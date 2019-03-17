@@ -7,6 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import AnchoredText
 
+from pandas.plotting import register_matplotlib_converters
+register_matplotlib_converters()
 # =============================================================================
 # User defined function
 # This function takes in a list that has nan in between numeric values and
@@ -151,7 +153,9 @@ print ("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(
 # =============================================================================
 qtr_eps_expanded_list = []
 for i in range(len(date_list)):
-  qtr_eps_expanded_list.append(str('nan'))
+  # 17th march : sundeep was here
+  # qtr_eps_expanded_list.append(str('nan'))
+  qtr_eps_expanded_list.append(float('nan'))
 
 for qtr_eps_date in qtr_eps_date_list:
   curr_index = qtr_eps_date_list.index(qtr_eps_date)
@@ -179,9 +183,9 @@ yr_eps_expanded_list = []
 annual_past_eps_expanded_list = []
 annual_projected_eps_expanded_list = []
 for i in range(len(date_list)):
-  yr_eps_expanded_list.append(str('nan'))
-  annual_past_eps_expanded_list.append(str('nan'))
-  annual_projected_eps_expanded_list.append(str('nan'))
+  yr_eps_expanded_list.append(float('nan'))
+  annual_past_eps_expanded_list.append(float('nan'))
+  annual_projected_eps_expanded_list.append(float('nan'))
 
 for yr_eps_date in yr_eps_date_list:
   curr_index = yr_eps_date_list.index(yr_eps_date)
@@ -209,10 +213,10 @@ yr_eps_05_0_growth_list = []
 yr_eps_10_0_growth_list = []
 yr_eps_20_0_growth_list = []
 for i in range(len(yr_eps_date_list)):
-  yr_eps_02_5_growth_list.append(str('nan'))
-  yr_eps_05_0_growth_list.append(str('nan'))
-  yr_eps_10_0_growth_list.append(str('nan'))
-  yr_eps_20_0_growth_list.append(str('nan'))
+  yr_eps_02_5_growth_list.append(float('nan'))
+  yr_eps_05_0_growth_list.append(float('nan'))
+  yr_eps_10_0_growth_list.append(float('nan'))
+  yr_eps_20_0_growth_list.append(float('nan'))
 
 yr_eps_02_5_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
 yr_eps_05_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
@@ -238,10 +242,10 @@ yr_eps_05_0_growth_expanded_list_unsmooth = []
 yr_eps_10_0_growth_expanded_list_unsmooth = []
 yr_eps_20_0_growth_expanded_list_unsmooth = []
 for i in range(len(date_list)):
-  yr_eps_02_5_growth_expanded_list_unsmooth.append(str('nan'))
-  yr_eps_05_0_growth_expanded_list_unsmooth.append(str('nan'))
-  yr_eps_10_0_growth_expanded_list_unsmooth.append(str('nan'))
-  yr_eps_20_0_growth_expanded_list_unsmooth.append(str('nan'))
+  yr_eps_02_5_growth_expanded_list_unsmooth.append(float('nan'))
+  yr_eps_05_0_growth_expanded_list_unsmooth.append(float('nan'))
+  yr_eps_10_0_growth_expanded_list_unsmooth.append(float('nan'))
+  yr_eps_20_0_growth_expanded_list_unsmooth.append(float('nan'))
 
 
 for yr_eps_date in yr_eps_date_list:
@@ -398,6 +402,7 @@ print ("Type of fig ", type(fig), \
        "\nType of price_plt: ", type(price_plt), \
        "\nType of yr_eps_plt: ", type(annual_past_eps_plt), \
        "\nType of upper_channel_plt: ", type(upper_channel_plt))
+print ("The Q EPS list is ",qtr_eps_expanded_list[0:plot_period_int])
 
 # -----------------------------------------------------------------------------
 # Main Plot - This is the Q EPS vs Date
@@ -405,7 +410,7 @@ print ("Type of fig ", type(fig), \
 main_plt.set_xlabel('Date')
 main_plt.set_ylabel('Q EPS')
 main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-main_plt_inst = main_plt.plot(date_list[0:plot_period_int],qtr_eps_expanded_list[0:plot_period_int], label = 'Q EPS',color="deeppink",marker='.', markersize='8')
+main_plt_inst = main_plt.plot(date_list[0:plot_period_int],qtr_eps_expanded_list[0:plot_period_int],color="deeppink",marker='.')
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -540,7 +545,7 @@ main_plt.yaxis.grid(True)
 # date_time =  dt.datetime.now().strftime("%Y_%m_%d_%H_%M")
 now = dt.datetime.now()
 date_time = now.strftime("%Y_%m_%d_%H_%M")
-fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg",dpi=200)
+# fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg",dpi=200)
 plt.show()
 # -----------------------------------------------------------------------------
 
