@@ -402,15 +402,13 @@ print ("Type of fig ", type(fig), \
        "\nType of price_plt: ", type(price_plt), \
        "\nType of yr_eps_plt: ", type(annual_past_eps_plt), \
        "\nType of upper_channel_plt: ", type(upper_channel_plt))
-print ("The Q EPS list is ",qtr_eps_expanded_list[0:plot_period_int])
-
 # -----------------------------------------------------------------------------
 # Main Plot - This is the Q EPS vs Date
 # -----------------------------------------------------------------------------
 main_plt.set_xlabel('Date')
 main_plt.set_ylabel('Q EPS')
 main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-main_plt_inst = main_plt.plot(date_list[0:plot_period_int],qtr_eps_expanded_list[0:plot_period_int],color="deeppink",marker='.')
+main_plt_inst = main_plt.plot(date_list[0:plot_period_int],qtr_eps_expanded_list[0:plot_period_int],label = 'Q EPS',color="deeppink",marker='.')
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -545,7 +543,7 @@ main_plt.yaxis.grid(True)
 # date_time =  dt.datetime.now().strftime("%Y_%m_%d_%H_%M")
 now = dt.datetime.now()
 date_time = now.strftime("%Y_%m_%d_%H_%M")
-# fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg",dpi=200)
+fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg",dpi=200)
 plt.show()
 # -----------------------------------------------------------------------------
 
