@@ -58,8 +58,8 @@ print("The Calendar Date list is", calendar_date_list, "\nand it has", len(calen
 # Open the Downloaded Yahoo Historical
 # =============================================================================
 tracklist_df = pd.read_csv(tracklist_file_full_path)
-tracklist_df.dropna(inplace=True)
-ticker_list = tracklist_df['Tickers'].tolist()
+ticker_list_unclean = tracklist_df['Tickers'].tolist()
+ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 print ("The ticker list is", ticker_list)
 
 for ticker_raw in ticker_list:
@@ -68,7 +68,7 @@ for ticker_raw in ticker_list:
 
   if ticker in config_df.index:
     ticker_config_series = config_df.loc[ticker]
-    print("Then configurations for ", ticker, " is ", ticker_config_series)
+    print("Then configurations for ", ticker, " is\n", ticker_config_series)
   else:
     # Todo : Create a default series at the start of the program
     print ("Configuration Entry for ", ticker , " not found...continuing with default values")
@@ -83,7 +83,7 @@ for ticker_raw in ticker_list:
   historical_df = pd.read_csv(in_historical_csv)
    # Drop any row that has nan values
   historical_df.dropna(inplace=True)
-  print("Historical Dataframe ", historical_df)
+  # print("Historical Dataframe ", historical_df)
   historical_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in historical_df.iloc[:, 0]]
   historical_col_str = ','.join(historical_df.columns.tolist())
   # print("The Historical Columns are", historical_col_str)
@@ -96,9 +96,9 @@ for ticker_raw in ticker_list:
   # ends at match date
   # Delete everything after - and including - the match index
   calendar_date_start_index = calendar_date_list.index(match_date) - int(future_cal_quarter*64)
-  print ("Will Start the Calendar fron index", calendar_date_start_index)
+  # print ("Will Start the Calendar from index", calendar_date_start_index)
   calendar_date_list_mod = calendar_date_list[calendar_date_start_index:calendar_date_list.index(match_date)]
-  print("The modified Calendar list is ", calendar_date_list_mod, "and it has \n", len(calendar_date_list_mod), "elements")
+  # print("The modified Calendar list is ", calendar_date_list_mod, "and it has \n", len(calendar_date_list_mod), "elements")
 
   # ===========================================================================
   # Now write the Data in csv
