@@ -61,6 +61,7 @@ user_dir = "User Files"
 chart_dir = "Charts"
 historical_dir = "Historical"
 earnings_dir= "Earnings"
+log_dir = "Logs"
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + "\\" + user_dir + "\\" + tracklist_file
 yahoo_hist_in_dir = dir_path + "\\Download\YahooHistorical"
@@ -72,6 +73,8 @@ yahoo_hist_out_dir = dir_path + "\\Historical"
 # todo : Should read from the Tracklist file and save the charts in the charts directory
 ticker = "MU"
 
+# Open the Log file in write mode
+logfile = dir_path + "\\" + log_dir + "\\" + ticker + "_log.csv"
 
 # =============================================================================
 # Read the Earnings file for the ticker
@@ -142,6 +145,15 @@ while (i_int < (len(qtr_eps_list)-3)):
   yr_eps_list.append(annual_average_eps)
   i_int += 1
 print ("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(yr_eps_list))
+yr_eps_list_tmp = yr_eps_list
+yr_eps_list_tmp.append('Not_calculated')
+yr_eps_list_tmp.append('Not_calculated')
+yr_eps_list_tmp.append('Not_calculated')
+
+# print ("The Earnings DF is ", earnings_df)
+earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_eps_list_tmp]),
+                               columns=['Date', 'Q EPS', 'Annual EPS'])
+earnings_df.to_csv(logfile)
 # ===================================================================================================
 
 
@@ -206,7 +218,7 @@ for yr_eps_date in yr_eps_date_list:
 
 # todo : Needs to be gotten from config file
 date_for_yr_eps_growth_projection = ""
-growth_proj_start_index = 6
+growth_proj_start_index = 14
 
 yr_eps_02_5_growth_list = []
 yr_eps_05_0_growth_list = []
