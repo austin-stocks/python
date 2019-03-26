@@ -70,7 +70,7 @@ yahoo_hist_out_dir = dir_path + "\\Historical"
 
 
 # todo : Should read from the Tracklist file and save the charts in the charts directory
-ticker = "APPF"
+ticker = "MU"
 
 
 # =============================================================================
