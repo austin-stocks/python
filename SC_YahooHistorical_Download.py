@@ -12,29 +12,22 @@ from yahoofinancials import YahooFinancials
 # ##############################################################################
 
 # =============================================================================
-# Define the various filenames and Directory Paths to be used
+# Define the various filenames and Directory Paths to be used and set the
+# start and end dates
 # =============================================================================
 dir_path = os.getcwd()
 user_dir = "User Files"
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + "\\" + user_dir + "\\" + tracklist_file
-# tracklist_file = "TrackList, 2018-09-01.xlsm"
-# tracklist_file_full_path = dir_path + "\\User Files" + "\\" + tracklist_file
-
 yahoo_hist_out_dir = dir_path + "\\Download\\YahooHistorical"
-# =============================================================================
 
-
-# =============================================================================
-# Define the Start and End dates
-# =============================================================================
 start_date = '1950-01-01'
 # end_date_raw = str(datetime.datetime.now().year) + \
 #        "-" + str(datetime.datetime.now().month) + \
 #        "-" + str(datetime.datetime.now().day)
 end_date_raw = datetime.datetime.today() + datetime.timedelta(days=1)
 end_date = end_date_raw.strftime('%Y-%m-%d')
-print ("Getting Date from ", start_date, " till ", end_date)
+print ("Start Date set to:  ", start_date, ", End Date set to: ", end_date)
 # =============================================================================
 
 
@@ -69,10 +62,13 @@ print ("Ticker List is ", ticker_list)
 print ('The number of ticker in the list are ', len(ticker_list))
 '''
 
+# Read the trracklist and convert the read tickers into a list
 tracklist_df = pd.read_csv(tracklist_file_full_path)
-print ("The Tracklist df is", tracklist_df)
-ticker_list = tracklist_df['Tickers'].tolist()
-
+# print ("The Tracklist df is", tracklist_df)
+ticker_list_unclean = tracklist_df['Tickers'].tolist()
+ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+# for ticker_raw in ticker_list:
+#   print("Element is ", str(ticker_raw))
 
 # =============================================================================
 
