@@ -1,5 +1,5 @@
 
-from my_logger import my_print as my_print
+from SC_logger import my_print as my_print
 
 
 
