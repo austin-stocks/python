@@ -20,11 +20,13 @@ def my_print(debug_fh, msg, stdout, lvl):
   #         prevent data loss (or further data loss). I reserve these only for the
   #         most heinous errors and situations where there is guaranteed to have
   #         been data corruption or loss.
+  # Sundeep will end up only using debug, warn and error
 
-  if (stdout == 1):
-		print(msg + "\n")
+  if ((stdout == 1) and (lvl == 'DEBUG')) or ((lvl == 'ERROR') or (lvl == 'WARN')):
+    print(msg + "\n")
 
-	debug_fh.write(msg + "\n")
+  if (lvl == 'DEBUG') or (lvl == 'ERROR') or (lvl == 'WARN'):
+    debug_fh.write(msg + "\n")
 
 # =============================================================================
 #
