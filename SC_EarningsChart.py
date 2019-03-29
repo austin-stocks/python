@@ -6,6 +6,7 @@ import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import AnchoredText
+from SC_logger import my_print as my_print
 
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
@@ -74,13 +75,18 @@ yahoo_hist_out_dir = dir_path + "\\Historical"
 ticker = "MU"
 
 # Open the Log file in write mode
-logfile = dir_path + "\\" + log_dir + "\\" + ticker + "_log.csv"
+logfile = dir_path + "\\" + log_dir + "\\" + ticker + "_log.txt"
+debug_fh = open(logfile, "w+")
 
 # =============================================================================
 # Read the Earnings file for the ticker
 # =============================================================================
 qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv")
-print ("The Earnings df is \n", qtr_eps_df)
+log_lvl = "error"
+debug_str = "The Earnings df is \n" + qtr_eps_df.to_string()
+stdout = 0; my_print (debug_fh,debug_str,stdout,log_lvl.upper())
+
+# print ("The Earnings df is \n", qtr_eps_df)
 # Todo : Error out if any elements in the date_list are nan except the trailing (this includes
 # Todo : leading nan and any nan in the list itself
 qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
@@ -153,7 +159,6 @@ yr_eps_list_tmp.append('Not_calculated')
 # print ("The Earnings DF is ", earnings_df)
 earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_eps_list_tmp]),
                                columns=['Date', 'Q EPS', 'Annual EPS'])
-earnings_df.to_csv(logfile)
 # ===================================================================================================
 
 
