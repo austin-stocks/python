@@ -126,9 +126,9 @@ for ticker_raw in ticker_list:
   csvFile.close()
 
   # For now break after 10
-  if i == 3:
-    break
-  i = i + 1
+  # if i == 3:
+  #   break
+  # i = i + 1
 
 print("Done")
 # ##############################################################################

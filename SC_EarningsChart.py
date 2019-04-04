@@ -72,7 +72,7 @@ yahoo_hist_out_dir = dir_path + "\\Historical"
 
 
 # todo : Should read from the Tracklist file and save the charts in the charts directory
-ticker = "MU"
+ticker = "SCVL"
 
 # Open the Log file in write mode
 logfile = dir_path + "\\" + log_dir + "\\" + ticker + "_log.txt"
