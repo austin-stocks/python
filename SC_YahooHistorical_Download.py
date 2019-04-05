@@ -9,6 +9,7 @@ import os
 
 import pandas as pd
 from yahoofinancials import YahooFinancials
+from termcolor import colored, cprint
 # ##############################################################################
 
 # =============================================================================
@@ -21,12 +22,13 @@ tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + "\\" + user_dir + "\\" + tracklist_file
 yahoo_hist_out_dir = dir_path + "\\Download\\YahooHistorical"
 
-start_date = '1950-01-01'
+start_date = '2015-07-28'
 # end_date_raw = str(datetime.datetime.now().year) + \
 #        "-" + str(datetime.datetime.now().month) + \
 #        "-" + str(datetime.datetime.now().day)
 end_date_raw = datetime.datetime.today() + datetime.timedelta(days=1)
 end_date = end_date_raw.strftime('%Y-%m-%d')
+# end_date = '2015-08-15'
 print ("Start Date set to:  ", start_date, ", End Date set to: ", end_date)
 # =============================================================================
 
@@ -82,6 +84,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 i = 1
 for ticker_raw in ticker_list:
 
+  missing_data_found = 0
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw
   print("Iteration no : ", i , " ", ticker)
   yahoo_financials=YahooFinancials(ticker)
@@ -92,6 +95,7 @@ for ticker_raw in ticker_list:
     print ("Ticker ", ticker , "could not download data from Yahoo Financials")
     continue
 
+
   csvFile=open(yahoo_hist_out_dir + "\\" + ticker + "_yahoo_historical.csv", 'w+', newline='')
   writer = csv.writer(csvFile)
 
@@ -101,6 +105,9 @@ for ticker_raw in ticker_list:
   # The function above provides the historical information in the list 'prices' in
   # the order from oldest -> lastest, so, Iterate over the list in reversed order
   for x in reversed(range(1, len(historical_data[ticker]['prices']))):
+
+    # Check and warn if the number of columns in date do not match in adjusted close
+    # data_list = historical_data['Tickers'].tolist()
 
     # Create the List to be written into csv file
     price_list = []
@@ -121,6 +128,19 @@ for ticker_raw in ticker_list:
     price_list.insert(5, historical_data[ticker]['prices'][x]['adjclose'])
     price_list.insert(6, historical_data[ticker]['prices'][x]['volume'])
     #print(price_list)
+    if (  (type(historical_data[ticker]['prices'][x]['open']) == type(None)) or \
+          (type(historical_data[ticker]['prices'][x]['high']) == type(None)) or \
+          (type(historical_data[ticker]['prices'][x]['low']) == type(None)) or \
+          (type(historical_data[ticker]['prices'][x]['close']) == type(None)) or \
+          (type(historical_data[ticker]['prices'][x]['adjclose']) == type(None)) or \
+          (type(historical_data[ticker]['prices'][x]['volume']) == type(None))):
+      # print ("Missing data found\n")
+      missing_data_found = 1
+      # text = colored('Warning: Missing data found in Yahoo Download - Either in Price or Volume for date: ' + date_str, 'red', attrs=['reverse', 'blink'])
+      # print (text)
+
+
+
     writer.writerow(price_list)
 
   csvFile.close()
@@ -129,6 +149,9 @@ for ticker_raw in ticker_list:
   # if i == 3:
   #   break
   # i = i + 1
+  if (missing_data_found == 1):
+    text = colored('Warning: Missing data found in Yahoo Download - Either in Price or Volume for ' + ticker, 'red',attrs=['reverse', 'blink'])
+    print (text)
 
 print("Done")
 # ##############################################################################
