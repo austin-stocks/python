@@ -1,0 +1,12 @@
+Ticker,Linear Chart Years,Future Calendar Quarters,Log Chart Years,Price Scale - High,Earnings Scale - Low,Earnings Scale - High,Lower Price Channel,Upper Price Channel,Price Scale - Low
+AAPL,6,4,,,,,,,
+APPF,10,8,,150,-0.3,0.5,0.1,0.1,-20
+MTSI,,6,,,,,,,
+MU,10,8,,70,-1,4,0.3,0.3,5
+UVE,10,8,,150,-0.3,0.5,0.1,0.1,-20
+PYX,10,8,,150,-0.3,0.5,0.1,0.1,-20
+CSWI,10,8,,150,-0.3,0.5,0.1,0.1,-20
+CVNA,10,8,,150,-0.3,0.5,0.1,0.1,-20
+SCVL,10,8,,60,0,1,0.1,0.1,0
+KL,10,8,,60,0,1,0.1,0.1,0
+CDE,10,8,,60,0,1,0.1,0.1,0
