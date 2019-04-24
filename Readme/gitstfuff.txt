@@ -1,3 +1,18 @@
+-- This is a file that to get some shortcuts etc going for git education
+
+--==============================================================================
+-- To make git reflog give out the dates of the hashes and make it look pretty 
+--==============================================================================
+-- This gives more relevant information...maybe I just don't know right now 
+-- how to format the other reflog command 
+$ git reflog --pretty='%h %cd %gd %gs'
+
+-- This one is pretty but seems like it misses some information
+$ git reflog --format='%C(auto)%h %<|(17)%gd %C(red)%ci%C(reset) %s'
+
+--==============================================================================
+
+
 git fetch origin
 git diff HEAD..origin or 
 git diff --name-only origin
@@ -15,9 +30,3 @@ b58aae8 HEAD@{1}: fetch origin/branch
 $ git reset --hard HEAD{2}
 
 
--- This one is pretty but seems like it misses some information
-$ git reflog --format='%C(auto)%h %<|(17)%gd %C(red)%ci%C(reset) %s'
-
--- This one is not as pretty but gives more relevant information...maybe I just don't 
--- know right now how to format the first reflog command 
-$ git reflog --pretty='%h %cd %gd %gs'
