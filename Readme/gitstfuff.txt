@@ -15,7 +15,7 @@ $ git reflog --format='%C(auto)%h %<|(17)%gd %C(red)%ci%C(reset) %s'
 
 git fetch origin
 git diff HEAD..origin or 
-git diff --name-only origin
+git diff --name-only HEAD..origin
 
 git merge orgin
 
