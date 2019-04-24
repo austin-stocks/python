@@ -1,0 +1,23 @@
+git fetch origin
+git diff HEAD..origin or 
+git diff --name-only origin
+
+git merge orgin
+
+
+
+$ git reflog
+...
+abc987  HEAD@{0}: merge activity
+b58aae8 HEAD@{1}: fetch origin/branch
+8f3a362 HEAD@{2}: activity before the fetch
+...
+$ git reset --hard HEAD{2}
+
+
+-- This one is pretty but seems like it misses some information
+$ git reflog --format='%C(auto)%h %<|(17)%gd %C(red)%ci%C(reset) %s'
+
+-- This one is not as pretty but gives more relevant information...maybe I just don't 
+-- know right now how to format the first reflog command 
+$ git reflog --pretty='%h %cd %gd %gs'
