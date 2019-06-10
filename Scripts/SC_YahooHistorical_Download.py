@@ -105,14 +105,14 @@ for ticker_raw in ticker_list:
   # Put the Header Row in the csv
   writer.writerow(["Date", "Open", "High", "Low", "Close", "Adj_Close", "Volume"])
 
-  # The function above provides the historical information in the list 'prices' in
-  # the order from oldest -> lastest, so, Iterate over the list in reversed order
+  # The package function above provides the historical information in the list 'prices'
+  # in the order from oldest -> lastest, so, Iterate over the list in reversed order
   for x in reversed(range(1, len(historical_data[ticker]['prices']))):
 
     # Check and warn if the number of columns in date do not match in adjusted close
     # data_list = historical_data['Tickers'].tolist()
 
-    # Create the List to be written into csv file
+    # Create the List to be written into csv file row
     price_list = []
 
     # Get the date in the format that we need
@@ -146,12 +146,9 @@ for ticker_raw in ticker_list:
       # text = colored('Warning: Missing data found in Yahoo Download - Either in Price or Volume for date: ' + date_str, 'red', attrs=['reverse', 'blink'])
       # print (text)
 
-
-
     writer.writerow(price_list)
 
   csvFile.close()
-
   # For now break after 10
   # if i == 3:
   #   break
