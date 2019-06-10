@@ -13,7 +13,7 @@ from termcolor import colored, cprint
 # ##############################################################################
 
 # =============================================================================
-# Define the various filenames and Directory Paths to be used and set the
+# Define the various File names and Directory Paths to be used and set the
 # start and end dates
 # =============================================================================
 dir_path = os.getcwd()
@@ -29,7 +29,7 @@ start_date = '1950-01-01'
 end_date_raw = datetime.datetime.today() + datetime.timedelta(days=1)
 end_date = end_date_raw.strftime('%Y-%m-%d')
 # end_date = '2015-08-15'
-print ("Start Date set to:  ", start_date, ", End Date set to: ", end_date)
+print ("Start Date set to: ", start_date, ", End Date set to: ", end_date)
 # =============================================================================
 
 
@@ -86,12 +86,14 @@ for ticker_raw in ticker_list:
 
   missing_data_found = 0
   missing_data_index = ""
-  ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw
+  ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   print("Iteration no : ", i , " ", ticker)
   yahoo_financials=YahooFinancials(ticker)
   try:
+    # The type of data that is returned by the package is <dict>
     historical_data=yahoo_financials.get_historical_price_data(start_date, end_date, 'daily')
-    # print ("Historical Data from Yahoo is ", historical_data)
+    # print ("Historical Data retuned from package is ", historical_data)
+    # print ("Historical Data Type returned from the package is ", type(historical_data))
   except (ValueError):
     print ("Ticker ", ticker , "could not download data from Yahoo Financials")
     continue
@@ -153,7 +155,7 @@ for ticker_raw in ticker_list:
   # For now break after 10
   # if i == 3:
   #   break
-  # i = i + 1
+  i = i + 1
   if (missing_data_found == 1):
     # Sundeep is here...need to find out what to report/how to report and then maybe do a missing panda data to
     # populate the entire data
