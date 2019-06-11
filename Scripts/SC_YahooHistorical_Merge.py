@@ -135,6 +135,7 @@ for ticker_raw in ticker_list:
   for x in calendar_date_list_mod:
     fout.write(x.strftime('%m/%d/%Y') + '\n')
 
+  # Now calculate the 200, 50, 20 and 10 day ma for adj close and 20 day for volume
   # Then write the historical Data
   x = historical_df.to_string(header=False, index=False, index_names=False).split('\n')
   row_list = [','.join(ele.split()) for ele in x]
