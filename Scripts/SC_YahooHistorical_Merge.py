@@ -1,8 +1,6 @@
 import pandas as pd
-import matplotlib
 import datetime as dt
 import numpy as np
-import matplotlib.pyplot as plt
 import os
 
 # This program reads the
@@ -39,7 +37,7 @@ print ("The configuration df", config_df)
 
 # =============================================================================
 # Get the years in the Calendar and concatenate them. This will generate a list
-# that is from say year 2024 to 2020 (or whatever years the calendar has)
+# that is from say year 2024 to 2020 (or whatever years the calendar has dates for)
 # =============================================================================
 # print("The Calendar is", calendar_df)
 col_list = calendar_df.columns.tolist()
@@ -67,7 +65,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 print ("The ticker list is", ticker_list)
 
 for ticker_raw in ticker_list:
-  ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw
+  ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
   print("Creating Historical Data for ", ticker)
 
   if ticker in config_df.index:
@@ -78,8 +76,6 @@ for ticker_raw in ticker_list:
     print ("Configuration Entry for ", ticker , " not found...continuing with default values")
     continue
 
-  # Get how many  future Quarters should be left in the final csv
-  future_cal_quarter = ticker_config_series['Future Calendar Quarters']
 
 
   # Read the input Yahoo Historical csv
@@ -99,6 +95,20 @@ for ticker_raw in ticker_list:
   # Now snip the calendar_date_list so that it starts at future_cal_quarter before match_date and
   # ends at match date
   # Delete everything after - and including - the match index
+  # See if there is a End future Date
+  # Get how many  future Quarters should be left in the final csv
+  # Sundeep is here...
+  calendar_future_end_date = dt.datetime.strptime(ticker_config_series['Calendar_Future_End_Date'],'%m/%d/%Y').date()
+  print ("Calendar Future End Date is : ", calendar_future_end_date)
+  calendar_date_start_index = calendar_date_list.index(calendar_future_end_date)
+  if (str(calendar_future_end_date) == 'nan'):
+    print("Found nan for Calendar Future End date. Will look for Future Calendar Quarter")
+    future_cal_quarter = ticker_config_series['Future Calendar Quarters']
+    print ("Future Calendar Quarters is : ", future_cal_quarter)
+    if (str(future_cal_quarter) == 'nan'):
+      print ("Found nan for Future Calendar Quarter. Will assume 8")
+      future_cal_quarter = 8
+
   calendar_date_start_index = calendar_date_list.index(match_date) - int(future_cal_quarter*64)
   # print ("Will Start the Calendar from index", calendar_date_start_index)
   calendar_date_list_mod = calendar_date_list[calendar_date_start_index:calendar_date_list.index(match_date)]
