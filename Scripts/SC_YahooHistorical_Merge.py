@@ -88,30 +88,39 @@ for ticker_raw in ticker_list:
   historical_col_str = ','.join(historical_df.columns.tolist())
   # print("The Historical Columns are", historical_col_str)
 
-  # Match the first date in historical to the dates in calendar
-  match_date = min(calendar_date_list, key=lambda d: abs(d - historical_date_list[0]))
-  print("The matching date is ", match_date, " at index ", calendar_date_list.index(match_date))
+  # Match the first/latest date from historical date list to the dates in calendar.
+  # This will become the ending index for extracting the dates from calendar_date_list
+  cal_match_date_with_historical = min(calendar_date_list, key=lambda d: abs(d - historical_date_list[0]))
+  cal_match_date_with_historical_index = calendar_date_list.index(cal_match_date_with_historical)
+  print("The latest historical date is : ", historical_date_list[0], ". Closest Matching date in Calendar is :", cal_match_date_with_historical, " at index : ", cal_match_date_with_historical_index)
 
-  # Now snip the calendar_date_list so that it starts at future_cal_quarter before match_date and
-  # ends at match date
-  # Delete everything after - and including - the match index
-  # See if there is a End future Date
-  # Get how many  future Quarters should be left in the final csv
-  # Sundeep is here...
-  calendar_future_end_date = dt.datetime.strptime(ticker_config_series['Calendar_Future_End_Date'],'%m/%d/%Y').date()
-  print ("Calendar Future End Date is : ", calendar_future_end_date)
-  calendar_date_start_index = calendar_date_list.index(calendar_future_end_date)
-  if (str(calendar_future_end_date) == 'nan'):
-    print("Found nan for Calendar Future End date. Will look for Future Calendar Quarter")
+  # ===========================================================================
+  # User specifies what date he/she wants the historical data to start from. The user specifies it as:
+  # 1. Either as a date. If so - then get the index of the data from the calendar date list
+  # 2. If the date is not specified then a future number of quarters are specified. If that is not specified
+  # then the script assumes 8 more quarters
+  # This will become lead to calculating the starting index for extracting the dates from calendar_date_list
+  # ===========================================================================
+  calendar_future_date_str = ticker_config_series['Calendar_Future_End_Date']
+  print ("User Specified Calendar Future Date is : ", calendar_future_date_str)
+  if (str(calendar_future_date_str) != 'nan'):
+    calendar_future_date = dt.datetime.strptime(calendar_future_date_str, '%m/%d/%Y').date()
+    calendar_future_match_date = min(calendar_date_list, key=lambda d: abs(d - calendar_future_date))
+    calendar_future_date_index = calendar_date_list.index(calendar_future_match_date)
+    print ("The nearest matching date (for user specified date : ", calendar_future_date, ") in calendar date list is : ", calendar_future_match_date, ", at calendar index : ", calendar_future_date_index)
+  else:
+    print("Found nan for Calendar Future End date. Will now look for Future Calendar Quarter")
     future_cal_quarter = ticker_config_series['Future Calendar Quarters']
     print ("Future Calendar Quarters is : ", future_cal_quarter)
     if (str(future_cal_quarter) == 'nan'):
-      print ("Found nan for Future Calendar Quarter. Will assume 8")
+      print ("Found nan for Future Calendar Quarter. Will assume user wants 8 future quarters")
       future_cal_quarter = 8
+    calendar_future_date_index = cal_match_date_with_historical_index - int(future_cal_quarter*64)
+  # ===========================================================================
 
-  calendar_date_start_index = calendar_date_list.index(match_date) - int(future_cal_quarter*64)
-  # print ("Will Start the Calendar from index", calendar_date_start_index)
-  calendar_date_list_mod = calendar_date_list[calendar_date_start_index:calendar_date_list.index(match_date)]
+
+  print ("Will use the Calendar date list from index : ", calendar_future_date_index, " to index : ",cal_match_date_with_historical_index)
+  calendar_date_list_mod = calendar_date_list[calendar_future_date_index:cal_match_date_with_historical_index]
   # print("The modified Calendar list is ", calendar_date_list_mod, "and it has \n", len(calendar_date_list_mod), "elements")
 
   # ===========================================================================
