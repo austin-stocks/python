@@ -4,6 +4,14 @@ import numpy as np
 import os
 import time
 
+# =============================================================================
+# This script reads an input file that has 2 columns and
+# 1. Inserts 2 empty columns after the existing columns (using different ways)
+# 2. Insert a column for 20 day MA for Price. This is NOT reversed. In other words the MA calculation starts from the top row
+# 3. Insert a column for 10 day MA for price. This is reversed. In other words the MA calculation starts from the bottom row
+# 4. Insert a column for 5  day MA for volume. This is reversed. In other words the MA calculation starts from the bottom row
+# =============================================================================
+
 # Read the input file
 exp_df = pd.read_csv('C:\Sundeep\Stocks_Automation\Scripts\Experiments\Moving_average_in.csv')
 # Drop any row that has nan values
