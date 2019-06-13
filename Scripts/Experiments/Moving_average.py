@@ -13,7 +13,7 @@ import time
 # =============================================================================
 
 # Read the input file
-exp_df = pd.read_csv('C:\Sundeep\Stocks_Automation\Scripts\Experiments\Moving_average_in.csv')
+exp_df = pd.read_csv('C:\Sundeep\Stocks_Automation\Scripts\Experiments\Data\Moving_average_in.csv')
 # Drop any row that has nan values
 exp_df.dropna(inplace=True)
 print("\n\nReading Input Dataframe \n\n", exp_df, "\n\n")
@@ -39,4 +39,4 @@ exp_df['10_day_Volume_MA_Reversed'] = exp_df.rolling(window=5)['Volume'].mean().
 print("\n\nWriting Output Dataframe \n\n", exp_df, "\n\n")
 
 # Write the dataframe to out file
-exp_df.to_csv('C:\Sundeep\Stocks_Automation\Scripts\Experiments\Moving_average_out.csv')
+exp_df.to_csv('C:\Sundeep\Stocks_Automation\Scripts\Experiments\Data\Moving_average_out.csv')
