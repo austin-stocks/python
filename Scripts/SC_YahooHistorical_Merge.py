@@ -77,13 +77,22 @@ for ticker_raw in ticker_list:
     continue
 
 
-
-  # Read the input Yahoo Historical csv
+  # ===========================================================================
+  # Read the input Yahoo Historical csv and clean it up the dataframe
+  # ===========================================================================
   in_historical_csv = yahoo_hist_in_dir + "\\" + ticker + "_yahoo_historical.csv"
   historical_df = pd.read_csv(in_historical_csv)
-   # Drop any row that has nan values
-  historical_df.dropna(inplace=True)
+  # Drop any row that has nan values in ALL the columns
+  historical_df.dropna(how='all',inplace=True)
+  # Drop ONLY the rows now that do not have Date
+  historical_df_tmp = historical_df[pd.notnull(historical_df['Date'])]
+  historical_df = historical_df_tmp
+  # Since we are guaranteed to have dates now for all the rows, now
+  # interpolate the values on the columns that have missing data
+  historical_df.interpolate(inplace=True)
   # print("Historical Dataframe ", historical_df)
+  # ===========================================================================
+
   historical_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in historical_df.iloc[:, 0]]
   historical_col_str = ','.join(historical_df.columns.tolist())
   # print("The Historical Columns are", historical_col_str)
