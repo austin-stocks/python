@@ -88,9 +88,29 @@ for ticker_raw in ticker_list:
   historical_df_tmp = historical_df[pd.notnull(historical_df['Date'])]
   historical_df = historical_df_tmp
   # Since we are guaranteed to have dates now for all the rows, now
-  # interpolate the values on the columns that have missing data
+  # interpolate the values on the columns that have missing data (price, volume)
   historical_df.interpolate(inplace=True)
   # print("Historical Dataframe ", historical_df)
+  # ===========================================================================
+
+  # ===========================================================================
+  # Insert Moving averages
+  # ===========================================================================
+  # For some reason Empty_col_H cannot just have a "," which would have truly
+  #   inserted a blank column. Maybe there is way but my solution below does not
+  #   break anything
+  # historical_df.loc[:, 'Empty_col_H'] = ',' Does not work
+  # historical_df.loc[:, 'Empty_col_H'] = ' ' Inserting space does not work either to get
+  #   an empty column
+
+  # So - now - Inserting a non-threatening character
+  historical_df.loc[:, 'Empty_col_H'] =  '-'
+  # Add the moving averages - They are added as columns after Empty Columns
+  historical_df['200_day_Price_MA'] = historical_df.rolling(window=200)['Adj_Close'].mean().shift(-199)
+  historical_df['50_day_Price_MA'] = historical_df.rolling(window=50)['Adj_Close'].mean().shift(-49)
+  historical_df['20_day_Price_MA'] = historical_df.rolling(window=20)['Adj_Close'].mean().shift(-19)
+  historical_df['10_day_Price_MA'] = historical_df.rolling(window=10)['Adj_Close'].mean().shift(-9)
+  historical_df['50_day_Volume_MA'] = historical_df.rolling(window=50)['Volume'].mean().shift(-49)
   # ===========================================================================
 
   historical_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in historical_df.iloc[:, 0]]
@@ -106,8 +126,8 @@ for ticker_raw in ticker_list:
   # ===========================================================================
   # User specifies what date he/she wants the historical data to start from. The user specifies it as:
   # 1. Either as a date. If so - then get the index of the data from the calendar date list
-  # 2. If the date is not specified then a future number of quarters are specified. If that is not specified
-  # then the script assumes 8 more quarters
+  # 2. If the date is not specified then a future number of quarters are specified.
+  # 3. If that is not specified then the script assumes 8 more quarters
   # This will become lead to calculating the starting index for extracting the dates from calendar_date_list
   # ===========================================================================
   calendar_future_date_str = ticker_config_series['Calendar_Future_End_Date']
@@ -118,11 +138,11 @@ for ticker_raw in ticker_list:
     calendar_future_date_index = calendar_date_list.index(calendar_future_match_date)
     print ("The nearest matching date (for user specified date : ", calendar_future_date, ") in calendar date list is : ", calendar_future_match_date, ", at calendar index : ", calendar_future_date_index)
   else:
-    print("Found nan for Calendar Future End date. Will now look for Future Calendar Quarter")
+    print("Found nan for Calendar Future End date. Will now look for Future Calendar Quarters")
     future_cal_quarter = ticker_config_series['Future Calendar Quarters']
     print ("Future Calendar Quarters is : ", future_cal_quarter)
     if (str(future_cal_quarter) == 'nan'):
-      print ("Found nan for Future Calendar Quarter. Will assume user wants 8 future quarters")
+      print ("Found nan for Future Calendar Quarters. Will assume user wants 8 future quarters")
       future_cal_quarter = 8
     calendar_future_date_index = cal_match_date_with_historical_index - int(future_cal_quarter*64)
   # ===========================================================================
