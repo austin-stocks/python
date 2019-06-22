@@ -74,7 +74,7 @@ config_df = pd.read_csv(configurations_file_full_path)
 
 
 # todo : Should read from the Tracklist file and save the charts in the charts directory
-ticker = "SRI"
+ticker = "PRFT"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -336,20 +336,20 @@ print ("The upper Guide is ", guide_line_lower_list, "\nand the number of elemen
 # ---------------------------------------------------------
 # Create the lower and upper Price limit
 # ---------------------------------------------------------
-if (math.isnan(ticker_config_series['Price Scale - Low'])):
+if (math.isnan(ticker_config_series['Price_Scale_Low'])):
   price_lim_lower = 0
-  print("Price Scale - Low is set to 0")
+  print("Price_Scale_Low is set to 0")
 else:
-  price_lim_lower = int(ticker_config_series['Price Scale - Low'])
-  print("Price Scale - Low from Config file is ", price_lim_lower)
+  price_lim_lower = int(ticker_config_series['Price_Scale_Low'])
+  print("Price_Scale_Low from Config file is ", price_lim_lower)
 
-if (math.isnan(ticker_config_series['Price Scale - High'])):
+if (math.isnan(ticker_config_series['Price_Scale_High'])):
   adj_close_list_nonan = [x for x in adj_close_list if math.isnan(x) is False]
   price_lim_upper = 1.25 * max(adj_close_list_nonan)
-  print("Price Scale - High from historical adj_close_list is ", price_lim_upper)
+  print("Price_Scale_High from historical adj_close_list is ", price_lim_upper)
 else:
-  price_lim_upper = int(ticker_config_series['Price Scale - High'])
-  print("Price Scale - High from Config file is ", price_lim_upper)
+  price_lim_upper = int(ticker_config_series['Price_Scale_High'])
+  print("Price_Scale_High from Config file is ", price_lim_upper)
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
@@ -392,7 +392,9 @@ else:
 # Move the annual two quarters over
 # Test out the values from the file
 # How to show values when you click
-
+# Get the Average PE for last 1, 3, 5 and 10 years and get the forward PE
+#   and get it printed in the box
+# If possible superimpose the PE line in the chart
 # #############################################################################
 # ###########                    Now plot Everything                 ##########
 # #############################################################################
