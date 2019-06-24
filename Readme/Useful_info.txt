@@ -1,0 +1,12 @@
+A few useful links:
+
+
+https://www.barchart.com/stocks/sectors/rankings?timeFrame=1m
+
+https://etfdb.com/etf/FFTY/#etf-holdings&sort_name=weight&sort_order=desc&page=1
+
+https://finance.yahoo.com/industries/
+
+https://finance.yahoo.com/screener
+
+https://markets.money.cnn.com/Marketsdata/Sectors
