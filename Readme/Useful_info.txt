@@ -1,0 +1,34 @@
+A few useful links:
+
+From Ann:
+---------
+# IBD 50 list
+https://etfdb.com/etf/FFTY/#etf-holdings&sort_name=weight&sort_order=desc&page=1
+# Yahoo Industries
+https://finance.yahoo.com/industries/
+# Yahoo screener
+https://finance.yahoo.com/screener
+# Premarket news etc 
+https://money.cnn.com/data/premarket/
+# After-market new and data
+https://money.cnn.com/data/afterhours/
+# Sector relative performance - defaults to 1 month
+https://www.barchart.com/stocks/sectors/rankings?timeFrame=1m
+# Sector relative performance - defaults to today
+https://markets.money.cnn.com/Marketsdata/Sectors
+
+
+From Dan Caldwell:
+-----------------
+https://www.zerohedge.com/
+ohn Murphy "Market Message" from stockcharts.com (subscription)
+http://news.goldseek.com/GoldenJackass/
+https://www.armstrongeconomics.com/
+https://srsroccoreport.com/
+https://kingworldnews.com/
+https://www.potnetwork.com/
+https://www.paulcraigroberts.org/
+https://www.marketwatch.com/trading-deck/stories?authorId=11267
+http://www.zealllc.com/
+https://www.financialsense.com/
+
