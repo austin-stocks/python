@@ -10,6 +10,8 @@ https://finance.yahoo.com/industries/
 https://finance.yahoo.com/screener
 # Premarket news etc 
 https://money.cnn.com/data/premarket/
+# After-market new and data
+https://money.cnn.com/data/afterhours/
 # Sector relative performance - defaults to 1 month
 https://www.barchart.com/stocks/sectors/rankings?timeFrame=1m
 # Sector relative performance - defaults to today
