@@ -73,7 +73,8 @@ config_df = pd.read_csv(configurations_file_full_path)
 
 
 
-# todo : Should read from the Tracklist file and save the charts in the charts directory
+# todo : Should be able to read from the Tracklist file in a loop
+# and save the charts in the charts directory
 ticker = "PRFT"
 
 # Open the Log file in write mode
@@ -113,7 +114,7 @@ if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
   exit()
 
 # So - if we are successful till this point - we have made sure that
-# 1. There are no nan in the date list (todo : This needs to be done)
+# 1. There are no nan in the date list
 # 2. There are no nan in the eps list
 # 3. Number of elements in the qtr_eps_date_list are equal to the number of
 #    element in the qtr_eps_list
@@ -379,7 +380,6 @@ else:
 
 
 # todo :
-# Get the earnings projections line - 2.5% etc
 # See how you can add comments
 # Legends
 # Minor grids
@@ -395,6 +395,7 @@ else:
 # Get the Average PE for last 1, 3, 5 and 10 years and get the forward PE
 #   and get it printed in the box
 # If possible superimpose the PE line in the chart
+# Compare the stock chart with spx or indu or compq
 # #############################################################################
 # ###########                    Now plot Everything                 ##########
 # #############################################################################
