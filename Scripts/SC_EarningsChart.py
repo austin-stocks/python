@@ -75,7 +75,7 @@ config_df = pd.read_csv(configurations_file_full_path)
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "PRFT"
+ticker = "MEDP"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -119,6 +119,15 @@ if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
 # 3. Number of elements in the qtr_eps_date_list are equal to the number of
 #    element in the qtr_eps_list
 # =============================================================================
+
+
+# Read the spy or dji and ixic file for comparison
+spy_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^GSPC_historical.csv")
+dji_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^DJI_historical.csv")
+nasdaq_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^IXIC_historical.csv")
+
+# if the user wants to compare the peformance of the ticker with the index then
+
 
 # =============================================================================
 # Read the Historical file for the ticker
@@ -309,6 +318,12 @@ else:
   print("Will Plot the Chart for ", int(ticker_config_series['Linear Chart Years']), " years")
   plot_period_int = 252*int(ticker_config_series['Linear Chart Years'])
 # ---------------------------------------------------------
+
+# Sundeep is here...Get the spy for the plot_period_int and then normalize it
+# to stock price from that date onwards
+spy_adj_close_list = spy_df.Adj_Close.tolist()
+# spy_adjust_factor = adj_close_list[plot_period_int]/spy_adj_close_list[plot_period_int]
+
 
 
 # ---------------------------------------------------------
