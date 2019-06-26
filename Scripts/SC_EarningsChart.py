@@ -134,7 +134,7 @@ nasdaq_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^IXIC_histori
 # =============================================================================
 historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
 print ("The Historical df is \n", historical_df)
-adj_close_list = historical_df.Adj_Close.tolist()
+ticker_adj_close_list = historical_df.Adj_Close.tolist()
 date_str_list = historical_df.Date.tolist()
 print ("The date list from historical df is ", date_str_list)
 date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
@@ -319,11 +319,17 @@ else:
   plot_period_int = 252*int(ticker_config_series['Linear Chart Years'])
 # ---------------------------------------------------------
 
+
+# Get the index factor
 # Sundeep is here...Get the spy for the plot_period_int and then normalize it
 # to stock price from that date onwards
 spy_adj_close_list = spy_df.Adj_Close.tolist()
-# spy_adjust_factor = adj_close_list[plot_period_int]/spy_adj_close_list[plot_period_int]
+# find the length of adk_close_list
+if (plot_period_int < len(ticker_adj_close_list)):
 
+# spy_adjust_factor = spy_adj_close_list[plot_period_int]/adj_close_list[plot_period_int]
+# spy_adjust_factor = adj_close_list[plot_period_int]
+spy_adjust_factor = spy_adj_close_list[plot_period_int]
 
 
 # ---------------------------------------------------------
@@ -360,9 +366,9 @@ else:
   print("Price_Scale_Low from Config file is ", price_lim_lower)
 
 if (math.isnan(ticker_config_series['Price_Scale_High'])):
-  adj_close_list_nonan = [x for x in adj_close_list if math.isnan(x) is False]
-  price_lim_upper = 1.25 * max(adj_close_list_nonan)
-  print("Price_Scale_High from historical adj_close_list is ", price_lim_upper)
+  ticker_adj_close_list_nonan = [x for x in ticker_adj_close_list if math.isnan(x) is False]
+  price_lim_upper = 1.25 * max(ticker_adj_close_list_nonan)
+  print("Price_Scale_High from historical ticker_adj_close_list is ", price_lim_upper)
 else:
   price_lim_upper = int(ticker_config_series['Price_Scale_High'])
   print("Price_Scale_High from Config file is ", price_lim_upper)
@@ -452,7 +458,7 @@ main_plt_inst = main_plt.plot(date_list[0:plot_period_int],qtr_eps_expanded_list
 # -----------------------------------------------------------------------------
 price_plt.set_ylabel('Price', color='k')
 price_plt.set_ylim(price_lim_lower,price_lim_upper)
-price_plt_inst = price_plt.plot(date_list[0:plot_period_int], adj_close_list[0:plot_period_int], label = 'Adj Close',color="brown",linestyle='-')
+price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int], label = 'Adj Close',color="brown",linestyle='-')
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -555,9 +561,9 @@ date_to_annotate = "2017-03-29"
 date_to_annotate_datetime = dt.datetime.strptime(date_to_annotate, '%Y-%m-%d').date()
 # date_to_annoate_num = matplotlib.dates.date2num(date_to_annotate)
 match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
-print("The matching date is ", match_date, " at index ", date_list.index(match_date), " and the price is " ,adj_close_list[date_list.index(match_date)])
+print("The matching date is ", match_date, " at index ", date_list.index(match_date), " and the price is " ,ticker_adj_close_list[date_list.index(match_date)])
 
-price_plt.annotate('UK Referendom for Brexit',xy= (date_list[date_list.index(match_date)],adj_close_list[date_list.index(match_date)]),
+price_plt.annotate('UK Referendom for Brexit',xy= (date_list[date_list.index(match_date)],ticker_adj_close_list[date_list.index(match_date)]),
                    arrowprops=dict(facecolor='black', width=1))
 # xytext=(50, 30),textcoords='offset points', arrowprops=dict(facecolor='black', width=1))
 
