@@ -1,0 +1,10 @@
+1. To Download all the S&P holdings:
+https://us.spdrs.com/en/etf/SPY
+
+2. S&P sector information is available - for each of the sectors here - for e.g. XLV here
+  https://us.spdrs.com/en/etf/XLV
+
+To download the holdings for any of the sectors - including SPY
+  a. In the "Fund Overview" Tab - it gives the number of listings in the sector (so that you can do a sanity check)
+  b. In the "Holdings" you can search for "Download all holdings" and it will download xls for you. 
+
