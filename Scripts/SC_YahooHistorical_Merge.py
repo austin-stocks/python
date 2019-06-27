@@ -59,14 +59,28 @@ print("The Calendar Date list is", calendar_date_list, "\nand it has", len(calen
 # For each ticker in the ticker list from tracklist
 # Open the Downloaded Yahoo Historical
 # =============================================================================
-tracklist_df = pd.read_csv(tracklist_file_full_path)
-ticker_list_unclean = tracklist_df['Tickers'].tolist()
-ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
-print ("The ticker list is", ticker_list)
 
+get_sp_holdings = 1
+if (get_sp_holdings == 1):
+  tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + 'SPY_All_Holdings.xlsx', sheet_name="SPY")
+  ticker_list_unclean = tracklist_df['Identifier'].tolist()
+  ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+else:
+  # Read the trracklist and convert the read tickers into a list
+  tracklist_df = pd.read_csv(tracklist_file_full_path)
+  # print ("The Tracklist df is", tracklist_df)
+  ticker_list_unclean = tracklist_df['Tickers'].tolist()
+  ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+
+# main Loop for Tickers
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
   print("Creating Historical Data for ", ticker)
+
+  if (ticker == "BRK.B"):
+    ticker = "BRK-B"
+  elif (ticker == "BF.B"):
+    ticker = "BF-B"
 
   if ticker in config_df.index:
     ticker_config_series = config_df.loc[ticker]
