@@ -75,7 +75,7 @@ config_df = pd.read_csv(configurations_file_full_path)
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "MEDP"
+ticker = "SCVL"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -325,12 +325,12 @@ else:
 # to stock price from that date onwards
 spy_adj_close_list = spy_df.Adj_Close.tolist()
 # find the length of adk_close_list
-if (plot_period_int < len(ticker_adj_close_list)):
+if (len(ticker_adj_close_list) < plot_period_int):
+  spy_adjust_factor = spy_adj_close_list[len(ticker_adj_close_list)]/ticker_adj_close_list[len(ticker_adj_close_list)]
+else:
+  spy_adjust_factor = spy_adj_close_list[plot_period_int]/ticker_adj_close_list[plot_period_int]
 
-# spy_adjust_factor = spy_adj_close_list[plot_period_int]/adj_close_list[plot_period_int]
-# spy_adjust_factor = adj_close_list[plot_period_int]
-spy_adjust_factor = spy_adj_close_list[plot_period_int]
-
+spy_adj_close_list[:] = [x / spy_adjust_factor for x in spy_adj_close_list]
 
 # ---------------------------------------------------------
 # Get the upper and lower guide lines separation from the annual EPS
@@ -430,6 +430,7 @@ main_plt.set_title("Stock Chart for " + ticker)
 
 # Various plots that share the same x axis(date)
 price_plt = main_plt.twinx()
+spy_plt = main_plt.twinx()
 annual_past_eps_plt = main_plt.twinx()
 annual_projected_eps_plt = main_plt.twinx()
 upper_channel_plt = main_plt.twinx()
@@ -459,6 +460,14 @@ main_plt_inst = main_plt.plot(date_list[0:plot_period_int],qtr_eps_expanded_list
 price_plt.set_ylabel('Price', color='k')
 price_plt.set_ylim(price_lim_lower,price_lim_upper)
 price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int], label = 'Adj Close',color="brown",linestyle='-')
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Historical Price Plot
+# -----------------------------------------------------------------------------
+spy_plt.set_ylabel('S&P', color='k')
+spy_plt.set_ylim(price_lim_lower,price_lim_upper)
+spy_plt_inst = spy_plt.plot(date_list[0:plot_period_int], spy_adj_close_list[0:plot_period_int], label = 'S&P',color="green",linestyle='-')
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -522,7 +531,7 @@ lns = main_plt_inst + \
       yr_eps_20_0_plt_inst + yr_eps_10_0_plt_inst + \
       yr_eps_05_0_plt_inst + yr_eps_02_5_plt_inst + \
       annual_past_eps_plt_inst + upper_channel_plt_inst + \
-      lower_channel_plt_inst + price_plt_inst
+      lower_channel_plt_inst + price_plt_inst + spy_plt_inst
 labs = [l.get_label() for l in lns]
 main_plt.legend(lns, labs, loc="upper left", fontsize = 'x-small')
 # This works if we don't have defined the inst of the plots. In this case we
