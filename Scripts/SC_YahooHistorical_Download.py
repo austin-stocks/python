@@ -6,6 +6,7 @@ import csv
 import datetime
 import openpyxl
 import os
+import xlrd
 
 import pandas as pd
 from yahoofinancials import YahooFinancials
@@ -22,7 +23,7 @@ tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 yahoo_hist_out_dir = dir_path + "\\..\\Download\\YahooHistorical"
 
-start_date = '1950-01-01'
+start_date = '1900-01-01'
 # end_date_raw = str(datetime.datetime.now().year) + \
 #        "-" + str(datetime.datetime.now().month) + \
 #        "-" + str(datetime.datetime.now().day)
@@ -64,13 +65,17 @@ print ("Ticker List is ", ticker_list)
 print ('The number of ticker in the list are ', len(ticker_list))
 '''
 
-# Read the trracklist and convert the read tickers into a list
-tracklist_df = pd.read_csv(tracklist_file_full_path)
-# print ("The Tracklist df is", tracklist_df)
-ticker_list_unclean = tracklist_df['Tickers'].tolist()
-ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
-# for ticker_raw in ticker_list:
-#   print("Element is ", str(ticker_raw))
+get_sp_holdings = 1
+if (get_sp_holdings == 1):
+  tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + 'SPY_All_Holdings.xlsx', sheet_name="SPY")
+  ticker_list_unclean = tracklist_df['Identifier'].tolist()
+  ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+else:
+  # Read the trracklist and convert the read tickers into a list
+  tracklist_df = pd.read_csv(tracklist_file_full_path)
+  # print ("The Tracklist df is", tracklist_df)
+  ticker_list_unclean = tracklist_df['Tickers'].tolist()
+  ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
 # =============================================================================
 
@@ -87,6 +92,13 @@ for ticker_raw in ticker_list:
   missing_data_found = 0
   missing_data_index = ""
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
+
+  # Remove the "." from the ticker and replace by "-" as this is what Yahoo has
+  if (ticker == "BRK.B"):
+    ticker = "BRK-B"
+  elif (ticker == "BF.B"):
+    ticker = "BF-B"
+
   print("Iteration no : ", i , " ", ticker)
   yahoo_financials=YahooFinancials(ticker)
   try:
@@ -158,6 +170,37 @@ for ticker_raw in ticker_list:
     # populate the entire data
     text = colored('Warning: Missing data found in Yahoo Download - Either in Price or Volume for ' + ticker + ' at index ' + str(missing_data_index), 'red',attrs=['reverse', 'blink'])
     print (text)
+
+
+  # Get the dividend data here
+  # print(yahoo_financials.get_daily_dividend_data(start_date, end_date))
+  # start_date = '1987-09-15'
+  # end_date = '1988-09-15'
+  # yahoo_financials = YahooFinancials(['AAPL', 'WFC'])
+  # print(yahoo_financials.get_daily_dividend_data(start_date, end_date))
+  # {
+  #     "AAPL": [
+  #         {
+  #             "date": 564157800,
+  #             "formatted_date": "1987-11-17",
+  #             "amount": 0.08
+  #         },
+  #         {
+  #             "date": 571674600,
+  #             "formatted_date": "1988-02-12",
+  #             "amount": 0.08
+  #         },
+  #         {
+  #             "date": 579792600,
+  #             "formatted_date": "1988-05-16",
+  #             "amount": 0.08
+  #         },
+  #         {
+  #             "date": 587655000,
+  #             "formatted_date": "1988-08-15",
+  #             "amount": 0.08
+  #         }
+  #     ],
 
 print("Done")
 # ##############################################################################
