@@ -97,8 +97,17 @@ qtr_eps_list = qtr_eps_df.Q_EPS.tolist()
 print ("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
 print ("The Earnings list for qtr_eps is ", qtr_eps_list)
 
-# Set the length of qtr_eps_list to same as date_list...this gets rid of nan at the end
-# of the qtr_eps_list
+# ============================================================================
+# Get the eps value list to the same length as date list and
+# check if theeps list has any nan. If it has any nan then error out and let
+# the user correct the earning file.
+
+# Set the length of qtr_eps_list same as date_list.
+# This gets rid of any earnings that are beyond the last date.
+# This is not a common case but could cocur because of copy and paste and then
+# ignorance on the part of the user to not remove the "extra" earnings
+# This also makes sure that the eps date list and eps value list have the same
+# number of entries.
 len_qtr_eps_date_list = len(qtr_eps_date_list)
 len_qtr_eps_list = len(qtr_eps_list)
 if (len_qtr_eps_date_list < len_qtr_eps_list):
@@ -112,6 +121,7 @@ print ("The Earnings list for qtr_eps is ", qtr_eps_list)
 if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
   print ("ERROR : There are some undefined EPS numbers in the Earnings file, Please correct and rerun")
   exit()
+# ============================================================================
 
 # So - if we are successful till this point - we have made sure that
 # 1. There are no nan in the date list
@@ -121,12 +131,12 @@ if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
 # =============================================================================
 
 
-# Read the spy or dji and ixic file for comparison
+# Todo : This should be in the if statement
+# Read the spy or dji or ixic file for comparison
 spy_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^GSPC_historical.csv")
 dji_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^DJI_historical.csv")
 nasdaq_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^IXIC_historical.csv")
 
-# if the user wants to compare the peformance of the ticker with the index then
 
 
 # =============================================================================
@@ -168,9 +178,11 @@ yr_eps_list_tmp.append('Not_calculated')
 yr_eps_list_tmp.append('Not_calculated')
 yr_eps_list_tmp.append('Not_calculated')
 
-# print ("The Earnings DF is ", earnings_df)
+# I am not sure why I wanted this but seems like a good thing to be able to make
+# a dataframe from lists.
 earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_eps_list_tmp]),
                                columns=['Date', 'Q EPS', 'Annual EPS'])
+# print ("The Earnings DF is ", earnings_df)
 # ===================================================================================================
 
 
@@ -182,8 +194,6 @@ earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_
 # =============================================================================
 qtr_eps_expanded_list = []
 for i in range(len(date_list)):
-  # 17th march : sundeep was here
-  # qtr_eps_expanded_list.append(str('nan'))
   qtr_eps_expanded_list.append(float('nan'))
 
 for qtr_eps_date in qtr_eps_date_list:
@@ -229,6 +239,7 @@ for yr_eps_date in yr_eps_date_list:
   else:
     print ("The matching date is in the future")
     annual_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
+print ("The Expanded Annual EPS List is: ", yr_eps_expanded_list)
 # =============================================================================
 
 
@@ -348,10 +359,18 @@ else:
   lower_price_channel_separation = float(ticker_config_series['Lower Price Channel'])
   guide_line_lower_list_unsmooth = [float(eps)- lower_price_channel_separation for eps in yr_eps_expanded_list]
 
+print ("The upper channel unsmooth list is : ", guide_line_upper_list_unsmooth)
+nan_list = []
+for i in range(126):
+  guide_line_upper_list_unsmooth.insert(0,float('nan'))
+  guide_line_lower_list_unsmooth.insert(0,float('nan'))
+
+print ("The unsmooth upper channel list is ", guide_line_upper_list_unsmooth)
 guide_line_upper_list = smooth_list(guide_line_upper_list_unsmooth)
 guide_line_lower_list = smooth_list(guide_line_lower_list_unsmooth)
 print ("The upper Guide is ", guide_line_upper_list, "\nand the number of element is ", len(guide_line_upper_list))
 print ("The upper Guide is ", guide_line_lower_list, "\nand the number of element is ", len(guide_line_lower_list))
+
 # ---------------------------------------------------------
 
 
@@ -465,7 +484,7 @@ price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_l
 # -----------------------------------------------------------------------------
 # Historical Price Plot
 # -----------------------------------------------------------------------------
-spy_plt.set_ylabel('S&P', color='k')
+# spy_plt.set_ylabel('S&P', color='k')
 spy_plt.set_ylim(price_lim_lower,price_lim_upper)
 spy_plt_inst = spy_plt.plot(date_list[0:plot_period_int], spy_adj_close_list[0:plot_period_int], label = 'S&P',color="green",linestyle='-')
 # -----------------------------------------------------------------------------
@@ -546,24 +565,42 @@ main_plt.legend(lns, labs, loc="upper left", fontsize = 'x-small')
 # insert it here...There can be multiple of them inserted
 # The locations for AnchoredText at
 # https://matplotlib.org/api/offsetbox_api.html
+# 'upper right'  : 1,
+# 'upper left'   : 2,
+# 'lower left'   : 3,
+# 'lower right'  : 4,
+# 'right'        : 5, (same as 'center right', for back-compatibility)
+# 'center left'  : 6,
+# 'center right' : 7,
+# 'lower center' : 8,
+# 'upper center' : 9,
+# 'center'       : 10,
 # -----------------------------------------------------------------------------
-a_text = AnchoredText("Analysts are Pretty \nDarn Accurate", loc=9)
-main_plt.add_artist(a_text)
+# todo : Can this be done in an array
+number_of_anchored_texts = 3
+for i in range(number_of_anchored_texts):
+  if (i == 0):
+    location = 9
+    my_text = "This is a dummy comment for text box #0 \nAnything can be put here"
+  elif (i == 1):
+    location = 6
+    my_text = "Test for Box number 2"
+  else:
+    location = 4
+    my_text = "What do you want me to put here?"
+  a_text=AnchoredText(my_text, loc=location)
+  main_plt.add_artist(a_text)
+# a_text = AnchoredText("This is a dummy comment \nAnything can be put here", loc=9)
+# b_text = AnchoredText("This is a 2nd text box", loc=6)
+# main_plt.add_artist(a_text)
+# main_plt.add_artist(b_text)
 # a_text1 = AnchoredText("Analysts are Pretty Darn Accurate Text1", loc=3)
 # main_plt.add_artist(a_text1)
 # -----------------------------------------------------------------------------
 
-
-
-
-#  Set the Minor and Major ticks and then show the gird
-xstart,xend = price_plt.get_xlim()
-ystart,yend = price_plt.get_ylim()
-xstart_date = matplotlib.dates.num2date(xstart)
-xend_date = matplotlib.dates.num2date(xend)
-
-
-
+# -----------------------------------------------------------------------------
+# Annonate at a particular price on the chart
+# -----------------------------------------------------------------------------
 # This works but needs more research
 # Date to annotate
 date_to_annotate = "2017-03-29"
@@ -575,17 +612,39 @@ print("The matching date is ", match_date, " at index ", date_list.index(match_d
 price_plt.annotate('UK Referendom for Brexit',xy= (date_list[date_list.index(match_date)],ticker_adj_close_list[date_list.index(match_date)]),
                    arrowprops=dict(facecolor='black', width=1))
 # xytext=(50, 30),textcoords='offset points', arrowprops=dict(facecolor='black', width=1))
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Set the gridlines
+# -----------------------------------------------------------------------------
+# import matplotlib.pyplot as plt
+# fig, ax = plt.subplots()
+# ax.set_yticks([0.2, 0.6, 0.8], minor=False)
+# ax.set_yticks([0.3, 0.55, 0.7], minor=True)
+# ax.yaxis.grid(True, which='major')
+# ax.yaxis.grid(True, which='minor')
+# plt.show()
+#  Set the Minor and Major ticks and then show the gird
+xstart,xend = price_plt.get_xlim()
+ystart,yend = price_plt.get_ylim()
+xstart_date = matplotlib.dates.num2date(xstart)
+xend_date = matplotlib.dates.num2date(xend)
 
 print ("The xlimit Start: ", xstart_date, " End: ", xend_date, "Starting year", xstart_date.year )
 print ("The ylimit Start: ", ystart, " End: ", yend )
 
-# main_plt.xaxis.grid(True)
+print ("The years between the start and end dates are : ", range(xstart_date.year, xend_date.year+1))
+qtr_dates = pd.date_range(xstart_date.year, xend_date.year, freq='Q')
+yr_dates = pd.date_range('2018-01', '2020-05', freq='Y')
+print ("Quarterly Dates are ", qtr_dates)
 
-
-main_plt.xaxis.grid(b=True,which='major')
-main_plt.xaxis.grid(b=True,which='minor',linestyle='--')
+main_plt.set_xticks(qtr_dates, minor=True)
+# main_plt.set_xticks(yr_dates, minor=False)
+main_plt.xaxis.grid(which='major', linestyle='-')
+main_plt.xaxis.grid(which='minor',linestyle='--')
 main_plt.minorticks_on()
 main_plt.yaxis.grid(True)
+# -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
 # Save the Chart with the date and time as prefix
