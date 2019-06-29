@@ -39,20 +39,26 @@ qtr_dates = pd.date_range(date_list[len(date_list)-1], date_list[0], freq='Q')
 print ("Yearly Dates are ", yr_dates)
 print ("Quarterly Dates are ", qtr_dates)
 
+qtr_dates_tmp = []
+yr_dates_tmp = []
 for x in qtr_dates:
   print ("The original Quarterly Date is :", x)
+  qtr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
 for x in yr_dates:
   print ("The original Yearly Date is :", x)
+  yr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
 
+print ("The modifed qtr dates list is: ", qtr_dates_tmp)
 # print ("Y is :", y)
 ax = plt.axes()
 ax.set_xticks(yr_dates)
 ax.set_xticks(qtr_dates, minor=True)
-ax.set_xticklabels(yr_dates)
+ax.set_xticklabels(yr_dates_tmp, rotation = 15, minor=False)
+ax.set_xticklabels(qtr_dates_tmp, rotation = 15, minor=True)
 ax.grid(which='major', linestyle='-')
 ax.grid(which='minor', linestyle='--',color='blue')
 
-ax.set_yscale('log')
+ax.set_yscale('linear')
 plt.plot(date_list,y,color="brown",linestyle='-')
 
 plt.show()
