@@ -2,6 +2,8 @@ import pandas as pd
 import json
 from pprint import pprint
 import matplotlib.pyplot as plt
+from matplotlib.offsetbox import AnchoredText
+import matplotlib.offsetbox as offsetbox
 import numpy as np
 import datetime as dt
 from random import randint
@@ -59,6 +61,22 @@ ax.grid(which='major', linestyle='-')
 ax.grid(which='minor', linestyle='--',color='blue')
 
 ax.set_yscale('linear')
+
+number_of_anchored_texts = 3
+for i in range(number_of_anchored_texts):
+  if (i == 0):
+    location = 9
+    my_text = "This is a dummy comment for text box #0 \nAnything can be put here"
+  elif (i == 1):
+    location = 6
+    my_text = "Test for Box number 2"
+  else:
+    location = 4
+    my_text = "What do you want me to put here?"
+  # a_text=offsetbox.AnchoredText(my_text, loc=location)
+  a_text = AnchoredText(my_text, loc=location)
+  ax.add_artist(a_text)
+
 plt.plot(date_list,y,color="brown",linestyle='-')
 
 plt.show()
