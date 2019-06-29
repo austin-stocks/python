@@ -22,7 +22,7 @@ date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_
 
 y = []
 for i in range(len(date_str_list)):
-  y.append(randint(2,20))
+  y.append(randint(2,2500))
 
 yr_dates = pd.date_range(pd.to_datetime(date_str_list[len(date_str_list)-1]),
                    pd.to_datetime(date_str_list[0]) + pd.offsets.QuarterBegin(1), freq='Y')
@@ -52,6 +52,7 @@ ax.set_xticklabels(yr_dates)
 ax.grid(which='major', linestyle='-')
 ax.grid(which='minor', linestyle='--',color='blue')
 
+ax.set_yscale('log')
 plt.plot(date_list,y,color="brown",linestyle='-')
 
 plt.show()

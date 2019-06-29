@@ -439,6 +439,7 @@ else:
 # #############################################################################
 # ###########                    Now plot Everything                 ##########
 # #############################################################################
+chart_type = 'linear'
 fig, main_plt = plt.subplots()
 fig.set_size_inches(12,8)
 fig.subplots_adjust(right=0.75)
@@ -478,6 +479,7 @@ main_plt_inst = main_plt.plot(date_list[0:plot_period_int],qtr_eps_expanded_list
 # -----------------------------------------------------------------------------
 price_plt.set_ylabel('Price', color='k')
 price_plt.set_ylim(price_lim_lower,price_lim_upper)
+price_plt.set_yscale(chart_type)
 price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int], label = 'Adj Close',color="brown",linestyle='-')
 # -----------------------------------------------------------------------------
 
