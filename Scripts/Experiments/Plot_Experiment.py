@@ -15,7 +15,7 @@ historical_df = pd.read_csv("Plot_Experiment.csv")
 # print ("The Historical df is \n", historical_df)
 date_str_list = historical_df.Date.tolist()
 # print ("The date list from historical df is ", date_str_list)
-tmp_list = date_str_list[:400]
+tmp_list = date_str_list[:1000]
 date_str_list = tmp_list
 # Truncate the datelist to 50 entries
 
@@ -39,24 +39,36 @@ print (qtr_dates)
 yr_dates = pd.date_range(date_list[len(date_list)-1], date_list[0], freq='Y')
 qtr_dates = pd.date_range(date_list[len(date_list)-1], date_list[0], freq='Q')
 print ("Yearly Dates are ", yr_dates)
-print ("Quarterly Dates are ", qtr_dates)
+print ("Quarterly Dates are ", type(qtr_dates))
+
+qtr_dates_df = pd.DataFrame(qtr_dates)
+print ("Quarterly Dates Datafram is ", qtr_dates_df)
 
 qtr_dates_tmp = []
 yr_dates_tmp = []
 for x in qtr_dates:
   print ("The original Quarterly Date is :", x)
-  qtr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
+  if (x.is_year_end is True):
+    print("This quarter is also year end date. Removing ", type(x))
+  if (x in yr_dates):
+    print ("This quarter is also year end date. Removing ",type(x))
+  else:
+    qtr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
+
 for x in yr_dates:
   print ("The original Yearly Date is :", x)
   yr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
 
-print ("The modifed qtr dates list is: ", qtr_dates_tmp)
+
+print ("The modified qtr dates list is: ", qtr_dates)
+print ("The modified qtr dates list is: ", qtr_dates_tmp)
+print ("The modified yr dates list is: ", yr_dates_tmp)
 # print ("Y is :", y)
 ax = plt.axes()
-ax.set_xticks(yr_dates)
-ax.set_xticks(qtr_dates, minor=True)
-ax.set_xticklabels(yr_dates_tmp, rotation = 15, minor=False)
-ax.set_xticklabels(qtr_dates_tmp, rotation = 15, minor=True)
+ax.set_xticks(yr_dates,minor=False)
+ax.set_xticks(qtr_dates_tmp, minor=True)
+ax.set_xticklabels(yr_dates_tmp, rotation = 30,  fontsize=7,color='blue',minor=False)
+ax.set_xticklabels(qtr_dates_tmp, rotation = 30,  fontsize=7,minor=True)
 ax.grid(which='major', linestyle='-')
 ax.grid(which='minor', linestyle='--',color='blue')
 
