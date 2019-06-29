@@ -66,9 +66,14 @@ print ('The number of ticker in the list are ', len(ticker_list))
 '''
 
 get_sp_holdings = 0
+get_qqq_holdings = 0
 if (get_sp_holdings == 1):
   tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + 'SPY_All_Holdings.xlsx', sheet_name="SPY")
   ticker_list_unclean = tracklist_df['Identifier'].tolist()
+  ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+elif (get_qqq_holdings == 1):
+  tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + 'QQQ_All_Holdings.xlsx', sheet_name="QQQ")
+  ticker_list_unclean = tracklist_df['HoldingsTicker'].tolist()
   ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 else:
   # Read the trracklist and convert the read tickers into a list

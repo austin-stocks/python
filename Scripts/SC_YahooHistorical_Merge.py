@@ -144,7 +144,7 @@ for ticker_raw in ticker_list:
   # 3. If that is not specified then the script assumes 8 more quarters
   # This will become lead to calculating the starting index for extracting the dates from calendar_date_list
   # ===========================================================================
-  calendar_future_date_str = ticker_config_series['Calendar_Future_End_Date']
+  calendar_future_date_str = ticker_config_series['Calendar_Future_Date']
   print ("User Specified Calendar Future Date is : ", calendar_future_date_str)
   if (str(calendar_future_date_str) != 'nan'):
     calendar_future_date = dt.datetime.strptime(calendar_future_date_str, '%m/%d/%Y').date()
@@ -153,7 +153,7 @@ for ticker_raw in ticker_list:
     print ("The nearest matching date (for user specified date : ", calendar_future_date, ") in calendar date list is : ", calendar_future_match_date, ", at calendar index : ", calendar_future_date_index)
   else:
     print("Found nan for Calendar Future End date. Will now look for Future Calendar Quarters")
-    future_cal_quarter = ticker_config_series['Future Calendar Quarters']
+    future_cal_quarter = ticker_config_series['Future_Calendar_Quarters']
     print ("Future Calendar Quarters is : ", future_cal_quarter)
     if (str(future_cal_quarter) == 'nan'):
       print ("Found nan for Future Calendar Quarters. Will assume user wants 8 future quarters")
