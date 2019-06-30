@@ -64,16 +64,27 @@ print ("The modified qtr dates list is: ", qtr_dates)
 print ("The modified qtr dates list is: ", qtr_dates_tmp)
 print ("The modified yr dates list is: ", yr_dates_tmp)
 # print ("Y is :", y)
+# =============================================================================
+# How to put the ticks and ticklabels
+# =============================================================================
 ax = plt.axes()
 ax.set_xticks(yr_dates,minor=False)
 ax.set_xticks(qtr_dates_tmp, minor=True)
+ax.xaxis.set_tick_params(width=5)
 ax.set_xticklabels(yr_dates_tmp, rotation = 30,  fontsize=7,color='blue',minor=False)
 ax.set_xticklabels(qtr_dates_tmp, rotation = 30,  fontsize=7,minor=True)
-ax.grid(which='major', linestyle='-')
+ax.grid(which='major', axis='x',linestyle='-',color='black',linewidth=1.5)
 ax.grid(which='minor', linestyle='--',color='blue')
+ax.grid(which='major', axis='y',linestyle='--',color='green',linewidth=1)
+# =============================================================================
+
+
 
 ax.set_yscale('linear')
 
+# =============================================================================
+# How to put acnhored text
+# =============================================================================
 number_of_anchored_texts = 3
 for i in range(number_of_anchored_texts):
   if (i == 0):
@@ -88,7 +99,25 @@ for i in range(number_of_anchored_texts):
   # a_text=offsetbox.AnchoredText(my_text, loc=location)
   a_text = AnchoredText(my_text, loc=location)
   ax.add_artist(a_text)
+# =============================================================================
 
-plt.plot(date_list,y,color="brown",linestyle='-')
+plt.plot(date_list,y,label='XYZ',color="brown",linestyle='-')
+
+# =============================================================================
+# how to get legend outside of axes
+# ax.legend(loc='lower left', bbox_to_anchor= (0.0, 1.01), ncol=2, borderaxespad=0, frameon=False)
+# plt.legend(bbox_to_anchor=(0,1.01), loc="lower left", borderaxespad=0,fontsize = 'x-small')
+plt.legend(bbox_to_anchor=(1.01,0), loc="lower left", borderaxespad=0,fontsize = 'x-small')
+# =============================================================================
+
+# Annotate outside the plot
+plt.annotate('...Additional information...',
+            xy=(0.5, 0), xytext=(0, 0),
+            xycoords=('axes fraction', 'figure fraction'),
+            textcoords='offset points',
+            size=10, ha='right', va='bottom')
+
+
+
 
 plt.show()
