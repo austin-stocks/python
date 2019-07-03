@@ -10,5 +10,5 @@ pprint(data_item)
 
 
 print (data_item["maps"][0]["id"])  # will return 'blabla'
-# print(data_item["masks"]["id"])    # will return 'valore'
+print(data_item["masks"][0]["id"])    # will return 'valore'
 print(data_item["om_points"])      # will return 'value'

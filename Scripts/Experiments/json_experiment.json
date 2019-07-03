@@ -1,0 +1,25 @@
+{
+  "AAPL" : {
+    "maps": [
+      {"id": "blabla",
+       "iscategorical": "0"},
+      {"id": "blabla",
+       "iscategorical": "0"}
+    ],
+    "masks": [
+      {"id": "valore"}
+    ],
+    "om_points": "value",
+    "parameters": [
+      {"id": "valore"}
+    ],
+    "Anchored_Text" : {
+      "9": "Analysts are accurate",
+      "6": "This has been a wonderful stock"
+    }
+
+
+
+
+  }
+}
