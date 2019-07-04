@@ -18,10 +18,17 @@ print(json_data[ticker]["om_points"])      # will return 'value'
 
 print ("The length of the array is : ", len_maps)
 
+print("\n========== Now really starting ticker processing ==========\n")
 # if anchored text exist
-# if the length of the keys is > 0
-anchored_text_keys = json_data[ticker]["Anchored_Text"].keys()
-for i_key in json_data[ticker]["Anchored_Text"].keys():
-  print ("Anchored text key :", i_key, " Value :", json_data[ticker]["Anchored_Text"][i_key])
+if ("Anchored_Text" in json_data[ticker]):
+  # if the length of the keys is > 0
+  if (len(json_data[ticker]["Anchored_Text"].keys()) > 0 ):
+    anchored_text_keys = json_data[ticker]["Anchored_Text"].keys()
+    for i_key in json_data[ticker]["Anchored_Text"].keys():
+      print ("Anchored text key :", i_key, " Value :", json_data[ticker]["Anchored_Text"][i_key])
+  else:
+    print("\"Anchored_Text\" exits but seems empty for ", ticker)
+else:
+  print ("\"Anchored_Text\" does not exist for ", ticker)
 
 
