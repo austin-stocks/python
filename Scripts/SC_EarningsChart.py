@@ -591,6 +591,8 @@ for i in range(number_of_anchored_texts):
   else:
     location = 4
     my_text = "What do you want me to put here?"
+
+  # todo : Maybe add transparency to the box?
   a_text=AnchoredText(my_text, loc=location)
   main_plt.add_artist(a_text)
 # a_text = AnchoredText("This is a dummy comment \nAnything can be put here", loc=9)
@@ -628,25 +630,62 @@ price_plt.annotate('UK Referendom for Brexit',xy= (date_list[date_list.index(mat
 # ax.yaxis.grid(True, which='minor')
 # plt.show()
 #  Set the Minor and Major ticks and then show the gird
-xstart,xend = price_plt.get_xlim()
-ystart,yend = price_plt.get_ylim()
-xstart_date = matplotlib.dates.num2date(xstart)
-xend_date = matplotlib.dates.num2date(xend)
+# xstart,xend = price_plt.get_xlim()
+# ystart,yend = price_plt.get_ylim()
+# xstart_date = matplotlib.dates.num2date(xstart)
+# xend_date = matplotlib.dates.num2date(xend)
+#
+# print ("The xlimit Start: ", xstart_date, " End: ", xend_date, "Starting year", xstart_date.year )
+# print ("The ylimit Start: ", ystart, " End: ", yend )
+#
+# print ("The years between the start and end dates are : ", range(xstart_date.year, xend_date.year+1))
+# qtr_dates = pd.date_range(xstart_date.year, xend_date.year, freq='Q')
+# yr_dates = pd.date_range('2018-01', '2020-05', freq='Y')
+# print ("Quarterly Dates are ", qtr_dates)
+#
+# main_plt.set_xticks(qtr_dates, minor=True)
+# # main_plt.set_xticks(yr_dates, minor=False)
+# main_plt.xaxis.grid(which='major', linestyle='-')
+# main_plt.xaxis.grid(which='minor',linestyle='--')
+# main_plt.minorticks_on()
+# main_plt.yaxis.grid(True)
+#
 
-print ("The xlimit Start: ", xstart_date, " End: ", xend_date, "Starting year", xstart_date.year )
-print ("The ylimit Start: ", ystart, " End: ", yend )
+yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
+qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
+print ("Yearly Dates are ", yr_dates)
+print ("Quarterly Dates are ", type(qtr_dates))
 
-print ("The years between the start and end dates are : ", range(xstart_date.year, xend_date.year+1))
-qtr_dates = pd.date_range(xstart_date.year, xend_date.year, freq='Q')
-yr_dates = pd.date_range('2018-01', '2020-05', freq='Y')
-print ("Quarterly Dates are ", qtr_dates)
+qtr_dates_tmp = []
+yr_dates_tmp = []
+for x in qtr_dates:
+  print ("The original Quarterly Date is :", x)
+  if (x.is_year_end is True):
+    print("This quarter is also year end date. Removing ", type(x))
+  if (x in yr_dates):
+    print ("This quarter is also year end date. Removing ",type(x))
+  else:
+    qtr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
 
-main_plt.set_xticks(qtr_dates, minor=True)
-# main_plt.set_xticks(yr_dates, minor=False)
-main_plt.xaxis.grid(which='major', linestyle='-')
-main_plt.xaxis.grid(which='minor',linestyle='--')
-main_plt.minorticks_on()
-main_plt.yaxis.grid(True)
+for x in yr_dates:
+  print ("The original Yearly Date is :", x)
+  yr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
+
+
+print ("The modified qtr dates list is: ", qtr_dates)
+print ("The modified qtr dates list is: ", qtr_dates_tmp)
+print ("The modified yr dates list is: ", yr_dates_tmp)
+
+main_plt.set_xticks(yr_dates_tmp,minor=False)
+main_plt.set_xticks(qtr_dates_tmp, minor=True)
+main_plt.xaxis.set_tick_params(width=5)
+main_plt.set_xticklabels(yr_dates_tmp, rotation = 90,  fontsize=8,color='blue',minor=False, fontstyle='italic')
+main_plt.set_xticklabels(qtr_dates_tmp, rotation = 90,  fontsize=7,minor=True)
+main_plt.grid(which='major', axis='x',linestyle='-',color='black',linewidth=1.5)
+main_plt.grid(which='minor', linestyle='--',color='blue')
+main_plt.grid(which='major', axis='y',linestyle='--',color='green',linewidth=1)
+
+
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
