@@ -132,5 +132,5 @@ for ticker_raw in ticker_list:
   csv_2write_df.set_index('Date', inplace=True)
 
   # print ("The dataframe is : ", csv_2write_df.head())
-  csv_2write_df.to_csv(dividend_out_dir + "\\" + ticker + "_yahoo_dividend.csv")
+  csv_2write_df.to_csv(dividend_out_dir + "\\" + ticker + "_dividend.csv")
 
