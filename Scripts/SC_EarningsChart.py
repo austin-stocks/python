@@ -75,7 +75,7 @@ config_df = pd.read_csv(configurations_file_full_path)
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "SCVL"
+ticker = "EME"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -441,8 +441,8 @@ else:
 # #############################################################################
 chart_type = 'linear'
 fig, main_plt = plt.subplots()
-fig.set_size_inches(12,8)
-fig.subplots_adjust(right=0.75)
+fig.set_size_inches(16,10)  # Length x height
+fig.subplots_adjust(right=0.90)
 fig.autofmt_xdate()
 main_plt.set_facecolor("lightgrey")
 main_plt.set_title("Stock Chart for " + ticker)
@@ -497,10 +497,11 @@ spy_plt_inst = spy_plt.plot(date_list[0:plot_period_int], spy_adj_close_list[0:p
 annual_past_eps_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
 annual_past_eps_plt.set_yticks([])
 annual_past_eps_plt_inst = annual_past_eps_plt.plot(date_list[0:plot_period_int], annual_past_eps_expanded_list[0:plot_period_int], label = '4 qtrs/4',color="black",marker='D',markersize='4')
+# todo : maybe change this to only have the value printed out at the year ends
 for i in range(len(yr_eps_date_list)):
   print ("The Date is ", yr_eps_date_list[i], " Corresponding EPS ", yr_eps_list[i])
   x = float("{0:.2f}".format(yr_eps_list[i]))
-  main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x,)
+  main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, fontsize=11, horizontalalignment='center',verticalalignment='bottom')
   # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
 
 

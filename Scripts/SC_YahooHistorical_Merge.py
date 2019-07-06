@@ -60,7 +60,7 @@ print("The Calendar Date list is", calendar_date_list, "\nand it has", len(calen
 # Open the Downloaded Yahoo Historical
 # =============================================================================
 
-get_sp_holdings = 1
+get_sp_holdings = 0
 if (get_sp_holdings == 1):
   tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + 'SPY_All_Holdings.xlsx', sheet_name="SPY")
   ticker_list_unclean = tracklist_df['Identifier'].tolist()
