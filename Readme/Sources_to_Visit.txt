@@ -8,3 +8,24 @@ To download the holdings for any of the sectors - including SPY
   a. In the "Fund Overview" Tab - it gives the number of listings in the sector (so that you can do a sanity check)
   b. In the "Holdings" you can search for "Download all holdings" and it will download xls for you. 
 
+3. To get IBD List 
+https://etfdb.com/etf/FFTY/#etf-holdings&sort_name=weight&sort_order=desc&page=1
+https://etfdb.com/etf/FFTY/#holdings
+
+https://www.zacks.com/funds/etf/FFTY/holding
+To get the list - 
+	3a. Towards the bottom of the page and in the pull down show 100 entries. 
+	3b. The sort the "Symbol" (one of the columns at the top). You 
+	    really don't need to do that but I just do it. 
+	3c. Then start selecting from the bottom of the list from the second but 
+	    last column (the 52 Wk Change(%)), and go all way to the top and select
+	    until the header row till "Symbol" (2nd column). This somehow all get 
+	    the names of the companies in "Security Name" column - without getting
+	    the "Security Name" header string. Now past it in excel. So now you will 
+	    have 5 columns in the date but only 4 columns in the header. Insert a
+	    columns only in the header by the name of "Security Name"
+	3d. Remove the 2nd row - somehow a empty row gets inserted
+	3e. Select all the data and remove hyperlinks. 
+And you are done. Now you need to find what are the new additions 
+	
+
