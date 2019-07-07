@@ -107,7 +107,7 @@ for ticker_raw in ticker_list:
   # print("Length of the dictionary is : ", dividend_data[ticker])
   i = i+1
   if ((dividend_data[ticker]) is None):
-    print ("Ticker ", ticker , "returned empty dictionary...skipping")
+    print ("Ticker ", ticker , "returned empty dictionary for dividends...skipping")
     continue
   # ===========================================================================
   # # This works when you have to iterated over a list of dictionaries.
@@ -115,7 +115,7 @@ for ticker_raw in ticker_list:
   #   for key in dividend_data[ticker][index]:
   #     print("Key : ", key, " Data : ", dividend_data[ticker][index][key])
   # ===========================================================================
-  csv_2write_df = pd.DataFrame()
+  csv_2write_dividend_df = pd.DataFrame()
   date_list = list()
   dividend_amount_list = list()
   for index in reversed(range(len(dividend_data[ticker]))):
@@ -126,11 +126,11 @@ for ticker_raw in ticker_list:
     date_list.append(date_new_format)
     dividend_amount_list.append(dividend_data[ticker][index]['amount'])
 
-  # This works too - but th next line is simpler to understand
-  # csv_2write_df=pd.DataFrame(list(zip(date_list,dividend_amount_list)),columns=['Date', 'Amount'])
-  csv_2write_df=pd.DataFrame({'Date': date_list, 'Amount': dividend_amount_list})
-  csv_2write_df.set_index('Date', inplace=True)
+  # This works too - but th next line is simpler to understand to make columns with lists
+  # csv_2write_dividend_df=pd.DataFrame(list(zip(date_list,dividend_amount_list)),columns=['Date', 'Amount'])
+  csv_2write_dividend_df=pd.DataFrame({'Date': date_list, 'Amount': dividend_amount_list})
+  csv_2write_dividend_df.set_index('Date', inplace=True)
 
-  # print ("The dataframe is : ", csv_2write_df.head())
-  csv_2write_df.to_csv(dividend_out_dir + "\\" + ticker + "_dividend.csv")
+  # print ("The dataframe is : ", csv_2write_dividend_df.head())
+  csv_2write_dividend_df.to_csv(dividend_out_dir + "\\" + ticker + "_dividend.csv")
 
