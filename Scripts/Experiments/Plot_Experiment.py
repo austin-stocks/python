@@ -3,6 +3,7 @@ import json
 from pprint import pprint
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import AnchoredText
+from matplotlib.widgets import TextBox
 import matplotlib.offsetbox as offsetbox
 import numpy as np
 import datetime as dt
@@ -28,18 +29,18 @@ for i in range(len(date_str_list)):
 
 yr_dates = pd.date_range(pd.to_datetime(date_str_list[len(date_str_list)-1]),
                    pd.to_datetime(date_str_list[0]) + pd.offsets.QuarterBegin(1), freq='Y')
-print (yr_dates)
+# print (yr_dates)
 
 qtr_dates = pd.date_range(pd.to_datetime(date_str_list[len(date_str_list)-1]),
                    pd.to_datetime(date_str_list[0]) + pd.offsets.QuarterBegin(1), freq='Q')
       # .strftime('%B %Y')
       # .tolist())
-print (qtr_dates)
+# print (qtr_dates)
 
 yr_dates = pd.date_range(date_list[len(date_list)-1], date_list[0], freq='Y')
 qtr_dates = pd.date_range(date_list[len(date_list)-1], date_list[0], freq='Q')
 print ("Yearly Dates are ", yr_dates)
-print ("Quarterly Dates are ", type(qtr_dates))
+print ("Quarterly Dates are ", qtr_dates)
 
 qtr_dates_df = pd.DataFrame(qtr_dates)
 print ("Quarterly Dates Datafram is ", qtr_dates_df)
@@ -101,6 +102,7 @@ for i in range(number_of_anchored_texts):
   ax.add_artist(a_text)
 # =============================================================================
 
+# Plot the main plot
 plt.plot(date_list,y,label='XYZ',color="brown",linestyle='-')
 
 # =============================================================================
@@ -112,12 +114,34 @@ plt.legend(bbox_to_anchor=(1.01,0), loc="lower left", borderaxespad=0,fontsize =
 
 # Annotate outside the plot
 plt.annotate('...Additional information...',
-            xy=(0.5, 0), xytext=(0, 0),
+            xy=(0, 0), xytext=(0, 0),
+            xycoords=('axes fraction', 'figure fraction'),
+            textcoords='offset points',
+            size=10, ha='left', va='bottom')
+
+
+plt.annotate('...More Additional information...',
+            xy=(1, 0), xytext=(0, 0),
             xycoords=('axes fraction', 'figure fraction'),
             textcoords='offset points',
             size=10, ha='right', va='bottom')
 
 
+#  All of these work but it seems like a pain to get their sizes and locations correct
+# # 1st number controls if the box is towards left
+# # 2nd number contorls the up-down position of the box
+# # the 3rd number controls the length of the box
+# # the 4th number controls the height of the box
+# axbox_0 = plt.axes([0.1, 0.05, 0.8, 0.075])
+# tb_0 = TextBox(axbox_0, "Name:", initial="Jane Doe")
+# tb_0.label.set_color('red')      # label color
+# tb_0.text_disp.set_color('blue') # text inside the edit box
+#
+# axbox_1 = plt.axes([0,.1, .1, .75])
+# tb_1 = TextBox(axbox_1, "Name:", initial="Joe Smith")
+# tb_1.label.set_color('blue')      # label color
+# tb_1.text_disp.set_color('red') # text inside the edit box
 
-
+# plt.figure(figsize=(16,10))
+# plt.tight_layout()
 plt.show()
