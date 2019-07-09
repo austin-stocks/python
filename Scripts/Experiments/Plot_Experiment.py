@@ -69,6 +69,10 @@ print ("The modified yr dates list is: ", yr_dates_tmp)
 # How to put the ticks and ticklabels
 # =============================================================================
 ax = plt.axes()
+number = 217
+title_str = "This is title number: " + r"$\bf{" + str(number) + "}$" +", And I am loving it"
+plt.title(title_str)
+
 ax.set_xticks(yr_dates,minor=False)
 ax.set_xticks(qtr_dates_tmp, minor=True)
 ax.xaxis.set_tick_params(width=5)
