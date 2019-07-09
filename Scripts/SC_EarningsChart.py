@@ -75,7 +75,7 @@ config_df = pd.read_csv(configurations_file_full_path)
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "EME"
+ticker = "OMF"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
