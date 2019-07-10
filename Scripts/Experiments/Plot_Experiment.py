@@ -27,6 +27,19 @@ y = []
 for i in range(len(date_str_list)):
   y.append(randint(2,2500))
 
+
+# The following code prints out the Fiscal Quarters if the FY Ends in Dec, Mar etc...
+# This is good stuff - just needs to see how I can use this to make the major and minor ticks and ticklables
+df = pd.DataFrame()
+# df = pd.DataFrame({'date': ['2015-11-01', '2014-10-01', '2016-02-01'],
+#                    'fiscal year': ['FY15/16', 'FY14/15', 'FY15/16']})
+df['Date']      = date_str_list
+df['FY_Ends_Dec'] = pd.PeriodIndex(date_str_list, freq='Q-DEC').strftime('Q%q')
+df['FY_Ends_Mar'] = pd.PeriodIndex(date_str_list, freq='Q-MAR').strftime('Q%q')
+df['FY_Ends_Jun'] = pd.PeriodIndex(date_str_list, freq='Q-JUN').strftime('Q%q')
+df['FY_Ends_Sep'] = pd.PeriodIndex(date_str_list, freq='Q-SEP').strftime('Q%q')
+# print(df)
+
 yr_dates = pd.date_range(pd.to_datetime(date_str_list[len(date_str_list)-1]),
                    pd.to_datetime(date_str_list[0]) + pd.offsets.QuarterBegin(1), freq='Y')
 # print (yr_dates)
