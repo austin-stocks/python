@@ -468,7 +468,9 @@ print ("Type of fig ", type(fig), \
 # -----------------------------------------------------------------------------
 # Main Plot - This is the Q EPS vs Date
 # -----------------------------------------------------------------------------
-main_plt.set_xlabel('Date')
+# This works - I have commented out so that the code does not print out the xlate
+# and I can get more space below the date ticks
+# main_plt.set_xlabel('Date')
 main_plt.set_ylabel('Q EPS')
 main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
 main_plt_inst = main_plt.plot(date_list[0:plot_period_int],qtr_eps_expanded_list[0:plot_period_int],label = 'Q EPS',color="deeppink",marker='.')
@@ -555,7 +557,10 @@ lns = main_plt_inst + \
       annual_past_eps_plt_inst + upper_channel_plt_inst + \
       lower_channel_plt_inst + price_plt_inst + spy_plt_inst
 labs = [l.get_label() for l in lns]
-main_plt.legend(lns, labs, loc="upper left", fontsize = 'x-small')
+# This works - puts the legend in upper-left
+# main_plt.legend(lns, labs, loc="upper left", fontsize = 'x-small')
+main_plt.legend(lns, labs,bbox_to_anchor=(1.01,0), loc="lower left", borderaxespad=2,fontsize = 'x-small')
+
 # This works if we don't have defined the inst of the plots. In this case we
 # collect the things manually and then put them in legend
 # h1,l1 = main_plt.get_legend_handles_labels()
@@ -580,7 +585,7 @@ main_plt.legend(lns, labs, loc="upper left", fontsize = 'x-small')
 # 'center'       : 10,
 # -----------------------------------------------------------------------------
 # todo : Can this be done in an array
-number_of_anchored_texts = 3
+number_of_anchored_texts = 4
 for i in range(number_of_anchored_texts):
   if (i == 0):
     location = 9
@@ -588,6 +593,9 @@ for i in range(number_of_anchored_texts):
   elif (i == 1):
     location = 6
     my_text = "Test for Box number 2"
+  elif (i == 2):
+    location = 2
+    my_text = "Test Box in upper left"
   else:
     location = 4
     my_text = "What do you want me to put here?"
@@ -595,12 +603,6 @@ for i in range(number_of_anchored_texts):
   # todo : Maybe add transparency to the box?
   a_text=AnchoredText(my_text, loc=location)
   main_plt.add_artist(a_text)
-# a_text = AnchoredText("This is a dummy comment \nAnything can be put here", loc=9)
-# b_text = AnchoredText("This is a 2nd text box", loc=6)
-# main_plt.add_artist(a_text)
-# main_plt.add_artist(b_text)
-# a_text1 = AnchoredText("Analysts are Pretty Darn Accurate Text1", loc=3)
-# main_plt.add_artist(a_text1)
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
