@@ -37,6 +37,7 @@ ticker = "UFPI"
 
 qtr_eps_df = pd.read_csv(ticker + "_earnings.csv")
 
+# Handle the case if the split is not separated by :
 split_dates = list()
 split_multiplier = list()
 if ("Splits" in json_data[ticker]):
@@ -70,6 +71,7 @@ for i in range(len(qtr_eps_date_list)):
     if (split_dates[j] > qtr_eps_date_list[i]):
       print ("The date for split ", split_dates[j], " is newer than earnings date ", qtr_eps_date_list[i])
       qtr_eps_mod_list[i] = qtr_eps_list[i]*split_multiplier[j]
+    #   Maybe should limit the float to 2 decimal places?
     # else:
     #   qtr_eps_mod_list.append(qtr_eps_list[i])
 

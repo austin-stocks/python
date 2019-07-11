@@ -53,6 +53,11 @@ def smooth_list (l):
   return (l_mod)
 # =============================================================================
 
+# todo :
+# Plot dividend
+# Handle splits
+# deal with fiscal quarter
+# Handle Annotated text
 
 # =============================================================================
 # Define the various filenames and Directory Paths to be used
