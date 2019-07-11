@@ -1,4 +1,5 @@
 {
+
   "AAPL" : {
     "maps": [
       {"id": "blabla",
@@ -17,9 +18,13 @@
       "9": "Analysts are accurate",
       "6": "This has been a wonderful stock"
     }
+  },
 
-
-
-
+  "UFPI" : {
+    "Splits" : {
+      "11/14/2017" : "3:1",
+      "07/01/2015" : "1:1.5"
+    }
   }
+
 }
