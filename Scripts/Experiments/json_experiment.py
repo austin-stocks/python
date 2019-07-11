@@ -65,16 +65,17 @@ qtr_eps_list = qtr_eps_df.Q_EPS.tolist()
 print ("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
 print ("The Earnings list for qtr_eps is ", qtr_eps_list)
 
-qtr_eps_mod_list = qtr_eps_list.copy()
-for i in range(len(qtr_eps_date_list)):
-  for j in range(len(split_dates)):
-    if (split_dates[j] > qtr_eps_date_list[i]):
-      print ("The date for split ", split_dates[j], " is newer than earnings date ", qtr_eps_date_list[i])
-      qtr_eps_mod_list[i] = qtr_eps_list[i]*split_multiplier[j]
-    #   Maybe should limit the float to 2 decimal places?
-    # else:
-    #   qtr_eps_mod_list.append(qtr_eps_list[i])
+
+
+for i in range(len(split_dates)):
+  qtr_eps_list_mod = qtr_eps_list.copy()
+  print ("Multiplier is ", split_multiplier[i])
+  for j in range(len(qtr_eps_date_list)):
+    if (split_dates[i] > qtr_eps_date_list[j]):
+      qtr_eps_list_mod[j] = round(qtr_eps_list[j]*split_multiplier[i],4)
+      print("The date for split ", split_dates[i], " is newer than earnings date ", qtr_eps_date_list[j], ". Changed ",qtr_eps_list[j], " to ",qtr_eps_list_mod[j] )
+  qtr_eps_list = qtr_eps_list_mod.copy()
 
 print ("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
-print ("The Earnings list for qtr_eps is ", qtr_eps_list)
-print ("The Earnings list for qtr_eps is ", qtr_eps_mod_list)
+print ("The Original Earnings list for qtr_eps is ", qtr_eps_list)
+print ("The Modified Earnings list for qtr_eps is ", qtr_eps_list_mod)
