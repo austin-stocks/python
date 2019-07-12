@@ -108,7 +108,7 @@ print ("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of 
 print ("The Earnings list for qtr_eps is ", qtr_eps_list)
 
 # =============================================================================
-# Handle splits before proceeding 
+# Handle splits before proceeding as splits can change the qtr_eps
 # =============================================================================
 # Handle the case if the split is not separated by :
 split_dates = list()
