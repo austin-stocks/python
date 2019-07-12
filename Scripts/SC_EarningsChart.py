@@ -85,7 +85,7 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "UFPI"
+ticker = "WIRE"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -103,7 +103,7 @@ stdout = 0; my_print (debug_fh,debug_str,stdout,log_lvl.upper())
 # Todo : Error out if any elements in the date_list are nan except the trailing (this includes
 # Todo : leading nan and any nan in the list itself
 qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
-qtr_eps_list = qtr_eps_df.Q_EPS.tolist()
+qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
 print ("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
 print ("The Earnings list for qtr_eps is ", qtr_eps_list)
 
