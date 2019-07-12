@@ -2,6 +2,8 @@ import pandas as pd
 import matplotlib
 import os
 import math
+import json
+import sys
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -71,16 +73,19 @@ log_dir = "\\..\\" + "Logs"
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
+configuration_json = "Configurations.json"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 
-config_df = pd.read_csv(configurations_file_full_path)
+config_df = pd.read_csv(dir_path + user_dir + "\\" + configuration_file)
+with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
+  config_json = json.load(json_file)
 # =============================================================================
 
 
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "OMF"
+ticker = "UFPI"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -101,6 +106,50 @@ qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in q
 qtr_eps_list = qtr_eps_df.Q_EPS.tolist()
 print ("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
 print ("The Earnings list for qtr_eps is ", qtr_eps_list)
+
+# =============================================================================
+# Handle splits before proceeding 
+# =============================================================================
+# Handle the case if the split is not separated by :
+split_dates = list()
+split_multiplier = list()
+print ("Tickers in json data: ",config_json.keys())
+if (ticker not in config_json.keys()):
+  print ("json data for ",ticker, "does not exist in",configuration_json, "file")
+else :
+  if ("Splits" in config_json[ticker]):
+    # if the length of the keys is > 0
+    if (len(config_json[ticker]["Splits"].keys()) > 0 ):
+      split_keys = config_json[ticker]["Splits"].keys()
+      print ("Split Date list is: ", split_keys)
+      for i_key in split_keys:
+        print ("Split Date :", i_key, "Split Factor :", config_json[ticker]["Splits"][i_key])
+        try:
+         split_dates.append(dt.datetime.strptime(str(i_key),"%m/%d/%Y").date())
+        except (ValueError):
+         print ("\n***** Error : The split Date: ",i_key,"does not seem to be right. Should be in the format %m/%d/%Y...please check *****")
+         sys.exit(1)
+        try:
+          (numerator, denominator) = config_json[ticker]["Splits"][i_key].split(":")
+          split_multiplier.append(float(denominator)/float(numerator))
+        except (ValueError):
+          print ("\n***** Error : The split factor: ",config_json[ticker]["Splits"][i_key],"for split date :", i_key , "does not seem to have right format [x:y]...please check *****")
+          sys.exit(1)
+      for i in range(len(split_dates)):
+        qtr_eps_list_mod = qtr_eps_list.copy()
+        print("Split Date :", split_dates[i], " Multiplier : ", split_multiplier[i])
+        for j in range(len(qtr_eps_date_list)):
+          if (split_dates[i] > qtr_eps_date_list[j]):
+            qtr_eps_list_mod[j] = round(qtr_eps_list[j] * split_multiplier[i], 4)
+            print("Earnings date ", qtr_eps_date_list[j], " is older than split date. Changed ", qtr_eps_list[j], " to ",
+                  qtr_eps_list_mod[j])
+        qtr_eps_list = qtr_eps_list_mod.copy()
+    else:
+      print("\"Splits\" exits but seems empty for ", ticker)
+  else:
+    print ("\"Splits\" does not exist for ", ticker)
+# =============================================================================
+
 
 # ============================================================================
 # Get the eps value list to the same length as date list and
@@ -501,15 +550,18 @@ spy_plt_inst = spy_plt.plot(date_list[0:plot_period_int], spy_adj_close_list[0:p
 # -----------------------------------------------------------------------------
 # Average Annual EPS Plot
 # -----------------------------------------------------------------------------
+# Find the eps points that fall in the plot range
 annual_past_eps_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
 annual_past_eps_plt.set_yticks([])
 annual_past_eps_plt_inst = annual_past_eps_plt.plot(date_list[0:plot_period_int], annual_past_eps_expanded_list[0:plot_period_int], label = '4 qtrs/4',color="black",marker='D',markersize='4')
 # todo : maybe change this to only have the value printed out at the year ends
 for i in range(len(yr_eps_date_list)):
   print ("The Date is ", yr_eps_date_list[i], " Corresponding EPS ", yr_eps_list[i])
-  x = float("{0:.2f}".format(yr_eps_list[i]))
-  main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, fontsize=11, horizontalalignment='center',verticalalignment='bottom')
-  # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
+  # check if the date is in the plot range
+  if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
+    x = float("{0:.2f}".format(yr_eps_list[i]))
+    main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, fontsize=11, horizontalalignment='center',verticalalignment='bottom')
+    # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
 
 
 annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
@@ -564,7 +616,9 @@ lns = main_plt_inst + \
 labs = [l.get_label() for l in lns]
 # This works - puts the legend in upper-left
 # main_plt.legend(lns, labs, loc="upper left", fontsize = 'x-small')
-main_plt.legend(lns, labs,bbox_to_anchor=(1.01,0), loc="lower left", borderaxespad=2,fontsize = 'x-small')
+main_plt.legend(lns, labs,bbox_to_anchor=(1.005,-0.13), loc="lower left", borderaxespad=2,fontsize = 'x-small')
+# Thw works perfectly well as well
+# main_plt.legend(lns, labs,bbox_to_anchor=(-.10,-0.13), loc="lower left", borderaxespad=2,fontsize = 'x-small')
 
 # This works if we don't have defined the inst of the plots. In this case we
 # collect the things manually and then put them in legend
