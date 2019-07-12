@@ -1,0 +1,30 @@
+{
+
+  "AAPL" : {
+    "maps": [
+      {"id": "blabla",
+       "iscategorical": "0"},
+      {"id": "blabla",
+       "iscategorical": "0"}
+    ],
+    "masks": [
+      {"id": "valore"}
+    ],
+    "om_points": "value",
+    "parameters": [
+      {"id": "valore"}
+    ],
+    "Anchored_Text" : {
+      "9": "Analysts are accurate",
+      "6": "This has been a wonderful stock"
+    }
+  },
+
+  "UFPI" : {
+    "Splits" : {
+      "11/17/2019" : "4:1",
+      "07/01/2018" : "1:4"
+    }
+  }
+
+}
