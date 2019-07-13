@@ -8,3 +8,7 @@ The following is the list of items that needs to be worked on
 6. Schiller PE chart overlay? 
 7. Long term SPY and DOW charts with their earnings?
 8. How to log in python? 
+9. Keep on extracting Earnings from xlsm
+10. Think about your own TrackList - where to get earnings date?
+11. Get the fiscal quarter lined up with gridlines
+
