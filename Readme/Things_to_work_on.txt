@@ -1,6 +1,9 @@
+The following is the list of items that needs to be worked on 
 
-candlestick charts
-adjustment to price channels 
-Adjusted price channels
-dividend in the chart
-two or more projection lines (the turcouise and blue)
+1. Candlestick charts with volume overlay - maybe have two separate charts
+2. Adjustment to price channels - This one needs more looking at charts and understanding 
+3. Two or more sets of Theoritical Earnings projections lines [The plastic overlay[
+4. Log charts
+5. Financial Analysis - Peter Lynch, Phil Town, CSW, Manan Shroff - others
+6. Schiller PE chart overlay? 
+7. Long term SPY and DOW charts with their earnings?
