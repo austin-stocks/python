@@ -1,5 +1,12 @@
-The following is the list of items that needs to be worked on 
+                                 REMEMBER
+THERE WILL ALWAYS MORE THINGS TO DO THAN YOU CAN PROBABLY DO - 
+AND THAT IS A GOOD THING - JIM ROHN SAID - IT IS GREAT THE KNOW
+THAT YOU HAVE MORE TO DO THAN YOU CAN DO
+So, you should probably feel grateful that you have more things
+to do - then you can probably do. 
 
+The following is the list of items that needs to be worked on 
+--------------------------------------------------------------
 1. Candlestick charts with volume overlay - maybe have two separate charts
 2. Adjustment to price channels - This one needs more looking at charts and understanding 
 3. Two or more sets of Theoritical Earnings projections lines [The plastic overlay[
