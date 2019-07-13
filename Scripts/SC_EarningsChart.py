@@ -57,7 +57,6 @@ def smooth_list (l):
 
 # todo :
 # Plot dividend
-# Handle splits
 # deal with fiscal quarter
 # Handle Annotated text
 
@@ -69,6 +68,7 @@ user_dir = "\\..\\" + "User_Files"
 chart_dir = "..\\" + "Charts"
 historical_dir = "\\..\\" + "Historical"
 earnings_dir= "\\..\\" + "Earnings"
+dividend_dir= "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
@@ -106,6 +106,22 @@ qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in q
 qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
 print ("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
 print ("The Earnings list for qtr_eps is ", qtr_eps_list)
+
+# =============================================================================
+# Check if the dividend file exists
+# =============================================================================
+pays_dividend = 0
+dividend_file = dir_path + "\\" + dividend_dir + "\\" + ticker + "_dividend.csv"
+if (os.path.exists(dividend_file) is True):
+  pays_dividend = 1
+  dividend_df = pd.read_csv(dir_path + "\\" + dividend_dir + "\\" + ticker + "_dividend.csv")
+  # print (dividend_df)
+  dividend_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in dividend_df.Date.dropna().tolist()]
+  dividend_list = dividend_df.Amount.tolist()
+  print ("The date list for Dividends is ", dividend_date_list, "\nand the number of elements are", len(dividend_date_list))
+  print ("The Amounts for dividends is ", dividend_list)
+# =============================================================================
+
 
 # =============================================================================
 # Handle splits before proceeding as splits can change the qtr_eps
@@ -241,23 +257,36 @@ earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_
 
 
 # =============================================================================
-# Create a qtr_eps_expanded list
+# Create a qtr_eps_expanded and dividend_expanded list
 # We are here trying to create the list that has the same number of elements
 # as the historical date_list and only the elements that have the Quarter EPS
 # have valid values, other values in the expanded list are nan
 # =============================================================================
 qtr_eps_expanded_list = []
+dividend_expanded_list = []
 for i in range(len(date_list)):
   qtr_eps_expanded_list.append(float('nan'))
+  if (pays_dividend == 1):
+    dividend_expanded_list.append(float('nan'))
 
 for qtr_eps_date in qtr_eps_date_list:
   curr_index = qtr_eps_date_list.index(qtr_eps_date)
   print ("Looking for ", qtr_eps_date)
   match_date = min(date_list, key=lambda d: abs(d - qtr_eps_date))
-  print ("The matching date is ", match_date, " at index ",date_list.index(match_date))
+  print ("The matching date for QTR EPS Date: ",qtr_eps_date, "is ", match_date, " at index ",date_list.index(match_date))
   qtr_eps_expanded_list[date_list.index(match_date)] = qtr_eps_list[curr_index]
 
 print ("The expanded qtr eps list is ", qtr_eps_expanded_list, "\nand the number of elements are", len(qtr_eps_expanded_list))
+
+if (pays_dividend == 1):
+  for dividend_date in dividend_date_list:
+    curr_index = dividend_date_list.index(dividend_date)
+    print ("Looking for ", dividend_date)
+    match_date = min(date_list, key=lambda d: abs(d - dividend_date))
+    print ("The matching date for QTR EPS Date: ",dividend_date, "is ", match_date, " at index ",date_list.index(match_date))
+    dividend_expanded_list[date_list.index(match_date)] = dividend_list[curr_index]
+
+  print ("The expanded Dividend list is ", dividend_expanded_list, "\nand the number of elements are", len(dividend_expanded_list))
 # =============================================================================
 
 # =============================================================================
@@ -514,6 +543,9 @@ yr_eps_05_0_plt = main_plt.twinx()
 yr_eps_10_0_plt = main_plt.twinx()
 yr_eps_20_0_plt = main_plt.twinx()
 
+if (pays_dividend == 1):
+  dividend_plt = main_plt.twinx()
+
 print ("Type of fig ", type(fig), \
        "\nType of main_plt ", type(main_plt), \
        "\nType of price_plt: ", type(price_plt), \
@@ -563,11 +595,27 @@ for i in range(len(yr_eps_date_list)):
     main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, fontsize=11, horizontalalignment='center',verticalalignment='bottom')
     # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
 
-
 annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
 annual_projected_eps_plt.set_yticks([])
 annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_period_int], annual_projected_eps_expanded_list[0:plot_period_int], label = '4 qtrs/4',color="White",marker='D',markersize='4')
+# -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# Dividend plot
+# -----------------------------------------------------------------------------
+if (pays_dividend == 1):
+  dividend_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+  dividend_plt.set_yticks([])
+  dividend_plt = annual_projected_eps_plt.plot(date_list[0:plot_period_int], dividend_expanded_list[0:plot_period_int], label = 'Dividend',color="Orange",marker='x',markersize='6')
+  for i in range(len(dividend_date_list)):
+    if (date_list[plot_period_int] <= dividend_date_list[i] <= date_list[0]):
+      x = float("{0:.2f}".format(dividend_list[i]))
+      main_plt.text(dividend_date_list[i],dividend_list[i],x, fontsize=8, horizontalalignment='center',verticalalignment='bottom')
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Price channels
+# -----------------------------------------------------------------------------
 yr_eps_02_5_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
 yr_eps_02_5_plt.set_yticks([])
 yr_eps_02_5_plt_inst = yr_eps_02_5_plt.plot(date_list[0:plot_period_int], yr_eps_02_5_growth_expanded_list[0:plot_period_int], label = 'Q 2.5%',color="Cyan",linestyle = '-', linewidth=1)
