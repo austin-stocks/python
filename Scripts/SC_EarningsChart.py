@@ -431,28 +431,32 @@ spy_adj_close_list[:] = [x / spy_adjust_factor for x in spy_adj_close_list]
 # ---------------------------------------------------------
 # todo : what if the eps is negative then the multiplication makes it more negative
 if (math.isnan(ticker_config_series['Upper Price Channel'])):
-  guide_line_upper_list_unsmooth = [float(eps)+ .5*float(eps) for eps in yr_eps_expanded_list]
+  upper_price_channel_list_unsmooth = [float(eps)+ .5*float(eps) for eps in yr_eps_expanded_list]
 else:
   upper_price_channel_separation = float(ticker_config_series['Upper Price Channel'])
-  guide_line_upper_list_unsmooth = [float(eps)+ upper_price_channel_separation for eps in yr_eps_expanded_list]
+  upper_price_channel_list_unsmooth = [float(eps)+ upper_price_channel_separation for eps in yr_eps_expanded_list]
 
 if (math.isnan(ticker_config_series['Lower Price Channel'])):
-  guide_line_lower_list_unsmooth = [float(eps) - .5*float(eps) for eps in yr_eps_expanded_list]
+  lower_price_channel_list_unsmooth = [float(eps) - .5*float(eps) for eps in yr_eps_expanded_list]
 else:
   lower_price_channel_separation = float(ticker_config_series['Lower Price Channel'])
-  guide_line_lower_list_unsmooth = [float(eps)- lower_price_channel_separation for eps in yr_eps_expanded_list]
+  lower_price_channel_list_unsmooth = [float(eps)- lower_price_channel_separation for eps in yr_eps_expanded_list]
 
-print ("The upper channel unsmooth list is : ", guide_line_upper_list_unsmooth)
+print ("The upper channel unsmooth list is : ", upper_price_channel_list_unsmooth)
+
+
+# Now shift the price channels by two quarters
+# Approximately 6 months = 126 business days by inserting 126 nan at location 0
 nan_list = []
 for i in range(126):
-  guide_line_upper_list_unsmooth.insert(0,float('nan'))
-  guide_line_lower_list_unsmooth.insert(0,float('nan'))
+  upper_price_channel_list_unsmooth.insert(0,float('nan'))
+  lower_price_channel_list_unsmooth.insert(0,float('nan'))
 
-print ("The unsmooth upper channel list is ", guide_line_upper_list_unsmooth)
-guide_line_upper_list = smooth_list(guide_line_upper_list_unsmooth)
-guide_line_lower_list = smooth_list(guide_line_lower_list_unsmooth)
-print ("The upper Guide is ", guide_line_upper_list, "\nand the number of element is ", len(guide_line_upper_list))
-print ("The upper Guide is ", guide_line_lower_list, "\nand the number of element is ", len(guide_line_lower_list))
+print ("The unsmooth upper channel list is ", upper_price_channel_list_unsmooth)
+upper_price_channel_list = smooth_list(upper_price_channel_list_unsmooth)
+lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
+print ("The upper Guide is ", upper_price_channel_list, "\nand the number of element is ", len(upper_price_channel_list))
+print ("The upper Guide is ", lower_price_channel_list, "\nand the number of element is ", len(lower_price_channel_list))
 
 # ---------------------------------------------------------
 
@@ -610,7 +614,7 @@ if (pays_dividend == 1):
   for i in range(len(dividend_date_list)):
     if (date_list[plot_period_int] <= dividend_date_list[i] <= date_list[0]):
       x = float("{0:.2f}".format(dividend_list[i]))
-      main_plt.text(dividend_date_list[i],dividend_list[i],x, fontsize=8, horizontalalignment='center',verticalalignment='bottom')
+      main_plt.text(dividend_date_list[i],dividend_list[i],x, fontsize=6, horizontalalignment='center',verticalalignment='bottom')
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -640,7 +644,7 @@ yr_eps_20_0_plt_inst = yr_eps_20_0_plt.plot(date_list[0:plot_period_int], yr_eps
 # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
 upper_channel_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
 upper_channel_plt.set_yticks([])
-upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int], guide_line_upper_list[0:plot_period_int],label= 'top', color="blue",linestyle = '-')
+upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int], upper_price_channel_list[0:plot_period_int],label= 'top', color="blue",linestyle = '-')
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -650,7 +654,7 @@ upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int], gu
 # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
 lower_channel_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
 lower_channel_plt.set_yticks([])
-lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int], guide_line_lower_list[0:plot_period_int],label= 'bot', color="blue",linestyle = '-')
+lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int], lower_price_channel_list[0:plot_period_int],label= 'bot', color="blue",linestyle = '-')
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
