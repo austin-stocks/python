@@ -18,4 +18,6 @@ The following is the list of items that needs to be worked on
 9. Keep on extracting Earnings from xlsm
 10. Think about your own TrackList - where to get earnings date?
 11. Get the fiscal quarter lined up with gridlines
+12. How to increase the figure area and reduce the white space in the file
+
 
