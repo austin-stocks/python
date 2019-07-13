@@ -7,3 +7,4 @@ The following is the list of items that needs to be worked on
 5. Financial Analysis - Peter Lynch, Phil Town, CSW, Manan Shroff - others
 6. Schiller PE chart overlay? 
 7. Long term SPY and DOW charts with their earnings?
+8. How to log in python? 
