@@ -443,20 +443,29 @@ else:
   lower_price_channel_list_unsmooth = [float(eps)- lower_price_channel_separation for eps in yr_eps_expanded_list]
 
 print ("The upper channel unsmooth list is : ", upper_price_channel_list_unsmooth)
+upper_price_channel_list = smooth_list(upper_price_channel_list_unsmooth)
+lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
+print ("The upper Guide is ", upper_price_channel_list, "\nand the number of element is ", len(upper_price_channel_list))
+print ("The upper Guide is ", lower_price_channel_list, "\nand the number of element is ", len(lower_price_channel_list))
 
+# Get the adjustmentst that need to be done and do them
+upper_channel_adj_start_date =  dt.datetime.strptime("03/31/2016", '%m/%d/%Y').date()
+upper_channel_adj_stop_date = dt.datetime.strptime("09/30/2016", '%m/%d/%Y').date()
+upper_channel_adj_amount = .2
+print ("The start date is ", upper_channel_adj_start_date)
+
+for i_date in date_list:
+  if (upper_channel_adj_start_date <= i_date <= upper_channel_adj_stop_date):
+    i_index = date_list.index(i_date)
+    print ("Date ", i_date, "lies between start Date", upper_channel_adj_start_date, "and stop Date",upper_channel_adj_stop_date, "at index ", i_index )
+    upper_price_channel_list[i_index] = upper_price_channel_list[i_index] +  upper_channel_adj_amount
 
 # Now shift the price channels by two quarters
 # Approximately 6 months = 126 business days by inserting 126 nan at location 0
 nan_list = []
 for i in range(126):
-  upper_price_channel_list_unsmooth.insert(0,float('nan'))
-  lower_price_channel_list_unsmooth.insert(0,float('nan'))
-
-print ("The unsmooth upper channel list is ", upper_price_channel_list_unsmooth)
-upper_price_channel_list = smooth_list(upper_price_channel_list_unsmooth)
-lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
-print ("The upper Guide is ", upper_price_channel_list, "\nand the number of element is ", len(upper_price_channel_list))
-print ("The upper Guide is ", lower_price_channel_list, "\nand the number of element is ", len(lower_price_channel_list))
+  upper_price_channel_list.insert(0,float('nan'))
+  lower_price_channel_list.insert(0,float('nan'))
 
 # ---------------------------------------------------------
 
