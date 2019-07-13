@@ -450,7 +450,7 @@ print ("The upper Guide is ", lower_price_channel_list, "\nand the number of ele
 
 # This variable is added to the adjustments that are done to the channels because
 # this is also the nubmer of days by which the channels get shifted left (or these
-#  are the number of nan entries that are inderted in the channel list 
+#  are the number of nan entries that are inserted in the channel list
 days_in_2_qtrs = 126
 # Get the adjustmentst that need to be done and do them
 # This can be a list if there are multiple adjustments needs for both lower and upper
