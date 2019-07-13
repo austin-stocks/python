@@ -3,7 +3,7 @@ THERE WILL ALWAYS MORE THINGS TO DO THAN YOU CAN PROBABLY DO -
 AND THAT IS A GOOD THING - JIM ROHN SAID - IT IS GREAT THE KNOW
 THAT YOU HAVE MORE TO DO THAN YOU CAN DO
 So, you should probably feel grateful that you have more things
-to do - then you can probably do. 
+to do - than you can probably do. 
 
 The following is the list of items that needs to be worked on 
 --------------------------------------------------------------
@@ -14,10 +14,10 @@ The following is the list of items that needs to be worked on
 5. Financial Analysis - Peter Lynch, Phil Town, CSW, Manan Shroff - others
 6. Schiller PE chart overlay? 
 7. Long term SPY and DOW charts with their earnings?
-8. How to log in python? 
+8. How to log messages in python? 
 9. Keep on extracting Earnings from xlsm
 10. Think about your own TrackList - where to get earnings date?
 11. Get the fiscal quarter lined up with gridlines
 12. How to increase the figure area and reduce the white space in the file
-
+13. Do you need more than one git to experiment etc?
 
