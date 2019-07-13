@@ -448,6 +448,10 @@ lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
 print ("The upper Guide is ", upper_price_channel_list, "\nand the number of element is ", len(upper_price_channel_list))
 print ("The upper Guide is ", lower_price_channel_list, "\nand the number of element is ", len(lower_price_channel_list))
 
+# This variable is added to the adjustments that are done to the channels because
+# this is also the nubmer of days by which the channels get shifted left (or these
+#  are the number of nan entries that are inderted in the channel list 
+days_in_2_qtrs = 126
 # Get the adjustmentst that need to be done and do them
 # This can be a list if there are multiple adjustments needs for both lower and upper
 upper_channel_adj_start_date =  dt.datetime.strptime("03/31/2016", '%m/%d/%Y').date()
@@ -462,16 +466,16 @@ for i_date in date_list:
   if (upper_channel_adj_start_date <= i_date <= upper_channel_adj_stop_date):
     i_index = date_list.index(i_date)
     print ("Date ", i_date, "lies between start Date", upper_channel_adj_start_date, "and stop Date",upper_channel_adj_stop_date, "at index ", i_index )
-    upper_price_channel_list[i_index] = upper_price_channel_list[i_index] +  upper_channel_adj_amount
+    upper_price_channel_list[i_index+days_in_2_qtrs] = upper_price_channel_list[i_index+days_in_2_qtrs] +  upper_channel_adj_amount
   if (lower_channel_adj_start_date <= i_date <= lower_channel_adj_stop_date):
     i_index = date_list.index(i_date)
     print ("Date ", i_date, "lies between start Date", lower_channel_adj_start_date, "and stop Date",lower_channel_adj_stop_date, "at index ", i_index )
-    lower_price_channel_list[i_index] = lower_price_channel_list[i_index] +  lower_channel_adj_amount
+    lower_price_channel_list[i_index+days_in_2_qtrs] = lower_price_channel_list[i_index+days_in_2_qtrs] +  lower_channel_adj_amount
 
 # Now shift the price channels by two quarters
 # Approximately 6 months = 126 business days by inserting 126 nan at location 0
 nan_list = []
-for i in range(126):
+for i in range(days_in_2_qtrs):
   upper_price_channel_list.insert(0,float('nan'))
   lower_price_channel_list.insert(0,float('nan'))
 
