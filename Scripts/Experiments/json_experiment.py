@@ -12,6 +12,25 @@ pprint(json_data)
 
 #
 ticker = "UFPI"
+len_upper_channel_adj = len(json_data[ticker]["Upper_Channel_Adj"])
+print ("The number of upper channel adjustments specified", len_upper_channel_adj)
+upper_channel_adj_start_date_list = []
+upper_channel_adj_stop_date_list = []
+upper_channel_adj_amount_list = []
+
+for i in range(len_upper_channel_adj):
+  i_start_date = json_data[ticker]["Upper_Channel_Adj"][i]["Start_Date"]
+  i_stop_date = json_data[ticker]["Upper_Channel_Adj"][i]["Stop_Date"]
+  i_adj_amount = float(json_data[ticker]["Upper_Channel_Adj"][i]["Adj_Amount"])
+  upper_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+  upper_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+  upper_channel_adj_amount_list.append(i_adj_amount)
+
+print ("The Upper Channel Start Date List", upper_channel_adj_start_date_list)
+print ("The Upper Channel Stop Date List", upper_channel_adj_stop_date_list)
+print ("The Upper Channel Adjust List", upper_channel_adj_amount_list)
+
+sys.exit()
 
 # len_maps = len(json_data[ticker]["maps"])
 # print (json_data[ticker]["maps"][0]["id"])  # will return 'blabla'
