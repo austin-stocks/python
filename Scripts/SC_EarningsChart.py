@@ -452,25 +452,101 @@ print ("The upper Guide is ", lower_price_channel_list, "\nand the number of ele
 # this is also the nubmer of days by which the channels get shifted left (or these
 #  are the number of nan entries that are inserted in the channel list
 days_in_2_qtrs = 126
-# Get the adjustmentst that need to be done and do them
-# This can be a list if there are multiple adjustments needs for both lower and upper
-upper_price_channel_adj_start_date =  dt.datetime.strptime("03/31/2016", '%m/%d/%Y').date()
-upper_price_channel_adj_stop_date = dt.datetime.strptime("04/10/2016", '%m/%d/%Y').date()
-upper_price_channel_adj_amount = .2
-print ("The start date is ", upper_price_channel_adj_start_date)
-lower_price_channel_adj_start_date =  dt.datetime.strptime("03/31/2016", '%m/%d/%Y').date()
-lower_price_channel_adj_stop_date = dt.datetime.strptime("04/10/2016", '%m/%d/%Y').date()
-lower_price_channel_adj_amount = -.2
 
-for i_date in date_list:
-  if (upper_price_channel_adj_start_date <= i_date <= upper_price_channel_adj_stop_date):
-    i_index = date_list.index(i_date)
-    print ("Date ", i_date, "lies between start Date", upper_price_channel_adj_start_date, "and stop Date",upper_price_channel_adj_stop_date, "at index ", i_index )
-    upper_price_channel_list[i_index+days_in_2_qtrs] = upper_price_channel_list[i_index+days_in_2_qtrs] +  upper_price_channel_adj_amount
-  if (lower_price_channel_adj_start_date <= i_date <= lower_price_channel_adj_stop_date):
-    i_index = date_list.index(i_date)
-    print ("Date ", i_date, "lies between start Date", lower_price_channel_adj_start_date, "and stop Date",lower_price_channel_adj_stop_date, "at index ", i_index )
-    lower_price_channel_list[i_index+days_in_2_qtrs] = lower_price_channel_list[i_index+days_in_2_qtrs] +  lower_price_channel_adj_amount
+# =============================================================================
+# Get the adjustments that need to be done and do the price channels
+# First read from the json file to know how may adjustments need to be done
+# for the upper and lower price channels and store them in their separate lists
+# respectively. After than process those separate list to make actual adjustments
+# to the channel lines
+# =============================================================================
+
+# Read the json file to get the adjustments for the upper and lower channels in
+# their respective list
+upper_price_channel_adj_start_date_list = []
+upper_price_channel_adj_stop_date_list = []
+upper_price_channel_adj_amount_list = []
+len_upper_price_channel_adj = 0
+lower_price_channel_adj_start_date_list = []
+lower_price_channel_adj_stop_date_list = []
+lower_price_channel_adj_amount_list = []
+len_lower_price_channel_adj = 0
+
+if (ticker not in config_json.keys()):
+  print ("json data for ",ticker, "does not exist in",configuration_json, "file")
+else :
+  if ("Upper_Price_Channel_Adj" in config_json[ticker]):
+    len_upper_price_channel_adj = len(config_json[ticker]["Upper_Price_Channel_Adj"])
+    print ("The number of Upper channel adjustments specified", len_upper_price_channel_adj)
+    for i in range(len_upper_price_channel_adj):
+      i_start_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Start_Date"]
+      i_stop_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Stop_Date"]
+      i_adj_amount = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Adj_Amount"]
+      try:
+        upper_price_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+        upper_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+        upper_price_channel_adj_amount_list.append(float(i_adj_amount))
+      except (ValueError):
+        print("\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Upper_Price_Channel_Adj in Configuration json file.\n"
+              "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
+              "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
+        sys.exit(1)
+
+print ("The Upper Channel Start Date List", upper_price_channel_adj_start_date_list)
+print ("The Upper Channel Stop Date List", upper_price_channel_adj_stop_date_list)
+print ("The Upper Channel Adjust List", upper_price_channel_adj_amount_list)
+
+
+if (ticker not in config_json.keys()):
+  print("json data for ", ticker, "does not exist in", configuration_json, "file")
+else:
+  if ("Lower_Price_Channel_Adj" in config_json[ticker]):
+    len_lower_price_channel_adj = len(config_json[ticker]["Lower_Price_Channel_Adj"])
+    print ("The number of Lower channel adjustments specified", len_lower_price_channel_adj)
+    for i in range(len_lower_price_channel_adj):
+      i_start_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Start_Date"]
+      i_stop_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Stop_Date"]
+      i_adj_amount = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Adj_Amount"]
+      try:
+        lower_price_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+        lower_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+        lower_price_channel_adj_amount_list.append(float(i_adj_amount))
+      except (ValueError):
+        print("\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Lower_Price_Channel_Adj in Configuration json file.\n"
+              "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
+              "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
+        sys.exit(1)
+print ("The Lower Channel Start Date List", lower_price_channel_adj_start_date_list)
+print ("The Lower Channel Stop Date List", lower_price_channel_adj_stop_date_list)
+print ("The Lower Channel Adjust List", lower_price_channel_adj_amount_list)
+
+
+for i_idx in range(len_upper_price_channel_adj):
+  upper_price_channel_adj_start_date = upper_price_channel_adj_start_date_list[i_idx]
+  upper_price_channel_adj_stop_date = upper_price_channel_adj_stop_date_list[i_idx]
+  upper_price_channel_adj_amount = upper_price_channel_adj_amount_list[i_idx]
+  for i_date in date_list:
+    if (upper_price_channel_adj_start_date <= i_date <= upper_price_channel_adj_stop_date):
+      i_index = date_list.index(i_date)
+      print("Date ", i_date, "lies between start Date", upper_price_channel_adj_start_date, "and stop Date",
+            upper_price_channel_adj_stop_date, "at index ", i_index)
+      upper_price_channel_list[i_index - days_in_2_qtrs] = upper_price_channel_list[i_index - days_in_2_qtrs] + upper_price_channel_adj_amount
+
+for i_idx in range(len_lower_price_channel_adj):
+  lower_price_channel_adj_start_date = lower_price_channel_adj_start_date_list[i_idx]
+  lower_price_channel_adj_stop_date = lower_price_channel_adj_stop_date_list[i_idx]
+  lower_price_channel_adj_amount = lower_price_channel_adj_amount_list[i_idx]
+  for i_date in date_list:
+    if (lower_price_channel_adj_start_date <= i_date <= lower_price_channel_adj_stop_date):
+      i_index = date_list.index(i_date)
+      print ("Date ", i_date, "lies between start Date", lower_price_channel_adj_start_date, "and stop Date",lower_price_channel_adj_stop_date, "at index ", i_index )
+      lower_price_channel_list[i_index-days_in_2_qtrs] = lower_price_channel_list[i_index-days_in_2_qtrs] +  lower_price_channel_adj_amount
+
+# Process the uppoer and lower price channel adjustment lists to make the adjustments to the
+# actual price channel list
+
+# sys.exit()
+# =============================================================================
 
 # Now shift the price channels by two quarters
 # Approximately 6 months = 126 business days by inserting 126 nan at location 0
