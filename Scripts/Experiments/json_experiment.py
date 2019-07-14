@@ -30,6 +30,25 @@ print ("The Upper Channel Start Date List", upper_channel_adj_start_date_list)
 print ("The Upper Channel Stop Date List", upper_channel_adj_stop_date_list)
 print ("The Upper Channel Adjust List", upper_channel_adj_amount_list)
 
+len_lower_channel_adj = len(json_data[ticker]["Lower_Channel_Adj"])
+print ("The number of upper channel adjustments specified", len_lower_channel_adj)
+lower_channel_adj_start_date_list = []
+lower_channel_adj_stop_date_list = []
+lower_channel_adj_amount_list = []
+
+for i in range(len_lower_channel_adj):
+  i_start_date = json_data[ticker]["Lower_Channel_Adj"][i]["Start_Date"]
+  i_stop_date = json_data[ticker]["Lower_Channel_Adj"][i]["Stop_Date"]
+  i_adj_amount = float(json_data[ticker]["Lower_Channel_Adj"][i]["Adj_Amount"])
+  lower_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+  lower_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+  lower_channel_adj_amount_list.append(i_adj_amount)
+
+print ("The Upper Channel Start Date List", lower_channel_adj_start_date_list)
+print ("The Upper Channel Stop Date List", lower_channel_adj_stop_date_list)
+print ("The Upper Channel Adjust List", lower_channel_adj_amount_list)
+
+
 sys.exit()
 
 # len_maps = len(json_data[ticker]["maps"])
