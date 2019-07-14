@@ -22,7 +22,8 @@
 
   "UFPI" : {
     "Splits" : {
-      "11/17/2019" : "4:1", "07/01/2018" : "1:4"
+      "11/17/2019" : "4:1",
+      "07/01/2018" : "1:4"
     },
     "Earnings_Projection_Lines" : [14,10],
     "Upper_Price_Channel_Adj" : [

@@ -13,7 +13,6 @@ The following is the list of items that needs to be worked on
     a. Should have a start date (with matching capability)
     b. Should have a stop (for how many quarter you want to lines to continue)
     c. Should have the capability to stop when the next lines start
-    
 4. Log charts
 5. Financial Analysis - Peter Lynch, Phil Town, CSW, Manan Shroff - others
 6. Schiller PE chart overlay? 
