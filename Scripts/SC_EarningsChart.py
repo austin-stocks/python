@@ -56,9 +56,19 @@ def smooth_list (l):
 # =============================================================================
 
 # todo :
-# Plot dividend
 # deal with fiscal quarter
 # Handle Annotated text
+# See how you can add comments
+# What format the file should be save
+# Get the code debug friendly
+# How to create other subplots that have the book value etc
+#   Maybe use subplots for it
+# How to use earnings projections
+# Test out the values from the file
+# How to show values when you click
+# Get the Average PE for last 1, 3, 5 and 10 years and get the forward PE
+#   and get it printed in the box
+# If possible superimpose the PE line in the chart
 
 # =============================================================================
 # Define the various filenames and Directory Paths to be used
@@ -100,8 +110,8 @@ debug_str = "The Earnings df is \n" + qtr_eps_df.to_string()
 stdout = 0; my_print (debug_fh,debug_str,stdout,log_lvl.upper())
 
 # print ("The Earnings df is \n", qtr_eps_df)
-# Todo : Error out if any elements in the date_list are nan except the trailing (this includes
-# Todo : leading nan and any nan in the list itself
+# todo : Error out if any elements in the date_list are nan except the trailing (this includes
+# todo : leading nan and any nan in the list itself
 qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
 qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
 print ("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
@@ -126,7 +136,7 @@ if (os.path.exists(dividend_file) is True):
 # =============================================================================
 # Handle splits before proceeding as splits can change the qtr_eps
 # =============================================================================
-# Handle the case if the split is not separated by :
+# todo : Test out various cases of splits so that the code is robust
 split_dates = list()
 split_multiplier = list()
 print ("Tickers in json data: ",config_json.keys())
@@ -168,13 +178,13 @@ else :
 
 
 # ============================================================================
-# Get the eps value list to the same length as date list and
-# check if theeps list has any nan. If it has any nan then error out and let
+# Get the eps value list to the same length as eps date list and
+# check if these list has any nan. If it has any nan then error out and let
 # the user correct the earning file.
 
 # Set the length of qtr_eps_list same as date_list.
 # This gets rid of any earnings that are beyond the last date.
-# This is not a common case but could cocur because of copy and paste and then
+# This is not a common case but could occur because of copy and paste and then
 # ignorance on the part of the user to not remove the "extra" earnings
 # This also makes sure that the eps date list and eps value list have the same
 # number of entries.
@@ -187,7 +197,6 @@ print ("The Earnings list for qtr_eps is ", qtr_eps_list)
 # Check if now the qtr_eps_list still has any undefined elements...flag an error and exit
 # This will indicate any empty cells are either the beginning or in the middle of the eps
 # column in the csv
-# todo : Get this as proper python exception
 if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
   print ("ERROR : There are some undefined EPS numbers in the Earnings file, Please correct and rerun")
   exit()
@@ -199,9 +208,7 @@ if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
 # 3. Number of elements in the qtr_eps_date_list are equal to the number of
 #    element in the qtr_eps_list
 # =============================================================================
-
-
-# Todo : This should be in the if statement
+# Todo : Reading and plotting the index should be inside a if statement
 # Read the spy or dji or ixic file for comparison
 spy_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^GSPC_historical.csv")
 dji_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^DJI_historical.csv")
@@ -243,15 +250,16 @@ while (i_int < (len(qtr_eps_list)-3)):
   yr_eps_list.append(annual_average_eps)
   i_int += 1
 print ("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(yr_eps_list))
-yr_eps_list_tmp = yr_eps_list
-yr_eps_list_tmp.append('Not_calculated')
-yr_eps_list_tmp.append('Not_calculated')
-yr_eps_list_tmp.append('Not_calculated')
 
 # I am not sure why I wanted this but seems like a good thing to be able to make
-# a dataframe from lists.
-earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_eps_list_tmp]),
-                               columns=['Date', 'Q EPS', 'Annual EPS'])
+# a dataframe from lists. This is not used anywhere in the code ahead...so commented
+# out for now
+# yr_eps_list_tmp = yr_eps_list
+# yr_eps_list_tmp.append('Not_calculated')
+# yr_eps_list_tmp.append('Not_calculated')
+# yr_eps_list_tmp.append('Not_calculated')
+# earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_eps_list_tmp]),
+#                                columns=['Date', 'Q EPS', 'Annual EPS'])
 # print ("The Earnings DF is ", earnings_df)
 # ===================================================================================================
 
@@ -260,7 +268,8 @@ earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_
 # Create a qtr_eps_expanded and dividend_expanded list
 # We are here trying to create the list that has the same number of elements
 # as the historical date_list and only the elements that have the Quarter EPS
-# have valid values, other values in the expanded list are nan
+# have valid values, other values in the expanded list are nan..so the
+# expanded lists are initially initialized to nan
 # =============================================================================
 qtr_eps_expanded_list = []
 dividend_expanded_list = []
@@ -269,6 +278,9 @@ for i in range(len(date_list)):
   if (pays_dividend == 1):
     dividend_expanded_list.append(float('nan'))
 
+# Now look for the date in eps datelist, match it with the closest index in the
+# date list from historical and then assign the qtr eps to that index in the qtr
+# eps expanded list. Do the same for divident expanded list
 for qtr_eps_date in qtr_eps_date_list:
   curr_index = qtr_eps_date_list.index(qtr_eps_date)
   print ("Looking for ", qtr_eps_date)
@@ -295,8 +307,10 @@ if (pays_dividend == 1):
 # However the expanded Annual EPS list is really three lists...to create a different
 # series in the plot/graph later
 # yr_eps_expanded_list
-# annual_past_eps_expanded_list - contains
-# annual_projected_eps_expanded_list
+# annual_past_eps_expanded_list - contains only the yr eps that is older than the
+#   current date - This will end up as black diamonds in the chart
+# annual_projected_eps_expanded_list - contains only the yr epx that is newer
+#   than the current date - This will end up as white diamonds in the chart
 # =============================================================================
 # Remove the last 3 dates from the qtr_eps_date_list to create yr_eps_date_list
 yr_eps_date_list = qtr_eps_date_list[0:len(qtr_eps_date_list)-3]
@@ -324,8 +338,6 @@ for yr_eps_date in yr_eps_date_list:
     annual_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
 print ("The Expanded Annual EPS List is: ", yr_eps_expanded_list)
 # =============================================================================
-
-
 
 # todo : Needs to be gotten from config file
 date_for_yr_eps_growth_projection = ""
@@ -405,6 +417,7 @@ else:
 # Find out how many years need to be plotted
 # ---------------------------------------------------------
 # todo : what if someone puts a string like "Max" in there?
+# Maybe support a date there?
 if (math.isnan(ticker_config_series['Linear Chart Years'])):
   plot_period_int = 252 * 10
   print("Will Plot the Chart for 10 years")
@@ -415,7 +428,7 @@ else:
 
 
 # Get the index factor
-# Sundeep is here...Get the spy for the plot_period_int and then normalize it
+# Get the spy for the plot_period_int and then normalize it
 # to stock price from that date onwards
 spy_adj_close_list = spy_df.Adj_Close.tolist()
 # find the length of adk_close_list
@@ -460,9 +473,8 @@ days_in_2_qtrs = 126
 # respectively. After than process those separate list to make actual adjustments
 # to the channel lines
 # =============================================================================
-
-# Read the json file to get the adjustments for the upper and lower channels in
-# their respective list
+# It is better to define the list and the variables that are getting created in the read of the json
+# file...as the for loops that use the lists are separated out from the creation of the lists
 upper_price_channel_adj_start_date_list = []
 upper_price_channel_adj_stop_date_list = []
 upper_price_channel_adj_amount_list = []
@@ -472,6 +484,8 @@ lower_price_channel_adj_stop_date_list = []
 lower_price_channel_adj_amount_list = []
 len_lower_price_channel_adj = 0
 
+# Read the json file to get the adjustments for the upper and lower channels in
+# their respective list
 if (ticker not in config_json.keys()):
   print ("json data for ",ticker, "does not exist in",configuration_json, "file")
 else :
@@ -520,7 +534,9 @@ print ("The Lower Channel Start Date List", lower_price_channel_adj_start_date_l
 print ("The Lower Channel Stop Date List", lower_price_channel_adj_stop_date_list)
 print ("The Lower Channel Adjust List", lower_price_channel_adj_amount_list)
 
-
+# Now Process the upper and lower price channel adjustment lists to make the adjustments to the
+# actual price channel list...for the length of the lists created above...and that is why it
+# was a good ides to initialize the length to '0' and crate empty lists above
 for i_idx in range(len_upper_price_channel_adj):
   upper_price_channel_adj_start_date = upper_price_channel_adj_start_date_list[i_idx]
   upper_price_channel_adj_stop_date = upper_price_channel_adj_stop_date_list[i_idx]
@@ -541,11 +557,6 @@ for i_idx in range(len_lower_price_channel_adj):
       i_index = date_list.index(i_date)
       print ("Date ", i_date, "lies between start Date", lower_price_channel_adj_start_date, "and stop Date",lower_price_channel_adj_stop_date, "at index ", i_index )
       lower_price_channel_list[i_index-days_in_2_qtrs] = lower_price_channel_list[i_index-days_in_2_qtrs] +  lower_price_channel_adj_amount
-
-# Process the uppoer and lower price channel adjustment lists to make the adjustments to the
-# actual price channel list
-
-# sys.exit()
 # =============================================================================
 
 # Now shift the price channels by two quarters
@@ -603,23 +614,10 @@ else:
 
 
 
-# todo :
-# See how you can add comments
-# Legends
-# Minor grids
-# Dividends
-# What format the file should be save
-# Get the code debug friendly
-# How to create other subplots that have the book value etc
-#   Maybe use subplots for it
-# How to use earnings projections
-# Move the annual two quarters over
-# Test out the values from the file
-# How to show values when you click
-# Get the Average PE for last 1, 3, 5 and 10 years and get the forward PE
-#   and get it printed in the box
-# If possible superimpose the PE line in the chart
-# Compare the stock chart with spx or indu or compq
+
+
+
+
 # #############################################################################
 # ###########                    Now plot Everything                 ##########
 # #############################################################################
