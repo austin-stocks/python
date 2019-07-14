@@ -24,15 +24,15 @@ else :
     for i in range(len_upper_price_channel_adj):
       i_start_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Start_Date"]
       i_stop_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Stop_Date"]
-      i_adj_amount = float(config_json[ticker]["Upper_Price_Channel_Adj"][i]["Adj_Amount"])
+      i_adj_amount = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Adj_Amount"]
       try:
         upper_price_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
         upper_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
-        upper_price_channel_adj_amount_list.append(i_adj_amount)
+        upper_price_channel_adj_amount_list.append(float(i_adj_amount))
       except (ValueError):
         print("\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Upper_Price_Channel_Adj in Configuration json file.\n"
               "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
-              "***** Error : Found ", i_start_date, i_stop_date, i_adj_amount)
+              "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
         sys.exit(1)
     print ("The Upper Channel Start Date List", upper_price_channel_adj_start_date_list)
     print ("The Upper Channel Stop Date List", upper_price_channel_adj_stop_date_list)
@@ -44,15 +44,19 @@ else :
     lower_price_channel_adj_start_date_list = []
     lower_price_channel_adj_stop_date_list = []
     lower_price_channel_adj_amount_list = []
-
     for i in range(len_lower_price_channel_adj):
       i_start_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Start_Date"]
       i_stop_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Stop_Date"]
-      i_adj_amount = float(config_json[ticker]["Lower_Price_Channel_Adj"][i]["Adj_Amount"])
-      lower_price_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
-      lower_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
-      lower_price_channel_adj_amount_list.append(i_adj_amount)
-
+      i_adj_amount = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Adj_Amount"]
+      try:
+        lower_price_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+        lower_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+        lower_price_channel_adj_amount_list.append(float(i_adj_amount))
+      except (ValueError):
+        print("\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Lower_Price_Channel_Adj in Configuration json file.\n"
+              "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
+              "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
+        sys.exit(1)
     print ("The Upper Channel Start Date List", lower_price_channel_adj_start_date_list)
     print ("The Upper Channel Stop Date List", lower_price_channel_adj_stop_date_list)
     print ("The Upper Channel Adjust List", lower_price_channel_adj_amount_list)
