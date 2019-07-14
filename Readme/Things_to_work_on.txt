@@ -8,11 +8,14 @@ to do - than you can probably do.
 The following is the list of items that needs to be worked on 
 --------------------------------------------------------------
 1. Candlestick charts with volume overlay - maybe have two separate charts
-2. Adjustment to price channels - This one needs more looking at charts and understanding 
+2. Adjustment to price channels - This one needs more looking at charts and understanding -- Done. More checking needed
+
+This is something that can be worked on after coming back from NY - should be quite similar to #2 above
 3. Two or more sets of Theoritical Earnings projections lines [The plastic overlay]
     a. Should have a start date (with matching capability)
     b. Should have a stop (for how many quarter you want to lines to continue)
     c. Should have the capability to stop when the next lines start
+
 4. Log charts
 5. Financial Analysis - Peter Lynch, Phil Town, CSW, Manan Shroff - others
 6. Schiller PE chart overlay? 
