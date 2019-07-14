@@ -454,23 +454,23 @@ print ("The upper Guide is ", lower_price_channel_list, "\nand the number of ele
 days_in_2_qtrs = 126
 # Get the adjustmentst that need to be done and do them
 # This can be a list if there are multiple adjustments needs for both lower and upper
-upper_channel_adj_start_date =  dt.datetime.strptime("03/31/2016", '%m/%d/%Y').date()
-upper_channel_adj_stop_date = dt.datetime.strptime("04/10/2016", '%m/%d/%Y').date()
-upper_channel_adj_amount = .2
-print ("The start date is ", upper_channel_adj_start_date)
-lower_channel_adj_start_date =  dt.datetime.strptime("03/31/2016", '%m/%d/%Y').date()
-lower_channel_adj_stop_date = dt.datetime.strptime("04/10/2016", '%m/%d/%Y').date()
-lower_channel_adj_amount = -.2
+upper_price_channel_adj_start_date =  dt.datetime.strptime("03/31/2016", '%m/%d/%Y').date()
+upper_price_channel_adj_stop_date = dt.datetime.strptime("04/10/2016", '%m/%d/%Y').date()
+upper_price_channel_adj_amount = .2
+print ("The start date is ", upper_price_channel_adj_start_date)
+lower_price_channel_adj_start_date =  dt.datetime.strptime("03/31/2016", '%m/%d/%Y').date()
+lower_price_channel_adj_stop_date = dt.datetime.strptime("04/10/2016", '%m/%d/%Y').date()
+lower_price_channel_adj_amount = -.2
 
 for i_date in date_list:
-  if (upper_channel_adj_start_date <= i_date <= upper_channel_adj_stop_date):
+  if (upper_price_channel_adj_start_date <= i_date <= upper_price_channel_adj_stop_date):
     i_index = date_list.index(i_date)
-    print ("Date ", i_date, "lies between start Date", upper_channel_adj_start_date, "and stop Date",upper_channel_adj_stop_date, "at index ", i_index )
-    upper_price_channel_list[i_index+days_in_2_qtrs] = upper_price_channel_list[i_index+days_in_2_qtrs] +  upper_channel_adj_amount
-  if (lower_channel_adj_start_date <= i_date <= lower_channel_adj_stop_date):
+    print ("Date ", i_date, "lies between start Date", upper_price_channel_adj_start_date, "and stop Date",upper_price_channel_adj_stop_date, "at index ", i_index )
+    upper_price_channel_list[i_index+days_in_2_qtrs] = upper_price_channel_list[i_index+days_in_2_qtrs] +  upper_price_channel_adj_amount
+  if (lower_price_channel_adj_start_date <= i_date <= lower_price_channel_adj_stop_date):
     i_index = date_list.index(i_date)
-    print ("Date ", i_date, "lies between start Date", lower_channel_adj_start_date, "and stop Date",lower_channel_adj_stop_date, "at index ", i_index )
-    lower_price_channel_list[i_index+days_in_2_qtrs] = lower_price_channel_list[i_index+days_in_2_qtrs] +  lower_channel_adj_amount
+    print ("Date ", i_date, "lies between start Date", lower_price_channel_adj_start_date, "and stop Date",lower_price_channel_adj_stop_date, "at index ", i_index )
+    lower_price_channel_list[i_index+days_in_2_qtrs] = lower_price_channel_list[i_index+days_in_2_qtrs] +  lower_price_channel_adj_amount
 
 # Now shift the price channels by two quarters
 # Approximately 6 months = 126 business days by inserting 126 nan at location 0
