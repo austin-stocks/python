@@ -339,64 +339,100 @@ for yr_eps_date in yr_eps_date_list:
 print ("The Expanded Annual EPS List is: ", yr_eps_expanded_list)
 # =============================================================================
 
-# todo : Needs to be gotten from config file
-date_for_yr_eps_growth_projection = ""
-growth_proj_start_index = 14
-
-yr_eps_02_5_growth_list = []
-yr_eps_05_0_growth_list = []
-yr_eps_10_0_growth_list = []
-yr_eps_20_0_growth_list = []
-for i in range(len(yr_eps_date_list)):
-  yr_eps_02_5_growth_list.append(float('nan'))
-  yr_eps_05_0_growth_list.append(float('nan'))
-  yr_eps_10_0_growth_list.append(float('nan'))
-  yr_eps_20_0_growth_list.append(float('nan'))
-
-yr_eps_02_5_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
-yr_eps_05_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
-yr_eps_10_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
-yr_eps_20_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
-
-for i in reversed(range(0, growth_proj_start_index)):
-  print ("Updating for index", i)
-  yr_eps_02_5_growth_list[i] = 1.025*float(yr_eps_02_5_growth_list[i+1])
-  yr_eps_05_0_growth_list[i] = 1.05*float(yr_eps_05_0_growth_list[i+1])
-  yr_eps_10_0_growth_list[i] = 1.10*float(yr_eps_10_0_growth_list[i+1])
-  yr_eps_20_0_growth_list[i] = 1.20*float(yr_eps_20_0_growth_list[i+1])
-
-print ("The Annual eps list", yr_eps_list)
-print ("The 2.5% growth rate eps list", yr_eps_02_5_growth_list)
-print ("The   5% growth rate eps list", yr_eps_05_0_growth_list)
-print ("The  10% growth rate eps list", yr_eps_10_0_growth_list)
-print ("The  20% growth rate eps list", yr_eps_20_0_growth_list)
+number_of_growth_proj = 0
+start_date_for_yr_eps_growth_proj_list = []
+stop_date_for_yr_eps_growth_proj_list = []
+if (ticker not in config_json.keys()):
+  print ("json data for ",ticker, "does not exist in",configuration_json, "file")
+else :
+  if ("Earnings_Projection_Lines" in config_json[ticker]):
+    number_of_growth_proj = len(config_json[ticker]["Earnings_Projection_Lines"])
+    for i in range(number_of_growth_proj):
+      i_start_date = config_json[ticker]["Earnings_Projection_Lines"][i]["Start_Date"]
+      i_stop_date = config_json[ticker]["Earnings_Projection_Lines"][i]["Stop_Date"]
+      try:
+        start_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+        stop_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+      except (ValueError):
+        print("\n***** Error : Either the Start/Stop Dates for Growth projection lines are not in proper format for in Configuration json file.\n"
+              "***** Error : The Start_Date should be in the format %m/%d/%Y and the Stop_Date should be in the format: %m/%d/%Y or Next or Last\n"
+              "***** Error : Found somewhere in :", i_start_date, i_stop_date)
+        sys.exit(1)
 
 
-yr_eps_02_5_growth_expanded_list_unsmooth = []
-yr_eps_05_0_growth_expanded_list_unsmooth = []
-yr_eps_10_0_growth_expanded_list_unsmooth = []
-yr_eps_20_0_growth_expanded_list_unsmooth = []
-for i in range(len(date_list)):
-  yr_eps_02_5_growth_expanded_list_unsmooth.append(float('nan'))
-  yr_eps_05_0_growth_expanded_list_unsmooth.append(float('nan'))
-  yr_eps_10_0_growth_expanded_list_unsmooth.append(float('nan'))
-  yr_eps_20_0_growth_expanded_list_unsmooth.append(float('nan'))
+yr_eps_02_5_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
+yr_eps_05_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
+yr_eps_10_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
+yr_eps_20_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
+
+for i_idx in range(number_of_growth_proj):
+
+  start_date_for_yr_eps_growth_proj = start_date_for_yr_eps_growth_proj_list[i_idx]
+  stop_date_for_yr_eps_growth_proj =stop_date_for_yr_eps_growth_proj_list[i_idx]
+
+  growth_proj_start_match_date = min(yr_eps_date_list, key=lambda d: abs(d - start_date_for_yr_eps_growth_proj))
+  growth_proj_start_index = yr_eps_date_list.index(growth_proj_start_match_date)
+  growth_proj_stop_match_date = min(yr_eps_date_list, key=lambda d: abs(d - stop_date_for_yr_eps_growth_proj))
+  growth_proj_stop_index = yr_eps_date_list.index(growth_proj_stop_match_date)
 
 
-for yr_eps_date in yr_eps_date_list:
-  curr_index = yr_eps_date_list.index(yr_eps_date)
-  print ("Looking for ", yr_eps_date)
-  match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
-  print ("The matching date is ", match_date, " at index ",date_list.index(match_date))
-  yr_eps_02_5_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_02_5_growth_list[curr_index]
-  yr_eps_05_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_05_0_growth_list[curr_index]
-  yr_eps_10_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_10_0_growth_list[curr_index]
-  yr_eps_20_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_20_0_growth_list[curr_index]
+  yr_eps_02_5_growth_list = []
+  yr_eps_05_0_growth_list = []
+  yr_eps_10_0_growth_list = []
+  yr_eps_20_0_growth_list = []
+  # Create the growth list for same number of entries as yr_eps_date_list
+  for i in range(len(yr_eps_date_list)):
+    yr_eps_02_5_growth_list.append(float('nan'))
+    yr_eps_05_0_growth_list.append(float('nan'))
+    yr_eps_10_0_growth_list.append(float('nan'))
+    yr_eps_20_0_growth_list.append(float('nan'))
 
-yr_eps_02_5_growth_expanded_list = smooth_list(yr_eps_02_5_growth_expanded_list_unsmooth)
-yr_eps_05_0_growth_expanded_list = smooth_list(yr_eps_05_0_growth_expanded_list_unsmooth)
-yr_eps_10_0_growth_expanded_list = smooth_list(yr_eps_10_0_growth_expanded_list_unsmooth)
-yr_eps_20_0_growth_expanded_list = smooth_list(yr_eps_20_0_growth_expanded_list_unsmooth)
+  # The first entry for the list comes from the yr_eps_list
+  yr_eps_02_5_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+  yr_eps_05_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+  yr_eps_10_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+  yr_eps_20_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+
+  # Then grow the growth list from the start point to the end point by multiplying
+  # with the grwoth factor
+  for i in reversed(range(growth_proj_stop_index, growth_proj_start_index)):
+    print ("Updating for index", i)
+    yr_eps_02_5_growth_list[i] = 1.025*float(yr_eps_02_5_growth_list[i+1])
+    yr_eps_05_0_growth_list[i] = 1.05*float(yr_eps_05_0_growth_list[i+1])
+    yr_eps_10_0_growth_list[i] = 1.10*float(yr_eps_10_0_growth_list[i+1])
+    yr_eps_20_0_growth_list[i] = 1.20*float(yr_eps_20_0_growth_list[i+1])
+
+  print ("The Annual eps list", yr_eps_list)
+  print ("The 2.5% growth rate eps list", yr_eps_02_5_growth_list)
+  print ("The   5% growth rate eps list", yr_eps_05_0_growth_list)
+  print ("The  10% growth rate eps list", yr_eps_10_0_growth_list)
+  print ("The  20% growth rate eps list", yr_eps_20_0_growth_list)
+
+  # Now expand the list to all the dates (from historical date list)
+  yr_eps_02_5_growth_expanded_list_unsmooth = []
+  yr_eps_05_0_growth_expanded_list_unsmooth = []
+  yr_eps_10_0_growth_expanded_list_unsmooth = []
+  yr_eps_20_0_growth_expanded_list_unsmooth = []
+  for i in range(len(date_list)):
+    yr_eps_02_5_growth_expanded_list_unsmooth.append(float('nan'))
+    yr_eps_05_0_growth_expanded_list_unsmooth.append(float('nan'))
+    yr_eps_10_0_growth_expanded_list_unsmooth.append(float('nan'))
+    yr_eps_20_0_growth_expanded_list_unsmooth.append(float('nan'))
+
+  for yr_eps_date in yr_eps_date_list:
+    curr_index = yr_eps_date_list.index(yr_eps_date)
+    print ("Looking for ", yr_eps_date)
+    match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
+    print ("The matching date is ", match_date, " at index ",date_list.index(match_date))
+    yr_eps_02_5_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_02_5_growth_list[curr_index]
+    yr_eps_05_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_05_0_growth_list[curr_index]
+    yr_eps_10_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_10_0_growth_list[curr_index]
+    yr_eps_20_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_20_0_growth_list[curr_index]
+
+  yr_eps_02_5_growth_expanded_list[i_idx] = smooth_list(yr_eps_02_5_growth_expanded_list_unsmooth)
+  yr_eps_05_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_05_0_growth_expanded_list_unsmooth)
+  yr_eps_10_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_10_0_growth_expanded_list_unsmooth)
+  yr_eps_20_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_20_0_growth_expanded_list_unsmooth)
 
 
 
@@ -645,6 +681,7 @@ yr_eps_02_5_plt = main_plt.twinx()
 yr_eps_05_0_plt = main_plt.twinx()
 yr_eps_10_0_plt = main_plt.twinx()
 yr_eps_20_0_plt = main_plt.twinx()
+# yr_eps_02_5_plt[0] = main_plt.twinx()
 
 if (pays_dividend == 1):
   dividend_plt = main_plt.twinx()
@@ -709,7 +746,7 @@ annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_p
 if (pays_dividend == 1):
   dividend_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
   dividend_plt.set_yticks([])
-  dividend_plt = annual_projected_eps_plt.plot(date_list[0:plot_period_int], dividend_expanded_list[0:plot_period_int], label = 'Dividend',color="Orange",marker='x',markersize='6')
+  dividend_plt_inst = dividend_plt.plot(date_list[0:plot_period_int], dividend_expanded_list[0:plot_period_int], label = 'Dividend',color="Orange",marker='x',markersize='6')
   for i in range(len(dividend_date_list)):
     if (date_list[plot_period_int] <= dividend_date_list[i] <= date_list[0]):
       x = float("{0:.2f}".format(dividend_list[i]))
@@ -719,21 +756,89 @@ if (pays_dividend == 1):
 # -----------------------------------------------------------------------------
 # Price channels
 # -----------------------------------------------------------------------------
-yr_eps_02_5_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
-yr_eps_02_5_plt.set_yticks([])
-yr_eps_02_5_plt_inst = yr_eps_02_5_plt.plot(date_list[0:plot_period_int], yr_eps_02_5_growth_expanded_list[0:plot_period_int], label = 'Q 2.5%',color="Cyan",linestyle = '-', linewidth=1)
+for i_idx in range(number_of_growth_proj):
 
-yr_eps_05_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
-yr_eps_05_0_plt.set_yticks([])
-yr_eps_05_0_plt_inst = yr_eps_05_0_plt.plot(date_list[0:plot_period_int], yr_eps_05_0_growth_expanded_list[0:plot_period_int], label = 'Q 5%',color="Yellow",linestyle = '-', linewidth=1)
+  # yr_eps_02_5_plt[i_idx,0] = main_plt.twinx()
+  # yr_eps_02_5_plt[i_idx,0].set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+  # yr_eps_02_5_plt[i_idx,0].set_yticks([])
+  # yr_eps_02_5_plt_inst[i_idx,0] = yr_eps_02_5_plt[i_idx,0].plot(date_list[0:plot_period_int],
+  #                                                 yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
+  #                                                 label='Q 2.5%',color="Cyan", linestyle='-', linewidth=1)
 
-yr_eps_10_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
-yr_eps_10_0_plt.set_yticks([])
-yr_eps_10_0_plt_inst = yr_eps_10_0_plt.plot(date_list[0:plot_period_int], yr_eps_10_0_growth_expanded_list[0:plot_period_int], label = 'Q 10%',color="Cyan",linestyle = '-', linewidth=1)
+  # Maybe write a function here
+  if (i_idx == 0):
+    yr_eps_02_5_plt_0 = main_plt.twinx()
+    yr_eps_02_5_plt_0.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+    yr_eps_02_5_plt_0.set_yticks([])
+    yr_eps_02_5_plt_inst_0 = yr_eps_02_5_plt_0.plot(date_list[0:plot_period_int],
+                                                    yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%',color="Cyan", linestyle='-', linewidth=1)
 
-yr_eps_20_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
-yr_eps_20_0_plt.set_yticks([])
-yr_eps_20_0_plt_inst = yr_eps_20_0_plt.plot(date_list[0:plot_period_int], yr_eps_20_0_growth_expanded_list[0:plot_period_int], label = 'Q 20%',color="Yellow",linestyle = '-', linewidth=1)
+    yr_eps_05_0_plt_0 = main_plt.twinx()
+    yr_eps_05_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_05_0_plt_0.set_yticks([])
+    yr_eps_05_0_plt_inst_0 = yr_eps_05_0_plt_0.plot(date_list[0:plot_period_int],
+                                                    yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+
+    yr_eps_10_0_plt_0 = main_plt.twinx()
+    yr_eps_10_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_10_0_plt_0.set_yticks([])
+    yr_eps_10_0_plt_inst_0 = yr_eps_10_0_plt_0.plot(date_list[0:plot_period_int],
+                                                    yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+
+    yr_eps_20_0_plt_0 = main_plt.twinx()
+    yr_eps_20_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_20_0_plt_0.set_yticks([])
+    yr_eps_20_0_plt_inst_0 = yr_eps_20_0_plt_0.plot(date_list[0:plot_period_int],
+                                                    yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+
+  elif (i_idx == 1):
+    yr_eps_02_5_plt_1 = main_plt.twinx()
+    yr_eps_02_5_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_02_5_plt_1.set_yticks([])
+    yr_eps_02_5_plt_inst_1 = yr_eps_02_5_plt_1.plot(date_list[0:plot_period_int],
+                                                    yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+
+    yr_eps_05_0_plt_1 = main_plt.twinx()
+    yr_eps_05_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_05_0_plt_1.set_yticks([])
+    yr_eps_05_0_plt_inst_1 = yr_eps_05_0_plt_1.plot(date_list[0:plot_period_int],
+                                                    yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+
+    yr_eps_10_0_plt_1 = main_plt.twinx()
+    yr_eps_10_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_10_0_plt_1.set_yticks([])
+    yr_eps_10_0_plt_inst_1 = yr_eps_10_0_plt_1.plot(date_list[0:plot_period_int],
+                                                    yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+
+    yr_eps_20_0_plt_1 = main_plt.twinx()
+    yr_eps_20_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_20_0_plt_1.set_yticks([])
+    yr_eps_20_0_plt_inst_1 = yr_eps_20_0_plt_1.plot(date_list[0:plot_period_int],
+                                                    yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+
+# yr_eps_02_5_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+# yr_eps_02_5_plt.set_yticks([])
+# yr_eps_02_5_plt_inst = yr_eps_02_5_plt.plot(date_list[0:plot_period_int], yr_eps_02_5_growth_expanded_list[0:plot_period_int], label = 'Q 2.5%',color="Cyan",linestyle = '-', linewidth=1)
+
+# yr_eps_05_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+# yr_eps_05_0_plt.set_yticks([])
+# yr_eps_05_0_plt_inst = yr_eps_05_0_plt.plot(date_list[0:plot_period_int], yr_eps_05_0_growth_expanded_list[0:plot_period_int], label = 'Q 5%',color="Yellow",linestyle = '-', linewidth=1)
+#
+# yr_eps_10_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+# yr_eps_10_0_plt.set_yticks([])
+# yr_eps_10_0_plt_inst = yr_eps_10_0_plt.plot(date_list[0:plot_period_int], yr_eps_10_0_growth_expanded_list[0:plot_period_int], label = 'Q 10%',color="Cyan",linestyle = '-', linewidth=1)
+#
+# yr_eps_20_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+# yr_eps_20_0_plt.set_yticks([])
+# yr_eps_20_0_plt_inst = yr_eps_20_0_plt.plot(date_list[0:plot_period_int], yr_eps_20_0_growth_expanded_list[0:plot_period_int], label = 'Q 20%',color="Yellow",linestyle = '-', linewidth=1)
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -759,9 +864,12 @@ lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int], lo
 # -----------------------------------------------------------------------------
 # Collect the labels for the subplots and then create the legends
 # -----------------------------------------------------------------------------
+# lns = main_plt_inst + \
+#       yr_eps_20_0_plt_inst + yr_eps_10_0_plt_inst + \
+#       yr_eps_05_0_plt_inst + yr_eps_02_5_plt_inst + \
+#       annual_past_eps_plt_inst + upper_channel_plt_inst + \
+#       lower_channel_plt_inst + price_plt_inst + spy_plt_inst
 lns = main_plt_inst + \
-      yr_eps_20_0_plt_inst + yr_eps_10_0_plt_inst + \
-      yr_eps_05_0_plt_inst + yr_eps_02_5_plt_inst + \
       annual_past_eps_plt_inst + upper_channel_plt_inst + \
       lower_channel_plt_inst + price_plt_inst + spy_plt_inst
 labs = [l.get_label() for l in lns]
