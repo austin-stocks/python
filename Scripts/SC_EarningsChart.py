@@ -345,11 +345,11 @@ stop_date_for_yr_eps_growth_proj_list = []
 if (ticker not in config_json.keys()):
   print ("json data for ",ticker, "does not exist in",configuration_json, "file")
 else :
-  if ("Earnings_Projection_Lines" in config_json[ticker]):
-    number_of_growth_proj = len(config_json[ticker]["Earnings_Projection_Lines"])
+  if ("Earnings_growth_projection_overlay" in config_json[ticker]):
+    number_of_growth_proj = len(config_json[ticker]["Earnings_growth_projection_overlay"])
     for i in range(number_of_growth_proj):
-      i_start_date = config_json[ticker]["Earnings_Projection_Lines"][i]["Start_Date"]
-      i_stop_date = config_json[ticker]["Earnings_Projection_Lines"][i]["Stop_Date"]
+      i_start_date = config_json[ticker]["Earnings_growth_projection_overlay"][i]["Start_Date"]
+      i_stop_date = config_json[ticker]["Earnings_growth_projection_overlay"][i]["Stop_Date"]
       try:
         start_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
         stop_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
@@ -776,28 +776,24 @@ for i_idx in range(number_of_growth_proj):
     yr_eps_02_5_plt_inst_0 = yr_eps_02_5_plt_0.plot(date_list[0:plot_period_int],
                                                     yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
                                                     label='Q 2.5%',color="Cyan", linestyle='-', linewidth=1)
-
     yr_eps_05_0_plt_0 = main_plt.twinx()
     yr_eps_05_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_05_0_plt_0.set_yticks([])
     yr_eps_05_0_plt_inst_0 = yr_eps_05_0_plt_0.plot(date_list[0:plot_period_int],
                                                     yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
                                                     label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
-
     yr_eps_10_0_plt_0 = main_plt.twinx()
     yr_eps_10_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_10_0_plt_0.set_yticks([])
     yr_eps_10_0_plt_inst_0 = yr_eps_10_0_plt_0.plot(date_list[0:plot_period_int],
                                                     yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
                                                     label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
-
     yr_eps_20_0_plt_0 = main_plt.twinx()
     yr_eps_20_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_20_0_plt_0.set_yticks([])
     yr_eps_20_0_plt_inst_0 = yr_eps_20_0_plt_0.plot(date_list[0:plot_period_int],
                                                     yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
                                                     label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
-
   elif (i_idx == 1):
     yr_eps_02_5_plt_1 = main_plt.twinx()
     yr_eps_02_5_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
@@ -805,25 +801,47 @@ for i_idx in range(number_of_growth_proj):
     yr_eps_02_5_plt_inst_1 = yr_eps_02_5_plt_1.plot(date_list[0:plot_period_int],
                                                     yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
                                                     label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
-
     yr_eps_05_0_plt_1 = main_plt.twinx()
     yr_eps_05_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_05_0_plt_1.set_yticks([])
     yr_eps_05_0_plt_inst_1 = yr_eps_05_0_plt_1.plot(date_list[0:plot_period_int],
                                                     yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
                                                     label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
-
     yr_eps_10_0_plt_1 = main_plt.twinx()
     yr_eps_10_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_10_0_plt_1.set_yticks([])
     yr_eps_10_0_plt_inst_1 = yr_eps_10_0_plt_1.plot(date_list[0:plot_period_int],
                                                     yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
                                                     label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
-
     yr_eps_20_0_plt_1 = main_plt.twinx()
     yr_eps_20_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_20_0_plt_1.set_yticks([])
     yr_eps_20_0_plt_inst_1 = yr_eps_20_0_plt_1.plot(date_list[0:plot_period_int],
+                                                    yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+  elif (i_idx == 2):
+    yr_eps_02_5_plt_2 = main_plt.twinx()
+    yr_eps_02_5_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_02_5_plt_2.set_yticks([])
+    yr_eps_02_5_plt_inst_2 = yr_eps_02_5_plt_2.plot(date_list[0:plot_period_int],
+                                                    yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+    yr_eps_05_0_plt_2 = main_plt.twinx()
+    yr_eps_05_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_05_0_plt_2.set_yticks([])
+    yr_eps_05_0_plt_inst_2 = yr_eps_05_0_plt_2.plot(date_list[0:plot_period_int],
+                                                    yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+    yr_eps_10_0_plt_2 = main_plt.twinx()
+    yr_eps_10_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_10_0_plt_2.set_yticks([])
+    yr_eps_10_0_plt_inst_2 = yr_eps_10_0_plt_2.plot(date_list[0:plot_period_int],
+                                                    yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                    label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+    yr_eps_20_0_plt_2 = main_plt.twinx()
+    yr_eps_20_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    yr_eps_20_0_plt_2.set_yticks([])
+    yr_eps_20_0_plt_inst_2 = yr_eps_20_0_plt_2.plot(date_list[0:plot_period_int],
                                                     yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
                                                     label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
 
