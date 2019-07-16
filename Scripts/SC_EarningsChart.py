@@ -359,14 +359,12 @@ else :
               "***** Error : Found somewhere in :", i_start_date, i_stop_date)
         sys.exit(1)
 
-
 yr_eps_02_5_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
 yr_eps_05_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
 yr_eps_10_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
 yr_eps_20_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
 
 for i_idx in range(number_of_growth_proj):
-
   start_date_for_yr_eps_growth_proj = start_date_for_yr_eps_growth_proj_list[i_idx]
   stop_date_for_yr_eps_growth_proj =stop_date_for_yr_eps_growth_proj_list[i_idx]
 
@@ -374,7 +372,6 @@ for i_idx in range(number_of_growth_proj):
   growth_proj_start_index = yr_eps_date_list.index(growth_proj_start_match_date)
   growth_proj_stop_match_date = min(yr_eps_date_list, key=lambda d: abs(d - stop_date_for_yr_eps_growth_proj))
   growth_proj_stop_index = yr_eps_date_list.index(growth_proj_stop_match_date)
-
 
   yr_eps_02_5_growth_list = []
   yr_eps_05_0_growth_list = []
@@ -758,6 +755,12 @@ if (pays_dividend == 1):
 # -----------------------------------------------------------------------------
 for i_idx in range(number_of_growth_proj):
 
+  # Search google for :
+  # TypeError: 'AxesSubplot'  object  does  not support  item  assignment
+  # https: // stackoverflow.com / questions / 19953348 / error - when - looping - to - produce - subplots
+  # https: // stackoverflow.com / questions / 45993370 / matplotlib - indexing - error - on - plotting
+  # Probably something needs to be done with subplots are declared ahove...need to know how many subplots will
+  # be created
   # yr_eps_02_5_plt[i_idx,0] = main_plt.twinx()
   # yr_eps_02_5_plt[i_idx,0].set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
   # yr_eps_02_5_plt[i_idx,0].set_yticks([])
@@ -765,7 +768,7 @@ for i_idx in range(number_of_growth_proj):
   #                                                 yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
   #                                                 label='Q 2.5%',color="Cyan", linestyle='-', linewidth=1)
 
-  # Maybe write a function here
+  # This is a hack for now
   if (i_idx == 0):
     yr_eps_02_5_plt_0 = main_plt.twinx()
     yr_eps_02_5_plt_0.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
