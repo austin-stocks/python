@@ -339,24 +339,43 @@ for yr_eps_date in yr_eps_date_list:
 print ("The Expanded Annual EPS List is: ", yr_eps_expanded_list)
 # =============================================================================
 
-number_of_growth_proj = 0
+# =============================================================================
+# Handle the earning Growth projection overlays
+# =============================================================================
+number_of_growth_proj_overlays = 0
 start_date_for_yr_eps_growth_proj_list = []
 stop_date_for_yr_eps_growth_proj_list = []
+# Read the json to get the information for the earnings projection overlays
+# At the end of this - we should have
+# 1. The number of overlays that need to be made in the chart
+# 2. A list that contains the start dates for each of the overlays and
+# 3. A corresponding list that contains the stop dates for each of the overlay
 if (ticker not in config_json.keys()):
   print ("json data for ",ticker, "does not exist in",configuration_json, "file")
 else :
   if ("Earnings_growth_projection_overlay" in config_json[ticker]):
-    number_of_growth_proj = len(config_json[ticker]["Earnings_growth_projection_overlay"])
     tmp_df = pd.DataFrame(config_json[ticker]["Earnings_growth_projection_overlay"])
-    print ("The Original dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
+    number_of_growth_proj_overlays = len(tmp_df.index)
+    print ("The Original dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj_overlays)
+    # This works : Delete the rows that have Ignore in any column
+    tmp_df.drop(tmp_df[(tmp_df.Start_Date == "Ignore") | (tmp_df.Stop_Date == "Ignore")].index, inplace=True)
+    # Conver the start Dates to datetime, add it as a separate column, and then
+    # sort the dataframe based on the datetime column and reindex the dateframe
     tmp_df['Start_Date_datetime'] = pd.to_datetime(tmp_df['Start_Date'], format='%m/%d/%Y')
     tmp_df.sort_values('Start_Date_datetime', inplace=True)
     tmp_df.reset_index(inplace=True, drop=True)
     # tmp_df.set_index('Start_Date', inplace=True)
-    print("The Sorted and reindexed dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
+    number_of_growth_proj_overlays = len(tmp_df.index)
+    print("The Sorted and reindexed dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj_overlays)
+    # Replace the "End" and "Next" in the stop dates with the appropriate value
+    # "End" gets replaced by the end date (which it at index 0) that the historical date list has
+    # "Next" gets replaced by the next row start date (remember that the dataframe is already sorted
+    # ascending with the start dates - so in essence the current row earning projection overlay
+    # will stop at the next start date
     tmp_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
     tmp_df.Stop_Date.replace(to_replace='Next', value=tmp_df.Start_Date.shift(-1), inplace=True)
-    print("The Sorted and reindexed and cleaned dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
+    print("The Sorted and reindexed and cleaned dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj_overlays)
+    # Finally put those start and stop dates as datetimes in their own lists
     start_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
                                               tmp_df.Start_Date.tolist()]
     stop_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
@@ -364,40 +383,12 @@ else :
     print("The Start Date List for EPS Growth Projection is", start_date_for_yr_eps_growth_proj_list)
     # sys.exit(1)
 
-    # todo : You should resolve this - chained assignment...there should be a better way to do it.
-    # https://www.dataquest.io/blog/settingwithcopywarning/
-    # pd.set_option('mode.chained_assignment', None)
-    # for i_idx in sorted(tmp_df.index):
-    #   print("The row", i_idx, "Stop Date is", tmp_df['Stop_Date'][i_idx])
-    #   if (tmp_df['Stop_Date'][i_idx] == "Next"):
-    #     tmp_df['Stop_Date'][i_idx] = tmp_df['Start_Date'][i_idx + 1]
-    # pd.set_option('mode.chained_assignment', 'warn')
-    # print("\n\nThe MODIFIED dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
-    # start_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
-    #                                           tmp_df.Start_Date.tolist()]
-    # stop_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
-    #                                          tmp_df.Stop_Date.tolist()]
-    # print("The Start Date List for EPS Growth Projection is", start_date_for_yr_eps_growth_proj_list)
-    # This works but did not have the Next and Last Handling
-    # for i in range(number_of_growth_proj):
-    #   i_start_date = config_json[ticker]["Earnings_growth_projection_overlay"][i]["Start_Date"]
-    #   i_stop_date = config_json[ticker]["Earnings_growth_projection_overlay"][i]["Stop_Date"]
-    #   try:
-    #     start_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
-    #     stop_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
-    #   except (ValueError):
-    #     print("\n***** Error : Either the Start/Stop Dates for Growth projection lines are not in proper format for in Configuration json file.\n"
-    #           "***** Error : The Start_Date should be in the format %m/%d/%Y and the Stop_Date should be in the format: %m/%d/%Y or Next or Last\n"
-    #           "***** Error : Found somewhere in :", i_start_date, i_stop_date)
-    #     sys.exit(1)
+yr_eps_02_5_growth_expanded_list =  [[] for _ in range(number_of_growth_proj_overlays)]
+yr_eps_05_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj_overlays)]
+yr_eps_10_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj_overlays)]
+yr_eps_20_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj_overlays)]
 
-
-yr_eps_02_5_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
-yr_eps_05_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
-yr_eps_10_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
-yr_eps_20_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
-
-for i_idx in range(number_of_growth_proj):
+for i_idx in range(number_of_growth_proj_overlays):
   start_date_for_yr_eps_growth_proj = start_date_for_yr_eps_growth_proj_list[i_idx]
   stop_date_for_yr_eps_growth_proj =stop_date_for_yr_eps_growth_proj_list[i_idx]
 
@@ -463,6 +454,7 @@ for i_idx in range(number_of_growth_proj):
   yr_eps_05_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_05_0_growth_expanded_list_unsmooth)
   yr_eps_10_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_10_0_growth_expanded_list_unsmooth)
   yr_eps_20_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_20_0_growth_expanded_list_unsmooth)
+# =============================================================================
 
 
 
@@ -786,7 +778,7 @@ if (pays_dividend == 1):
 # -----------------------------------------------------------------------------
 # Price channels
 # -----------------------------------------------------------------------------
-for i_idx in range(number_of_growth_proj):
+for i_idx in range(number_of_growth_proj_overlays):
 
   # Search google for :
   # TypeError: 'AxesSubplot'  object  does  not support  item  assignment
