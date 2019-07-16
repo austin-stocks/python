@@ -354,22 +354,30 @@ else :
     tmp_df.reset_index(inplace=True, drop=True)
     # tmp_df.set_index('Start_Date', inplace=True)
     print("The Sorted and reindexed dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
-    # todo : You should resolve this - chained assignment...there should be a better way to do it.
-    # https://www.dataquest.io/blog/settingwithcopywarning/
-    pd.set_option('mode.chained_assignment', None)
-    for i_idx in sorted(tmp_df.index):
-      print("The row", i_idx, "Stop Date is", tmp_df['Stop_Date'][i_idx])
-      if (tmp_df['Stop_Date'][i_idx] == "Next"):
-        tmp_df['Stop_Date'][i_idx] = tmp_df['Start_Date'][i_idx + 1]
-      elif (tmp_df['Stop_Date'][i_idx] == "Last"):
-        tmp_df['Stop_Date'][i_idx] = date_str_list[0]
-    pd.set_option('mode.chained_assignment', 'warn')
-    print("\n\nThe MODIFIED dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
+    tmp_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
+    tmp_df.Stop_Date.replace(to_replace='Next', value=tmp_df.Start_Date.shift(-1), inplace=True)
+    print("The Sorted and reindexed and cleaned dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
     start_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
                                               tmp_df.Start_Date.tolist()]
     stop_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
                                              tmp_df.Stop_Date.tolist()]
     print("The Start Date List for EPS Growth Projection is", start_date_for_yr_eps_growth_proj_list)
+    # sys.exit(1)
+
+    # todo : You should resolve this - chained assignment...there should be a better way to do it.
+    # https://www.dataquest.io/blog/settingwithcopywarning/
+    # pd.set_option('mode.chained_assignment', None)
+    # for i_idx in sorted(tmp_df.index):
+    #   print("The row", i_idx, "Stop Date is", tmp_df['Stop_Date'][i_idx])
+    #   if (tmp_df['Stop_Date'][i_idx] == "Next"):
+    #     tmp_df['Stop_Date'][i_idx] = tmp_df['Start_Date'][i_idx + 1]
+    # pd.set_option('mode.chained_assignment', 'warn')
+    # print("\n\nThe MODIFIED dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
+    # start_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
+    #                                           tmp_df.Start_Date.tolist()]
+    # stop_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
+    #                                          tmp_df.Stop_Date.tolist()]
+    # print("The Start Date List for EPS Growth Projection is", start_date_for_yr_eps_growth_proj_list)
     # This works but did not have the Next and Last Handling
     # for i in range(number_of_growth_proj):
     #   i_start_date = config_json[ticker]["Earnings_growth_projection_overlay"][i]["Start_Date"]
