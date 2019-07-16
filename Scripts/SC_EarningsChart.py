@@ -253,7 +253,7 @@ print ("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(
 
 # I am not sure why I wanted this but seems like a good thing to be able to make
 # a dataframe from lists. This is not used anywhere in the code ahead...so commented
-# out for now
+# out for now7
 # yr_eps_list_tmp = yr_eps_list
 # yr_eps_list_tmp.append('Not_calculated')
 # yr_eps_list_tmp.append('Not_calculated')
@@ -347,17 +347,42 @@ if (ticker not in config_json.keys()):
 else :
   if ("Earnings_growth_projection_overlay" in config_json[ticker]):
     number_of_growth_proj = len(config_json[ticker]["Earnings_growth_projection_overlay"])
-    for i in range(number_of_growth_proj):
-      i_start_date = config_json[ticker]["Earnings_growth_projection_overlay"][i]["Start_Date"]
-      i_stop_date = config_json[ticker]["Earnings_growth_projection_overlay"][i]["Stop_Date"]
-      try:
-        start_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
-        stop_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
-      except (ValueError):
-        print("\n***** Error : Either the Start/Stop Dates for Growth projection lines are not in proper format for in Configuration json file.\n"
-              "***** Error : The Start_Date should be in the format %m/%d/%Y and the Stop_Date should be in the format: %m/%d/%Y or Next or Last\n"
-              "***** Error : Found somewhere in :", i_start_date, i_stop_date)
-        sys.exit(1)
+    tmp_df = pd.DataFrame(config_json[ticker]["Earnings_growth_projection_overlay"])
+    print ("The Original dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
+    tmp_df['Start_Date_datetime'] = pd.to_datetime(tmp_df['Start_Date'], format='%m/%d/%Y')
+    tmp_df.sort_values('Start_Date_datetime', inplace=True)
+    tmp_df.reset_index(inplace=True, drop=True)
+    # tmp_df.set_index('Start_Date', inplace=True)
+    print("The Sorted and reindexed dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
+    # todo : You should resolve this - chained assignment...there should be a better way to do it.
+    # https://www.dataquest.io/blog/settingwithcopywarning/
+    pd.set_option('mode.chained_assignment', None)
+    for i_idx in sorted(tmp_df.index):
+      print("The row", i_idx, "Stop Date is", tmp_df['Stop_Date'][i_idx])
+      if (tmp_df['Stop_Date'][i_idx] == "Next"):
+        tmp_df['Stop_Date'][i_idx] = tmp_df['Start_Date'][i_idx + 1]
+      elif (tmp_df['Stop_Date'][i_idx] == "Last"):
+        tmp_df['Stop_Date'][i_idx] = date_str_list[0]
+    pd.set_option('mode.chained_assignment', 'warn')
+    print("\n\nThe MODIFIED dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is", number_of_growth_proj)
+    start_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
+                                              tmp_df.Start_Date.tolist()]
+    stop_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
+                                             tmp_df.Stop_Date.tolist()]
+    print("The Start Date List for EPS Growth Projection is", start_date_for_yr_eps_growth_proj_list)
+    # This works but did not have the Next and Last Handling
+    # for i in range(number_of_growth_proj):
+    #   i_start_date = config_json[ticker]["Earnings_growth_projection_overlay"][i]["Start_Date"]
+    #   i_stop_date = config_json[ticker]["Earnings_growth_projection_overlay"][i]["Stop_Date"]
+    #   try:
+    #     start_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+    #     stop_date_for_yr_eps_growth_proj_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+    #   except (ValueError):
+    #     print("\n***** Error : Either the Start/Stop Dates for Growth projection lines are not in proper format for in Configuration json file.\n"
+    #           "***** Error : The Start_Date should be in the format %m/%d/%Y and the Stop_Date should be in the format: %m/%d/%Y or Next or Last\n"
+    #           "***** Error : Found somewhere in :", i_start_date, i_stop_date)
+    #     sys.exit(1)
+
 
 yr_eps_02_5_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
 yr_eps_05_0_growth_expanded_list =  [[] for _ in range(number_of_growth_proj)]
@@ -674,10 +699,10 @@ annual_past_eps_plt = main_plt.twinx()
 annual_projected_eps_plt = main_plt.twinx()
 upper_channel_plt = main_plt.twinx()
 lower_channel_plt = main_plt.twinx()
-yr_eps_02_5_plt = main_plt.twinx()
-yr_eps_05_0_plt = main_plt.twinx()
-yr_eps_10_0_plt = main_plt.twinx()
-yr_eps_20_0_plt = main_plt.twinx()
+# yr_eps_02_5_plt = main_plt.twinx()
+# yr_eps_05_0_plt = main_plt.twinx()
+# yr_eps_10_0_plt = main_plt.twinx()
+# yr_eps_20_0_plt = main_plt.twinx()
 # yr_eps_02_5_plt[0] = main_plt.twinx()
 
 if (pays_dividend == 1):

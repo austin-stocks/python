@@ -35,9 +35,9 @@
   },
   "WIRE" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "06/30/2017", "Stop_Date" :   "06/30/2018"},
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "Last"},
        {"Start_Date" : "06/30/2015", "Stop_Date" :   "06/30/2016"},
-       {"Start_Date" : "03/30/2012", "Stop_Date" :   "06/30/2014"}
+       {"Start_Date" : "12/30/2012", "Stop_Date" :   "Next"}
     ],
     "Upper_Price_Channel_Adj" : [
       {"Start_Date" : "10/17/2018", "Stop_Date" :   "11/27/2018", "Adj_Amount" : ".2"},
