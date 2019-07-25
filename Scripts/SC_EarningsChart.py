@@ -209,7 +209,6 @@ print("The Earnings list for qtr_eps is ", qtr_eps_list)
 if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
   print("ERROR : There are some undefined EPS numbers in the Earnings file, Please correct and rerun")
   exit()
-# ============================================================================
 
 # So - if we are successful till this point - we have made sure that
 # 1. There are no nan in the date list
@@ -217,11 +216,22 @@ if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
 # 3. Number of elements in the qtr_eps_date_list are equal to the number of
 #    element in the qtr_eps_list
 # =============================================================================
-# Todo : Reading and plotting the index should be inside a if statement
+
+# =============================================================================
+# Todo : Reading and plotting the index should be inside a if statement and should
+# be in some global file
 # Read the spy or dji or ixic file for comparison
-spy_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^GSPC_historical.csv")
-dji_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^DJI_historical.csv")
-nasdaq_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^IXIC_historical.csv")
+plot_spy = 0
+plot_dji = 1
+plot_nasdaq = 1
+if (plot_spy):
+  spy_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^GSPC_historical.csv")
+if (plot_dji):
+  dji_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^DJI_historical.csv")
+if (plot_nasdaq):
+  nasdaq_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^IXIC_historical.csv")
+# =============================================================================
+
 
 # =============================================================================
 # Read the Historical file for the ticker
@@ -508,17 +518,19 @@ else:
 # ---------------------------------------------------------
 
 
-# Get the index factor
-# Get the spy for the plot_period_int and then normalize it
-# to stock price from that date onwards
-spy_adj_close_list = spy_df.Adj_Close.tolist()
-# find the length of adk_close_list
-if (len(ticker_adj_close_list) < plot_period_int):
-  spy_adjust_factor = spy_adj_close_list[len(ticker_adj_close_list)] / ticker_adj_close_list[len(ticker_adj_close_list)]
-else:
-  spy_adjust_factor = spy_adj_close_list[plot_period_int] / ticker_adj_close_list[plot_period_int]
+# Get the index factor to pin/anchor/align the index and the price of the stock
+# to the same point at the start of the plot
 
-spy_adj_close_list[:] = [x / spy_adjust_factor for x in spy_adj_close_list]
+if (plot_spy):
+  # Get the spy for the plot_period_int and then normalize it to stock price from
+  # that date onwards
+  spy_adj_close_list = spy_df.Adj_Close.tolist()
+  # find the length of adj_close_list
+  if (len(ticker_adj_close_list) < plot_period_int):
+    spy_adjust_factor = spy_adj_close_list[len(ticker_adj_close_list)] / ticker_adj_close_list[len(ticker_adj_close_list)]
+  else:
+    spy_adjust_factor = spy_adj_close_list[plot_period_int] / ticker_adj_close_list[plot_period_int]
+  spy_adj_close_list[:] = [x / spy_adjust_factor for x in spy_adj_close_list]
 
 # ---------------------------------------------------------
 # Get the upper and lower guide lines separation from the annual EPS
@@ -719,7 +731,8 @@ main_plt.set_title("Stock Chart for " + ticker)
 
 # Various plots that share the same x axis(date)
 price_plt = main_plt.twinx()
-spy_plt = main_plt.twinx()
+if (plot_spy):
+  spy_plt = main_plt.twinx()
 annual_past_eps_plt = main_plt.twinx()
 annual_projected_eps_plt = main_plt.twinx()
 upper_channel_plt = main_plt.twinx()
@@ -761,12 +774,12 @@ price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_l
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# Historical Price Plot
+# Index Price Plot
 # -----------------------------------------------------------------------------
-# spy_plt.set_ylabel('S&P', color='k')
-spy_plt.set_ylim(price_lim_lower, price_lim_upper)
-spy_plt_inst = spy_plt.plot(date_list[0:plot_period_int], spy_adj_close_list[0:plot_period_int], label='S&P',
-                            color="green", linestyle='-')
+if (plot_spy):
+  spy_plt.set_ylim(price_lim_lower, price_lim_upper)
+  spy_plt_inst = spy_plt.plot(date_list[0:plot_period_int], spy_adj_close_list[0:plot_period_int], label='S&P',
+                              color="green", linestyle='-')
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -950,12 +963,13 @@ lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
 # -----------------------------------------------------------------------------
 # Collect the labels for the subplots and then create the legends
 # -----------------------------------------------------------------------------
-lns = price_plt_inst + main_plt_inst + annual_past_eps_plt_inst + lower_channel_plt_inst +\
-      dividend_plt_inst + spy_plt_inst
+lns = price_plt_inst + main_plt_inst + annual_past_eps_plt_inst + lower_channel_plt_inst + dividend_plt_inst
 print ("The type is ", type(lns))
 if (number_of_growth_proj_overlays > 0):
   lns = lns + yr_eps_02_5_plt_inst_0 + yr_eps_05_0_plt_inst_0 \
             + yr_eps_10_0_plt_inst_0 + yr_eps_20_0_plt_inst_0
+if (plot_spy):
+  lns = lns + spy_plt_inst
 
 # sys.exit(1)
 labs = [l.get_label() for l in lns]
