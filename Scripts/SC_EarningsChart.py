@@ -265,6 +265,7 @@ print("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(y
 # yr_eps_list_tmp.append('Not_calculated')
 # yr_eps_list_tmp.append('Not_calculated')
 # yr_eps_list_tmp.append('Not_calculated')
+# This is good. This works
 # earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_eps_list_tmp]),
 #                                columns=['Date', 'Q EPS', 'Annual EPS'])
 # print ("The Earnings DF is ", earnings_df)
@@ -353,26 +354,27 @@ print("The Expanded Annual EPS List is: ", yr_eps_expanded_list)
 # =============================================================================
 # Handle the earning Growth projection overlays
 # =============================================================================
-number_of_growth_proj_overlays = 0
-start_date_for_yr_eps_growth_proj_list = []
-stop_date_for_yr_eps_growth_proj_list = []
 # Read the json to get the information for the earnings projection overlays
 # At the end of this - we should have
 # 1. The number of overlays that need to be made in the chart
 # 2. A list that contains the start dates for each of the overlays and
 # 3. A corresponding list that contains the stop dates for each of the overlay
+
+number_of_growth_proj_overlays = 0
+start_date_for_yr_eps_growth_proj_list = []
+stop_date_for_yr_eps_growth_proj_list = []
 if (ticker not in config_json.keys()):
   print("json data for ", ticker, "does not exist in", configuration_json, "file")
 else:
   if ("Earnings_growth_projection_overlay" in config_json[ticker]):
     tmp_df = pd.DataFrame(config_json[ticker]["Earnings_growth_projection_overlay"])
     number_of_growth_proj_overlays = len(tmp_df.index)
-    print("The Original dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is",
+    print("The Sorted and reindexed dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is",
           number_of_growth_proj_overlays)
     # This works : Delete the rows that have Ignore in any column
     tmp_df.drop(tmp_df[(tmp_df.Start_Date == "Ignore") | (tmp_df.Stop_Date == "Ignore")].index, inplace=True)
     # Conver the start Dates to datetime, add it as a separate column, and then
-    # sort the dataframe based on the datetime column and reindex the dateframe
+    # sort the dataframe based on that datetime column and reindex the dateframe
     tmp_df['Start_Date_datetime'] = pd.to_datetime(tmp_df['Start_Date'], format='%m/%d/%Y')
     tmp_df.sort_values('Start_Date_datetime', inplace=True)
     tmp_df.reset_index(inplace=True, drop=True)
@@ -382,10 +384,12 @@ else:
           number_of_growth_proj_overlays)
     # Replace the "End" and "Next" in the stop dates with the appropriate value
     # "End" gets replaced by the end date (which it at index 0) that the historical date list has
+    # (So the overlay will extent all the way to the right of the chart)
     # "Next" gets replaced by the next row start date (remember that the dataframe is already sorted
     # ascending with the start dates - so in essence the current row earning projection overlay
     # will stop at the next start date
     tmp_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
+    # This works : Replaces the stop date of the current row with the value of start date from the next row
     tmp_df.Stop_Date.replace(to_replace='Next', value=tmp_df.Start_Date.shift(-1), inplace=True)
     print("The Sorted and reindexed and cleaned dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is",
           number_of_growth_proj_overlays)
@@ -397,12 +401,15 @@ else:
     # print("The Start Date List for EPS Growth Projection is", start_date_for_yr_eps_growth_proj_list)
     # sys.exit(1)
 
+# Create a list of lists equal to the number of rows of the dataframe - which is the same as
+# the number of overlays that are specified in the json file)
 yr_eps_02_5_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
 yr_eps_05_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
 yr_eps_10_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
 yr_eps_20_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
 
 for i_idx, row in tmp_df.iterrows():
+  # This works : Get the Start_Date and Stop_Date columns in a list
   start_date_for_yr_eps_growth_proj = dt.datetime.strptime(row['Start_Date'], '%m/%d/%Y').date()
   stop_date_for_yr_eps_growth_proj = dt.datetime.strptime(row['Stop_Date'], '%m/%d/%Y').date()
 
@@ -425,6 +432,7 @@ for i_idx, row in tmp_df.iterrows():
     yr_eps_20_0_growth_list.append(float('nan'))
 
   # The first entry for the list comes from the yr_eps_list that matched the start date
+  # because the overlay will start from the same black/while diamond
   yr_eps_02_5_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
   yr_eps_05_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
   yr_eps_10_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
@@ -466,6 +474,7 @@ for i_idx, row in tmp_df.iterrows():
     yr_eps_10_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_10_0_growth_list[curr_index]
     yr_eps_20_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_20_0_growth_list[curr_index]
 
+  # Populate the list of lists
   yr_eps_02_5_growth_expanded_list[i_idx] = smooth_list(yr_eps_02_5_growth_expanded_list_unsmooth)
   yr_eps_05_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_05_0_growth_expanded_list_unsmooth)
   yr_eps_10_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_10_0_growth_expanded_list_unsmooth)
@@ -833,19 +842,19 @@ for i_idx in range(number_of_growth_proj_overlays):
     yr_eps_05_0_plt_0.set_yticks([])
     yr_eps_05_0_plt_inst_0 = yr_eps_05_0_plt_0.plot(date_list[0:plot_period_int],
                                                     yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+                                                    label='Q 5.0%', color="Yellow", linestyle='-', linewidth=1)
     yr_eps_10_0_plt_0 = main_plt.twinx()
     yr_eps_10_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_10_0_plt_0.set_yticks([])
     yr_eps_10_0_plt_inst_0 = yr_eps_10_0_plt_0.plot(date_list[0:plot_period_int],
                                                     yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                    label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+                                                    label='Q 10%', color="Cyan", linestyle='-', linewidth=1)
     yr_eps_20_0_plt_0 = main_plt.twinx()
     yr_eps_20_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_20_0_plt_0.set_yticks([])
     yr_eps_20_0_plt_inst_0 = yr_eps_20_0_plt_0.plot(date_list[0:plot_period_int],
                                                     yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+                                                    label='Q 20%', color="Yellow", linestyle='-', linewidth=1)
   elif (i_idx == 1):
     yr_eps_02_5_plt_1 = main_plt.twinx()
     yr_eps_02_5_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
@@ -858,19 +867,19 @@ for i_idx in range(number_of_growth_proj_overlays):
     yr_eps_05_0_plt_1.set_yticks([])
     yr_eps_05_0_plt_inst_1 = yr_eps_05_0_plt_1.plot(date_list[0:plot_period_int],
                                                     yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+                                                    label='Q 5.0%', color="Yellow", linestyle='-', linewidth=1)
     yr_eps_10_0_plt_1 = main_plt.twinx()
     yr_eps_10_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_10_0_plt_1.set_yticks([])
     yr_eps_10_0_plt_inst_1 = yr_eps_10_0_plt_1.plot(date_list[0:plot_period_int],
                                                     yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                    label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+                                                    label='Q 10%', color="Cyan", linestyle='-', linewidth=1)
     yr_eps_20_0_plt_1 = main_plt.twinx()
     yr_eps_20_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_20_0_plt_1.set_yticks([])
     yr_eps_20_0_plt_inst_1 = yr_eps_20_0_plt_1.plot(date_list[0:plot_period_int],
                                                     yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+                                                    label='Q 20%', color="Yellow", linestyle='-', linewidth=1)
   elif (i_idx == 2):
     yr_eps_02_5_plt_2 = main_plt.twinx()
     yr_eps_02_5_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
@@ -883,19 +892,19 @@ for i_idx in range(number_of_growth_proj_overlays):
     yr_eps_05_0_plt_2.set_yticks([])
     yr_eps_05_0_plt_inst_2 = yr_eps_05_0_plt_2.plot(date_list[0:plot_period_int],
                                                     yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+                                                    label='Q 5.0%', color="Yellow", linestyle='-', linewidth=1)
     yr_eps_10_0_plt_2 = main_plt.twinx()
     yr_eps_10_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_10_0_plt_2.set_yticks([])
     yr_eps_10_0_plt_inst_2 = yr_eps_10_0_plt_2.plot(date_list[0:plot_period_int],
                                                     yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                    label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+                                                    label='Q 10%', color="Cyan", linestyle='-', linewidth=1)
     yr_eps_20_0_plt_2 = main_plt.twinx()
     yr_eps_20_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     yr_eps_20_0_plt_2.set_yticks([])
     yr_eps_20_0_plt_inst_2 = yr_eps_20_0_plt_2.plot(date_list[0:plot_period_int],
                                                     yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                    label='Q 2.5%', color="Yellow", linestyle='-', linewidth=1)
+                                                    label='Q 20%', color="Yellow", linestyle='-', linewidth=1)
 
 # yr_eps_02_5_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
 # yr_eps_02_5_plt.set_yticks([])
@@ -922,7 +931,7 @@ for i_idx in range(number_of_growth_proj_overlays):
 upper_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
 upper_channel_plt.set_yticks([])
 upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
-                                                upper_price_channel_list[0:plot_period_int], label='top', color="blue",
+                                                upper_price_channel_list[0:plot_period_int], label='Channel', color="blue",
                                                 linestyle='-')
 # -----------------------------------------------------------------------------
 
@@ -934,26 +943,26 @@ upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
 lower_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
 lower_channel_plt.set_yticks([])
 lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
-                                                lower_price_channel_list[0:plot_period_int], label='bot', color="blue",
+                                                lower_price_channel_list[0:plot_period_int], label='Price Channel', color="blue",
                                                 linestyle='-')
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
 # Collect the labels for the subplots and then create the legends
 # -----------------------------------------------------------------------------
-# lns = main_plt_inst + \
-#       yr_eps_20_0_plt_inst + yr_eps_10_0_plt_inst + \
-#       yr_eps_05_0_plt_inst + yr_eps_02_5_plt_inst + \
-#       annual_past_eps_plt_inst + upper_channel_plt_inst + \
-#       lower_channel_plt_inst + price_plt_inst + spy_plt_inst
-lns = main_plt_inst + \
-      annual_past_eps_plt_inst + upper_channel_plt_inst + \
-      lower_channel_plt_inst + price_plt_inst + spy_plt_inst
+lns = price_plt_inst + main_plt_inst + annual_past_eps_plt_inst + lower_channel_plt_inst +\
+      dividend_plt_inst + spy_plt_inst
+print ("The type is ", type(lns))
+if (number_of_growth_proj_overlays > 0):
+  lns = lns + yr_eps_02_5_plt_inst_0 + yr_eps_05_0_plt_inst_0 \
+            + yr_eps_10_0_plt_inst_0 + yr_eps_20_0_plt_inst_0
+
+# sys.exit(1)
 labs = [l.get_label() for l in lns]
 # This works - puts the legend in upper-left
 # main_plt.legend(lns, labs, loc="upper left", fontsize = 'x-small')
 main_plt.legend(lns, labs, bbox_to_anchor=(1.005, -0.13), loc="lower left", borderaxespad=2, fontsize='x-small')
-# Thw works perfectly well as well
+# This works perfectly well as well
 # main_plt.legend(lns, labs,bbox_to_anchor=(-.10,-0.13), loc="lower left", borderaxespad=2,fontsize = 'x-small')
 
 # This works if we don't have defined the inst of the plots. In this case we
