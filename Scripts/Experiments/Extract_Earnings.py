@@ -1,12 +1,13 @@
 
 
 import csv
-import datetime
 import openpyxl
 import os
 import xlrd
-
+import sys
+import time
 import pandas as pd
+import datetime as dt
 from yahoofinancials import YahooFinancials
 from termcolor import colored, cprint
 
@@ -28,7 +29,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
-  print("CGetting Earnings for ", ticker)
+  print("Getting Earnings for ", ticker)
 
   # todo : Why does this not work here?
   # earnings_df = pd.read_excel(dir_path + "\\" + "Stock_Files" + "\\" + ticker + '.xlsm', sheet_name="historical")
@@ -48,10 +49,17 @@ for ticker_raw in ticker_list:
   print ("New dataframe :", step1_df)
 
   step1_df.dropna(how='all',inplace=True)
-  # Drop ONLY the rows now that do not have Date
-  step1_df_tmp = step1_df[pd.notnull(step1_df['projection'])]
-  step1_df = step1_df_tmp
-  print ("New dataframe :", step1_df)
+  step1_df.dropna(subset=['Date'],inplace=True)
+  step1_df.to_csv('debug1.csv')
+
+
+
+  # Drop ONLY the rows now that do not have any data in projection tab
+  # step1_df_tmp = step1_df[pd.notnull(step1_df['projection'])]
+  step1_df.dropna(subset=['Q EPS', 'projection'], how='all', inplace=True)
+
+  step1_df.to_csv('debug.csv')
+  print ("New dataframe after dropping all the null from projection column:", step1_df)
 
   step1_date_list = step1_df['Date'].tolist()
   step1_eps_list = step1_df['Q EPS'].tolist()
@@ -60,7 +68,7 @@ for ticker_raw in ticker_list:
   csvFile=open('Extracted_Earnings' + "\\" + ticker + "_earnings.csv", 'w+', newline='')
   writer = csv.writer(csvFile)
   # Put the Header Row in the csv
-  writer.writerow(["Date", "Q_EPS"])
+  writer.writerow(["Date", "Q_EPS_Diluted"])
 
   # todo : format the date (should be quick) before writing it in the csv (earnings) file
   tmp_index = 0
@@ -76,7 +84,7 @@ for ticker_raw in ticker_list:
 
       csv_line = []
       print ("Found 1st Instance")
-      csv_line.insert(0, x)
+      csv_line.insert(0, x.date())
       csv_line.insert(1, step1_eps)
       csv_line.insert(2, step1_projected_eps)
       insert_index = 3
@@ -86,3 +94,4 @@ for ticker_raw in ticker_list:
     tmp_index = tmp_index+1
 
 csvFile.close()
+
