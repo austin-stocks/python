@@ -99,7 +99,7 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "WIRE"
+ticker = "AMZN"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -110,7 +110,7 @@ debug_fh = open(logfile, "w+")
 # =============================================================================
 qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv",delimiter=",")
 
-# Need to make extracted earnings work - say for AMZN or change the extract earnings macro 
+# Need to make extracted earnings work - say for AMZN or change the extract earnings macro
 # qtr_eps_df = pd.DataFrame([line.strip().split(',') for line in open(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv", 'r')])
 # print ("DataFrame is", qtr_eps_df.head())
 # qtr_eps_df.columns = qtr_eps_df.iloc[0]
@@ -239,7 +239,7 @@ if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
 # Todo : Reading and plotting the index should be inside a if statement and should
 # be in some global file
 # Read the spy or dji or ixic file for comparison
-plot_spy = 0
+plot_spy = 1
 plot_dji = 1
 plot_nasdaq = 1
 if (plot_spy):
@@ -429,84 +429,85 @@ else:
     # print("The Start Date List for EPS Growth Projection is", start_date_for_yr_eps_growth_proj_list)
     # sys.exit(1)
 
-# Create a list of lists equal to the number of rows of the dataframe - which is the same as
-# the number of overlays that are specified in the json file)
-yr_eps_02_5_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
-yr_eps_05_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
-yr_eps_10_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
-yr_eps_20_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
+if (number_of_growth_proj_overlays > 0):
+  # Create a list of lists equal to the number of rows of the dataframe - which is the same as
+  # the number of overlays that are specified in the json file)
+  yr_eps_02_5_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
+  yr_eps_05_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
+  yr_eps_10_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
+  yr_eps_20_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
 
-for i_idx, row in tmp_df.iterrows():
-  # This works : Get the Start_Date and Stop_Date columns in a list
-  start_date_for_yr_eps_growth_proj = dt.datetime.strptime(row['Start_Date'], '%m/%d/%Y').date()
-  stop_date_for_yr_eps_growth_proj = dt.datetime.strptime(row['Stop_Date'], '%m/%d/%Y').date()
+  for i_idx, row in tmp_df.iterrows():
+    # This works : Get the Start_Date and Stop_Date columns in a list
+    start_date_for_yr_eps_growth_proj = dt.datetime.strptime(row['Start_Date'], '%m/%d/%Y').date()
+    stop_date_for_yr_eps_growth_proj = dt.datetime.strptime(row['Stop_Date'], '%m/%d/%Y').date()
 
-  # Match the start and stop dates with the closest dates from yr_eps_date_list to
-  # get the index of the matching dates.
-  growth_proj_start_match_date = min(yr_eps_date_list, key=lambda d: abs(d - start_date_for_yr_eps_growth_proj))
-  growth_proj_start_index = yr_eps_date_list.index(growth_proj_start_match_date)
-  growth_proj_stop_match_date = min(yr_eps_date_list, key=lambda d: abs(d - stop_date_for_yr_eps_growth_proj))
-  growth_proj_stop_index = yr_eps_date_list.index(growth_proj_stop_match_date)
+    # Match the start and stop dates with the closest dates from yr_eps_date_list to
+    # get the index of the matching dates.
+    growth_proj_start_match_date = min(yr_eps_date_list, key=lambda d: abs(d - start_date_for_yr_eps_growth_proj))
+    growth_proj_start_index = yr_eps_date_list.index(growth_proj_start_match_date)
+    growth_proj_stop_match_date = min(yr_eps_date_list, key=lambda d: abs(d - stop_date_for_yr_eps_growth_proj))
+    growth_proj_stop_index = yr_eps_date_list.index(growth_proj_stop_match_date)
 
-  yr_eps_02_5_growth_list = []
-  yr_eps_05_0_growth_list = []
-  yr_eps_10_0_growth_list = []
-  yr_eps_20_0_growth_list = []
-  # Create the growth list for same number of entries as yr_eps_date_list
-  for i in range(len(yr_eps_date_list)):
-    yr_eps_02_5_growth_list.append(float('nan'))
-    yr_eps_05_0_growth_list.append(float('nan'))
-    yr_eps_10_0_growth_list.append(float('nan'))
-    yr_eps_20_0_growth_list.append(float('nan'))
+    yr_eps_02_5_growth_list = []
+    yr_eps_05_0_growth_list = []
+    yr_eps_10_0_growth_list = []
+    yr_eps_20_0_growth_list = []
+    # Create the growth list for same number of entries as yr_eps_date_list
+    for i in range(len(yr_eps_date_list)):
+      yr_eps_02_5_growth_list.append(float('nan'))
+      yr_eps_05_0_growth_list.append(float('nan'))
+      yr_eps_10_0_growth_list.append(float('nan'))
+      yr_eps_20_0_growth_list.append(float('nan'))
 
-  # The first entry for the list comes from the yr_eps_list that matched the start date
-  # because the overlay will start from the same black/while diamond
-  yr_eps_02_5_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
-  yr_eps_05_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
-  yr_eps_10_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
-  yr_eps_20_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+    # The first entry for the list comes from the yr_eps_list that matched the start date
+    # because the overlay will start from the same black/while diamond
+    yr_eps_02_5_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+    yr_eps_05_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+    yr_eps_10_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+    yr_eps_20_0_growth_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
 
-  # Then grow the growth list from the start date to the stop date by multiplying
-  # with the grwoth factor
-  for i in reversed(range(growth_proj_stop_index, growth_proj_start_index)):
-    print("Updating for index", i)
-    yr_eps_02_5_growth_list[i] = 1.025 * float(yr_eps_02_5_growth_list[i + 1])
-    yr_eps_05_0_growth_list[i] = 1.05 * float(yr_eps_05_0_growth_list[i + 1])
-    yr_eps_10_0_growth_list[i] = 1.10 * float(yr_eps_10_0_growth_list[i + 1])
-    yr_eps_20_0_growth_list[i] = 1.20 * float(yr_eps_20_0_growth_list[i + 1])
+    # Then grow the growth list from the start date to the stop date by multiplying
+    # with the grwoth factor
+    for i in reversed(range(growth_proj_stop_index, growth_proj_start_index)):
+      print("Updating for index", i)
+      yr_eps_02_5_growth_list[i] = 1.025 * float(yr_eps_02_5_growth_list[i + 1])
+      yr_eps_05_0_growth_list[i] = 1.05 * float(yr_eps_05_0_growth_list[i + 1])
+      yr_eps_10_0_growth_list[i] = 1.10 * float(yr_eps_10_0_growth_list[i + 1])
+      yr_eps_20_0_growth_list[i] = 1.20 * float(yr_eps_20_0_growth_list[i + 1])
 
-  print("The Annual eps list", yr_eps_list)
-  print("The 2.5% growth rate eps list", yr_eps_02_5_growth_list)
-  print("The   5% growth rate eps list", yr_eps_05_0_growth_list)
-  print("The  10% growth rate eps list", yr_eps_10_0_growth_list)
-  print("The  20% growth rate eps list", yr_eps_20_0_growth_list)
+    print("The Annual eps list", yr_eps_list)
+    print("The 2.5% growth rate eps list", yr_eps_02_5_growth_list)
+    print("The   5% growth rate eps list", yr_eps_05_0_growth_list)
+    print("The  10% growth rate eps list", yr_eps_10_0_growth_list)
+    print("The  20% growth rate eps list", yr_eps_20_0_growth_list)
 
-  # Now expand the list to all the dates (from historical date list)
-  yr_eps_02_5_growth_expanded_list_unsmooth = []
-  yr_eps_05_0_growth_expanded_list_unsmooth = []
-  yr_eps_10_0_growth_expanded_list_unsmooth = []
-  yr_eps_20_0_growth_expanded_list_unsmooth = []
-  for i in range(len(date_list)):
-    yr_eps_02_5_growth_expanded_list_unsmooth.append(float('nan'))
-    yr_eps_05_0_growth_expanded_list_unsmooth.append(float('nan'))
-    yr_eps_10_0_growth_expanded_list_unsmooth.append(float('nan'))
-    yr_eps_20_0_growth_expanded_list_unsmooth.append(float('nan'))
+    # Now expand the list to all the dates (from historical date list)
+    yr_eps_02_5_growth_expanded_list_unsmooth = []
+    yr_eps_05_0_growth_expanded_list_unsmooth = []
+    yr_eps_10_0_growth_expanded_list_unsmooth = []
+    yr_eps_20_0_growth_expanded_list_unsmooth = []
+    for i in range(len(date_list)):
+      yr_eps_02_5_growth_expanded_list_unsmooth.append(float('nan'))
+      yr_eps_05_0_growth_expanded_list_unsmooth.append(float('nan'))
+      yr_eps_10_0_growth_expanded_list_unsmooth.append(float('nan'))
+      yr_eps_20_0_growth_expanded_list_unsmooth.append(float('nan'))
 
-  for yr_eps_date in yr_eps_date_list:
-    curr_index = yr_eps_date_list.index(yr_eps_date)
-    print("Looking for ", yr_eps_date)
-    match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
-    print("The matching date is ", match_date, " at index ", date_list.index(match_date))
-    yr_eps_02_5_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_02_5_growth_list[curr_index]
-    yr_eps_05_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_05_0_growth_list[curr_index]
-    yr_eps_10_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_10_0_growth_list[curr_index]
-    yr_eps_20_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_20_0_growth_list[curr_index]
+    for yr_eps_date in yr_eps_date_list:
+      curr_index = yr_eps_date_list.index(yr_eps_date)
+      print("Looking for ", yr_eps_date)
+      match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
+      print("The matching date is ", match_date, " at index ", date_list.index(match_date))
+      yr_eps_02_5_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_02_5_growth_list[curr_index]
+      yr_eps_05_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_05_0_growth_list[curr_index]
+      yr_eps_10_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_10_0_growth_list[curr_index]
+      yr_eps_20_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_20_0_growth_list[curr_index]
 
-  # Populate the list of lists
-  yr_eps_02_5_growth_expanded_list[i_idx] = smooth_list(yr_eps_02_5_growth_expanded_list_unsmooth)
-  yr_eps_05_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_05_0_growth_expanded_list_unsmooth)
-  yr_eps_10_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_10_0_growth_expanded_list_unsmooth)
-  yr_eps_20_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_20_0_growth_expanded_list_unsmooth)
+    # Populate the list of lists
+    yr_eps_02_5_growth_expanded_list[i_idx] = smooth_list(yr_eps_02_5_growth_expanded_list_unsmooth)
+    yr_eps_05_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_05_0_growth_expanded_list_unsmooth)
+    yr_eps_10_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_10_0_growth_expanded_list_unsmooth)
+    yr_eps_20_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_20_0_growth_expanded_list_unsmooth)
 # =============================================================================
 
 
@@ -981,8 +982,9 @@ lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
 # -----------------------------------------------------------------------------
 # Collect the labels for the subplots and then create the legends
 # -----------------------------------------------------------------------------
-lns = price_plt_inst + main_plt_inst + annual_past_eps_plt_inst + lower_channel_plt_inst + dividend_plt_inst
-print ("The type is ", type(lns))
+lns = price_plt_inst + main_plt_inst + annual_past_eps_plt_inst + lower_channel_plt_inst
+if (pays_dividend):
+  lns = lns + dividend_plt_inst
 if (number_of_growth_proj_overlays > 0):
   lns = lns + yr_eps_02_5_plt_inst_0 + yr_eps_05_0_plt_inst_0 \
             + yr_eps_10_0_plt_inst_0 + yr_eps_20_0_plt_inst_0
