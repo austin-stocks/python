@@ -1,4 +1,4 @@
-Ticker,Linear Chart Years,Calendar_Future_Date,Future_Calendar_Quarters,Log Chart Years,Price_Scale_Low,Price_Scale_High,Earnings Scale - Low,Earnings Scale - High,Lower Price Channel,Upper Price Channel
+Ticker,Linear Chart Years,Calendar_Future_Date,Future_Calendar_Quarters,Log Chart Years,Price_Scale_Low,Price_Scale_High,Earnings Scale - Low,Earnings Scale - High,Upper Price Channel,Lower Price Channel
 ^DJI,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
 ^GSPC,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
 ^IXIC,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
@@ -46,7 +46,7 @@ AMG,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
 AMGN,10,1/2/2021,8,,0,55,-0.5,1.5,0.1,0.1
 AMP,10,1/2/2021,8,,0,60,0,1,0.1,0.1
 AMT,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
-AMZN,10,1/2/2021,8,,-20,150,-0.3,0.5,0.1,0.1
+AMZN,10,1/2/2021,8,,0,3500,0,10.5,0.5,0.5
 ANET,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
 ANSS,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
 ANTM,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
