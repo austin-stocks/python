@@ -35,33 +35,46 @@ for ticker_raw in ticker_list:
   # earnings_df = pd.read_excel(dir_path + "\\" + "Stock_Files" + "\\" + ticker + '.xlsm', sheet_name="historical")
   earnings_df = pd.read_excel('C:\Sundeep\Stocks_Automation\Scripts\Experiments\Stocks_Files' + "\\" + ticker + '.xlsm', sheet_name="historical")
 
-
-  print ("The Historical Tab is :", earnings_df)
+  print ("The Historical Tab (which contains earnings data) from the stock file is :", earnings_df)
+  print ("\nAll the columns in the historical tab are :\n")
   for col in earnings_df.columns:
     print(col)
 
-  date_list = earnings_df['Date'].tolist()
+  # For some reason python reads the Date column as Timestamp
+  # Convert it to string here We will convet it to Datetime later
+  date_list = earnings_df['Date'].astype(str).tolist()
   qtr_eps_list = earnings_df['Q EPS'].tolist()
   projected_eps_list = earnings_df['projection'].tolist()
+  print ("The Raw Date list is :", date_list)
 
+  # Check if the length of all the columns are equal
+
+  # This works : The create a dataframe from a list of lists
   step1_df=pd.DataFrame(list(zip(date_list, qtr_eps_list, projected_eps_list)),
-    columns=['Date','Q EPS', 'projection'])
-  print ("New dataframe :", step1_df)
+                        columns=['Date','Q EPS', 'projection'])
+  print ("Dataframe that only has Date, Q EPS and projection columns :", step1_df)
 
+  # ===========================================================================
+  # Clean up the dataframe
+  # ===========================================================================
+  # Remove all rows that do not have data in ALL columns
   step1_df.dropna(how='all',inplace=True)
+  # Remove all rows that do not have data in Date column
   step1_df.dropna(subset=['Date'],inplace=True)
-  step1_df.to_csv('debug1.csv')
+  tmp_df = step1_df[step1_df.Date != 'NaT']
+  step1_df = tmp_df
+  print ("New dataframe after dropping all rows with null in Date column:", step1_df)
+  # step1_df.to_csv('debug1.csv')
+  # Now we should have a dataframe that does not have any rows that do not have a valid date
 
-
-
-  # Drop ONLY the rows now that do not have any data in projection tab
-  # step1_df_tmp = step1_df[pd.notnull(step1_df['projection'])]
+  # Drop ONLY the rows now that do not have any data in Q EPA AND projection column
   step1_df.dropna(subset=['Q EPS', 'projection'], how='all', inplace=True)
+  # step1_df.to_csv('debug.csv')
+  print ("New dataframe after dropping all the rows with null in (Q EPS AND projection) columns:", step1_df)
+  # ===========================================================================
 
-  step1_df.to_csv('debug.csv')
-  print ("New dataframe after dropping all the null from projection column:", step1_df)
-
-  step1_date_list = step1_df['Date'].tolist()
+  # step1_date_list = step1_df['Date'].tolist()
+  step1_date_list = [dt.datetime.strptime(date, '%Y-%m-%d').date() for date in step1_df.Date.tolist()]
   step1_eps_list = step1_df['Q EPS'].tolist()
   step1_projected_eps_list = step1_df['projection'].tolist()
 
@@ -70,7 +83,6 @@ for ticker_raw in ticker_list:
   # Put the Header Row in the csv
   writer.writerow(["Date", "Q_EPS_Diluted"])
 
-  # todo : format the date (should be quick) before writing it in the csv (earnings) file
   tmp_index = 0
   csv_line = []
   for x in step1_date_list:
@@ -84,7 +96,7 @@ for ticker_raw in ticker_list:
 
       csv_line = []
       print ("Found 1st Instance")
-      csv_line.insert(0, x.date())
+      csv_line.insert(0, x.strftime('%m/%d/%Y'))
       csv_line.insert(1, step1_eps)
       csv_line.insert(2, step1_projected_eps)
       insert_index = 3
