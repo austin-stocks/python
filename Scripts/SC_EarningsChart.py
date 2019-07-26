@@ -108,11 +108,29 @@ debug_fh = open(logfile, "w+")
 # =============================================================================
 # Read the Earnings file for the ticker
 # =============================================================================
-qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv")
+qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv",delimiter=",")
+
+# Need to make extracted earnings work - say for AMZN or change the extract earnings macro 
+# qtr_eps_df = pd.DataFrame([line.strip().split(',') for line in open(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv", 'r')])
+# print ("DataFrame is", qtr_eps_df.head())
+# qtr_eps_df.columns = qtr_eps_df.iloc[0]
+# print ("DataFrame is", qtr_eps_df.head())
+# qtr_eps_df.drop(qtr_eps_df.index[[0]],inplace=True)
+# print ("DataFrame is", qtr_eps_df.head())
+
+# qtr_eps_df.reindex(qtr_eps_df.index.drop(2))
+# print ("DataFrame is", qtr_eps_df.head())
+# sys.exit()
+
+# qtr_eps_df.set_index('Date', inplace=True)
+
 log_lvl = "error"
 debug_str = "The Earnings df is \n" + qtr_eps_df.to_string()
+
+
 stdout = 0;
 my_print(debug_fh, debug_str, stdout, log_lvl.upper())
+# sys.exit()
 
 # print ("The Earnings df is \n", qtr_eps_df)
 # todo : Error out if any elements in the date_list are nan except the trailing (this includes
