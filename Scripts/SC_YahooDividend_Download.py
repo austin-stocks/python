@@ -46,7 +46,7 @@ print ("Start Date set to: ", start_date, ", End Date set to: ", end_date)
 # ##############################################################################
 
 
-get_sp_holdings = 1
+get_sp_holdings = 0
 get_qqq_holdings = 0
 get_ibd50_holdings = 0
 if (get_sp_holdings == 1):
