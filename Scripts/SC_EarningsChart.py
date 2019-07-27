@@ -21,6 +21,14 @@ register_matplotlib_converters()
 # replaces the nan in the middle with a step so that the 'markers' can be
 #  converted to a line while plotting
 # # =============================================================================
+def get_growth(current, previous):
+  if current == previous:
+    return 0
+  try:
+    return round((abs(current - previous) / previous) * 100.0,2)
+  except ZeroDivisionError:
+    return float('inf')
+
 def smooth_list(l):
   i_int = 0
   l_mod = l.copy()
@@ -257,6 +265,7 @@ if (plot_nasdaq):
 historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
 print("The Historical df is \n", historical_df)
 ticker_adj_close_list = historical_df.Adj_Close.tolist()
+print ("Historical Adj. Prices", type(ticker_adj_close_list))
 date_str_list = historical_df.Date.tolist()
 print("The date list from historical df is ", date_str_list)
 date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
@@ -728,6 +737,64 @@ else:
   print("EPS Scale - Low from Config file ", qtr_eps_lim_lower)
 # =============================================================================
 
+# =============================================================================
+# Find out the growth for 1yr, 3yr and 5yr for eps and price
+# =============================================================================
+# todo :
+# Handle negative earning...in the function
+# What if there is no 5 years worth of data availabe?
+# Which text box to use...can I put the text_str outside the plot
+# So I am ifing the block of code out for now...it works but once I do the
+# above two todo then can unif the code
+# Find the first non nan value in the adj list - that is the current price
+get_eps_and_price_growth = 0
+price_eps_growth_text_str = "This is the box in top center"
+if (get_eps_and_price_growth):
+  ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
+  ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
+
+  ticker_1_yr_ago_date_raw = ticker_curr_date - dt.timedelta(days=365)
+  ticker_3_yr_ago_date_raw = ticker_curr_date - dt.timedelta(days=3*365)
+  ticker_5_yr_ago_date_raw = ticker_curr_date - dt.timedelta(days=5*365)
+
+  ticker_1_yr_ago_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_1_yr_ago_date_raw))
+  ticker_3_yr_ago_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_3_yr_ago_date_raw))
+  ticker_5_yr_ago_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_5_yr_ago_date_raw))
+
+  ticker_1_yr_ago_price = ticker_adj_close_list[date_list.index(ticker_1_yr_ago_date)]
+  ticker_3_yr_ago_price = ticker_adj_close_list[date_list.index(ticker_3_yr_ago_date)]
+  ticker_5_yr_ago_price = ticker_adj_close_list[date_list.index(ticker_5_yr_ago_date)]
+
+  yr_eps_curr_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_curr_date))
+  if (yr_eps_curr_date > dt.date.today()):
+    print ("The match date for yr eps is newer than the current date. Will use yr eps from one quarter ago")
+    yr_eps_curr_date = min(yr_eps_date_list, key=lambda d: abs(d - (ticker_curr_date - dt.timedelta(days=66))))
+
+  yr_eps_curr = yr_eps_list[yr_eps_date_list.index(yr_eps_curr_date)]
+  yr_eps_1_yr_ago = yr_eps_list[yr_eps_date_list.index(ticker_1_yr_ago_date)]
+  yr_eps_3_yr_ago = yr_eps_list[yr_eps_date_list.index(ticker_3_yr_ago_date)]
+  yr_eps_5_yr_ago = yr_eps_list[yr_eps_date_list.index(ticker_5_yr_ago_date)]
+
+  print ("The Last     price for ticker is", ticker_curr_price,    "on date", ticker_curr_date,    "with earnings at", yr_eps_curr, "is at index", date_list.index(ticker_curr_date))
+  print ("The 1 Yr ago price for ticker is", ticker_1_yr_ago_price, "on date", ticker_1_yr_ago_date, "with earnings at", yr_eps_1_yr_ago, "is at index", date_list.index(ticker_1_yr_ago_date))
+  print ("The 3 Yr ago price for ticker is", ticker_3_yr_ago_price, "on date", ticker_3_yr_ago_date, "with earnings at", yr_eps_3_yr_ago, "is at index", date_list.index(ticker_3_yr_ago_date))
+  print ("The 5 Yr ago price for ticker is", ticker_5_yr_ago_price, "on date", ticker_5_yr_ago_date, "with earnings at", yr_eps_5_yr_ago, "is at index", date_list.index(ticker_5_yr_ago_date))
+
+  eps_growth_1_yr = get_growth(yr_eps_curr, yr_eps_1_yr_ago)
+  eps_growth_3_yr = get_growth(yr_eps_curr, yr_eps_3_yr_ago)
+  eps_growth_5_yr = get_growth(yr_eps_curr, yr_eps_5_yr_ago)
+
+  price_growth_1_yr = get_growth(ticker_curr_price, ticker_1_yr_ago_price)
+  price_growth_3_yr = get_growth(ticker_curr_price, ticker_3_yr_ago_price)
+  price_growth_5_yr = get_growth(ticker_curr_price, ticker_5_yr_ago_price)
+
+  price_eps_growth_text_str = "       Earnings    Price\n"
+  price_eps_growth_text_str = price_eps_growth_text_str + "1 Yr    " + str(eps_growth_1_yr) + "%     " + str(price_growth_1_yr) + "%\n"
+  price_eps_growth_text_str = price_eps_growth_text_str + "3 Yr    " + str(eps_growth_3_yr) + "%     " + str(price_growth_3_yr) + "%\n"
+  price_eps_growth_text_str = price_eps_growth_text_str + "5 Yr    " + str(eps_growth_5_yr) + "%     " + str(price_growth_5_yr) + "%"
+  print (price_eps_growth_text_str)
+  # sys.exit()
+# =============================================================================
 
 # #############################################################################
 # #############################################################################
@@ -1027,7 +1094,7 @@ number_of_anchored_texts = 4
 for i in range(number_of_anchored_texts):
   if (i == 0):
     location = 9
-    my_text = "This is a dummy comment for text box #0 \nAnything can be put here"
+    my_text = price_eps_growth_text_str
   elif (i == 1):
     location = 6
     my_text = "Test for Box number 2"
