@@ -107,7 +107,7 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "ABCB"
+ticker = "CHTR"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -537,12 +537,12 @@ else:
 # ---------------------------------------------------------
 # todo : what if someone puts a string like "Max" in there?
 # Maybe support a date there?
-if (math.isnan(ticker_config_series['Linear Chart Years'])):
+if (math.isnan(ticker_config_series['Linear_Chart_Duration_Years'])):
   plot_period_int = 252 * 10
   print("Will Plot the Chart for 10 years")
 else:
-  print("Will Plot the Chart for ", int(ticker_config_series['Linear Chart Years']), " years")
-  plot_period_int = 252 * int(ticker_config_series['Linear Chart Years'])
+  print("Will Plot the Chart for ", int(ticker_config_series['Linear_Chart_Duration_Years']), " years")
+  plot_period_int = 252 * int(ticker_config_series['Linear_Chart_Duration_Years'])
 # ---------------------------------------------------------
 
 
