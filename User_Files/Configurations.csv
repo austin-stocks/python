@@ -1,4 +1,4 @@
-Ticker,Linear Chart Years,Calendar_Future_Date,Future_Calendar_Quarters,Log Chart Years,Price_Scale_Low,Price_Scale_High,Earnings Scale - Low,Earnings Scale - High,Upper Price Channel,Lower Price Channel
+Ticker,Linear_Chart_Duration_Years,Calendar_Future_Date,Future_Calendar_Quarters,Log Chart Years,Price_Scale_Low,Price_Scale_High,Earnings Scale - Low,Earnings Scale - High,Upper Price Channel,Lower Price Channel
 ^DJI,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
 ^GSPC,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
 ^IXIC,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
@@ -592,3 +592,4 @@ SOI,10,1/2/2021,8,,-20,150,-0.3,0.5,0.1,0.1
 UFPI,13,1/2/2021,8,,0,50,-0.5,2,0.1,0.1
 VCTR,10,1/2/2021,8,,5,70,-1,4,0.3,0.3
 WIRE,10,1/2/2021,8,,0,90,0,1.2,0.075,0.075
+PSXP,7,1/2/2021,8,,0,200,0,1.6,0.05,0.05
