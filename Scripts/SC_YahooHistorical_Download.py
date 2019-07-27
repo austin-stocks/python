@@ -67,7 +67,7 @@ print ('The number of ticker in the list are ', len(ticker_list))
 
 get_sp_holdings = 0
 get_qqq_holdings = 0
-get_ibd50_holdings = 1
+get_ibd50_holdings = 0
 if (get_sp_holdings == 1):
   tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + 'SPY_Holdings.xlsx', sheet_name="SPY")
   ticker_list_unclean = tracklist_df['Identifier'].tolist()

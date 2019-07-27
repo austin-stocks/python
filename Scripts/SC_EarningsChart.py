@@ -99,7 +99,7 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "AMZN"
+ticker = "ABCB"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -239,7 +239,7 @@ if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
 # Todo : Reading and plotting the index should be inside a if statement and should
 # be in some global file
 # Read the spy or dji or ixic file for comparison
-plot_spy = 1
+plot_spy = 0
 plot_dji = 1
 plot_nasdaq = 1
 if (plot_spy):
