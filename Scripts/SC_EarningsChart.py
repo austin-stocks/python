@@ -107,7 +107,7 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "CHTR"
+ticker = "ABG"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -163,6 +163,18 @@ if (os.path.exists(dividend_file) is True):
         len(dividend_date_list))
   print("The Amounts for dividends is ", dividend_list)
 # =============================================================================
+
+# =============================================================================
+# Read the config file and decide all the parms that are needed for plot
+# =============================================================================
+config_df.set_index('Ticker', inplace=True)
+print("The configuration df", config_df)
+if ticker in config_df.index:
+  ticker_config_series = config_df.loc[ticker]
+  print("Then configurations for ", ticker, " is ", ticker_config_series)
+else:
+  # Todo : Create a default series with all nan so that it can be cleaned up in the next step
+  print("Configuration Entry for ", ticker, " not found...continuing with default values")
 
 
 # =============================================================================
@@ -337,17 +349,27 @@ for qtr_eps_date in qtr_eps_date_list:
 print("The expanded qtr eps list is ", qtr_eps_expanded_list, "\nand the number of elements are",
       len(qtr_eps_expanded_list))
 
+
 if (pays_dividend == 1):
+  if (math.isnan(ticker_config_series['Dividend_Multiplier_Factor'])):
+    dividend_multiplier = 1.0
+  else:
+    dividend_multiplier = float(ticker_config_series['Dividend_Multiplier_Factor'])
+  dividend_list_multiplied = [x * dividend_multiplier for x in dividend_list]
+  print ("Dividend List is", dividend_list)
+  print ("Multiplied Divided List is", dividend_list_multiplied)
+
   for dividend_date in dividend_date_list:
     curr_index = dividend_date_list.index(dividend_date)
     print("Looking for ", dividend_date)
     match_date = min(date_list, key=lambda d: abs(d - dividend_date))
     print("The matching date for QTR EPS Date: ", dividend_date, "is ", match_date, " at index ",
           date_list.index(match_date))
-    dividend_expanded_list[date_list.index(match_date)] = dividend_list[curr_index]
+    dividend_expanded_list[date_list.index(match_date)] = dividend_list_multiplied[curr_index]
 
   print("The expanded Dividend list is ", dividend_expanded_list, "\nand the number of elements are",
         len(dividend_expanded_list))
+  # sys.exit()
 # =============================================================================
 
 # =============================================================================
@@ -520,17 +542,6 @@ if (number_of_growth_proj_overlays > 0):
 # =============================================================================
 
 
-# =============================================================================
-# Read the config file and decide all the parms that are needed for plot
-# =============================================================================
-config_df.set_index('Ticker', inplace=True)
-print("The configuration df", config_df)
-if ticker in config_df.index:
-  ticker_config_series = config_df.loc[ticker]
-  print("Then configurations for ", ticker, " is ", ticker_config_series)
-else:
-  # Todo : Create a default series with all nan so that it can be cleaned up in the next step
-  print("Configuration Entry for ", ticker, " not found...continuing with default values")
 
 # ---------------------------------------------------------
 # Find out how many years need to be plotted
@@ -906,7 +917,7 @@ if (pays_dividend == 1):
   for i in range(len(dividend_date_list)):
     if (date_list[plot_period_int] <= dividend_date_list[i] <= date_list[0]):
       x = float("{0:.2f}".format(dividend_list[i]))
-      main_plt.text(dividend_date_list[i], dividend_list[i], x, fontsize=6, horizontalalignment='center',
+      main_plt.text(dividend_date_list[i], dividend_list_multiplied[i], x, fontsize=6, horizontalalignment='center',
                     verticalalignment='bottom')
 # -----------------------------------------------------------------------------
 
