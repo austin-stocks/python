@@ -4,6 +4,7 @@ import os
 import math
 import json
 import sys
+from yahoofinancials import YahooFinancials
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -138,29 +139,9 @@ debug_str = "The Earnings df is \n" + qtr_eps_df.to_string()
 
 stdout = 0;
 my_print(debug_fh, debug_str, stdout, log_lvl.upper())
-# sys.exit()
 
-# It is possible to get the company name from this....do you want to do it here
-# yahoo_financials = YahooFinancials('AAPL')
-# print(yahoo_financials.get_stock_quote_type_data())
-# {
-#     "AAPL": {
-#         "underlyingExchangeSymbol": null,
-#         "exchangeTimezoneName": "America/New_York",
-#         "underlyingSymbol": null,
-#         "headSymbol": null,
-#         "shortName": "Apple Inc.",
-#         "symbol": "AAPL",
-#         "uuid": "8b10e4ae-9eeb-3684-921a-9ab27e4d87aa",
-#         "gmtOffSetMilliseconds": "-14400000",
-#         "exchange": "NMS",
-#         "exchangeTimezoneShortName": "EDT",
-#         "messageBoardId": "finmb_24937",
-#         "longName": "Apple Inc.",
-#         "market": "us_market",
-#         "quoteType": "EQUITY"
-#     }
-# }
+
+
 
 #print ("The Earnings df is \n", qtr_eps_df)
 # todo : Error out if any elements in the date_list are nan except the trailing (this includes
@@ -862,6 +843,15 @@ if (get_eps_and_price_growth):
 
 # =============================================================================
 
+# Get the company name - todo : Test it out...probably better to put it in
+# some other file rather than calling out the function here...
+yahoo_financials = YahooFinancials(ticker)
+ticker_quote_type_data = yahoo_financials.get_stock_quote_type_data()
+print(ticker_quote_type_data)
+ticker_company_name = ticker_quote_type_data[ticker]['shortName']
+print(ticker_company_name)
+
+
 # #############################################################################
 # #############################################################################
 # #############################################################################
@@ -879,7 +869,9 @@ fig.set_size_inches(16, 10)  # Length x height
 fig.subplots_adjust(right=0.90)
 fig.autofmt_xdate()
 main_plt.set_facecolor("lightgrey")
-main_plt.set_title("Stock Chart for " + ticker)
+fig.suptitle(ticker_company_name + "("  +ticker +")", fontsize=18,x=0.25,y=.91)
+# This works too...may use that is set the subtitle for the plot
+# main_plt.set_title(ticker_company_name + "("  +ticker +")", fontsize=18,horizontalalignment='right')
 
 # Various plots that share the same x axis(date)
 price_plt = main_plt.twinx()
