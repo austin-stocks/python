@@ -24,4 +24,5 @@ The following is the list of items that needs to be worked on
 11. Get the fiscal quarter lined up with gridlines
 12. How to increase the figure area and reduce the white space in the file
 13. Do you need more than one git to experiment etc?
-
+14. From Ann - The major dates are kinda misaligned
+15. The company name should be visible in big fonts - in addition to the symbol
