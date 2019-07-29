@@ -140,7 +140,29 @@ stdout = 0;
 my_print(debug_fh, debug_str, stdout, log_lvl.upper())
 # sys.exit()
 
-# print ("The Earnings df is \n", qtr_eps_df)
+# It is possible to get the company name from this....do you want to do it here
+# yahoo_financials = YahooFinancials('AAPL')
+# print(yahoo_financials.get_stock_quote_type_data())
+# {
+#     "AAPL": {
+#         "underlyingExchangeSymbol": null,
+#         "exchangeTimezoneName": "America/New_York",
+#         "underlyingSymbol": null,
+#         "headSymbol": null,
+#         "shortName": "Apple Inc.",
+#         "symbol": "AAPL",
+#         "uuid": "8b10e4ae-9eeb-3684-921a-9ab27e4d87aa",
+#         "gmtOffSetMilliseconds": "-14400000",
+#         "exchange": "NMS",
+#         "exchangeTimezoneShortName": "EDT",
+#         "messageBoardId": "finmb_24937",
+#         "longName": "Apple Inc.",
+#         "market": "us_market",
+#         "quoteType": "EQUITY"
+#     }
+# }
+
+#print ("The Earnings df is \n", qtr_eps_df)
 # todo : Error out if any elements in the date_list are nan except the trailing (this includes
 # todo : leading nan and any nan in the list itself
 qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
