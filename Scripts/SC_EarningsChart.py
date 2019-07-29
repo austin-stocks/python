@@ -107,7 +107,7 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "ABG"
+ticker = "FIX"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -764,7 +764,11 @@ get_eps_and_price_growth = 1
 price_eps_growth_str_textbox_loc_09 = "This is the box in top center"
 if (get_eps_and_price_growth):
   # This works : Get the first non nan value from the list. That is the current price.
-  ticker_curr_price = round(next(x for x in ticker_adj_close_list if not math.isnan(x)),2)
+  # Can't do a round here - as it round 81.6999 to 81.7 and 81.7 will not match
+  # to get us the current date as there is not index that will now match in the
+  # adj_close_list
+  # ticker_curr_price = round(next(x for x in ticker_adj_close_list if not math.isnan(x)),2)
+  ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
   ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
 
   # Based on the latest date from the ticker, get the latest past date for yr_eps.
