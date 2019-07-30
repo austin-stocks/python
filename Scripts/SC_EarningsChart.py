@@ -108,42 +108,37 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "FIX"
+ticker = "MEDP"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
 debug_fh = open(logfile, "w+")
 
 # =============================================================================
+# Todo : Reading and plotting the index should be inside a if statement and should
+# be in some global file
+# Read the spy or dji or ixic file for comparison
+plot_spy = 0
+plot_dji = 1
+plot_nasdaq = 1
+if (plot_spy):
+  spy_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^GSPC_historical.csv")
+if (plot_dji):
+  dji_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^DJI_historical.csv")
+if (plot_nasdaq):
+  nasdaq_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^IXIC_historical.csv")
+# =============================================================================
+
+# =============================================================================
 # Read the Earnings file for the ticker
 # =============================================================================
 qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv",delimiter=",")
-
-# Need to make extracted earnings work - say for AMZN or change the extract earnings macro
-# qtr_eps_df = pd.DataFrame([line.strip().split(',') for line in open(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv", 'r')])
-# print ("DataFrame is", qtr_eps_df.head())
-# qtr_eps_df.columns = qtr_eps_df.iloc[0]
-# print ("DataFrame is", qtr_eps_df.head())
-# qtr_eps_df.drop(qtr_eps_df.index[[0]],inplace=True)
-# print ("DataFrame is", qtr_eps_df.head())
-
-# qtr_eps_df.reindex(qtr_eps_df.index.drop(2))
-# print ("DataFrame is", qtr_eps_df.head())
-# sys.exit()
-
-# qtr_eps_df.set_index('Date', inplace=True)
-
 log_lvl = "error"
 debug_str = "The Earnings df is \n" + qtr_eps_df.to_string()
-
-
 stdout = 0;
 my_print(debug_fh, debug_str, stdout, log_lvl.upper())
 
-
-
-
-#print ("The Earnings df is \n", qtr_eps_df)
+print ("The Earnings df is \n", qtr_eps_df)
 # todo : Error out if any elements in the date_list are nan except the trailing (this includes
 # todo : leading nan and any nan in the list itself
 qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
@@ -259,24 +254,14 @@ if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
 # =============================================================================
 
 # =============================================================================
-# Todo : Reading and plotting the index should be inside a if statement and should
-# be in some global file
-# Read the spy or dji or ixic file for comparison
-plot_spy = 0
-plot_dji = 1
-plot_nasdaq = 1
-if (plot_spy):
-  spy_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^GSPC_historical.csv")
-if (plot_dji):
-  dji_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^DJI_historical.csv")
-if (plot_nasdaq):
-  nasdaq_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^IXIC_historical.csv")
-# =============================================================================
-
-
-# =============================================================================
 # Read the Historical file for the ticker
 # =============================================================================
+# todo : There are certain cases (MEDP) for e.g. that has recently IPO'ed that
+# have earning going back 2-3 quarters more than the historical data (in other
+# words they started trading on say 08/12/2015, but their earnings are available
+# from 03/30/2015). In such a case probably need to look at calendar file and extend
+# the date list and adj_close list so that all the prior earnings are included.
+# The back date adj_close needs to be initialized to whatever value (nan likely)
 historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
 print("The Historical df is \n", historical_df)
 ticker_adj_close_list = historical_df.Adj_Close.tolist()
@@ -546,17 +531,26 @@ if (number_of_growth_proj_overlays > 0):
 
 
 
-# ---------------------------------------------------------
-# Find out how many years need to be plotted
-# ---------------------------------------------------------
-# todo : what if someone puts a string like "Max" in there?
-# Maybe support a date there?
+# -----------------------------------------------------------------------------
+# Find out how many years need to be plotted. If the historical data is available
+# for lesser time, then adjust the period to the length of the data_list
+# -----------------------------------------------------------------------------
+# todo : Maybe support a date there?
 if (math.isnan(ticker_config_series['Linear_Chart_Duration_Years'])):
+  # Deal with if the data availalbe in the historical tab is less than
+  # user specified in the config file
   plot_period_int = 252 * 10
-  print("Will Plot the Chart for 10 years")
 else:
-  print("Will Plot the Chart for ", int(ticker_config_series['Linear_Chart_Duration_Years']), " years")
   plot_period_int = 252 * int(ticker_config_series['Linear_Chart_Duration_Years'])
+
+if (len(date_list) < plot_period_int):
+  plot_period_int = len(date_list) -1
+  print("Since the Historical Data (Length of the date list) is not available for all\
+  the years that user is asking to plot for, so adjusting the plot for",\
+  float(plot_period_int/252), "years (or", plot_period_int, "days)")
+else:
+  print ("Will plot for", plot_period_int, "years")
+
 # ---------------------------------------------------------
 
 
