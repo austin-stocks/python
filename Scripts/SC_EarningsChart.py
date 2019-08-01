@@ -108,7 +108,7 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "MEDP"
+ticker = "MED"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -873,8 +873,8 @@ fig.set_size_inches(16, 10)  # Length x height
 fig.subplots_adjust(right=0.90)
 fig.autofmt_xdate()
 main_plt.set_facecolor("lightgrey")
-plt.text(x=0.12, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
-plt.text(x=0.12, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+plt.text(x=0.11, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
+plt.text(x=0.11, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
 # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
 # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
 # This works too...may use that is set the subtitle for the plot
