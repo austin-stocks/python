@@ -837,18 +837,24 @@ if (get_eps_and_price_growth):
 
 # =============================================================================
 
-# Get the company name - todo : Test it out...probably better to put it in
-# some other file rather than calling out the function here...
-yahoo_financials = YahooFinancials(ticker)
-ticker_quote_type_data = yahoo_financials.get_stock_quote_type_data()
-print(ticker_quote_type_data)
-# summary_data = yahoo_financials.get_summary_data()
-# print (summary_data)
-# sys.exit()
-ticker_company_name = ticker_quote_type_data[ticker]['shortName']
-print(ticker_company_name)
-ticker_sector = "Healthcare"
-ticker_industry = "Pharma"
+
+# =============================================================================
+# Get the company info for company name, sector and industry
+# =============================================================================
+yahoo_comany_info_df = pd.read_excel(dir_path + user_dir + "\\" + 'Yahoo_Company_Info.xlsm', sheet_name="Company_Info")
+yahoo_comany_info_df.set_index('Ticker', inplace=True)
+# print (yahoo_comany_info_df)
+ticker_company_name = "#NA#"
+ticker_sector = "#NA#"
+ticker_industry = "#NA#"
+if (yahoo_comany_info_df.index.isin([(ticker)]).any()):
+  # This works - get the value in the column corresponding to the index
+  ticker_company_name = yahoo_comany_info_df.loc[ticker, 'Company_Name']
+  ticker_sector = yahoo_comany_info_df.loc[ticker, 'Sector']
+  ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
+print (ticker_company_name, ticker_sector, ticker_industry)
+# =============================================================================
+
 
 # #############################################################################
 # #############################################################################
