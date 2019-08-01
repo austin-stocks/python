@@ -842,9 +842,13 @@ if (get_eps_and_price_growth):
 yahoo_financials = YahooFinancials(ticker)
 ticker_quote_type_data = yahoo_financials.get_stock_quote_type_data()
 print(ticker_quote_type_data)
+# summary_data = yahoo_financials.get_summary_data()
+# print (summary_data)
+# sys.exit()
 ticker_company_name = ticker_quote_type_data[ticker]['shortName']
 print(ticker_company_name)
-
+ticker_sector = "Healthcare"
+ticker_industry = "Pharma"
 
 # #############################################################################
 # #############################################################################
@@ -863,7 +867,10 @@ fig.set_size_inches(16, 10)  # Length x height
 fig.subplots_adjust(right=0.90)
 fig.autofmt_xdate()
 main_plt.set_facecolor("lightgrey")
-fig.suptitle(ticker_company_name + "("  +ticker +")", fontsize=18,x=0.25,y=.91)
+plt.text(x=0.12, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
+plt.text(x=0.12, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+# fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
+# fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
 # This works too...may use that is set the subtitle for the plot
 # main_plt.set_title(ticker_company_name + "("  +ticker +")", fontsize=18,horizontalalignment='right')
 
