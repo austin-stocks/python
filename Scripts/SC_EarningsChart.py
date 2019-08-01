@@ -4,6 +4,7 @@ import os
 import math
 import json
 import sys
+from yahoofinancials import YahooFinancials
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -107,40 +108,37 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "ABG"
+ticker = "MEDP"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
 debug_fh = open(logfile, "w+")
 
 # =============================================================================
+# Todo : Reading and plotting the index should be inside a if statement and should
+# be in some global file
+# Read the spy or dji or ixic file for comparison
+plot_spy = 0
+plot_dji = 1
+plot_nasdaq = 1
+if (plot_spy):
+  spy_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^GSPC_historical.csv")
+if (plot_dji):
+  dji_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^DJI_historical.csv")
+if (plot_nasdaq):
+  nasdaq_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^IXIC_historical.csv")
+# =============================================================================
+
+# =============================================================================
 # Read the Earnings file for the ticker
 # =============================================================================
 qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv",delimiter=",")
-
-# Need to make extracted earnings work - say for AMZN or change the extract earnings macro
-# qtr_eps_df = pd.DataFrame([line.strip().split(',') for line in open(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv", 'r')])
-# print ("DataFrame is", qtr_eps_df.head())
-# qtr_eps_df.columns = qtr_eps_df.iloc[0]
-# print ("DataFrame is", qtr_eps_df.head())
-# qtr_eps_df.drop(qtr_eps_df.index[[0]],inplace=True)
-# print ("DataFrame is", qtr_eps_df.head())
-
-# qtr_eps_df.reindex(qtr_eps_df.index.drop(2))
-# print ("DataFrame is", qtr_eps_df.head())
-# sys.exit()
-
-# qtr_eps_df.set_index('Date', inplace=True)
-
 log_lvl = "error"
 debug_str = "The Earnings df is \n" + qtr_eps_df.to_string()
-
-
 stdout = 0;
 my_print(debug_fh, debug_str, stdout, log_lvl.upper())
-# sys.exit()
 
-# print ("The Earnings df is \n", qtr_eps_df)
+print ("The Earnings df is \n", qtr_eps_df)
 # todo : Error out if any elements in the date_list are nan except the trailing (this includes
 # todo : leading nan and any nan in the list itself
 qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
@@ -256,24 +254,14 @@ if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
 # =============================================================================
 
 # =============================================================================
-# Todo : Reading and plotting the index should be inside a if statement and should
-# be in some global file
-# Read the spy or dji or ixic file for comparison
-plot_spy = 0
-plot_dji = 1
-plot_nasdaq = 1
-if (plot_spy):
-  spy_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^GSPC_historical.csv")
-if (plot_dji):
-  dji_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^DJI_historical.csv")
-if (plot_nasdaq):
-  nasdaq_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + "^IXIC_historical.csv")
-# =============================================================================
-
-
-# =============================================================================
 # Read the Historical file for the ticker
 # =============================================================================
+# todo : There are certain cases (MEDP) for e.g. that has recently IPO'ed that
+# have earning going back 2-3 quarters more than the historical data (in other
+# words they started trading on say 08/12/2015, but their earnings are available
+# from 03/30/2015). In such a case probably need to look at calendar file and extend
+# the date list and adj_close list so that all the prior earnings are included.
+# The back date adj_close needs to be initialized to whatever value (nan likely)
 historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
 print("The Historical df is \n", historical_df)
 ticker_adj_close_list = historical_df.Adj_Close.tolist()
@@ -543,17 +531,26 @@ if (number_of_growth_proj_overlays > 0):
 
 
 
-# ---------------------------------------------------------
-# Find out how many years need to be plotted
-# ---------------------------------------------------------
-# todo : what if someone puts a string like "Max" in there?
-# Maybe support a date there?
+# -----------------------------------------------------------------------------
+# Find out how many years need to be plotted. If the historical data is available
+# for lesser time, then adjust the period to the length of the data_list
+# -----------------------------------------------------------------------------
+# todo : Maybe support a date there?
 if (math.isnan(ticker_config_series['Linear_Chart_Duration_Years'])):
+  # Deal with if the data availalbe in the historical tab is less than
+  # user specified in the config file
   plot_period_int = 252 * 10
-  print("Will Plot the Chart for 10 years")
 else:
-  print("Will Plot the Chart for ", int(ticker_config_series['Linear_Chart_Duration_Years']), " years")
   plot_period_int = 252 * int(ticker_config_series['Linear_Chart_Duration_Years'])
+
+if (len(date_list) < plot_period_int):
+  plot_period_int = len(date_list) -1
+  print("Since the Historical Data (Length of the date list) is not available for all\
+  the years that user is asking to plot for, so adjusting the plot for",\
+  float(plot_period_int/252), "years (or", plot_period_int, "days)")
+else:
+  print ("Will plot for", plot_period_int, "years")
+
 # ---------------------------------------------------------
 
 
@@ -750,46 +747,78 @@ else:
 
 # =============================================================================
 # Find out the growth for 1yr, 3yr and 5yr for eps and price
+# Temporarily iffed out
 # =============================================================================
 # todo :
 # Handle negative earning...in the function
-# What if there is no 5 years worth of data availabe?
+# What if there is no 5 years worth of data available?
 # Which text box to use...can I put the text_str outside the plot
+# Get the text string to format for left justified with enough space 
 # So I am ifing the block of code out for now...it works but once I do the
 # above two todo then can unif the code
-# Find the first non nan value in the adj list - that is the current price
-get_eps_and_price_growth = 0
-price_eps_growth_text_str = "This is the box in top center"
+
+get_eps_and_price_growth = 1
+price_eps_growth_str_textbox_loc_09 = "This is the box in top center"
 if (get_eps_and_price_growth):
+  # This works : Get the first non nan value from the list. That is the current price.
+  # Can't do a round here - as it round 81.6999 to 81.7 and 81.7 will not match
+  # to get us the current date as there is not index that will now match in the
+  # adj_close_list
+  # ticker_curr_price = round(next(x for x in ticker_adj_close_list if not math.isnan(x)),2)
   ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
   ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
 
-  ticker_1_yr_ago_date_raw = ticker_curr_date - dt.timedelta(days=365)
-  ticker_3_yr_ago_date_raw = ticker_curr_date - dt.timedelta(days=3*365)
-  ticker_5_yr_ago_date_raw = ticker_curr_date - dt.timedelta(days=5*365)
-
-  ticker_1_yr_ago_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_1_yr_ago_date_raw))
-  ticker_3_yr_ago_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_3_yr_ago_date_raw))
-  ticker_5_yr_ago_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_5_yr_ago_date_raw))
-
-  ticker_1_yr_ago_price = ticker_adj_close_list[date_list.index(ticker_1_yr_ago_date)]
-  ticker_3_yr_ago_price = ticker_adj_close_list[date_list.index(ticker_3_yr_ago_date)]
-  ticker_5_yr_ago_price = ticker_adj_close_list[date_list.index(ticker_5_yr_ago_date)]
-
+  # Based on the latest date from the ticker, get the latest past date for yr_eps.
+  # In other words, if the current ticker date is - say 07/17/2019 - then get the latest
+  # past date for yr eps - which can be 06/30/2019. In other words - it is possible that we
+  # are - say 89 days into the quarter (say the current ticker date is 03/29/2019) - then also
+  # we want to latest past quarter day (in this case it may be 12/31/2018). This is needed
+  # because we want to get the growth rates based on latest reported earnings and not
+  # the projected earnings - which is what that match function will find if the ticker
+  # current date is more than half way into the quarter
+  #
+  # If the match date for yr_eps is newer than the current date (that can happen if the current
+  # date is in the later half of the quarter) - then substract 60 days and genearte
+  # matching date again - That will certainly give us a date that is the immdediately
+  # of the latest reported quarter
   yr_eps_curr_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_curr_date))
   if (yr_eps_curr_date > dt.date.today()):
     print ("The match date for yr eps is newer than the current date. Will use yr eps from one quarter ago")
-    yr_eps_curr_date = min(yr_eps_date_list, key=lambda d: abs(d - (ticker_curr_date - dt.timedelta(days=66))))
+    yr_eps_curr_date = min(yr_eps_date_list, key=lambda d: abs(d - (ticker_curr_date - dt.timedelta(days=60))))
 
-  yr_eps_curr = yr_eps_list[yr_eps_date_list.index(yr_eps_curr_date)]
-  yr_eps_1_yr_ago = yr_eps_list[yr_eps_date_list.index(ticker_1_yr_ago_date)]
-  yr_eps_3_yr_ago = yr_eps_list[yr_eps_date_list.index(ticker_3_yr_ago_date)]
-  yr_eps_5_yr_ago = yr_eps_list[yr_eps_date_list.index(ticker_5_yr_ago_date)]
+  yr_eps_curr = round(yr_eps_list[yr_eps_date_list.index(yr_eps_curr_date)],2)
 
-  print ("The Last     price for ticker is", ticker_curr_price,    "on date", ticker_curr_date,    "with earnings at", yr_eps_curr, "is at index", date_list.index(ticker_curr_date))
-  print ("The 1 Yr ago price for ticker is", ticker_1_yr_ago_price, "on date", ticker_1_yr_ago_date, "with earnings at", yr_eps_1_yr_ago, "is at index", date_list.index(ticker_1_yr_ago_date))
-  print ("The 3 Yr ago price for ticker is", ticker_3_yr_ago_price, "on date", ticker_3_yr_ago_date, "with earnings at", yr_eps_3_yr_ago, "is at index", date_list.index(ticker_3_yr_ago_date))
-  print ("The 5 Yr ago price for ticker is", ticker_5_yr_ago_price, "on date", ticker_5_yr_ago_date, "with earnings at", yr_eps_5_yr_ago, "is at index", date_list.index(ticker_5_yr_ago_date))
+  # Get dates 1, 3 and 5 yr ago - based on curr eps date
+  ticker_1_yr_ago_date_raw = yr_eps_curr_date - dt.timedelta(days=365)
+  ticker_3_yr_ago_date_raw = yr_eps_curr_date - dt.timedelta(days=3*365)
+  ticker_5_yr_ago_date_raw = yr_eps_curr_date - dt.timedelta(days=5*365)
+
+  # Match the raw dates to get the closest dates 1, 3 and 5 yr ago for eps
+  ticker_1_yr_ago_date_for_eps = min(yr_eps_date_list, key=lambda d: abs(d - ticker_1_yr_ago_date_raw))
+  ticker_3_yr_ago_date_for_eps = min(yr_eps_date_list, key=lambda d: abs(d - ticker_3_yr_ago_date_raw))
+  ticker_5_yr_ago_date_for_eps = min(yr_eps_date_list, key=lambda d: abs(d - ticker_5_yr_ago_date_raw))
+
+  # Match the raw dates to get the closest dates 1, 3 and 5 yr ago for price. So
+  # note that the price that we will get is not 1, 3 and 5 yr ago from the current ticker date
+  # but rather 1, 3 and 5 yr ago from the latest past quarter
+  ticker_1_yr_ago_date_for_price = min(date_list, key=lambda d: abs(d - ticker_1_yr_ago_date_raw))
+  ticker_3_yr_ago_date_for_price = min(date_list, key=lambda d: abs(d - ticker_3_yr_ago_date_raw))
+  ticker_5_yr_ago_date_for_price = min(date_list, key=lambda d: abs(d - ticker_5_yr_ago_date_raw))
+
+  # Note that the price that we get here is the 1, 3 and 5 yr ago price for date from the curr eps
+  # date (and not the current price date)
+  ticker_1_yr_ago_price = round(ticker_adj_close_list[date_list.index(ticker_1_yr_ago_date_for_price)],2)
+  ticker_3_yr_ago_price = round(ticker_adj_close_list[date_list.index(ticker_3_yr_ago_date_for_price)],2)
+  ticker_5_yr_ago_price = round(ticker_adj_close_list[date_list.index(ticker_5_yr_ago_date_for_price)],2)
+
+  yr_eps_1_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_1_yr_ago_date_for_eps)],2)
+  yr_eps_3_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_3_yr_ago_date_for_eps)],2)
+  yr_eps_5_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_5_yr_ago_date_for_eps)],2)
+
+  print ("The Last     price for ticker is", ticker_curr_price,     "on date", ticker_curr_date,               "with earnings at", yr_eps_curr,     "is at index", date_list.index(ticker_curr_date))
+  print ("The 1 Yr ago price for ticker is", ticker_1_yr_ago_price, "on date", ticker_1_yr_ago_date_for_price, "with earnings at", yr_eps_1_yr_ago, "is at index", date_list.index(ticker_1_yr_ago_date_for_price))
+  print ("The 3 Yr ago price for ticker is", ticker_3_yr_ago_price, "on date", ticker_3_yr_ago_date_for_price, "with earnings at", yr_eps_3_yr_ago, "is at index", date_list.index(ticker_3_yr_ago_date_for_price))
+  print ("The 5 Yr ago price for ticker is", ticker_5_yr_ago_price, "on date", ticker_5_yr_ago_date_for_price, "with earnings at", yr_eps_5_yr_ago, "is at index", date_list.index(ticker_5_yr_ago_date_for_price))
 
   eps_growth_1_yr = get_growth(yr_eps_curr, yr_eps_1_yr_ago)
   eps_growth_3_yr = get_growth(yr_eps_curr, yr_eps_3_yr_ago)
@@ -799,13 +828,27 @@ if (get_eps_and_price_growth):
   price_growth_3_yr = get_growth(ticker_curr_price, ticker_3_yr_ago_price)
   price_growth_5_yr = get_growth(ticker_curr_price, ticker_5_yr_ago_price)
 
-  price_eps_growth_text_str = "       Earnings    Price\n"
-  price_eps_growth_text_str = price_eps_growth_text_str + "1 Yr    " + str(eps_growth_1_yr) + "%     " + str(price_growth_1_yr) + "%\n"
-  price_eps_growth_text_str = price_eps_growth_text_str + "3 Yr    " + str(eps_growth_3_yr) + "%     " + str(price_growth_3_yr) + "%\n"
-  price_eps_growth_text_str = price_eps_growth_text_str + "5 Yr    " + str(eps_growth_5_yr) + "%     " + str(price_growth_5_yr) + "%"
-  print (price_eps_growth_text_str)
-  # sys.exit()
+  price_eps_growth_str_textbox_loc_09 = "                               Earnings             Price\n"
+  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "Curr" + " - " + str(ticker_curr_date)             + "   " + str(yr_eps_curr)     + "                     " + str(ticker_curr_price) +"              \n"
+  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "1 Yr" + " - " + str(ticker_1_yr_ago_date_for_eps) + "   " + str(yr_eps_1_yr_ago) + "(" + str(eps_growth_1_yr) + "%)     " + str(ticker_1_yr_ago_price) +"("+ str(price_growth_1_yr) + "%)\n"
+  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "3 Yr" + " - " + str(ticker_3_yr_ago_date_for_eps) + "   " + str(yr_eps_3_yr_ago) + "(" + str(eps_growth_3_yr) + "%)     " + str(ticker_3_yr_ago_price) +"("+ str(price_growth_3_yr) + "%)\n"
+  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "5 Yr" + " - " + str(ticker_5_yr_ago_date_for_eps) + "   " + str(yr_eps_5_yr_ago) + "(" + str(eps_growth_5_yr) + "%)     " + str(ticker_5_yr_ago_price) +"("+ str(price_growth_5_yr) + "%)"
+  print (price_eps_growth_str_textbox_loc_09)
+
 # =============================================================================
+
+# Get the company name - todo : Test it out...probably better to put it in
+# some other file rather than calling out the function here...
+yahoo_financials = YahooFinancials(ticker)
+ticker_quote_type_data = yahoo_financials.get_stock_quote_type_data()
+print(ticker_quote_type_data)
+# summary_data = yahoo_financials.get_summary_data()
+# print (summary_data)
+# sys.exit()
+ticker_company_name = ticker_quote_type_data[ticker]['shortName']
+print(ticker_company_name)
+ticker_sector = "Healthcare"
+ticker_industry = "Pharma"
 
 # #############################################################################
 # #############################################################################
@@ -824,7 +867,12 @@ fig.set_size_inches(16, 10)  # Length x height
 fig.subplots_adjust(right=0.90)
 fig.autofmt_xdate()
 main_plt.set_facecolor("lightgrey")
-main_plt.set_title("Stock Chart for " + ticker)
+plt.text(x=0.12, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
+plt.text(x=0.12, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+# fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
+# fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
+# This works too...may use that is set the subtitle for the plot
+# main_plt.set_title(ticker_company_name + "("  +ticker +")", fontsize=18,horizontalalignment='right')
 
 # Various plots that share the same x axis(date)
 price_plt = main_plt.twinx()
@@ -1105,7 +1153,7 @@ number_of_anchored_texts = 4
 for i in range(number_of_anchored_texts):
   if (i == 0):
     location = 9
-    my_text = price_eps_growth_text_str
+    my_text = price_eps_growth_str_textbox_loc_09
   elif (i == 1):
     location = 6
     my_text = "Test for Box number 2"
