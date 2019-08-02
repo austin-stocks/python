@@ -81,7 +81,7 @@ for ticker_raw in ticker_list:
   # Put the Header Row in the csv
   writer.writerow(["Date", "Q_EPS_Diluted"])
 
-  step1_date_list = [dt.datetime.strptime(date, '%Y-%m-%d').date() for date in step1_df.Date.tolist()]
+  step1_date_list = [dt.datetime.strptime(date, '%Y-%m-%d %H:%M:%S').date() for date in step1_df.Date.tolist()]
   step1_eps_list = step1_df['Q EPS'].tolist()
   step1_projected_eps_list = step1_df['projection'].tolist()
 
