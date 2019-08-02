@@ -145,6 +145,7 @@ qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in q
 qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
 print("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
 print("The Earnings list for qtr_eps is ", qtr_eps_list)
+# =============================================================================
 
 # =============================================================================
 # Check if the dividend file exists
@@ -272,11 +273,11 @@ date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_
 print("The date list for historical is ", date_list, "\nit has ", len(date_list), " entries")
 # =============================================================================
 
-# ===================================================================================================
+# =============================================================================
 # Create the Annual EPS list from the Quarter EPS list.
 # The last 3 elemnts of the annual EPS are going to be blank because the last annual EPS corresponds
 # the the last but 4th Quarter EPS
-# ===================================================================================================
+# =============================================================================
 i_int = 0
 yr_eps_list = list()
 while (i_int < (len(qtr_eps_list) - 3)):
@@ -306,14 +307,14 @@ print("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(y
 # earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_eps_list_tmp]),
 #                                columns=['Date', 'Q EPS', 'Annual EPS'])
 # print ("The Earnings DF is ", earnings_df)
-# ===================================================================================================
+# =============================================================================
 
 
 # =============================================================================
 # Create a qtr_eps_expanded and dividend_expanded list
 # We are here trying to create the list that has the same number of elements
 # as the historical date_list and only the elements that have the Quarter EPS
-# have valid values, other values in the expanded list are nan..so the
+# have valid values, other values in the expanded list are nan...and hence the
 # expanded lists are initially initialized to nan
 # =============================================================================
 qtr_eps_expanded_list = []
@@ -357,7 +358,6 @@ if (pays_dividend == 1):
 
   print("The expanded Dividend list is ", dividend_expanded_list, "\nand the number of elements are",
         len(dividend_expanded_list))
-  # sys.exit()
 # =============================================================================
 
 # =============================================================================
@@ -365,7 +365,7 @@ if (pays_dividend == 1):
 # Expanded annual EPS list just like the expanded Quarter EPS list was created
 # However the expanded Annual EPS list is really three lists...to create a different
 # series in the plot/graph later
-# yr_eps_expanded_list
+# yr_eps_expanded_list - This will end up to create the price channels
 # annual_past_eps_expanded_list - contains only the yr eps that is older than the
 #   current date - This will end up as black diamonds in the chart
 # annual_projected_eps_expanded_list - contains only the yr epx that is newer
@@ -1176,26 +1176,28 @@ for i in range(number_of_anchored_texts):
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# Annonate at a particular price on the chart
+# Annonate at a particular (x,y) = (Date,Prcie) on the chart
 # -----------------------------------------------------------------------------
 if (ticker not in config_json.keys()):
   print("json data for ", ticker, "does not exist in", configuration_json, "file")
 else:
   if ("Plot_Annotate" in config_json[ticker]):
-    date_to_annotate = config_json[ticker]["Plot_Annotate"][0]["Date"]
-    date_to_annotate_datetime = dt.datetime.strptime(date_to_annotate, '%m/%d/%Y').date()
-    annotate_text = config_json[ticker]["Plot_Annotate"][0]["Text"]
-    (x_coord,y_coord) =  config_json[ticker]["Plot_Annotate"][0]["Line_Length"].split(":")
+    print("The number of plot annotates requested by the user are", len(config_json[ticker]["Plot_Annotate"]))
+    for i_idx in range(len(config_json[ticker]["Plot_Annotate"])):
+      date_to_annotate = config_json[ticker]["Plot_Annotate"][i_idx]["Date"]
+      date_to_annotate_datetime = dt.datetime.strptime(date_to_annotate, '%m/%d/%Y').date()
+      annotate_text = config_json[ticker]["Plot_Annotate"][i_idx]["Text"]
+      (x_coord,y_coord) =  config_json[ticker]["Plot_Annotate"][i_idx]["Line_Length"].split(":")
 
-    # date_to_annoate_num = matplotlib.dates.date2num(date_to_annotate)
-    match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
-    print("The matching date is ", match_date, " at index ", date_list.index(match_date), " and the price is ",
-          ticker_adj_close_list[date_list.index(match_date)])
-    price_plt.annotate(annotate_text,
-                       xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
-                       xytext=(int(x_coord), int(y_coord)), textcoords='offset points', arrowprops=dict(facecolor='black', width=.25),
-                       bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
-                       # arrowprops=dict(facecolor='black', width=1))
+      # date_to_annoate_num = matplotlib.dates.date2num(date_to_annotate)
+      match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
+      print("The matching date is ", match_date, " at index ", date_list.index(match_date), " and the price is ",
+            ticker_adj_close_list[date_list.index(match_date)])
+      price_plt.annotate(annotate_text,
+                         xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
+                         xytext=(int(x_coord), int(y_coord)), textcoords='offset points', arrowprops=dict(facecolor='black', width=.25),
+                         bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
+                         # arrowprops=dict(facecolor='black', width=1))
 
 # -----------------------------------------------------------------------------
 
