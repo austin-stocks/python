@@ -1,0 +1,54 @@
+Sub iterate_over_rows()
+
+Dim i_rows           As Integer
+Dim i_columns        As Integer
+Dim curr_ws          As Worksheet
+Dim cell_value      As Variant
+
+Set curr_ws = ThisWorkbook.Worksheets("Company_Info")
+Debug.Print "The current worksheet is " & curr_ws.Name
+curr_ws.Activate
+
+For i_rows = 3003 To 5136
+  For i_columns = 2 To 4
+    curr_ws.Cells(i_rows, i_columns).Select
+
+    Debug.Print "The row is " & i_rows & " and the column is " & i_columns & " and the value is " & cell_value
+
+    ' Change the "=" to "=" in the cell
+    ActiveCell.Replace What:="=", Replacement:="=", LookAt:=xlPart, SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+    Cells.Find(What:="=", After:=ActiveCell, LookIn:=xlFormulas, LookAt:=xlPart, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=False, SearchFormat:=False).Activate
+
+    curr_ws.Cells(i_rows, i_columns).Select
+    Selection.Copy
+    curr_ws.Cells(i_rows, 5).Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+    Application.CutCopyMode = False
+    curr_ws.Cells(i_rows, 5).Select
+    Selection.Copy
+    curr_ws.Cells(i_rows, i_columns).Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+    Application.CutCopyMode = False
+    curr_ws.Cells(i_rows, 5).Select
+    Selection.ClearContents
+
+  Next i_columns
+
+  Application.Wait (Now + TimeValue("0:00:01"))
+  'Debug.Print "Saving the workbook"
+  'ActiveWorkbook.Save
+
+  If (i_rows Mod 25) = 0 Then
+    Debug.Print "Saving the workbook"
+    ActiveWorkbook.Save
+    Debug.Print "Recalculating macro"
+    Application.Run "smfForceRecalculation"
+  End If
+
+  'If (i_rows Mod 40) = 0 Then
+  '  Debug.Print "Saving the workbook"
+  '  ActiveWorkbook.Save
+  'End If
+Next i_rows
+
+End Sub
