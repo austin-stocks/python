@@ -1176,7 +1176,14 @@ for i in range(number_of_anchored_texts):
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# Annonate at a particular (x,y) = (Date,Prcie) on the chart
+# Annonate at a particular (x,y) = (Date,Prcie) on the chart.
+# User can sepcifiy muliple annotates - however right now the code only supports
+# annotated on (Date, Price) pair - price_plt. The user specifies the date and
+# the code finds out the corresponding price and annotates that point.
+# If however - there is a need to annotate (say on annual eps) then that can
+# be done as well - In order to support that feature the use has the specify
+# it in the annoate jon and then there will have to be a if statement, that will
+# choose the appropriate plot
 # -----------------------------------------------------------------------------
 if (ticker not in config_json.keys()):
   print("json data for ", ticker, "does not exist in", configuration_json, "file")
@@ -1189,7 +1196,6 @@ else:
       annotate_text = config_json[ticker]["Plot_Annotate"][i_idx]["Text"]
       (x_coord,y_coord) =  config_json[ticker]["Plot_Annotate"][i_idx]["Line_Length"].split(":")
 
-      # date_to_annoate_num = matplotlib.dates.date2num(date_to_annotate)
       match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
       print("The matching date is ", match_date, " at index ", date_list.index(match_date), " and the price is ",
             ticker_adj_close_list[date_list.index(match_date)])
