@@ -1178,19 +1178,25 @@ for i in range(number_of_anchored_texts):
 # -----------------------------------------------------------------------------
 # Annonate at a particular price on the chart
 # -----------------------------------------------------------------------------
-# This works but needs more research
-# Date to annotate
-date_to_annotate = "2017-03-29"
-date_to_annotate_datetime = dt.datetime.strptime(date_to_annotate, '%Y-%m-%d').date()
-# date_to_annoate_num = matplotlib.dates.date2num(date_to_annotate)
-match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
-print("The matching date is ", match_date, " at index ", date_list.index(match_date), " and the price is ",
-      ticker_adj_close_list[date_list.index(match_date)])
+if (ticker not in config_json.keys()):
+  print("json data for ", ticker, "does not exist in", configuration_json, "file")
+else:
+  if ("Plot_Annotate" in config_json[ticker]):
+    date_to_annotate = config_json[ticker]["Plot_Annotate"][0]["Date"]
+    date_to_annotate_datetime = dt.datetime.strptime(date_to_annotate, '%m/%d/%Y').date()
+    annotate_text = config_json[ticker]["Plot_Annotate"][0]["Text"]
+    (x_coord,y_coord) =  config_json[ticker]["Plot_Annotate"][0]["Line_Length"].split(":")
 
-price_plt.annotate('UK Referendom for Brexit',
-                   xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
-                   arrowprops=dict(facecolor='black', width=1))
-# xytext=(50, 30),textcoords='offset points', arrowprops=dict(facecolor='black', width=1))
+    # date_to_annoate_num = matplotlib.dates.date2num(date_to_annotate)
+    match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
+    print("The matching date is ", match_date, " at index ", date_list.index(match_date), " and the price is ",
+          ticker_adj_close_list[date_list.index(match_date)])
+    price_plt.annotate(annotate_text,
+                       xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
+                       xytext=(int(x_coord), int(y_coord)), textcoords='offset points', arrowprops=dict(facecolor='black', width=.25),
+                       bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
+                       # arrowprops=dict(facecolor='black', width=1))
+
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
