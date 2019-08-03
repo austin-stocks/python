@@ -78,33 +78,82 @@ volume = candlestick_df.Volume.tolist()
 print ("The type of quotes is",quotes)
 print ("The type of volume is",volume)
 
-# Todo :
-# 1. Only one should have the x axis displayed
-# 2. Volume ticks should be viewed on the left
-# 3. Price ticks should be viiewed on the left
-# 4. How to set the range for Price chart (probably same as the main chart)
-# 5. Volume ticks should be written in Million or 100,000s
-# 6. Is it possible to change the color of the bars based on up day or down day?
-# 7. Make the price chart taller than the volume chart
-fig=plt.figure()
-ax1 = plt.subplot(211)
-ax2 = plt.subplot(212, sharex = ax1)
+price_open_list = candlestick_df.Open.tolist()
+price_close_list = candlestick_df.Close.tolist()
+bar_color_list = ['r'] * len(price_close_list)
+for i_idx in range(len(price_close_list)):
+  bar_color_list[i_idx] = 'orange'
+  if (price_close_list[i_idx] > price_open_list[i_idx]):
+    bar_color_list[i_idx] = 'g'
 
-candlestick_ohlc(ax1, quotes[0:100], width=0.6, colorup='g', colordown='r');
+print ("The bar color list is ",bar_color_list)
+# Todo :
+# 1. How to set the range for Price chart (probably same as the main chart)
+# 2. Volume ticks should be written in Million or 100,000s
+# 3. Is it possible to change the color of the bars based on up day or down day?
+
+# fig=plt.figure()
+# ax1 = plt.subplot(211)
+# ax2 = plt.subplot(212)
+# import matplotlib.gridspec as gridspec
+
+fig=plt.figure()
+ax1 = plt.subplot2grid((5,1), (0,0), rowspan=4)
+ax2 = plt.subplot2grid((5,1), (4,0), rowspan=4)
+plt.subplots_adjust(hspace=0)
+
+# fig, axes = plt.subplots(nrows=5, ncols=1)
+# fig, (ax1,ax2) = plt.subplots(2,gridspec_kw={'hspace': 0})
+# ax2 = plt.subplot(212, sharex = ax1)
+
+# fig.autofmt_xdate()
+
+candlestick_ohlc(ax1, quotes[0:100], width=0.75, colorup='g', colordown='orange');
 ax1.plot(date_list_tmp[0:100],MA_Price_200_list[0:100], color = 'black', label = 'SMA200')
 ax1.plot(date_list_tmp[0:100],MA_Price_50_list[0:100], color = 'blue', label = 'SMA50')
 ax1.plot(date_list_tmp[0:100],MA_Price_20_list[0:100], color = 'green', label = 'SMA20')
-ax1.plot(date_list_tmp[0:100],MA_Price_10_list[0:100], color = 'pink', label = 'SMA10')
+ax1.plot(date_list_tmp[0:100],MA_Price_10_list[0:100], color = 'deeppink', label = 'SMA10')
 
-ax1.set_title('MEDP')
-ax1.set_ylabel('Price')
-ax1.grid(True)
-ax1.xaxis_date()
-plt.bar(date_list_tmp[0:100], volume[0:100], width=0.5)
+
+
+'''
+# Code that shows how to create different colors on bars based in some condition 
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.arange(10)
+y = np.arange(10) * 0.1
+
+mask1 = y < 0.5
+mask2 = y >= 0.5
+
+plt.bar(x[mask1], y[mask1], color = 'red')
+plt.bar(x[mask2], y[mask2], color = 'blue')
+plt.show()
+'''
+ax2.bar(date_list_tmp[0:100], volume[0:100], width=0.75, color=bar_color_list[0:100])
 ax2.plot(date_list_tmp[0:100],MA_volume_50_list[0:100], color = 'pink', label = 'SMA10')
-ax2.set_ylabel('volume')
+
+
+
+# ax1.set_title('MEDP')
+# ax1.set_ylabel('Price')
+# ax2.set_ylabel('volume')
+
+ax1.grid(True)
+# ax1.xaxis_date()
+ax1.set_xticks([])
+ax1.yaxis.tick_right()
+
+
+
 ax2.grid(True)
-ax2.autoscale_view()
-plt.setp(plt.gca().get_xticklabels(), rotation=30)
+ax2.xaxis_date()
+ax2.yaxis.tick_right()
+
+
+
+# ax2.autoscale_view()
+plt.setp(plt.gca().get_xticklabels(), rotation=90)
 # plt.savefig('mpl_finance-apple.png')
 plt.show()
