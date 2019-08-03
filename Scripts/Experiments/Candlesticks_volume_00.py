@@ -65,10 +65,10 @@ candlestick_df['Date'] = [mdates.date2num(dt.datetime.strptime(d, '%m/%d/%Y').da
 # print ("Tmp List is ", tmp_list)
 print ("Candlestick Dataframe is ",candlestick_df)
 
-MA_200_list = candlestick_df.MA_Price_200_day.tolist()
-MA_50_list = candlestick_df.MA_Price_50_day.tolist()
-MA_20_list = candlestick_df.MA_Price_20_day.tolist()
-MA_10_list = candlestick_df.MA_Price_10_day.tolist()
+MA_Price_200_list = candlestick_df.MA_Price_200_day.tolist()
+MA_Price_50_list = candlestick_df.MA_Price_50_day.tolist()
+MA_Price_20_list = candlestick_df.MA_Price_20_day.tolist()
+MA_Price_10_list = candlestick_df.MA_Price_10_day.tolist()
 MA_volume_50_list = candlestick_df.MA_Volume_50_day.tolist()
 
 
@@ -78,16 +78,23 @@ volume = candlestick_df.Volume.tolist()
 print ("The type of quotes is",quotes)
 print ("The type of volume is",volume)
 
-# fig, (ax1, ax2) = plt.subplots(2, sharex=True, figsize=(8, 6))
+# Todo :
+# 1. Only one should have the x axis displayed
+# 2. Volume ticks should be viewed on the left
+# 3. Price ticks should be viiewed on the left
+# 4. How to set the range for Price chart (probably same as the main chart)
+# 5. Volume ticks should be written in Million or 100,000s
+# 6. Is it possible to change the color of the bars based on up day or down day?
+# 7. Make the price chart taller than the volume chart
 fig=plt.figure()
 ax1 = plt.subplot(211)
 ax2 = plt.subplot(212, sharex = ax1)
 
 candlestick_ohlc(ax1, quotes[0:100], width=0.6, colorup='g', colordown='r');
-ax1.plot(date_list_tmp[0:100],MA_200_list[0:100], color = 'black', label = 'SMA200')
-ax1.plot(date_list_tmp[0:100],MA_50_list[0:100], color = 'blue', label = 'SMA50')
-ax1.plot(date_list_tmp[0:100],MA_20_list[0:100], color = 'green', label = 'SMA20')
-ax1.plot(date_list_tmp[0:100],MA_10_list[0:100], color = 'pink', label = 'SMA10')
+ax1.plot(date_list_tmp[0:100],MA_Price_200_list[0:100], color = 'black', label = 'SMA200')
+ax1.plot(date_list_tmp[0:100],MA_Price_50_list[0:100], color = 'blue', label = 'SMA50')
+ax1.plot(date_list_tmp[0:100],MA_Price_20_list[0:100], color = 'green', label = 'SMA20')
+ax1.plot(date_list_tmp[0:100],MA_Price_10_list[0:100], color = 'pink', label = 'SMA10')
 
 ax1.set_title('MEDP')
 ax1.set_ylabel('Price')
