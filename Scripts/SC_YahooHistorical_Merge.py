@@ -120,11 +120,11 @@ for ticker_raw in ticker_list:
   # So - now - Inserting a non-threatening character
   historical_df.loc[:, 'Empty_col_H'] =  '-'
   # Add the moving averages - They are added as columns after Empty Columns
-  historical_df['200_day_Price_MA'] = historical_df.rolling(window=200)['Adj_Close'].mean().shift(-199)
-  historical_df['50_day_Price_MA'] = historical_df.rolling(window=50)['Adj_Close'].mean().shift(-49)
-  historical_df['20_day_Price_MA'] = historical_df.rolling(window=20)['Adj_Close'].mean().shift(-19)
-  historical_df['10_day_Price_MA'] = historical_df.rolling(window=10)['Adj_Close'].mean().shift(-9)
-  historical_df['50_day_Volume_MA'] = historical_df.rolling(window=50)['Volume'].mean().shift(-49)
+  historical_df['MA_Price_200_day'] = historical_df.rolling(window=200)['Adj_Close'].mean().shift(-199)
+  historical_df['MA_Price_50_day'] = historical_df.rolling(window=50)['Adj_Close'].mean().shift(-49)
+  historical_df['MA_Price_20_day'] = historical_df.rolling(window=20)['Adj_Close'].mean().shift(-19)
+  historical_df['MA_Price_10_day'] = historical_df.rolling(window=10)['Adj_Close'].mean().shift(-9)
+  historical_df['MA_Volume_50_day'] = historical_df.rolling(window=50)['Volume'].mean().shift(-49)
   # ===========================================================================
 
   historical_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in historical_df.iloc[:, 0]]
