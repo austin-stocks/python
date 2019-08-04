@@ -94,25 +94,25 @@ print ("The bar color list is ",bar_color_list)
 
 # fig=plt.figure()
 # ax1 = plt.subplot(211)
-# ax2 = plt.subplot(212)
+# volume_plt = plt.subplot(212)
 # import matplotlib.gridspec as gridspec
 
 fig=plt.figure()
-ax1 = plt.subplot2grid((5,1), (0,0), rowspan=4)
-ax2 = plt.subplot2grid((5,1), (4,0), rowspan=4)
+candle_plt = plt.subplot2grid((5,1), (0,0), rowspan=4)
+volume_plt = plt.subplot2grid((5,1), (4,0), rowspan=4)
 plt.subplots_adjust(hspace=0)
 
 # fig, axes = plt.subplots(nrows=5, ncols=1)
-# fig, (ax1,ax2) = plt.subplots(2,gridspec_kw={'hspace': 0})
-# ax2 = plt.subplot(212, sharex = ax1)
+# fig, (candle_plt,volume_plt) = plt.subplots(2,gridspec_kw={'hspace': 0})
+# volume_plt = plt.subplot(212, sharex = candle_plt)
 
 # fig.autofmt_xdate()
 
-candlestick_ohlc(ax1, quotes[0:100], width=0.75, colorup='g', colordown='orange');
-ax1.plot(date_list_tmp[0:100],MA_Price_200_list[0:100], color = 'black', label = 'SMA200')
-ax1.plot(date_list_tmp[0:100],MA_Price_50_list[0:100], color = 'blue', label = 'SMA50')
-ax1.plot(date_list_tmp[0:100],MA_Price_20_list[0:100], color = 'green', label = 'SMA20')
-ax1.plot(date_list_tmp[0:100],MA_Price_10_list[0:100], color = 'deeppink', label = 'SMA10')
+candlestick_ohlc(candle_plt, quotes[0:100], width=0.75, colorup='g', colordown='orange');
+candle_plt.plot(date_list_tmp[0:100],MA_Price_200_list[0:100], color = 'black', label = 'SMA200')
+candle_plt.plot(date_list_tmp[0:100],MA_Price_50_list[0:100], color = 'blue', label = 'SMA50')
+candle_plt.plot(date_list_tmp[0:100],MA_Price_20_list[0:100], color = 'green', label = 'SMA20')
+candle_plt.plot(date_list_tmp[0:100],MA_Price_10_list[0:100], color = 'deeppink', label = 'SMA10')
 
 
 
@@ -131,29 +131,29 @@ plt.bar(x[mask1], y[mask1], color = 'red')
 plt.bar(x[mask2], y[mask2], color = 'blue')
 plt.show()
 '''
-ax2.bar(date_list_tmp[0:100], volume[0:100], width=0.75, color=bar_color_list[0:100])
-ax2.plot(date_list_tmp[0:100],MA_volume_50_list[0:100], color = 'pink', label = 'SMA10')
+volume_plt.bar(date_list_tmp[0:100], volume[0:100], width=0.75, color=bar_color_list[0:100])
+volume_plt.plot(date_list_tmp[0:100],MA_volume_50_list[0:100], color = 'pink', label = 'SMA10')
 
 
 
-# ax1.set_title('MEDP')
-# ax1.set_ylabel('Price')
-# ax2.set_ylabel('volume')
+# candle_plt.set_title('MEDP')
+# candle_plt.set_ylabel('Price')
+# volume_plt.set_ylabel('volume')
 
-ax1.grid(True)
-# ax1.xaxis_date()
-ax1.set_xticks([])
-ax1.yaxis.tick_right()
-
-
-
-ax2.grid(True)
-ax2.xaxis_date()
-ax2.yaxis.tick_right()
+candle_plt.grid(True)
+# candle_plt.xaxis_date()
+candle_plt.set_xticks([])
+candle_plt.yaxis.tick_right()
 
 
 
-# ax2.autoscale_view()
+volume_plt.grid(True)
+volume_plt.xaxis_date()
+volume_plt.yaxis.tick_right()
+
+
+
+# volume_plt.autoscale_view()
 plt.setp(plt.gca().get_xticklabels(), rotation=90)
 # plt.savefig('mpl_finance-apple.png')
 plt.show()
