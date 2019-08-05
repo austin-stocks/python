@@ -935,6 +935,7 @@ plt.text(x=0.11, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10
 # Figure out the best place for legend
 # Figure out how to print the volume in lesser digits
 # Figure out how to adjust the candlestick price y ranges
+# Google search - remove weekends from matplotlib plot
 candlestick_ohlc(candle_plt, quotes[0:50], width=1, colorup='g', colordown='r');
 candle_plt.plot(date_list_tmp[0:50],MA_Price_200_list[0:50],linewidth=.5, color = 'black', label = 'SMA200')
 candle_plt.plot(date_list_tmp[0:50],MA_Price_50_list[0:50], linewidth=.5,color = 'blue', label = 'SMA50')
