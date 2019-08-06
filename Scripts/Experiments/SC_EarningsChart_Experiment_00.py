@@ -4,13 +4,15 @@ import os
 import math
 import json
 import sys
-from yahoofinancials import YahooFinancials
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
 from matplotlib.offsetbox import AnchoredText
 from SC_logger import my_print as my_print
-
+from yahoofinancials import YahooFinancials
+from mpl_finance import candlestick_ohlc
 from pandas.plotting import register_matplotlib_converters
 
 register_matplotlib_converters()
@@ -862,36 +864,40 @@ if (yahoo_comany_info_df.index.isin([(ticker)]).any()):
 print (ticker_company_name, ticker_sector, ticker_industry)
 # =============================================================================
 
-import matplotlib.dates as mdates
-from mpl_finance import candlestick_ohlc
+# =============================================================================
+# Extract and generate information needed for candlesticks and volume chart
+# =============================================================================
+if (math.isnan(ticker_config_series['Candle_Chart_Duration_Days'])):
+  candle_chart_duration = 50
+else:
+  candle_chart_duration = int(ticker_config_series['Candle_Chart_Duration_Days'])
 
 historical_columns_list = list(historical_df)
 print ("The columns in Historical Dataframe ", historical_columns_list)
+# Get the candlestick_df from historical_df - candlesticks_df has all the data
+# past the first date when the prices are available.
 candlestick_df = historical_df.loc[ticker_adj_close_list.index(ticker_curr_price):]
 candlestick_df.columns =  historical_columns_list
 print ("Candlestick Dataframe is ",candlestick_df)
 
-# this works - very cool stuff here
-date_str_list_tmp = candlestick_df.Date.tolist()
-
-candlestick_df['Date'] = [mdates.date2num(dt.datetime.strptime(d, '%m/%d/%Y').date()) for d in date_str_list_tmp]
-# tmp_list = [d for d in candlestick_df.Date.tolist()]
-# print ("Tmp List is ", tmp_list)
-print ("Candlestick Dataframe is ",candlestick_df)
-
+date_str_list_candles = candlestick_df.Date.tolist()
+# Change the Date to mdates - This gives out warning - todo : Take care of the warning.
+candlestick_df['Date'] = [mdates.date2num(dt.datetime.strptime(d, '%m/%d/%Y').date()) for d in date_str_list_candles]
+print ("Candlestick Dataframe after chanings the Dates to mdates is ",candlestick_df)
 MA_Price_200_list = candlestick_df.MA_Price_200_day.tolist()
 MA_Price_50_list = candlestick_df.MA_Price_50_day.tolist()
 MA_Price_20_list = candlestick_df.MA_Price_20_day.tolist()
 MA_Price_10_list = candlestick_df.MA_Price_10_day.tolist()
 MA_volume_50_list = candlestick_df.MA_Volume_50_day.tolist()
 
-
+# Canclesticks likes to put everything in tuple before plotting
 quotes = [tuple(x) for x in candlestick_df[['Date', 'Open', 'High', 'Low', 'Close']].values]
-date_list_tmp = candlestick_df.Date.tolist()
+date_list_candles = candlestick_df.Date.tolist()
 volume = candlestick_df.Volume.tolist()
 print ("The type of quotes is",quotes)
 print ("The type of volume is",volume)
 
+# Set the bar color for volume by comparing the open and close prices
 price_open_list = candlestick_df.Open.tolist()
 price_close_list = candlestick_df.Close.tolist()
 bar_color_list = ['r'] * len(price_close_list)
@@ -902,9 +908,10 @@ for i_idx in range(len(price_close_list)):
 
 print ("The bar color list is ",bar_color_list)
 
-
-
-ticker_volume_max = max(volume[0:50])
+# ---------------------------------------------------------
+# Set the ticks and the ticklabels for y-axis for volume
+# ---------------------------------------------------------
+ticker_volume_max = max(volume[0:candle_chart_duration])
 ticker_volume_max_no_of_digits = len(str(abs(int(ticker_volume_max))))
 ticker_volume_max_first_digit = int(str(ticker_volume_max)[:1])
 print ("The max volume is", ticker_volume_max, "and the number of digits are", ticker_volume_max_no_of_digits, "and the first digit is", ticker_volume_max_first_digit)
@@ -924,8 +931,9 @@ ticker_volume_ytick_list = []
 ticker_volume_yticklabels_list = []
 for i_idx in range(0,5,1):
   ticker_volume_ytick_list.append(i_idx*(ticker_volume_upper_limit/4))
-  ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx]))
+  ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx],precision=0))
   print("Index", i_idx, "Tick Label", ticker_volume_ytick_list[i_idx], "Tick label Text", ticker_volume_yticklabels_list[i_idx])
+# =============================================================================
 
 
 # #############################################################################
@@ -946,7 +954,7 @@ fig=plt.figure()
 main_plt = plt.subplot2grid((5,5), (0,0), colspan=4,rowspan=5)
 candle_plt = plt.subplot2grid((5,5), (0,4), colspan=1,rowspan=4)
 volume_plt = plt.subplot2grid((5,5), (4,4), colspan=1,rowspan=1)
-plt.subplots_adjust(hspace=0)
+plt.subplots_adjust(hspace=0,wspace=0)
 
 
 
@@ -954,6 +962,8 @@ fig.set_size_inches(16, 10)  # Length x height
 fig.subplots_adjust(right=0.90)
 # fig.autofmt_xdate()
 main_plt.set_facecolor("lightgrey")
+candle_plt.set_facecolor("lightblue")
+
 plt.text(x=0.11, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
 plt.text(x=0.11, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
 # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
@@ -969,14 +979,17 @@ plt.text(x=0.11, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10
 # Figure out how to print the volume in lesser digits
 # Figure out how to adjust the candlestick price y ranges
 # Google search - remove weekends from matplotlib plot
-candlestick_ohlc(candle_plt, quotes[0:50], width=1, colorup='g', colordown='r');
-candle_plt.plot(date_list_tmp[0:50],MA_Price_200_list[0:50],linewidth=.5, color = 'black', label = 'SMA200')
-candle_plt.plot(date_list_tmp[0:50],MA_Price_50_list[0:50], linewidth=.5,color = 'blue', label = 'SMA50')
-candle_plt.plot(date_list_tmp[0:50],MA_Price_20_list[0:50],linewidth=.5, color = 'green', label = 'SMA20')
-candle_plt.plot(date_list_tmp[0:50],MA_Price_10_list[0:50],linewidth=.5, color = 'deeppink', label = 'SMA10')
-volume_plt.bar(date_list_tmp[0:50], volume[0:50], width=1, color=bar_color_list[0:50])
+candlestick_ohlc(candle_plt, quotes[0:candle_chart_duration], width=1, colorup='g', colordown='r');
+candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_200_list[0:candle_chart_duration],linewidth=.5, color = 'black', label = 'SMA200')
+candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_50_list[0:candle_chart_duration], linewidth=.5,color = 'blue', label = 'SMA50')
+candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_20_list[0:candle_chart_duration],linewidth=.5, color = 'green', label = 'SMA20')
+candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_10_list[0:candle_chart_duration],linewidth=.5, color = 'deeppink', label = 'SMA10')
+candle_plt.set_ylabel('Price', color='k')
+candle_plt.yaxis.set_label_position("right")
+
+volume_plt.bar(date_list_candles[0:candle_chart_duration], volume[0:candle_chart_duration], width=1, color=bar_color_list[0:candle_chart_duration])
 volume_plt_MA = volume_plt.twinx()
-volume_plt_MA.plot(date_list_tmp[0:50],MA_volume_50_list[0:50], color = 'pink', label = 'SMA10')
+volume_plt_MA.plot(date_list_candles[0:candle_chart_duration],MA_volume_50_list[0:candle_chart_duration], color = 'blue', label = 'SMA10')
 
 candle_plt.grid(True)
 candle_plt.set_xticks([])
@@ -985,7 +998,7 @@ candle_plt.yaxis.tick_right()
 
 volume_plt.grid(True)
 volume_plt.xaxis_date()
-volume_plt.set_xticklabels(date_list_tmp[0:50],rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+volume_plt.set_xticklabels(date_list_candles[0:candle_chart_duration],rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
 volume_plt.set_ylim(0, ticker_volume_upper_limit)
 volume_plt.yaxis.tick_right()
 volume_plt.set_yticks(ticker_volume_ytick_list)
@@ -995,7 +1008,7 @@ volume_plt.set_yticklabels(ticker_volume_yticklabels_list, rotation=0, fontsize=
 volume_plt_MA.set_ylim(0, ticker_volume_upper_limit)
 volume_plt_MA.set_xticks([])
 volume_plt_MA.set_yticks([])
-volume_plt_MA.text(date_list_tmp[0], MA_volume_50_list[0], human_format(MA_volume_50_list[0]),
+volume_plt_MA.text(date_list_candles[0], MA_volume_50_list[0], human_format(MA_volume_50_list[0]),
                    fontsize=7,color='blue',fontweight='bold',
                    bbox=dict(facecolor='grey', edgecolor='k', pad=1.0,alpha=1))
 plt.setp(plt.gca().get_xticklabels(), rotation=90)
@@ -1041,7 +1054,10 @@ main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_lis
 # -----------------------------------------------------------------------------
 # Historical Price Plot
 # -----------------------------------------------------------------------------
-price_plt.set_ylabel('Price', color='k')
+# Now printing price on the right side of the candle plot
+# price_plt.set_ylabel('Price', color='k')
+# This works - this will move the tick labels inside the plot
+price_plt.tick_params(axis="y",direction="in", pad=-22)
 price_plt.set_ylim(price_lim_lower, price_lim_upper)
 price_plt.set_yscale(chart_type)
 price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
