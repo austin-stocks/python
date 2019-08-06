@@ -15,7 +15,14 @@ from pandas.plotting import register_matplotlib_converters
 
 register_matplotlib_converters()
 
+def millify(n):
+  n = float(n)
+  millidx = max(0,min(len(millnames)-1,int(math.floor(0 if n == 0 else math.log10(abs(n))/3))))
+  return '{:.0f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
 
+def human_format(num, precision=2, suffixes=['', 'K', 'M', 'B', 'T', 'P']):
+  m = sum([abs(num / 1000.0 ** x) >= 1 for x in range(1, len(suffixes))])
+  return f'{num / 1000.0 ** m:.{precision}f}{suffixes[m]}'
 # =============================================================================
 # User defined function
 # This function takes in a list that has nan in between numeric values and
@@ -895,6 +902,34 @@ for i_idx in range(len(price_close_list)):
 
 print ("The bar color list is ",bar_color_list)
 
+ticker_volume_upper_limit = max(volume[0:50])
+# if (ticker_volume_upper_limit >= 100000000000):
+#   ticker_volume_ytick_format_for = "100B"
+# elif (10000000000 <= ticker_volume_upper_limit < 100000000000):
+#   ticker_volume_ytick_format_for = "10B"
+# elif (1000000000 <= ticker_volume_upper_limit < 10000000000):
+#   ticker_volume_ytick_format_for = "B"
+
+#
+# millnames = ['',' Thousand',' Million',' Billion',' Trillion']
+# for n in (1.23456789 * 10**r for r in range(-2, 19, 1)):
+#   print('%20.1f: %20s' % (n,millify(n)))
+#
+# print('the answer is %s' % human_format(ticker_volume_upper_limit))  # prints 'the answer is 7.45M'
+# sys.exit(1)
+#
+#
+#
+# ticker_volume_upper_limit_chunks = int(max(volume[0:50])/4)
+# print ("The max volume in the range is", ticker_volume_upper_limit)
+# ticker_volume_ytick_list = []
+# for i_idx in range(0,5,1):
+#   print ("Index", i_idx)
+#   ticker_volume_ytick_list.append(i_idx*ticker_volume_upper_limit_chunks)
+#
+# print (("The volume chunk list is", ticker_volume_ytick_list))
+# sys.exit(1)
+#
 # #############################################################################
 # #############################################################################
 # #############################################################################
@@ -944,9 +979,16 @@ candle_plt.plot(date_list_tmp[0:50],MA_Price_10_list[0:50],linewidth=.5, color =
 volume_plt.bar(date_list_tmp[0:50], volume[0:50], width=1, color=bar_color_list[0:50])
 volume_plt_MA = volume_plt.twinx()
 volume_plt_MA.plot(date_list_tmp[0:50],MA_volume_50_list[0:50], color = 'pink', label = 'SMA10')
+
 candle_plt.grid(True)
 candle_plt.set_xticks([])
 candle_plt.yaxis.tick_right()
+
+volume_plt.set_ylim(0, ticker_volume_upper_limit)
+volume_plt_MA.set_ylim(0, ticker_volume_upper_limit)
+# volume_plt.set_yticks(yr_dates_tmp)
+# volume_plt.set_xticklabels(yr_dates_tmp, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+
 volume_plt.grid(True)
 volume_plt.xaxis_date()
 volume_plt.yaxis.tick_right()
