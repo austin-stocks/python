@@ -933,6 +933,17 @@ for i_idx in range(0,5,1):
   ticker_volume_ytick_list.append(i_idx*(ticker_volume_upper_limit/4))
   ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx],precision=0))
   print("Index", i_idx, "Tick Label", ticker_volume_ytick_list[i_idx], "Tick label Text", ticker_volume_yticklabels_list[i_idx])
+
+# Get the Sundays in the date range to act as grid in the candle and volume plots
+candle_sunday_dates = pd.date_range(date_str_list_candles[candle_chart_duration], date_str_list_candles[0], freq='W-SUN')
+print ("The Sunday dates are", candle_sunday_dates)
+
+candle_sunday_dates_str = []
+for x in candle_sunday_dates:
+  print("The original Sunday Date is :", x)
+  candle_sunday_dates_str.append(x.date().strftime('%m/%d/%Y'))
+
+print ("The modified Sunday dates are", candle_sunday_dates_str)
 # =============================================================================
 
 
@@ -961,8 +972,11 @@ plt.subplots_adjust(hspace=0,wspace=0)
 fig.set_size_inches(16, 10)  # Length x height
 fig.subplots_adjust(right=0.90)
 # fig.autofmt_xdate()
+# This works - Named colors in matplotlib
+# https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib
 main_plt.set_facecolor("lightgrey")
-candle_plt.set_facecolor("lightblue")
+candle_plt.set_facecolor("mistyrose")
+volume_plt.set_facecolor("honeydew")
 
 plt.text(x=0.11, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
 plt.text(x=0.11, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
@@ -984,21 +998,26 @@ candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_200_list[0:c
 candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_50_list[0:candle_chart_duration], linewidth=.5,color = 'blue', label = 'SMA50')
 candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_20_list[0:candle_chart_duration],linewidth=.5, color = 'green', label = 'SMA20')
 candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_10_list[0:candle_chart_duration],linewidth=.5, color = 'deeppink', label = 'SMA10')
+# candle_plt.set_xticks([])
+candle_plt.set_xticks(candle_sunday_dates, minor=False)
+candle_plt.grid(True)
 candle_plt.set_ylabel('Price', color='k')
 candle_plt.yaxis.set_label_position("right")
+candle_plt.yaxis.tick_right()
+
+
+
 
 volume_plt.bar(date_list_candles[0:candle_chart_duration], volume[0:candle_chart_duration], width=1, color=bar_color_list[0:candle_chart_duration])
 volume_plt_MA = volume_plt.twinx()
 volume_plt_MA.plot(date_list_candles[0:candle_chart_duration],MA_volume_50_list[0:candle_chart_duration], color = 'blue', label = 'SMA10')
 
-candle_plt.grid(True)
-candle_plt.set_xticks([])
-candle_plt.yaxis.tick_right()
 
 
+volume_plt.set_xticks(candle_sunday_dates, minor=False)
 volume_plt.grid(True)
-volume_plt.xaxis_date()
-volume_plt.set_xticklabels(date_list_candles[0:candle_chart_duration],rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+# volume_plt.xaxis_date()
+volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
 volume_plt.set_ylim(0, ticker_volume_upper_limit)
 volume_plt.yaxis.tick_right()
 volume_plt.set_yticks(ticker_volume_ytick_list)
@@ -1006,11 +1025,11 @@ volume_plt.set_yticklabels(ticker_volume_yticklabels_list, rotation=0, fontsize=
 
 
 volume_plt_MA.set_ylim(0, ticker_volume_upper_limit)
-volume_plt_MA.set_xticks([])
+# volume_plt_MA.set_xticks([])
 volume_plt_MA.set_yticks([])
 volume_plt_MA.text(date_list_candles[0], MA_volume_50_list[0], human_format(MA_volume_50_list[0]),
                    fontsize=7,color='blue',fontweight='bold',
-                   bbox=dict(facecolor='grey', edgecolor='k', pad=1.0,alpha=1))
+                   bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
 plt.setp(plt.gca().get_xticklabels(), rotation=90)
 
 
@@ -1045,7 +1064,7 @@ print("Type of fig ", type(fig), \
 # This works - I have commented out so that the code does not print out the xlate
 # and I can get more space below the date ticks
 # main_plt.set_xlabel('Date')
-main_plt.set_ylabel('Q EPS')
+main_plt.set_ylabel('Earnings')
 main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
 main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
                               color="deeppink", marker='.')
@@ -1254,6 +1273,8 @@ lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
 # -----------------------------------------------------------------------------
 # Collect the labels for the subplots and then create the legends
 # -----------------------------------------------------------------------------
+'''
+# This works perfectly well - but Ann wants no Legends for now
 lns = price_plt_inst + main_plt_inst + annual_past_eps_plt_inst + lower_channel_plt_inst
 if (pays_dividend):
   lns = lns + dividend_plt_inst
@@ -1262,15 +1283,12 @@ if (number_of_growth_proj_overlays > 0):
             + yr_eps_10_0_plt_inst_0 + yr_eps_20_0_plt_inst_0
 if (plot_spy):
   lns = lns + spy_plt_inst
-
 # sys.exit(1)
 labs = [l.get_label() for l in lns]
-# This works - puts the legend in upper-left
-# main_plt.legend(lns, labs, loc="upper left", fontsize = 'x-small')
 main_plt.legend(lns, labs, bbox_to_anchor=(-.06, -0.13), loc="lower right", borderaxespad=2, fontsize='x-small')
+'''
 # This works perfectly well as well
 # main_plt.legend(lns, labs,bbox_to_anchor=(-.10,-0.13), loc="lower left", borderaxespad=2,fontsize = 'x-small')
-
 # This works if we don't have defined the inst of the plots. In this case we
 # collect the things manually and then put them in legend
 # h1,l1 = main_plt.get_legend_handles_labels()
@@ -1378,7 +1396,9 @@ else:
 # main_plt.minorticks_on()
 # main_plt.yaxis.grid(True)
 #
-
+# This works - Good resource
+# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
+# https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
 yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
 qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
 print("Yearly Dates are ", yr_dates)
