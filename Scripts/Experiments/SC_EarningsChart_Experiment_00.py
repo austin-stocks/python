@@ -902,34 +902,32 @@ for i_idx in range(len(price_close_list)):
 
 print ("The bar color list is ",bar_color_list)
 
-ticker_volume_upper_limit = max(volume[0:50])
-# if (ticker_volume_upper_limit >= 100000000000):
-#   ticker_volume_ytick_format_for = "100B"
-# elif (10000000000 <= ticker_volume_upper_limit < 100000000000):
-#   ticker_volume_ytick_format_for = "10B"
-# elif (1000000000 <= ticker_volume_upper_limit < 10000000000):
-#   ticker_volume_ytick_format_for = "B"
 
-#
-# millnames = ['',' Thousand',' Million',' Billion',' Trillion']
-# for n in (1.23456789 * 10**r for r in range(-2, 19, 1)):
-#   print('%20.1f: %20s' % (n,millify(n)))
-#
-# print('the answer is %s' % human_format(ticker_volume_upper_limit))  # prints 'the answer is 7.45M'
-# sys.exit(1)
-#
-#
-#
-# ticker_volume_upper_limit_chunks = int(max(volume[0:50])/4)
-# print ("The max volume in the range is", ticker_volume_upper_limit)
-# ticker_volume_ytick_list = []
-# for i_idx in range(0,5,1):
-#   print ("Index", i_idx)
-#   ticker_volume_ytick_list.append(i_idx*ticker_volume_upper_limit_chunks)
-#
-# print (("The volume chunk list is", ticker_volume_ytick_list))
-# sys.exit(1)
-#
+
+ticker_volume_max = max(volume[0:50])
+ticker_volume_max_no_of_digits = len(str(abs(int(ticker_volume_max))))
+ticker_volume_max_first_digit = int(str(ticker_volume_max)[:1])
+print ("The max volume is", ticker_volume_max, "and the number of digits are", ticker_volume_max_no_of_digits, "and the first digit is", ticker_volume_max_first_digit)
+if (ticker_volume_max_first_digit == 1):
+  ticker_volume_upper_limit = 2 * math.pow(10,ticker_volume_max_no_of_digits-1)
+elif (ticker_volume_max_first_digit == 2):
+  ticker_volume_upper_limit = 4 * math.pow(10,ticker_volume_max_no_of_digits-1)
+elif (2 < ticker_volume_max_first_digit <= 4):
+  ticker_volume_upper_limit = 5 * math.pow(10, ticker_volume_max_no_of_digits - 1)
+elif (5 < ticker_volume_max_first_digit <= 7):
+  ticker_volume_upper_limit = 8 * math.pow(10, ticker_volume_max_no_of_digits - 1)
+else:
+  ticker_volume_upper_limit = 10 * math.pow(10,ticker_volume_max_no_of_digits-1)
+
+print ("The upper limit for volume is", ticker_volume_upper_limit)
+ticker_volume_ytick_list = []
+ticker_volume_yticklabels_list = []
+for i_idx in range(0,5,1):
+  ticker_volume_ytick_list.append(i_idx*(ticker_volume_upper_limit/4))
+  ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx]))
+  print("Index", i_idx, "Tick Label", ticker_volume_ytick_list[i_idx], "Tick label Text", ticker_volume_yticklabels_list[i_idx])
+
+
 # #############################################################################
 # #############################################################################
 # #############################################################################
@@ -984,18 +982,22 @@ candle_plt.grid(True)
 candle_plt.set_xticks([])
 candle_plt.yaxis.tick_right()
 
-volume_plt.set_ylim(0, ticker_volume_upper_limit)
-volume_plt_MA.set_ylim(0, ticker_volume_upper_limit)
-# volume_plt.set_yticks(yr_dates_tmp)
-# volume_plt.set_xticklabels(yr_dates_tmp, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
 
 volume_plt.grid(True)
 volume_plt.xaxis_date()
+volume_plt.set_xticklabels(date_list_tmp[0:50],rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+volume_plt.set_ylim(0, ticker_volume_upper_limit)
 volume_plt.yaxis.tick_right()
+volume_plt.set_yticks(ticker_volume_ytick_list)
+volume_plt.set_yticklabels(ticker_volume_yticklabels_list, rotation=0, fontsize=8, color='k', minor=False)
+
+
+volume_plt_MA.set_ylim(0, ticker_volume_upper_limit)
 volume_plt_MA.set_xticks([])
 volume_plt_MA.set_yticks([])
-volume_plt.set_xticklabels(date_list_tmp[0:50],rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
-
+volume_plt_MA.text(date_list_tmp[0], MA_volume_50_list[0], human_format(MA_volume_50_list[0]),
+                   fontsize=7,color='blue',fontweight='bold',
+                   bbox=dict(facecolor='grey', edgecolor='k', pad=1.0,alpha=1))
 plt.setp(plt.gca().get_xticklabels(), rotation=90)
 
 
