@@ -1001,6 +1001,9 @@ candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_10_list[0:ca
 # candle_plt.set_xticks([])
 candle_plt.set_xticks(candle_sunday_dates, minor=False)
 candle_plt.grid(True)
+candle_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
+# This works - To turn individual grid axis off or on
+# candle_plt.grid(False,axis='y')
 candle_plt.set_ylabel('Price', color='k')
 candle_plt.yaxis.set_label_position("right")
 candle_plt.yaxis.tick_right()
@@ -1016,7 +1019,7 @@ volume_plt_MA.plot(date_list_candles[0:candle_chart_duration],MA_volume_50_list[
 
 volume_plt.set_xticks(candle_sunday_dates, minor=False)
 volume_plt.grid(True)
-# volume_plt.xaxis_date()
+volume_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
 volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
 volume_plt.set_ylim(0, ticker_volume_upper_limit)
 volume_plt.yaxis.tick_right()
