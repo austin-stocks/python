@@ -4,18 +4,27 @@ import os
 import math
 import json
 import sys
-from yahoofinancials import YahooFinancials
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
 from matplotlib.offsetbox import AnchoredText
 from SC_logger import my_print as my_print
-
+from yahoofinancials import YahooFinancials
+from mpl_finance import candlestick_ohlc
 from pandas.plotting import register_matplotlib_converters
 
 register_matplotlib_converters()
 
+def millify(n):
+  n = float(n)
+  millidx = max(0,min(len(millnames)-1,int(math.floor(0 if n == 0 else math.log10(abs(n))/3))))
+  return '{:.0f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
 
+def human_format(num, precision=2, suffixes=['', 'K', 'M', 'B', 'T', 'P']):
+  m = sum([abs(num / 1000.0 ** x) >= 1 for x in range(1, len(suffixes))])
+  return f'{num / 1000.0 ** m:.{precision}f}{suffixes[m]}'
 # =============================================================================
 # User defined function
 # This function takes in a list that has nan in between numeric values and
@@ -753,7 +762,7 @@ else:
 # Handle negative earning...in the function
 # What if there is no 5 years worth of data available?
 # Which text box to use...can I put the text_str outside the plot
-# Get the text string to format for left justified with enough space 
+# Get the text string to format for left justified with enough space
 # So I am ifing the block of code out for now...it works but once I do the
 # above two todo then can unif the code
 
@@ -855,6 +864,88 @@ if (yahoo_comany_info_df.index.isin([(ticker)]).any()):
 print (ticker_company_name, ticker_sector, ticker_industry)
 # =============================================================================
 
+# =============================================================================
+# Extract and generate information needed for candlesticks and volume chart
+# =============================================================================
+if (math.isnan(ticker_config_series['Candle_Chart_Duration_Days'])):
+  candle_chart_duration = 50
+else:
+  candle_chart_duration = int(ticker_config_series['Candle_Chart_Duration_Days'])
+
+historical_columns_list = list(historical_df)
+print ("The columns in Historical Dataframe ", historical_columns_list)
+# Get the candlestick_df from historical_df - candlesticks_df has all the data
+# past the first date when the prices are available.
+candlestick_df = historical_df.loc[ticker_adj_close_list.index(ticker_curr_price):]
+candlestick_df.columns =  historical_columns_list
+print ("Candlestick Dataframe is ",candlestick_df)
+
+date_str_list_candles = candlestick_df.Date.tolist()
+# Change the Date to mdates - This gives out warning - todo : Take care of the warning.
+candlestick_df['Date'] = [mdates.date2num(dt.datetime.strptime(d, '%m/%d/%Y').date()) for d in date_str_list_candles]
+print ("Candlestick Dataframe after chanings the Dates to mdates is ",candlestick_df)
+MA_Price_200_list = candlestick_df.MA_Price_200_day.tolist()
+MA_Price_50_list = candlestick_df.MA_Price_50_day.tolist()
+MA_Price_20_list = candlestick_df.MA_Price_20_day.tolist()
+MA_Price_10_list = candlestick_df.MA_Price_10_day.tolist()
+MA_volume_50_list = candlestick_df.MA_Volume_50_day.tolist()
+
+# Canclesticks likes to put everything in tuple before plotting
+quotes = [tuple(x) for x in candlestick_df[['Date', 'Open', 'High', 'Low', 'Close']].values]
+date_list_candles = candlestick_df.Date.tolist()
+volume = candlestick_df.Volume.tolist()
+print ("The type of quotes is",quotes)
+print ("The type of volume is",volume)
+
+# Set the bar color for volume by comparing the open and close prices
+price_open_list = candlestick_df.Open.tolist()
+price_close_list = candlestick_df.Close.tolist()
+bar_color_list = ['r'] * len(price_close_list)
+for i_idx in range(len(price_close_list)):
+  bar_color_list[i_idx] = 'r'
+  if (price_close_list[i_idx] > price_open_list[i_idx]):
+    bar_color_list[i_idx] = 'g'
+
+print ("The bar color list is ",bar_color_list)
+
+# ---------------------------------------------------------
+# Set the ticks and the ticklabels for y-axis for volume
+# ---------------------------------------------------------
+ticker_volume_max = max(volume[0:candle_chart_duration])
+ticker_volume_max_no_of_digits = len(str(abs(int(ticker_volume_max))))
+ticker_volume_max_first_digit = int(str(ticker_volume_max)[:1])
+print ("The max volume is", ticker_volume_max, "and the number of digits are", ticker_volume_max_no_of_digits, "and the first digit is", ticker_volume_max_first_digit)
+if (ticker_volume_max_first_digit == 1):
+  ticker_volume_upper_limit = 2 * math.pow(10,ticker_volume_max_no_of_digits-1)
+elif (ticker_volume_max_first_digit == 2):
+  ticker_volume_upper_limit = 4 * math.pow(10,ticker_volume_max_no_of_digits-1)
+elif (2 < ticker_volume_max_first_digit <= 4):
+  ticker_volume_upper_limit = 5 * math.pow(10, ticker_volume_max_no_of_digits - 1)
+elif (5 < ticker_volume_max_first_digit <= 7):
+  ticker_volume_upper_limit = 8 * math.pow(10, ticker_volume_max_no_of_digits - 1)
+else:
+  ticker_volume_upper_limit = 10 * math.pow(10,ticker_volume_max_no_of_digits-1)
+
+print ("The upper limit for volume is", ticker_volume_upper_limit)
+ticker_volume_ytick_list = []
+ticker_volume_yticklabels_list = []
+for i_idx in range(0,5,1):
+  ticker_volume_ytick_list.append(i_idx*(ticker_volume_upper_limit/4))
+  ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx],precision=0))
+  print("Index", i_idx, "Tick Label", ticker_volume_ytick_list[i_idx], "Tick label Text", ticker_volume_yticklabels_list[i_idx])
+
+# Get the Sundays in the date range to act as grid in the candle and volume plots
+candle_sunday_dates = pd.date_range(date_str_list_candles[candle_chart_duration], date_str_list_candles[0], freq='W-SUN')
+print ("The Sunday dates are", candle_sunday_dates)
+
+candle_sunday_dates_str = []
+for x in candle_sunday_dates:
+  print("The original Sunday Date is :", x)
+  candle_sunday_dates_str.append(x.date().strftime('%m/%d/%Y'))
+
+print ("The modified Sunday dates are", candle_sunday_dates_str)
+# =============================================================================
+
 
 # #############################################################################
 # #############################################################################
@@ -868,17 +959,35 @@ print (ticker_company_name, ticker_sector, ticker_industry)
 # #############################################################################
 # #############################################################################
 chart_type = 'linear'
-fig, main_plt = plt.subplots()
+# fig, main_plt = plt.subplots()
+
+fig=plt.figure()
+main_plt = plt.subplot2grid((5,5), (0,0), colspan=4,rowspan=5)
+candle_plt = plt.subplot2grid((5,5), (0,4), colspan=1,rowspan=4)
+volume_plt = plt.subplot2grid((5,5), (4,4), colspan=1,rowspan=1)
+plt.subplots_adjust(hspace=0,wspace=0)
+
+
+
 fig.set_size_inches(16, 10)  # Length x height
 fig.subplots_adjust(right=0.90)
-fig.autofmt_xdate()
+# fig.autofmt_xdate()
+# This works - Named colors in matplotlib
+# https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib
 main_plt.set_facecolor("lightgrey")
+candle_plt.set_facecolor("mistyrose")
+volume_plt.set_facecolor("honeydew")
+
 plt.text(x=0.11, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
 plt.text(x=0.11, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
 # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
 # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
 # This works too...may use that is set the subtitle for the plot
 # main_plt.set_title(ticker_company_name + "("  +ticker +")", fontsize=18,horizontalalignment='right')
+
+
+
+
 
 # Various plots that share the same x axis(date)
 price_plt = main_plt.twinx()
@@ -908,7 +1017,7 @@ print("Type of fig ", type(fig), \
 # This works - I have commented out so that the code does not print out the xlate
 # and I can get more space below the date ticks
 # main_plt.set_xlabel('Date')
-main_plt.set_ylabel('Q EPS')
+main_plt.set_ylabel('Earnings')
 main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
 main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
                               color="deeppink", marker='.')
@@ -917,7 +1026,10 @@ main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_lis
 # -----------------------------------------------------------------------------
 # Historical Price Plot
 # -----------------------------------------------------------------------------
-price_plt.set_ylabel('Price', color='k')
+# Now printing price on the right side of the candle plot
+# price_plt.set_ylabel('Price', color='k')
+# This works - this will move the tick labels inside the plot
+price_plt.tick_params(axis="y",direction="in", pad=-22)
 price_plt.set_ylim(price_lim_lower, price_lim_upper)
 price_plt.set_yscale(chart_type)
 price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
@@ -1112,8 +1224,122 @@ lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
+# Candlestick and volume Plots
+# -----------------------------------------------------------------------------
+# todo
+# Figure out how to adjust the candlestick price y ranges
+# Google search - remove weekends from matplotlib plot
+candle_plt_inst = candlestick_ohlc(candle_plt, quotes[0:candle_chart_duration], width=1, colorup='g', colordown='r');
+candle_plt_MA200_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_200_list[0:candle_chart_duration],linewidth=.5, color = 'black', label = 'SMA200')
+candle_plt_MA50_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_50_list[0:candle_chart_duration], linewidth=.5,color = 'blue', label = 'SMA50')
+candle_plt_MA20_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_20_list[0:candle_chart_duration],linewidth=.5, color = 'green', label = 'SMA20')
+candle_plt_MA10_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_10_list[0:candle_chart_duration],linewidth=.5, color = 'deeppink', label = 'SMA10')
+volume_plt_inst = volume_plt.bar(date_list_candles[0:candle_chart_duration], volume[0:candle_chart_duration], width=1, color=bar_color_list[0:candle_chart_duration])
+volume_plt_MA = volume_plt.twinx()
+volume_plt_MA_inst = volume_plt_MA.plot(date_list_candles[0:candle_chart_duration],MA_volume_50_list[0:candle_chart_duration], color = 'blue', label = 'SMA10')
+# -----------------------------------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# Set the gridlines for all plots
+# -----------------------------------------------------------------------------
+# import matplotlib.pyplot as plt
+# fig, ax = plt.subplots()
+# ax.set_yticks([0.2, 0.6, 0.8], minor=False)
+# ax.set_yticks([0.3, 0.55, 0.7], minor=True)
+# ax.yaxis.grid(True, which='major')
+# ax.yaxis.grid(True, which='minor')
+# plt.show()
+#  Set the Minor and Major ticks and then show the gird
+# xstart,xend = price_plt.get_xlim()
+# ystart,yend = price_plt.get_ylim()
+# xstart_date = matplotlib.dates.num2date(xstart)
+# xend_date = matplotlib.dates.num2date(xend)
+#
+# print ("The xlimit Start: ", xstart_date, " End: ", xend_date, "Starting year", xstart_date.year )
+# print ("The ylimit Start: ", ystart, " End: ", yend )
+#
+# print ("The years between the start and end dates are : ", range(xstart_date.year, xend_date.year+1))
+# qtr_dates = pd.date_range(xstart_date.year, xend_date.year, freq='Q')
+# yr_dates = pd.date_range('2018-01', '2020-05', freq='Y')
+# print ("Quarterly Dates are ", qtr_dates)
+#
+# main_plt.set_xticks(qtr_dates, minor=True)
+# # main_plt.set_xticks(yr_dates, minor=False)
+# main_plt.xaxis.grid(which='major', linestyle='-')
+# main_plt.xaxis.grid(which='minor',linestyle='--')
+# main_plt.minorticks_on()
+# main_plt.yaxis.grid(True)
+#
+# This works - Good resource
+# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
+# https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
+yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
+qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
+print("Yearly Dates are ", yr_dates)
+print("Quarterly Dates are ", type(qtr_dates))
+
+qtr_dates_tmp = []
+yr_dates_tmp = []
+for x in qtr_dates:
+  print("The original Quarterly Date is :", x)
+  if (x.is_year_end is True):
+    print("This quarter is also year end date. Removing ", type(x))
+  if (x in yr_dates):
+    print("This quarter is also year end date. Removing ", type(x))
+  else:
+    qtr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
+
+for x in yr_dates:
+  print("The original Yearly Date is :", x)
+  yr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
+
+print("The modified qtr dates list is: ", qtr_dates)
+print("The modified qtr dates list is: ", qtr_dates_tmp)
+print("The modified yr dates list is: ", yr_dates_tmp)
+
+main_plt.set_xticks(yr_dates_tmp, minor=False)
+main_plt.set_xticks(qtr_dates_tmp, minor=True)
+main_plt.xaxis.set_tick_params(width=5)
+main_plt.set_xticklabels(yr_dates_tmp, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+main_plt.set_xticklabels(qtr_dates_tmp, rotation=90, fontsize=7, minor=True)
+main_plt.grid(which='major', axis='x', linestyle='-', color='black', linewidth=1.5)
+main_plt.grid(which='minor', linestyle='--', color='blue')
+main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=1)
+
+# candle_plt.set_xticks([])
+candle_plt.set_xticks(candle_sunday_dates, minor=False)
+candle_plt.grid(True)
+candle_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
+# This works - To turn individual grid axis off or on
+# candle_plt.grid(False,axis='y')
+candle_plt.set_ylabel('Price', color='k')
+candle_plt.yaxis.set_label_position("right")
+candle_plt.yaxis.tick_right()
+
+volume_plt.set_xticks(candle_sunday_dates, minor=False)
+volume_plt.grid(True)
+volume_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
+volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+volume_plt.set_ylim(0, ticker_volume_upper_limit)
+volume_plt.yaxis.tick_right()
+volume_plt.set_yticks(ticker_volume_ytick_list)
+volume_plt.set_yticklabels(ticker_volume_yticklabels_list, rotation=0, fontsize=8, color='k', minor=False)
+
+volume_plt_MA.set_ylim(0, ticker_volume_upper_limit)
+# volume_plt_MA.set_xticks([])
+volume_plt_MA.set_yticks([])
+volume_plt_MA.text(date_list_candles[0], MA_volume_50_list[0], human_format(MA_volume_50_list[0]),
+                   fontsize=7,color='blue',fontweight='bold',
+                   bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+plt.setp(plt.gca().get_xticklabels(), rotation=90)
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # Collect the labels for the subplots and then create the legends
 # -----------------------------------------------------------------------------
+'''
+# This works perfectly well - but Ann wants no Legends for now
 lns = price_plt_inst + main_plt_inst + annual_past_eps_plt_inst + lower_channel_plt_inst
 if (pays_dividend):
   lns = lns + dividend_plt_inst
@@ -1122,15 +1348,12 @@ if (number_of_growth_proj_overlays > 0):
             + yr_eps_10_0_plt_inst_0 + yr_eps_20_0_plt_inst_0
 if (plot_spy):
   lns = lns + spy_plt_inst
-
 # sys.exit(1)
 labs = [l.get_label() for l in lns]
-# This works - puts the legend in upper-left
-# main_plt.legend(lns, labs, loc="upper left", fontsize = 'x-small')
-main_plt.legend(lns, labs, bbox_to_anchor=(1.005, -0.13), loc="lower left", borderaxespad=2, fontsize='x-small')
+main_plt.legend(lns, labs, bbox_to_anchor=(-.06, -0.13), loc="lower right", borderaxespad=2, fontsize='x-small')
+'''
 # This works perfectly well as well
 # main_plt.legend(lns, labs,bbox_to_anchor=(-.10,-0.13), loc="lower left", borderaxespad=2,fontsize = 'x-small')
-
 # This works if we don't have defined the inst of the plots. In this case we
 # collect the things manually and then put them in legend
 # h1,l1 = main_plt.get_legend_handles_labels()
@@ -1204,73 +1427,6 @@ else:
                          xytext=(int(x_coord), int(y_coord)), textcoords='offset points', arrowprops=dict(facecolor='black', width=.25),
                          bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
                          # arrowprops=dict(facecolor='black', width=1))
-
-# -----------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------
-# Set the gridlines
-# -----------------------------------------------------------------------------
-# import matplotlib.pyplot as plt
-# fig, ax = plt.subplots()
-# ax.set_yticks([0.2, 0.6, 0.8], minor=False)
-# ax.set_yticks([0.3, 0.55, 0.7], minor=True)
-# ax.yaxis.grid(True, which='major')
-# ax.yaxis.grid(True, which='minor')
-# plt.show()
-#  Set the Minor and Major ticks and then show the gird
-# xstart,xend = price_plt.get_xlim()
-# ystart,yend = price_plt.get_ylim()
-# xstart_date = matplotlib.dates.num2date(xstart)
-# xend_date = matplotlib.dates.num2date(xend)
-#
-# print ("The xlimit Start: ", xstart_date, " End: ", xend_date, "Starting year", xstart_date.year )
-# print ("The ylimit Start: ", ystart, " End: ", yend )
-#
-# print ("The years between the start and end dates are : ", range(xstart_date.year, xend_date.year+1))
-# qtr_dates = pd.date_range(xstart_date.year, xend_date.year, freq='Q')
-# yr_dates = pd.date_range('2018-01', '2020-05', freq='Y')
-# print ("Quarterly Dates are ", qtr_dates)
-#
-# main_plt.set_xticks(qtr_dates, minor=True)
-# # main_plt.set_xticks(yr_dates, minor=False)
-# main_plt.xaxis.grid(which='major', linestyle='-')
-# main_plt.xaxis.grid(which='minor',linestyle='--')
-# main_plt.minorticks_on()
-# main_plt.yaxis.grid(True)
-#
-
-yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
-qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
-print("Yearly Dates are ", yr_dates)
-print("Quarterly Dates are ", type(qtr_dates))
-
-qtr_dates_tmp = []
-yr_dates_tmp = []
-for x in qtr_dates:
-  print("The original Quarterly Date is :", x)
-  if (x.is_year_end is True):
-    print("This quarter is also year end date. Removing ", type(x))
-  if (x in yr_dates):
-    print("This quarter is also year end date. Removing ", type(x))
-  else:
-    qtr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
-
-for x in yr_dates:
-  print("The original Yearly Date is :", x)
-  yr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
-
-print("The modified qtr dates list is: ", qtr_dates)
-print("The modified qtr dates list is: ", qtr_dates_tmp)
-print("The modified yr dates list is: ", yr_dates_tmp)
-
-main_plt.set_xticks(yr_dates_tmp, minor=False)
-main_plt.set_xticks(qtr_dates_tmp, minor=True)
-main_plt.xaxis.set_tick_params(width=5)
-main_plt.set_xticklabels(yr_dates_tmp, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
-main_plt.set_xticklabels(qtr_dates_tmp, rotation=90, fontsize=7, minor=True)
-main_plt.grid(which='major', axis='x', linestyle='-', color='black', linewidth=1.5)
-main_plt.grid(which='minor', linestyle='--', color='blue')
-main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=1)
 
 # -----------------------------------------------------------------------------
 
