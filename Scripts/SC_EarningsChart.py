@@ -117,7 +117,7 @@ with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
 
 # todo : Should be able to read from the Tracklist file in a loop
 # and save the charts in the charts directory
-ticker = "MED"
+ticker = "NMIH"
 
 # Open the Log file in write mode
 logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
@@ -756,7 +756,6 @@ else:
 
 # =============================================================================
 # Find out the growth for 1yr, 3yr and 5yr for eps and price
-# Temporarily iffed out
 # =============================================================================
 # todo :
 # Handle negative earning...in the function
@@ -838,10 +837,10 @@ if (get_eps_and_price_growth):
   price_growth_5_yr = get_growth(ticker_curr_price, ticker_5_yr_ago_price)
 
   price_eps_growth_str_textbox_loc_09 = "                               Earnings             Price\n"
-  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "Curr" + " - " + str(ticker_curr_date)             + "   " + str(yr_eps_curr)     + "                     " + str(ticker_curr_price) +"              \n"
-  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "1 Yr" + " - " + str(ticker_1_yr_ago_date_for_eps) + "   " + str(yr_eps_1_yr_ago) + "(" + str(eps_growth_1_yr) + "%)     " + str(ticker_1_yr_ago_price) +"("+ str(price_growth_1_yr) + "%)\n"
-  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "3 Yr" + " - " + str(ticker_3_yr_ago_date_for_eps) + "   " + str(yr_eps_3_yr_ago) + "(" + str(eps_growth_3_yr) + "%)     " + str(ticker_3_yr_ago_price) +"("+ str(price_growth_3_yr) + "%)\n"
-  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "5 Yr" + " - " + str(ticker_5_yr_ago_date_for_eps) + "   " + str(yr_eps_5_yr_ago) + "(" + str(eps_growth_5_yr) + "%)     " + str(ticker_5_yr_ago_price) +"("+ str(price_growth_5_yr) + "%)"
+  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "Curr - " + str(ticker_curr_date)             + "   " + str(yr_eps_curr)     + "                     " + str(ticker_curr_price) +"              \n"
+  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "1 Yr - " + str(ticker_1_yr_ago_date_for_eps) + "   " + str(yr_eps_1_yr_ago) + "(" + str(eps_growth_1_yr) + "%)     " + str(ticker_1_yr_ago_price) +"("+ str(price_growth_1_yr) + "%)\n"
+  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "3 Yr - " + str(ticker_3_yr_ago_date_for_eps) + "   " + str(yr_eps_3_yr_ago) + "(" + str(eps_growth_3_yr) + "%)     " + str(ticker_3_yr_ago_price) +"("+ str(price_growth_3_yr) + "%)\n"
+  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "5 Yr - " + str(ticker_5_yr_ago_date_for_eps) + "   " + str(yr_eps_5_yr_ago) + "(" + str(eps_growth_5_yr) + "%)     " + str(ticker_5_yr_ago_price) +"("+ str(price_growth_5_yr) + "%)"
   print (price_eps_growth_str_textbox_loc_09)
 
 # =============================================================================
@@ -909,7 +908,8 @@ for i_idx in range(len(price_close_list)):
 print ("The bar color list is ",bar_color_list)
 
 # ---------------------------------------------------------
-# Set the ticks and the ticklabels for y-axis for volume
+# Generate the data that will be used for ticks and
+# ticklabels for y-axis for volume
 # ---------------------------------------------------------
 ticker_volume_max = max(volume[0:candle_chart_duration])
 ticker_volume_max_no_of_digits = len(str(abs(int(ticker_volume_max))))
@@ -931,7 +931,7 @@ ticker_volume_ytick_list = []
 ticker_volume_yticklabels_list = []
 for i_idx in range(0,5,1):
   ticker_volume_ytick_list.append(i_idx*(ticker_volume_upper_limit/4))
-  ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx],precision=0))
+  ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx],precision=1))
   print("Index", i_idx, "Tick Label", ticker_volume_ytick_list[i_idx], "Tick label Text", ticker_volume_yticklabels_list[i_idx])
 
 # Get the Sundays in the date range to act as grid in the candle and volume plots
