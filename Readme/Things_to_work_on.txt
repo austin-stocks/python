@@ -7,14 +7,12 @@ to do - than you can probably do.
 
 The following is the list of items that needs to be worked on 
 --------------------------------------------------------------
-1. Candlestick charts with volume overlay - maybe have two separate charts
 2. Price channels with Analyst accuracy based adjustment - Needs more though
    and discussion with Ann
 3. Log charts
 4. As per Ann - want to turn off the numbers besides the black and white
    diamonds
 5. As per Ann - have a file that tells about individual buys and sells
-6. Figure out how to place text box outside the chart
 5. Financial Analysis - Peter Lynch, Phil Town, CSW, Manan Shroff - others
 6. Schiller PE chart overlay? 
 7. Long term SPY and DOW charts with their earnings?
@@ -24,5 +22,3 @@ The following is the list of items that needs to be worked on
 11. Get the fiscal quarter lined up with gridlines
 12. How to increase the figure area and reduce the white space in the file
 13. Do you need more than one git to experiment etc?
-14. From Ann - The major dates are kinda misaligned
-15. The company name should be visible in big fonts - in addition to the symbol
