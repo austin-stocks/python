@@ -32,7 +32,7 @@ yahoo_hist_out_dir = dir_path + "\\..\\Historical"
 calendar_df = pd.read_csv(calendar_file_full_path)
 config_df = pd.read_csv(configurations_file_full_path)
 config_df.set_index('Ticker', inplace=True)
-print ("The configuration df", config_df)
+# print ("The configuration df", config_df)
 # =============================================================================
 
 # =============================================================================
@@ -41,17 +41,17 @@ print ("The configuration df", config_df)
 # =============================================================================
 # print("The Calendar is", calendar_df)
 col_list = calendar_df.columns.tolist()
-print("The years are ", col_list)
+# print("The years are ", col_list)
 calendar_date_list_raw = []
 for col in col_list:
   tmp_list = calendar_df[col].dropna().tolist()
-  print("The date in col", col, " are ", tmp_list)
+  # print("The date in col", col, " are ", tmp_list)
   calendar_date_list_raw.extend(tmp_list)
 
-print("The concatenated Calendar list is ", calendar_date_list_raw)
+# print("The concatenated Calendar list is ", calendar_date_list_raw)
 # calendar_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in calendar_df.iloc[:, 0]]
 calendar_date_list = [dt.datetime.strptime(str(date), '%m/%d/%y').date() for date in calendar_date_list_raw]
-print("The Calendar Date list is", calendar_date_list, "\nand it has", len(calendar_date_list), " elements")
+# print("The Calendar Date list is", calendar_date_list, "\nand it has", len(calendar_date_list), " elements")
 # =============================================================================
 
 
@@ -75,7 +75,7 @@ else:
 # main Loop for Tickers
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
-  print("Creating Historical Data for ", ticker)
+  print("Merging Historical Data with Calendar for ", ticker)
 
   if (ticker == "BRK.B"):
     ticker = "BRK-B"
@@ -84,10 +84,10 @@ for ticker_raw in ticker_list:
 
   if ticker in config_df.index:
     ticker_config_series = config_df.loc[ticker]
-    print("Then configurations for ", ticker, " is\n", ticker_config_series)
+    # print("Then configurations for ", ticker, " is\n", ticker_config_series)
   else:
     # Todo : Create a default series at the start of the program
-    print ("Configuration Entry for ", ticker , " not found...continuing with default values")
+    # print ("Configuration Entry for ", ticker , " not found...continuing with default values")
     continue
 
 
@@ -135,7 +135,7 @@ for ticker_raw in ticker_list:
   # This will become the ending index for extracting the dates from calendar_date_list
   cal_match_date_with_historical = min(calendar_date_list, key=lambda d: abs(d - historical_date_list[0]))
   cal_match_date_with_historical_index = calendar_date_list.index(cal_match_date_with_historical)
-  print("The latest historical date is : ", historical_date_list[0], ". Closest Matching date in Calendar is :", cal_match_date_with_historical, " at index : ", cal_match_date_with_historical_index)
+  # print("The latest historical date is : ", historical_date_list[0], ". Closest Matching date in Calendar is :", cal_match_date_with_historical, " at index : ", cal_match_date_with_historical_index)
 
   # ===========================================================================
   # User specifies what date he/she wants the historical data to start from. The user specifies it as:
@@ -145,24 +145,24 @@ for ticker_raw in ticker_list:
   # This will become lead to calculating the starting index for extracting the dates from calendar_date_list
   # ===========================================================================
   calendar_future_date_str = ticker_config_series['Calendar_Future_Date']
-  print ("User Specified Calendar Future Date is : ", calendar_future_date_str)
+  # print ("User Specified Calendar Future Date is : ", calendar_future_date_str)
   if (str(calendar_future_date_str) != 'nan'):
     calendar_future_date = dt.datetime.strptime(calendar_future_date_str, '%m/%d/%Y').date()
     calendar_future_match_date = min(calendar_date_list, key=lambda d: abs(d - calendar_future_date))
     calendar_future_date_index = calendar_date_list.index(calendar_future_match_date)
-    print ("The nearest matching date (for user specified date : ", calendar_future_date, ") in calendar date list is : ", calendar_future_match_date, ", at calendar index : ", calendar_future_date_index)
+    # print ("The nearest matching date (for user specified date : ", calendar_future_date, ") in calendar date list is : ", calendar_future_match_date, ", at calendar index : ", calendar_future_date_index)
   else:
-    print("Found nan for Calendar Future End date. Will now look for Future Calendar Quarters")
+    # print("Found nan for Calendar Future End date. Will now look for Future Calendar Quarters")
     future_cal_quarter = ticker_config_series['Future_Calendar_Quarters']
-    print ("Future Calendar Quarters is : ", future_cal_quarter)
+    # print ("Future Calendar Quarters is : ", future_cal_quarter)
     if (str(future_cal_quarter) == 'nan'):
-      print ("Found nan for Future Calendar Quarters. Will assume user wants 8 future quarters")
+      # print ("Found nan for Future Calendar Quarters. Will assume user wants 8 future quarters")
       future_cal_quarter = 8
     calendar_future_date_index = cal_match_date_with_historical_index - int(future_cal_quarter*64)
   # ===========================================================================
 
 
-  print ("Will use the Calendar date list from index : ", calendar_future_date_index, " to index : ",cal_match_date_with_historical_index)
+  # print ("Will use the Calendar date list from index : ", calendar_future_date_index, " to index : ",cal_match_date_with_historical_index)
   calendar_date_list_mod = calendar_date_list[calendar_future_date_index:cal_match_date_with_historical_index]
   # print("The modified Calendar list is ", calendar_date_list_mod, "and it has \n", len(calendar_date_list_mod), "elements")
 
