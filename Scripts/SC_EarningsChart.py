@@ -17,28 +17,57 @@ from pandas.plotting import register_matplotlib_converters
 
 register_matplotlib_converters()
 
-def millify(n):
-  n = float(n)
-  millidx = max(0,min(len(millnames)-1,int(math.floor(0 if n == 0 else math.log10(abs(n))/3))))
-  return '{:.0f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
 
+# =============================================================================
+# User defined functions
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Returns big numbers in K, M(illion), B(ilion) etc
+# -----------------------------------------------------------------------------
 def human_format(num, precision=2, suffixes=['', 'K', 'M', 'B', 'T', 'P']):
   m = sum([abs(num / 1000.0 ** x) >= 1 for x in range(1, len(suffixes))])
   return f'{num / 1000.0 ** m:.{precision}f}{suffixes[m]}'
-# =============================================================================
-# User defined function
+
+# -----------------------------------------------------------------------------
+# Returns growth between the current and previous number
+# ----------|-----------|------------------------------------------|
+# Previous  |  Current  |  Notes                                   |
+# ----------|-----------|------------------------------------------|
+#    +      |     +     | Meaningful. Can be positive or negative  |
+# ----------|-----------|------------------------------------------|
+#    +      |     -     | Meaningful. Will always be negative      |
+# ----------|-----------|------------------------------------------|
+#    -      |     +     | Earnings are improving...maybe meaningful|
+# ----------|-----------|------------------------------------------|
+#    -      |     -     | If current > previous - Improving        |
+#           |           | If current < previous - Deteriorating    |
+# ----------|-----------|------------------------------------------|
+# -----------------------------------------------------------------------------
+def get_growth(current, previous):
+  if (previous == 0):
+    return "Div#0#"
+  elif current == previous:
+    return 0
+  elif (previous > 0): # Covers case 1 and 2
+    return round(((current - previous) / previous) * 100.0, 2)
+  elif (previous < 0) and (current > 0):  # Case 3
+    # This has very little meaning but still will give sone indication to
+    # the user that the growth has been on positive tragectory
+    return round(((current - previous) / previous) * 100.0, 2)*(-1)
+  elif (previous < 0) and (current < 0):  # Case 3
+    if (current > previous): # Case 4a
+      return "Improving"
+    else: # Case 4a
+      return "Deteriorating"
+
+  # return float('inf')
+
+# -----------------------------------------------------------------------------
 # This function takes in a list that has nan in between numeric values and
 # replaces the nan in the middle with a step so that the 'markers' can be
 #  converted to a line while plotting
-# # =============================================================================
-def get_growth(current, previous):
-  if current == previous:
-    return 0
-  try:
-    return round((abs(current - previous) / previous) * 100.0,2)
-  except ZeroDivisionError:
-    return float('inf')
-
+# -----------------------------------------------------------------------------
 def smooth_list(l):
   i_int = 0
   l_mod = l.copy()
@@ -758,7 +787,7 @@ else:
 # Find out the growth for 1yr, 3yr and 5yr for eps and price
 # =============================================================================
 # todo :
-# Handle negative earning...in the function
+# Handle negative earnings...in the function
 # What if there is no 5 years worth of data available?
 # Which text box to use...can I put the text_str outside the plot
 # Get the text string to format for left justified with enough space
@@ -766,7 +795,7 @@ else:
 # above two todo then can unif the code
 
 get_eps_and_price_growth = 1
-price_eps_growth_str_textbox_loc_09 = "This is the box in top center"
+price_eps_growth_str_textbox = "This is the box in top center"
 if (get_eps_and_price_growth):
   # This works : Get the first non nan value from the list. That is the current price.
   # Can't do a round here - as it round 81.6999 to 81.7 and 81.7 will not match
@@ -775,6 +804,8 @@ if (get_eps_and_price_growth):
   # ticker_curr_price = round(next(x for x in ticker_adj_close_list if not math.isnan(x)),2)
   ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
   ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
+  # Now round the ticker_curr_price to 2 decimal places
+  round(ticker_curr_price,2)
 
   # Based on the latest date from the ticker, get the latest past date for yr_eps.
   # In other words, if the current ticker date is - say 07/17/2019 - then get the latest
@@ -795,6 +826,19 @@ if (get_eps_and_price_growth):
     yr_eps_curr_date = min(yr_eps_date_list, key=lambda d: abs(d - (ticker_curr_date - dt.timedelta(days=60))))
 
   yr_eps_curr = round(yr_eps_list[yr_eps_date_list.index(yr_eps_curr_date)],2)
+
+  yr_eps_next_q_date  = min(yr_eps_date_list, key=lambda d: abs(d - ticker_curr_date))
+  print ("The date for next quarter is", yr_eps_next_q_date)
+  if (yr_eps_next_q_date <= dt.date.today()):
+    print ("The match date for next quarter eps is older than the current date. Will use date from one quarter ahead")
+    yr_eps_next_q_date = min(yr_eps_date_list, key=lambda d: abs(d - (ticker_curr_date + dt.timedelta(days=60))))
+
+  yr_eps_next_yr_date = min(yr_eps_date_list, key=lambda d: abs(d - (yr_eps_next_q_date + dt.timedelta(days=273))))
+  yr_eps_next_q = round(yr_eps_list[yr_eps_date_list.index(yr_eps_next_q_date)],2)
+  yr_eps_next_yr = round(yr_eps_list[yr_eps_date_list.index(yr_eps_next_yr_date)],2)
+  print ("The date for next quarter is", yr_eps_next_q_date, "and the projected eps is",yr_eps_next_q)
+  print ("The date for next year is", yr_eps_next_yr_date, "and the projected eps is",yr_eps_next_yr)
+
 
   # Get dates 1, 3 and 5 yr ago - based on curr eps date
   ticker_1_yr_ago_date_raw = yr_eps_curr_date - dt.timedelta(days=365)
@@ -828,20 +872,36 @@ if (get_eps_and_price_growth):
   print ("The 3 Yr ago price for ticker is", ticker_3_yr_ago_price, "on date", ticker_3_yr_ago_date_for_price, "with earnings at", yr_eps_3_yr_ago, "is at index", date_list.index(ticker_3_yr_ago_date_for_price))
   print ("The 5 Yr ago price for ticker is", ticker_5_yr_ago_price, "on date", ticker_5_yr_ago_date_for_price, "with earnings at", yr_eps_5_yr_ago, "is at index", date_list.index(ticker_5_yr_ago_date_for_price))
 
-  eps_growth_1_yr = get_growth(yr_eps_curr, yr_eps_1_yr_ago)
-  eps_growth_3_yr = get_growth(yr_eps_curr, yr_eps_3_yr_ago)
-  eps_growth_5_yr = get_growth(yr_eps_curr, yr_eps_5_yr_ago)
+
+  eps_growth_next_yr  = get_growth(yr_eps_next_yr, yr_eps_curr)
+  eps_growth_next_q   = get_growth(yr_eps_next_q, yr_eps_curr)
+  eps_growth_1_yr_ago = get_growth(yr_eps_curr, yr_eps_1_yr_ago)
+  eps_growth_3_yr_ago = get_growth(yr_eps_curr, yr_eps_3_yr_ago)
+  eps_growth_5_yr_ago = get_growth(yr_eps_curr, yr_eps_5_yr_ago)
 
   price_growth_1_yr = get_growth(ticker_curr_price, ticker_1_yr_ago_price)
   price_growth_3_yr = get_growth(ticker_curr_price, ticker_3_yr_ago_price)
   price_growth_5_yr = get_growth(ticker_curr_price, ticker_5_yr_ago_price)
 
-  price_eps_growth_str_textbox_loc_09 = "                               Earnings             Price\n"
-  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "Curr - " + str(ticker_curr_date)             + "   " + str(yr_eps_curr)     + "                     " + str(ticker_curr_price) +"              \n"
-  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "1 Yr - " + str(ticker_1_yr_ago_date_for_eps) + "   " + str(yr_eps_1_yr_ago) + "(" + str(eps_growth_1_yr) + "%)     " + str(ticker_1_yr_ago_price) +"("+ str(price_growth_1_yr) + "%)\n"
-  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "3 Yr - " + str(ticker_3_yr_ago_date_for_eps) + "   " + str(yr_eps_3_yr_ago) + "(" + str(eps_growth_3_yr) + "%)     " + str(ticker_3_yr_ago_price) +"("+ str(price_growth_3_yr) + "%)\n"
-  price_eps_growth_str_textbox_loc_09 = price_eps_growth_str_textbox_loc_09 + "5 Yr - " + str(ticker_5_yr_ago_date_for_eps) + "   " + str(yr_eps_5_yr_ago) + "(" + str(eps_growth_5_yr) + "%)     " + str(ticker_5_yr_ago_price) +"("+ str(price_growth_5_yr) + "%)"
-  print (price_eps_growth_str_textbox_loc_09)
+  price_eps_growth_str_textbox = "                                     Earnings             Price\n"
+  price_eps_growth_str_textbox += "Next yr - " + str(yr_eps_next_yr_date)          + "  " + (str(yr_eps_next_yr)+ "("+str(eps_growth_next_yr)+"%)").ljust(22) +"\n"
+  price_eps_growth_str_textbox += "Next q  - " + str(yr_eps_next_q_date)           + "  " + (str(yr_eps_next_q)+ "("+str(eps_growth_next_q)+"%)").ljust(22) +"\n"
+  price_eps_growth_str_textbox += "Curr    - " + str(ticker_curr_date)             + "  " + (str(yr_eps_curr)).ljust(22) \
+                                                                                          + "  " + (str(ticker_curr_price)).ljust(15) + "\n"
+  price_eps_growth_str_textbox += "1 Yr    - " + str(ticker_1_yr_ago_date_for_eps) + "  " + (str(yr_eps_1_yr_ago)+"("+str(eps_growth_1_yr_ago)+"%)").ljust(22) \
+                                                                                          + "  " + (str(ticker_1_yr_ago_price)+"("+str(price_growth_1_yr)+"%)").ljust(15)
+  # price_eps_growth_str_textbox += "3 Yr    - " + str(ticker_3_yr_ago_date_for_eps) + "  " + (str(yr_eps_3_yr_ago)+"("+ str(eps_growth_3_yr_ago)+"%)").ljust(22) \
+  #                                                                                         + "  " + (str(ticker_3_yr_ago_price)+"("+str(price_growth_3_yr)+"%)").ljust(15) + "\n"
+  # price_eps_growth_str_textbox += "5 Yr    - " + str(ticker_5_yr_ago_date_for_eps) + "  " + (str(yr_eps_5_yr_ago)+"("+ str(eps_growth_5_yr_ago)+"%)").ljust(22) \
+  #                                                                                         + "  " + (str(ticker_5_yr_ago_price)+"("+str(price_growth_5_yr)+"%)").ljust(15) + "\n"
+
+  print (price_eps_growth_str_textbox)
+
+  # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "Curr - " + str(ticker_curr_date)             + "  " + str(yr_eps_curr).ljust(22) + (" " + str(ticker_curr_price)).ljust(15) +"\n"
+  # # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "Curr - " + str(ticker_curr_date)             + "   " + str(yr_eps_curr)     + "                     " + str(ticker_curr_price) +"              \n"
+  # # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "1 Yr - " + str(ticker_1_yr_ago_date_for_eps) + "   " + str(yr_eps_1_yr_ago) + "(" + str(eps_growth_1_yr_ago) + "%)     " + str(ticker_1_yr_ago_price) +"("+ str(price_growth_1_yr) + "%)\n"
+  # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "3 Yr - " + str(ticker_3_yr_ago_date_for_eps) + " " + str(yr_eps_3_yr_ago) + "(" + str(eps_growth_3_yr_ago) + "%)     " + str(ticker_3_yr_ago_price) +"("+ str(price_growth_3_yr) + "%)\n"
+  # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "5 Yr - " + str(ticker_5_yr_ago_date_for_eps) + " " + str(yr_eps_5_yr_ago) + "(" + str(eps_growth_5_yr_ago) + "%)     " + str(ticker_5_yr_ago_price) +"("+ str(price_growth_5_yr) + "%)"
 
 # =============================================================================
 
@@ -867,7 +927,7 @@ print (ticker_company_name, ticker_sector, ticker_industry)
 # Extract and generate information needed for candlesticks and volume chart
 # =============================================================================
 if (math.isnan(ticker_config_series['Candle_Chart_Duration_Days'])):
-  candle_chart_duration = 50
+  candle_chart_duration = 65
 else:
   candle_chart_duration = int(ticker_config_series['Candle_Chart_Duration_Days'])
 
@@ -899,11 +959,11 @@ print ("The type of volume is",volume)
 # Set the bar color for volume by comparing the open and close prices
 price_open_list = candlestick_df.Open.tolist()
 price_close_list = candlestick_df.Close.tolist()
-bar_color_list = ['r'] * len(price_close_list)
+bar_color_list = ['darksalmon'] * len(price_close_list)
 for i_idx in range(len(price_close_list)):
-  bar_color_list[i_idx] = 'r'
+  bar_color_list[i_idx] = 'darksalmon'
   if (price_close_list[i_idx] > price_open_list[i_idx]):
-    bar_color_list[i_idx] = 'g'
+    bar_color_list[i_idx] = 'mediumseagreen'
 
 print ("The bar color list is ",bar_color_list)
 
@@ -962,9 +1022,9 @@ chart_type = 'linear'
 # fig, main_plt = plt.subplots()
 
 fig=plt.figure()
-main_plt = plt.subplot2grid((5,5), (0,0), colspan=4,rowspan=5)
-candle_plt = plt.subplot2grid((5,5), (0,4), colspan=1,rowspan=4)
-volume_plt = plt.subplot2grid((5,5), (4,4), colspan=1,rowspan=1)
+main_plt = plt.subplot2grid((5,6), (0,0), colspan=5,rowspan=5)
+candle_plt = plt.subplot2grid((5,6), (0,5), colspan=1,rowspan=4)
+volume_plt = plt.subplot2grid((5,6), (4,5), colspan=1,rowspan=1)
 plt.subplots_adjust(hspace=0,wspace=0)
 
 
@@ -975,11 +1035,13 @@ fig.subplots_adjust(right=0.90)
 # This works - Named colors in matplotlib
 # https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib
 main_plt.set_facecolor("lightgrey")
-candle_plt.set_facecolor("mistyrose")
+candle_plt.set_facecolor("aliceblue")
 volume_plt.set_facecolor("honeydew")
 
 plt.text(x=0.11, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
 plt.text(x=0.11, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+main_plt.text(x=.6,y=.89,s=price_eps_growth_str_textbox, fontsize=9,transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+
 # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
 # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
 # This works too...may use that is set the subtitle for the plot
@@ -1229,7 +1291,7 @@ lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
 # todo
 # Figure out how to adjust the candlestick price y ranges
 # Google search - remove weekends from matplotlib plot
-candle_plt_inst = candlestick_ohlc(candle_plt, quotes[0:candle_chart_duration], width=1, colorup='g', colordown='r');
+candle_plt_inst = candlestick_ohlc(candle_plt, quotes[0:candle_chart_duration], width=1, colorup='mediumseagreen', colordown='darksalmon');
 candle_plt_MA200_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_200_list[0:candle_chart_duration],linewidth=.5, color = 'black', label = 'SMA200')
 candle_plt_MA50_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_50_list[0:candle_chart_duration], linewidth=.5,color = 'blue', label = 'SMA50')
 candle_plt_MA20_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_20_list[0:candle_chart_duration],linewidth=.5, color = 'green', label = 'SMA20')
@@ -1320,7 +1382,7 @@ candle_plt.yaxis.tick_right()
 volume_plt.set_xticks(candle_sunday_dates, minor=False)
 volume_plt.grid(True)
 volume_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
-volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=7, color='k', minor=False)
 volume_plt.set_ylim(0, ticker_volume_upper_limit)
 volume_plt.yaxis.tick_right()
 volume_plt.set_yticks(ticker_volume_ytick_list)
@@ -1382,7 +1444,7 @@ number_of_anchored_texts = 4
 for i in range(number_of_anchored_texts):
   if (i == 0):
     location = 9
-    my_text = price_eps_growth_str_textbox_loc_09
+    my_text = "Test Box in upper center"
   elif (i == 1):
     location = 6
     my_text = "Test for Box number 2"
