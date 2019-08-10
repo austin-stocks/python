@@ -883,11 +883,20 @@ if (get_eps_and_price_growth):
   price_growth_3_yr = get_growth(ticker_curr_price, ticker_3_yr_ago_price)
   price_growth_5_yr = get_growth(ticker_curr_price, ticker_5_yr_ago_price)
 
-  price_eps_growth_str_textbox = "                                     Earnings             Price\n"
-  price_eps_growth_str_textbox += "Next yr - " + str(yr_eps_next_yr_date)          + "  " + (str(yr_eps_next_yr)+ "("+str(eps_growth_next_yr)+"%)").ljust(22) +"\n"
-  price_eps_growth_str_textbox += "Next q  - " + str(yr_eps_next_q_date)           + "  " + (str(yr_eps_next_q)+ "("+str(eps_growth_next_q)+"%)").ljust(22) +"\n"
-  price_eps_growth_str_textbox += "Curr    - " + str(ticker_curr_date)             + "  " + (str(yr_eps_curr)).ljust(22) \
-                                                                                          + "  " + (str(ticker_curr_price)).ljust(15) + "\n"
+  price_eps_growth_str_textbox = "                                     Earnings             Price"
+  tmp_str =  ("\nNext yr - " + str(yr_eps_next_yr_date)).ljust(25,"=")
+  tmp_str += (str(yr_eps_next_yr)+ "("+str(eps_growth_next_yr)+"%)").ljust(18,"=")
+  price_eps_growth_str_textbox += tmp_str
+
+  tmp_str =  ("\nNext q  - " + str(yr_eps_next_q_date)).ljust(25,"=")
+  tmp_str += (str(yr_eps_next_q)+ "("+str(eps_growth_next_q)+"%)").ljust(18,"=")
+  price_eps_growth_str_textbox += tmp_str
+
+  tmp_str =  ("\nCurr    - " + str(ticker_curr_date)).ljust(25,"=")
+  tmp_str += (str(yr_eps_curr)).ljust(22,"=") \
+           + (str(ticker_curr_price)).ljust(15,"=") + "\n"
+  price_eps_growth_str_textbox += tmp_str
+
   price_eps_growth_str_textbox += "1 Yr    - " + str(ticker_1_yr_ago_date_for_eps) + "  " + (str(yr_eps_1_yr_ago)+"("+str(eps_growth_1_yr_ago)+"%)").ljust(22) \
                                                                                           + "  " + (str(ticker_1_yr_ago_price)+"("+str(price_growth_1_yr)+"%)").ljust(15)
   # price_eps_growth_str_textbox += "3 Yr    - " + str(ticker_3_yr_ago_date_for_eps) + "  " + (str(yr_eps_3_yr_ago)+"("+ str(eps_growth_3_yr_ago)+"%)").ljust(22) \
@@ -1040,7 +1049,8 @@ volume_plt.set_facecolor("honeydew")
 
 plt.text(x=0.11, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
 plt.text(x=0.11, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-main_plt.text(x=.6,y=.89,s=price_eps_growth_str_textbox, fontsize=9,transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+main_plt.text(x=.6,y=.89,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+
 
 # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
 # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
