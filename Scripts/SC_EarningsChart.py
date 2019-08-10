@@ -786,14 +786,6 @@ else:
 # =============================================================================
 # Find out the growth for 1yr, 3yr and 5yr for eps and price
 # =============================================================================
-# todo :
-# Handle negative earnings...in the function
-# What if there is no 5 years worth of data available?
-# Which text box to use...can I put the text_str outside the plot
-# Get the text string to format for left justified with enough space
-# So I am ifing the block of code out for now...it works but once I do the
-# above two todo then can unif the code
-
 get_eps_and_price_growth = 1
 price_eps_growth_str_textbox = "This is the box in top center"
 if (get_eps_and_price_growth):
@@ -872,7 +864,6 @@ if (get_eps_and_price_growth):
   print ("The 3 Yr ago price for ticker is", ticker_3_yr_ago_price, "on date", ticker_3_yr_ago_date_for_price, "with earnings at", yr_eps_3_yr_ago, "is at index", date_list.index(ticker_3_yr_ago_date_for_price))
   print ("The 5 Yr ago price for ticker is", ticker_5_yr_ago_price, "on date", ticker_5_yr_ago_date_for_price, "with earnings at", yr_eps_5_yr_ago, "is at index", date_list.index(ticker_5_yr_ago_date_for_price))
 
-
   eps_growth_next_yr  = get_growth(yr_eps_next_yr, yr_eps_curr)
   eps_growth_next_q   = get_growth(yr_eps_next_q, yr_eps_curr)
   eps_growth_1_yr_ago = get_growth(yr_eps_curr, yr_eps_1_yr_ago)
@@ -883,35 +874,32 @@ if (get_eps_and_price_growth):
   price_growth_3_yr = get_growth(ticker_curr_price, ticker_3_yr_ago_price)
   price_growth_5_yr = get_growth(ticker_curr_price, ticker_5_yr_ago_price)
 
-  price_eps_growth_str_textbox = "                                     Earnings             Price"
-  tmp_str =  ("\nNext yr - " + str(yr_eps_next_yr_date)).ljust(25,"=")
-  tmp_str += (str(yr_eps_next_yr)+ "("+str(eps_growth_next_yr)+"%)").ljust(18,"=")
-  price_eps_growth_str_textbox += tmp_str
+  price_eps_growth_str_textbox = "     Date".ljust(20," ") + "|  Earnings".ljust(20," ") + "| Price".ljust(16," ")
+  price_eps_growth_str_textbox +=  ("\nNext yr- " + str(yr_eps_next_yr_date)).ljust(21," ")
+  price_eps_growth_str_textbox += ("| "+str(yr_eps_next_yr)+ "("+str(eps_growth_next_yr)+"%)").ljust(20," ")
+  price_eps_growth_str_textbox += ("| ").ljust(20)
 
-  tmp_str =  ("\nNext q  - " + str(yr_eps_next_q_date)).ljust(25,"=")
-  tmp_str += (str(yr_eps_next_q)+ "("+str(eps_growth_next_q)+"%)").ljust(18,"=")
-  price_eps_growth_str_textbox += tmp_str
+  price_eps_growth_str_textbox +=  ("\nNext q - " + str(yr_eps_next_q_date)).ljust(21," ")
+  price_eps_growth_str_textbox += ("| "+str(yr_eps_next_q)+ "("+str(eps_growth_next_q)+"%)").ljust(20, )
+  price_eps_growth_str_textbox += ("| ").ljust(20)
 
-  tmp_str =  ("\nCurr    - " + str(ticker_curr_date)).ljust(25,"=")
-  tmp_str += (str(yr_eps_curr)).ljust(22,"=") \
-           + (str(ticker_curr_price)).ljust(15,"=") + "\n"
-  price_eps_growth_str_textbox += tmp_str
+  price_eps_growth_str_textbox +=  ("\nCurr   - " + str(ticker_curr_date)).ljust(21," ")
+  price_eps_growth_str_textbox += ("| "+str(yr_eps_curr)).ljust(20," ")
+  price_eps_growth_str_textbox += ("| "+str(ticker_curr_price)).ljust(20," ")
 
-  price_eps_growth_str_textbox += "1 Yr    - " + str(ticker_1_yr_ago_date_for_eps) + "  " + (str(yr_eps_1_yr_ago)+"("+str(eps_growth_1_yr_ago)+"%)").ljust(22) \
-                                                                                          + "  " + (str(ticker_1_yr_ago_price)+"("+str(price_growth_1_yr)+"%)").ljust(15)
-  # price_eps_growth_str_textbox += "3 Yr    - " + str(ticker_3_yr_ago_date_for_eps) + "  " + (str(yr_eps_3_yr_ago)+"("+ str(eps_growth_3_yr_ago)+"%)").ljust(22) \
-  #                                                                                         + "  " + (str(ticker_3_yr_ago_price)+"("+str(price_growth_3_yr)+"%)").ljust(15) + "\n"
-  # price_eps_growth_str_textbox += "5 Yr    - " + str(ticker_5_yr_ago_date_for_eps) + "  " + (str(yr_eps_5_yr_ago)+"("+ str(eps_growth_5_yr_ago)+"%)").ljust(22) \
-  #                                                                                         + "  " + (str(ticker_5_yr_ago_price)+"("+str(price_growth_5_yr)+"%)").ljust(15) + "\n"
+  price_eps_growth_str_textbox +=  ("\n1 Yr   - " + str(ticker_1_yr_ago_date_for_eps)).ljust(21," ")
+  price_eps_growth_str_textbox += ("| "+str(yr_eps_1_yr_ago)+"("+str(eps_growth_1_yr_ago)+"%)").ljust(20)
+  price_eps_growth_str_textbox += ("| "+str(ticker_1_yr_ago_price)+"("+str(price_growth_1_yr)+"%)").ljust(20)
+
+  price_eps_growth_str_textbox +=  ("\n3 Yr   - " + str(ticker_3_yr_ago_date_for_eps)).ljust(21," ")
+  price_eps_growth_str_textbox += ("| "+str(yr_eps_3_yr_ago)+"("+str(eps_growth_3_yr_ago)+"%)").ljust(20)
+  price_eps_growth_str_textbox += ("| "+str(ticker_3_yr_ago_price)+"("+str(price_growth_3_yr)+"%)").ljust(20)
+
+  price_eps_growth_str_textbox +=  ("\n5 Yr   - " + str(ticker_5_yr_ago_date_for_eps)).ljust(21," ")
+  price_eps_growth_str_textbox += ("| "+str(yr_eps_5_yr_ago)+"("+str(eps_growth_5_yr_ago)+"%)").ljust(20)
+  price_eps_growth_str_textbox += ("| "+str(ticker_5_yr_ago_price)+"("+str(price_growth_5_yr)+"%)").ljust(20)
 
   print (price_eps_growth_str_textbox)
-
-  # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "Curr - " + str(ticker_curr_date)             + "  " + str(yr_eps_curr).ljust(22) + (" " + str(ticker_curr_price)).ljust(15) +"\n"
-  # # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "Curr - " + str(ticker_curr_date)             + "   " + str(yr_eps_curr)     + "                     " + str(ticker_curr_price) +"              \n"
-  # # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "1 Yr - " + str(ticker_1_yr_ago_date_for_eps) + "   " + str(yr_eps_1_yr_ago) + "(" + str(eps_growth_1_yr_ago) + "%)     " + str(ticker_1_yr_ago_price) +"("+ str(price_growth_1_yr) + "%)\n"
-  # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "3 Yr - " + str(ticker_3_yr_ago_date_for_eps) + " " + str(yr_eps_3_yr_ago) + "(" + str(eps_growth_3_yr_ago) + "%)     " + str(ticker_3_yr_ago_price) +"("+ str(price_growth_3_yr) + "%)\n"
-  # price_eps_growth_str_textbox = price_eps_growth_str_textbox + "5 Yr - " + str(ticker_5_yr_ago_date_for_eps) + " " + str(yr_eps_5_yr_ago) + "(" + str(eps_growth_5_yr_ago) + "%)     " + str(ticker_5_yr_ago_price) +"("+ str(price_growth_5_yr) + "%)"
-
 # =============================================================================
 
 
