@@ -105,6 +105,66 @@
     ]
   },
 
+
+  "IIPR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "JAZZ" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2012", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "MNST" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2013", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+
+  "REGN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2015", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+  "NCLH" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2013", "Stop_Date" :   "12/31/2015"},
+       {"Start_Date" : "03/31/2017", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "CYBR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2014", "Stop_Date" :   "12/30/2017"},
+       {"Start_Date" : "03/30/2018", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "EPAM" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2012", "Stop_Date" :   "12/30/2016"},
+       {"Start_Date" : "03/30/2017", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "FLT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2012", "Stop_Date" :   "06/30/2019"},
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
+
+  "ESNT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2014", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
   "CORT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
