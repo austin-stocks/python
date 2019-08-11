@@ -1,14 +1,14 @@
 Tickers,All Tickers,,VL_SS_Aggresive,,,VL_SS_Conservative,,VL_SS_Tickers,,,,Indices,
-ABCB,YT ERP  ,,alrm,Hold,,ATSG,Esp_Rec,alrm,,,,^GSPC,^GSPC
-,appf,,appf,Hold,,AGX,Esp_Rec,appf,,,,^DJI,^IXIC
-,A,,appn,Buy,,bcor,Esp_Rec,appn,,,,^IXIC,^DJI
-,AA,,cvna,Hold,,bfam,Hold,cvna,,,,,HDB
-,AAL,,evr,Hold,,caty,Hold,evr,,,,,AYX
-,AAN,,hcci,Buy,,cswi,Buy,hcci,,,,,BMCH
-,AAON,,ktos,Hold,,bdf,Esp_Rec,ktos,,,,,EME
-,AAP,,lgih,Buy,,plus,Hold,lgih,,,,,EPRT
-,AAPL,,medp,Hold,,eeft,Buy,medp,,,,,HF
-,ABB,,nxst,Hold,,exls,Buy,nxst,,,,,MLR
+CORT,YT ERP  ,,alrm,Hold,,ATSG,Esp_Rec,alrm,,,,^GSPC,^GSPC
+CYBR,appf,,appf,Hold,,AGX,Esp_Rec,appf,,,,^DJI,^IXIC
+EPAM,A,,appn,Buy,,bcor,Esp_Rec,appn,,,,^IXIC,^DJI
+ESNT,AA,,cvna,Hold,,bfam,Hold,cvna,,,,,HDB
+FLT,AAL,,evr,Hold,,caty,Hold,evr,,,,,AYX
+IIPR,AAN,,hcci,Buy,,cswi,Buy,hcci,,,,,BMCH
+JAZZ,AAON,,ktos,Hold,,bdf,Esp_Rec,ktos,,,,,EME
+MNST,AAP,,lgih,Buy,,plus,Hold,lgih,,,,,EPRT
+NCLH,AAPL,,medp,Hold,,eeft,Buy,medp,,,,,HF
+REGN,ABB,,nxst,Hold,,exls,Buy,nxst,,,,,MLR
 ,ABBV,,pega,Hold,,fmb,Buy,pega,,,,,OMF
 ,ABC,,ags,Esp_Rec,,hckt,Buy,ags,,,,,OMP
 ,ABCB,,pfpt,Buy,,hoft,Esp_Rec,pfpt,,,,,PUMP
