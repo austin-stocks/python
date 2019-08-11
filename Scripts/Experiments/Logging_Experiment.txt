@@ -1,0 +1,14 @@
+08-11 15:49 root         DEBUG    Debug Level
+08-11 15:49 root         INFO     Info Level
+08-11 15:49 root         WARNING  Warning Level
+08-11 15:49 root         ERROR    Error Level
+08-11 15:49 root         CRITICAL Critical Level
+08-11 15:49 root         CRITICAL I am trying to print a string tmp_str
+08-11 15:49 root         CRITICAL I am trying to print a list [0, 1, 2, 3, 4]
+08-11 15:49 root         CRITICAL I am trying to print a df
+    A  B      D
+0  0  4  EMPTY
+1  0  4  EMPTY
+2  0  4  EMPTY
+08-11 15:49 root         CRITICAL The type of the structure is
+ <class 'pandas.core.frame.DataFrame'>
