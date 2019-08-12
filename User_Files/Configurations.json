@@ -14,6 +14,9 @@
     "parameters": [
       {"id": "valore"}
     ],
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2017", "Stop_Date" :   "06/30/2019"}
+    ],
     "Anchored_Text" : {
       "9": "Analysts are accurate",
       "6": "This has been a wonderful stock"
@@ -99,6 +102,12 @@
     ]
   },
 
+  "ABMD" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2013", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
   "ABG" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2013", "Stop_Date" :   "06/30/2019"}
@@ -109,6 +118,12 @@
   "IIPR" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "AAN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "06/30/2019"}
     ]
   },
 
