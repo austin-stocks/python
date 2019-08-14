@@ -345,6 +345,7 @@ for ticker_raw in ticker_list:
     i_int += 1
   print("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(yr_eps_list))
 
+
   # I am not sure why I wanted this but seems like a good thing to be able to make
   # a dataframe from lists. This is not used anywhere in the code ahead...so commented
   # out for now7
@@ -1345,6 +1346,8 @@ for ticker_raw in ticker_list:
   # This works - Good resource
   # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
   # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
+  # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='BA-Jan')
+  # qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='BQ-Jan')
   yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
   qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
   print("Yearly Dates are ", yr_dates)
@@ -1365,7 +1368,8 @@ for ticker_raw in ticker_list:
     print("The original Yearly Date is :", x)
     yr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
 
-  print("The modified qtr dates list is: ", qtr_dates)
+  print("The original yr dates list is: ", yr_dates)
+  print("The original qtr dates list is: ", qtr_dates)
   print("The modified qtr dates list is: ", qtr_dates_tmp)
   print("The modified yr dates list is: ", yr_dates_tmp)
 
@@ -1510,5 +1514,5 @@ for ticker_raw in ticker_list:
   date_time = now.strftime("%Y_%m_%d_%H_%M")
   date_time = now.strftime("%Y_%m_%d")
   fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
-  # plt.show()
+  plt.show()
   # -----------------------------------------------------------------------------
