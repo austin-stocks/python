@@ -194,7 +194,7 @@ for ticker_raw in ticker_list:
   qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
   qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
   print("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
-  print("The Earnings list for qtr_eps is ", qtr_eps_list)
+  print("The Earnings list for qtr_eps is ", qtr_eps_list, "\nand the number of elements are", len(qtr_eps_list))
   # =============================================================================
 
   # =============================================================================
@@ -379,14 +379,12 @@ for ticker_raw in ticker_list:
   # eps expanded list. Do the same for divident expanded list
   for qtr_eps_date in qtr_eps_date_list:
     curr_index = qtr_eps_date_list.index(qtr_eps_date)
-    print("Looking for ", qtr_eps_date)
+    # print("Looking for ", qtr_eps_date)
     match_date = min(date_list, key=lambda d: abs(d - qtr_eps_date))
     print("The matching date for QTR EPS Date: ", qtr_eps_date, "is ", match_date, " at index ",
-          date_list.index(match_date))
+          date_list.index(match_date), "and the QTR EPS is", qtr_eps_list[curr_index])
     qtr_eps_expanded_list[date_list.index(match_date)] = qtr_eps_list[curr_index]
-
-  print("The expanded qtr eps list is ", qtr_eps_expanded_list, "\nand the number of elements are",
-        len(qtr_eps_expanded_list))
+  print("The expanded qtr eps list is ", qtr_eps_expanded_list, "\nand the number of elements are",len(qtr_eps_expanded_list))
 
 
   if (pays_dividend == 1):
@@ -436,7 +434,7 @@ for ticker_raw in ticker_list:
     curr_index = yr_eps_date_list.index(yr_eps_date)
     print("Looking for ", yr_eps_date)
     match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
-    print("The matching date is ", match_date, " at index ", date_list.index(match_date))
+    print("The matching date for YR EPS date",  yr_eps_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_list[curr_index])
     yr_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
     # Check if the matching data is in the past or in the future
     if (match_date < dt.date.today()):
@@ -1376,10 +1374,10 @@ for ticker_raw in ticker_list:
   main_plt.set_xticks(yr_dates_tmp, minor=False)
   main_plt.set_xticks(qtr_dates_tmp, minor=True)
   main_plt.xaxis.set_tick_params(width=5)
+  main_plt.set_xticklabels(qtr_dates_tmp, rotation=90, fontsize=7,  color='k',  minor=True)
   main_plt.set_xticklabels(yr_dates_tmp, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
-  main_plt.set_xticklabels(qtr_dates_tmp, rotation=90, fontsize=7, minor=True)
   main_plt.grid(which='major', axis='x', linestyle='-', color='black', linewidth=1.5)
-  main_plt.grid(which='minor', linestyle='--', color='blue')
+  main_plt.grid(which='minor', axis='x', linestyle='--', color='blue')
   main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=1)
 
   # candle_plt.set_xticks([])
