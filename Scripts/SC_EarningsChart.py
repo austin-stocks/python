@@ -322,43 +322,6 @@ for ticker_raw in ticker_list:
   print("The date list for historical is ", date_list, "\nit has ", len(date_list), " entries")
   # =============================================================================
 
-  # =============================================================================
-  # Create the Annual EPS list from the Quarter EPS list.
-  # The last 3 elemnts of the annual EPS are going to be blank because the last annual EPS corresponds
-  # the the last but 4th Quarter EPS
-  # =============================================================================
-  i_int = 0
-  yr_eps_list = list()
-  while (i_int < (len(qtr_eps_list) - 3)):
-    annual_average_eps = (qtr_eps_list[i_int] + \
-                          qtr_eps_list[i_int + 1] + \
-                          qtr_eps_list[i_int + 2] + \
-                          qtr_eps_list[i_int + 3]) / 4
-
-    print("Iteration #, ", i_int, " Quartely EPS, Annual EPS", \
-          qtr_eps_list[i_int], \
-          qtr_eps_list[i_int + 1], \
-          qtr_eps_list[i_int + 2], \
-          qtr_eps_list[i_int + 3], \
-          annual_average_eps)
-    yr_eps_list.append(annual_average_eps)
-    i_int += 1
-  print("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(yr_eps_list))
-
-
-  # I am not sure why I wanted this but seems like a good thing to be able to make
-  # a dataframe from lists. This is not used anywhere in the code ahead...so commented
-  # out for now7
-  # yr_eps_list_tmp = yr_eps_list
-  # yr_eps_list_tmp.append('Not_calculated')
-  # yr_eps_list_tmp.append('Not_calculated')
-  # yr_eps_list_tmp.append('Not_calculated')
-  # This is good. This works
-  # earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_eps_list_tmp]),
-  #                                columns=['Date', 'Q EPS', 'Annual EPS'])
-  # print ("The Earnings DF is ", earnings_df)
-  # =============================================================================
-
 
   # =============================================================================
   # Create a qtr_eps_expanded and dividend_expanded list
@@ -414,21 +377,128 @@ for ticker_raw in ticker_list:
   # However the expanded Annual EPS list is really three lists...to create a different
   # series in the plot/graph later
   # yr_eps_expanded_list - This will end up to create the price channels
-  # annual_past_eps_expanded_list - contains only the yr eps that is older than the
+  # yr_past_eps_expanded_list - contains only the yr eps that is older than the
   #   current date - This will end up as black diamonds in the chart
-  # annual_projected_eps_expanded_list - contains only the yr epx that is newer
+  # yr_projected_eps_expanded_list - contains only the yr epx that is newer
   #   than the current date - This will end up as white diamonds in the chart
+  # =============================================================================
+  # =============================================================================
+  # Create the Annual EPS list from the Quarter EPS list.
+  # The last 3 elemnts of the annual EPS are going to be blank because the last annual EPS corresponds
+  # the the last but 4th Quarter EPS
   # =============================================================================
   # Remove the last 3 dates from the qtr_eps_date_list to create yr_eps_date_list
   yr_eps_date_list = qtr_eps_date_list[0:len(qtr_eps_date_list) - 3]
+  i_int = 0
+  yr_eps_list = list()
+  while (i_int < (len(qtr_eps_list) - 3)):
+    annual_average_eps = (qtr_eps_list[i_int] + \
+                          qtr_eps_list[i_int + 1] + \
+                          qtr_eps_list[i_int + 2] + \
+                          qtr_eps_list[i_int + 3]) / 4
+
+    print("Iteration #, ", i_int, " Quartely EPS, Annual EPS", \
+          qtr_eps_list[i_int], \
+          qtr_eps_list[i_int + 1], \
+          qtr_eps_list[i_int + 2], \
+          qtr_eps_list[i_int + 3], \
+          annual_average_eps)
+    yr_eps_list.append(annual_average_eps)
+    i_int += 1
+  print("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(yr_eps_list))
+
+  # Adjust the yr_eps if the user wants to...This happens if there was an unusual quarter
+  yr_eps_adj_start_date_list = []
+  yr_eps_adj_stop_date_list = []
+  yr_eps_adj_amount_list = []
+  len_yr_eps_adj = 0
+  annual_eps_adjust_json = 0
+
+  # Read the json file to get the adjustments for the yr eps in lists
+  if (ticker not in config_json.keys()):
+    print("json data for ", ticker, "does not exist in", configuration_json, "file")
+  else:
+    if ("Annual_EPS_Adjust" in config_json[ticker]):
+      annual_eps_adjust_json = 1
+      len_yr_eps_adj = len(config_json[ticker]["Annual_EPS_Adjust"])
+      print("The number of YR EPS adjustments specified", len_yr_eps_adj)
+      for i in range(len_yr_eps_adj):
+        i_start_date = config_json[ticker]["Annual_EPS_Adjust"][i]["Start_Date"]
+        i_stop_date = config_json[ticker]["Annual_EPS_Adjust"][i]["Stop_Date"]
+        i_adj_amount = config_json[ticker]["Annual_EPS_Adjust"][i]["Adj_Amount"]
+        try:
+          yr_eps_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+          yr_eps_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+          yr_eps_adj_amount_list.append(float(i_adj_amount))
+        except (ValueError):
+          print(
+            "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Upper_Price_Channel_Adj in Configuration json file.\n"
+            "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
+            "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
+          sys.exit(1)
+
+  # Now we have 3 lists - start date, stop data and the adjustment amount
+  print("The yr eps adjust Start Date List", yr_eps_adj_start_date_list)
+  print("The yr eps adjust Stop Date List", yr_eps_adj_stop_date_list)
+  print("The yr eps adjust List", yr_eps_adj_amount_list)
+
+  # Now Process the yr eps adjustment lists to make the adjustments to the yr eps
+  # The adjusted amount with be adjusted in a separate list as the original list is
+  # plotted in the chart. The adjusted list will be used to create the price channels later
+  yr_eps_adjusted_date_list = yr_eps_date_list.copy()
+  yr_eps_adjusted_list = yr_eps_list.copy()
+  yr_eps_has_been_adjusted_index_list = []
+  for i_idx in range(len_yr_eps_adj):
+    yr_eps_adj_start_date = yr_eps_adj_start_date_list[i_idx]
+    yr_eps_adj_stop_date = yr_eps_adj_stop_date_list[i_idx]
+    yr_eps_adj_amount = yr_eps_adj_amount_list[i_idx]
+    for i_date in yr_eps_adjusted_date_list:
+      if (yr_eps_adj_start_date <= i_date <= yr_eps_adj_stop_date):
+        i_index = yr_eps_adjusted_date_list.index(i_date)
+        print("Date ", i_date, "lies between start Date", yr_eps_adj_start_date, "and stop Date",
+              yr_eps_adj_stop_date, "at index ", i_index)
+        yr_eps_adjusted_list[i_index] = yr_eps_adjusted_list[i_index] + yr_eps_adj_amount
+        yr_eps_has_been_adjusted_index_list.append(i_index)
+  print ("The original yr EPS is", yr_eps_list)
+  print ("The adjusted yr EPS is", yr_eps_adjusted_list)
+  print ("The adjustments has been done at indices", yr_eps_has_been_adjusted_index_list)
+
+  yr_eps_adjusted_slice_list = []
+  yr_eps_adjusted_slice_date_list = []
+  for i_idx in range(len(yr_eps_adjusted_list)):
+    if (i_idx in yr_eps_has_been_adjusted_index_list):
+      print ("The index", i_idx,"was adjusted")
+      yr_eps_adjusted_slice_date_list.append(yr_eps_adjusted_date_list[i_idx])
+      yr_eps_adjusted_slice_list.append(yr_eps_adjusted_list[i_idx])
+
+  print ("The date list of adjusted slice of the yr eps", yr_eps_adjusted_slice_date_list)
+  print ("The of adjusted slice of the yr eps", yr_eps_adjusted_slice_list)
+
+
+
+  # I am not sure why I wanted this but seems like a good thing to be able to make
+  # a dataframe from lists. This is not used anywhere in the code ahead...so commented
+  # out for now7
+  # yr_eps_list_tmp = yr_eps_list
+  # yr_eps_list_tmp.append('Not_calculated')
+  # yr_eps_list_tmp.append('Not_calculated')
+  # yr_eps_list_tmp.append('Not_calculated')
+  # This is good. This works
+  # earnings_df = pd.DataFrame(np.column_stack([qtr_eps_date_list, qtr_eps_list, yr_eps_list_tmp]),
+  #                                columns=['Date', 'Q EPS', 'Annual EPS'])
+  # print ("The Earnings DF is ", earnings_df)
+  # =============================================================================
+
 
   yr_eps_expanded_list = []
-  annual_past_eps_expanded_list = []
-  annual_projected_eps_expanded_list = []
+  yr_eps_adjusted_expanded_list = []
+  yr_past_eps_expanded_list = []
+  yr_projected_eps_expanded_list = []
   for i in range(len(date_list)):
     yr_eps_expanded_list.append(float('nan'))
-    annual_past_eps_expanded_list.append(float('nan'))
-    annual_projected_eps_expanded_list.append(float('nan'))
+    yr_eps_adjusted_expanded_list.append(float('nan'))
+    yr_past_eps_expanded_list.append(float('nan'))
+    yr_projected_eps_expanded_list.append(float('nan'))
 
   for yr_eps_date in yr_eps_date_list:
     curr_index = yr_eps_date_list.index(yr_eps_date)
@@ -436,14 +506,29 @@ for ticker_raw in ticker_list:
     match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
     print("The matching date for YR EPS date",  yr_eps_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_list[curr_index])
     yr_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
+    yr_eps_adjusted_expanded_list[date_list.index(match_date)] = yr_eps_adjusted_list[curr_index]
     # Check if the matching data is in the past or in the future
     if (match_date < dt.date.today()):
       print("The matching date is in the past")
-      annual_past_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
+      yr_past_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
     else:
       print("The matching date is in the future")
-      annual_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
+      yr_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
   print("The Expanded Annual EPS List is: ", yr_eps_expanded_list)
+
+  yr_eps_adjusted_slice_date_expanded_list = []
+  yr_eps_adjusted_slice_expanded_list = []
+  for i in range(len(date_list)):
+    yr_eps_adjusted_slice_date_expanded_list.append(float('nan'))
+    yr_eps_adjusted_slice_expanded_list.append(float('nan'))
+
+  for yr_eps_date in yr_eps_adjusted_slice_date_list:
+    curr_index = yr_eps_adjusted_slice_date_list.index(yr_eps_date)
+    print("Looking for ", yr_eps_date)
+    match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
+    print("The matching date for YR EPS date",  yr_eps_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_adjusted_slice_list[curr_index])
+    yr_eps_adjusted_slice_expanded_list[date_list.index(match_date)] = yr_eps_adjusted_slice_list[curr_index]
+    yr_eps_adjusted_slice_date_expanded_list[date_list.index(match_date)] = yr_eps_adjusted_slice_date_list[curr_index]
   # =============================================================================
 
   # =============================================================================
@@ -621,16 +706,16 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------
   # todo : what if the eps is negative then the multiplication makes it more negative
   if (math.isnan(ticker_config_series['Upper Price Channel'])):
-    upper_price_channel_list_unsmooth = [float(eps) + .5 * float(eps) for eps in yr_eps_expanded_list]
+    upper_price_channel_list_unsmooth = [float(eps) + .5 * float(eps) for eps in yr_eps_adjusted_expanded_list]
   else:
     upper_price_channel_separation = float(ticker_config_series['Upper Price Channel'])
-    upper_price_channel_list_unsmooth = [float(eps) + upper_price_channel_separation for eps in yr_eps_expanded_list]
+    upper_price_channel_list_unsmooth = [float(eps) + upper_price_channel_separation for eps in yr_eps_adjusted_expanded_list]
 
   if (math.isnan(ticker_config_series['Lower Price Channel'])):
-    lower_price_channel_list_unsmooth = [float(eps) - .5 * float(eps) for eps in yr_eps_expanded_list]
+    lower_price_channel_list_unsmooth = [float(eps) - .5 * float(eps) for eps in yr_eps_adjusted_expanded_list]
   else:
     lower_price_channel_separation = float(ticker_config_series['Lower Price Channel'])
-    lower_price_channel_list_unsmooth = [float(eps) - lower_price_channel_separation for eps in yr_eps_expanded_list]
+    lower_price_channel_list_unsmooth = [float(eps) - lower_price_channel_separation for eps in yr_eps_adjusted_expanded_list]
 
   print("The upper channel unsmooth list is : ", upper_price_channel_list_unsmooth)
   upper_price_channel_list = smooth_list(upper_price_channel_list_unsmooth)
@@ -1061,8 +1146,6 @@ for ticker_raw in ticker_list:
 
   # Various plots that share the same x axis(date)
   price_plt = main_plt.twinx()
-  if (plot_spy):
-    spy_plt = main_plt.twinx()
   annual_past_eps_plt = main_plt.twinx()
   annual_projected_eps_plt = main_plt.twinx()
   upper_channel_plt = main_plt.twinx()
@@ -1072,7 +1155,10 @@ for ticker_raw in ticker_list:
   # yr_eps_10_0_plt = main_plt.twinx()
   # yr_eps_20_0_plt = main_plt.twinx()
   # yr_eps_02_5_plt[0] = main_plt.twinx()
-
+  if (annual_eps_adjust_json):
+    annual_eps_adjusted_slice_plt = main_plt.twinx()
+  if (plot_spy):
+    spy_plt = main_plt.twinx()
   if (pays_dividend == 1):
     dividend_plt = main_plt.twinx()
 
@@ -1122,7 +1208,7 @@ for ticker_raw in ticker_list:
   annual_past_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
   annual_past_eps_plt.set_yticks([])
   annual_past_eps_plt_inst = annual_past_eps_plt.plot(date_list[0:plot_period_int],
-                                                      annual_past_eps_expanded_list[0:plot_period_int], label='4 qtrs/4',
+                                                      yr_past_eps_expanded_list[0:plot_period_int], label='4 qtrs/4',
                                                       color="black", marker='D', markersize='4')
   # todo : maybe change this to only have the value printed out at the year ends
   for i in range(len(yr_eps_date_list)):
@@ -1137,9 +1223,26 @@ for ticker_raw in ticker_list:
   annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
   annual_projected_eps_plt.set_yticks([])
   annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_period_int],
-                                                                annual_projected_eps_expanded_list[0:plot_period_int],
+                                                                yr_projected_eps_expanded_list[0:plot_period_int],
                                                                 label='4 qtrs/4', color="White", marker='D',
                                                                 markersize='4')
+
+  if (annual_eps_adjust_json):
+    # If the annual eps was ajusted, then plot those diamonds in green
+    annual_eps_adjusted_slice_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    annual_eps_adjusted_slice_plt.set_yticks([])
+    annual_eps_adjusted_slice_plt_inst = annual_eps_adjusted_slice_plt.plot(date_list[0:plot_period_int],
+                                                        yr_eps_adjusted_slice_expanded_list[0:plot_period_int], label='4 qtrs/4',
+                                                        color="teal", marker='D', markersize='4')
+    for i in range(len(yr_eps_adjusted_slice_date_list)):
+      print("The Date is ", yr_eps_adjusted_slice_date_list[i], " Corresponding EPS ", yr_eps_adjusted_slice_list[i])
+      # check if the date is in the plot range
+      if (date_list[plot_period_int] <= yr_eps_adjusted_slice_date_list[i] <= date_list[0]):
+        x = float("{0:.2f}".format(yr_eps_adjusted_slice_list[i]))
+        main_plt.text(yr_eps_adjusted_slice_date_list[i], yr_eps_adjusted_slice_list[i], x, fontsize=11, horizontalalignment='center',
+                      verticalalignment='bottom')
+
+
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------

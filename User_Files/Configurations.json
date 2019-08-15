@@ -266,6 +266,14 @@
     ]
   },
 
+  "ANTM" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/15/2017", "Stop_Date" :   "10/15/2018", "Adj_Amount" : "-3.1"}
+    ]
+  },
   "CORT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
