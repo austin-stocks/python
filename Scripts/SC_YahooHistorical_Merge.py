@@ -2,7 +2,7 @@ import pandas as pd
 import datetime as dt
 import numpy as np
 import os
-
+import sys
 # This program reads the
 # 1. Calendar file
 # 2. Yahoo Historical Downloaded file
@@ -86,9 +86,10 @@ for ticker_raw in ticker_list:
     ticker_config_series = config_df.loc[ticker]
     # print("Then configurations for ", ticker, " is\n", ticker_config_series)
   else:
-    # Todo : Create a default series at the start of the program
-    # print ("Configuration Entry for ", ticker , " not found...continuing with default values")
-    continue
+    print ("**********                                  ERROR                               **********")
+    print ("**********     Entry for ", ticker , " not found in the configurations file     **********")
+    print ("**********     Please create one and then run the script again                  **********")
+    sys.exit(1)
 
 
   # ===========================================================================
