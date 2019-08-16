@@ -86,9 +86,9 @@ for ticker_raw in ticker_list:
     ticker_config_series = config_df.loc[ticker]
     # print("Then configurations for ", ticker, " is\n", ticker_config_series)
   else:
-    print ("**********                                  ERROR                               **********")
-    print ("**********     Entry for ", ticker , " not found in the configurations file     **********")
-    print ("**********     Please create one and then run the script again                  **********")
+    print ("**********                                  ERROR                              **********")
+    print ("**********     Entry for ", str(ticker).center(10) , " not found in the configurations file     **********")
+    print ("**********     Please create one and then run the script again                 **********")
     sys.exit(1)
 
 

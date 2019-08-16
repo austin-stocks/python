@@ -178,6 +178,24 @@ for ticker_raw in ticker_list:
   logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
   debug_fh = open(logfile, "w+")
 
+  # =============================================================================
+  # Read the Historical file for the ticker
+  # =============================================================================
+  # todo : There are certain cases (MEDP) for e.g. that has recently IPO'ed that
+  # have earning going back 2-3 quarters more than the historical data (in other
+  # words they started trading on say 08/12/2015, but their earnings are available
+  # from 03/30/2015). In such a case probably need to look at calendar file and extend
+  # the date list and adj_close list so that all the prior earnings are included.
+  # The back date adj_close needs to be initialized to whatever value (nan likely)
+  historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
+  print("The Historical df is \n", historical_df)
+  ticker_adj_close_list = historical_df.Adj_Close.tolist()
+  print ("Historical Adj. Prices", type(ticker_adj_close_list))
+  date_str_list = historical_df.Date.tolist()
+  print("The date list from historical df is ", date_str_list)
+  date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
+  print("The date list for historical is ", date_list, "\nit has ", len(date_list), " entries")
+  # =============================================================================
 
   # =============================================================================
   # Read the Earnings file for the ticker
@@ -217,13 +235,15 @@ for ticker_raw in ticker_list:
   # Read the config file and decide all the parms that are needed for plot
   # =============================================================================
   print("The configuration df", config_df)
-  if ticker in config_df.index:
+  try:
     ticker_config_series = config_df.loc[ticker]
     print("Then configurations for ", ticker, " is ", ticker_config_series)
-  else:
+  except KeyError:
     # Todo : Create a default series with all nan so that it can be cleaned up in the next step
-    print("Configuration Entry for ", ticker, " not found...continuing with default values")
-
+    print ("**********                                  ERROR                              **********")
+    print ("**********     Entry for ", str(ticker).center(10) , " not found in the configurations file     **********")
+    print ("**********     Please create one and then run the script again                 **********")
+    sys.exit()
 
   # =============================================================================
   # Handle splits before proceeding as splits can change the qtr_eps
@@ -302,26 +322,6 @@ for ticker_raw in ticker_list:
   # 3. Number of elements in the qtr_eps_date_list are equal to the number of
   #    element in the qtr_eps_list
   # =============================================================================
-
-  # =============================================================================
-  # Read the Historical file for the ticker
-  # =============================================================================
-  # todo : There are certain cases (MEDP) for e.g. that has recently IPO'ed that
-  # have earning going back 2-3 quarters more than the historical data (in other
-  # words they started trading on say 08/12/2015, but their earnings are available
-  # from 03/30/2015). In such a case probably need to look at calendar file and extend
-  # the date list and adj_close list so that all the prior earnings are included.
-  # The back date adj_close needs to be initialized to whatever value (nan likely)
-  historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
-  print("The Historical df is \n", historical_df)
-  ticker_adj_close_list = historical_df.Adj_Close.tolist()
-  print ("Historical Adj. Prices", type(ticker_adj_close_list))
-  date_str_list = historical_df.Date.tolist()
-  print("The date list from historical df is ", date_str_list)
-  date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
-  print("The date list for historical is ", date_list, "\nit has ", len(date_list), " entries")
-  # =============================================================================
-
 
   # =============================================================================
   # Create a qtr_eps_expanded and dividend_expanded list
