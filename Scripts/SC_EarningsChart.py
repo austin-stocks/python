@@ -118,8 +118,6 @@ def smooth_list(l):
 # How to use earnings projections
 # Test out the values from the file
 # How to show values when you click
-# Get the Average PE for last 1, 3, 5 and 10 years and get the forward PE
-#   and get it printed in the box
 # If possible superimpose the PE line in the chart
 
 # =============================================================================
@@ -167,7 +165,13 @@ tracklist_df = pd.read_csv(tracklist_file_full_path)
 ticker_list_unclean = tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
-
+# #############################################################################
+# #############################################################################
+# #############################################################################
+#                   MAIN LOOP FOR TICKERS
+# #############################################################################
+# #############################################################################
+# #############################################################################
 for ticker_raw in ticker_list:
 
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
@@ -207,12 +211,57 @@ for ticker_raw in ticker_list:
   my_print(debug_fh, debug_str, stdout, log_lvl.upper())
 
   print ("The Earnings df is \n", qtr_eps_df)
-  # todo : Error out if any elements in the date_list are nan except the trailing (this includes
-  # todo : leading nan and any nan in the list itself
-  qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
+  # Remove all rows after the last valid value for row for Column 'Date'
+  qtr_eps_df_copy = qtr_eps_df.loc[0:qtr_eps_df.Date.last_valid_index()].copy()
+  # This works - but removes the rows after the longest (any)column has last
+  # valid value
+  # qtr_eps_df_copy = qtr_eps_df.loc[0:qtr_eps_df.last_valid_index()].copy()
+  qtr_eps_df = qtr_eps_df_copy.copy()
+  qtr_eps_df_copy = pd.DataFrame()
+  print ("The Earnings df after removing all trailing NaN from the 'Date' column is \n", qtr_eps_df)
+
+  # I can do dropna right away from the df 'Date' column but I want to make sure
+  # that all the values in the Date column are in the format that can be converted
+  # to Date so the try and except is more versatile
+  # qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
+  try:
+    qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.tolist()]
+  except (TypeError):
+    print ("**********                                ERROR                               **********")
+    # print ("**********  while processing", date                                         ,"**********")
+    print ("**********  Some of the entries for Column 'Date' in the Earnings file are    **********")
+    print ("**********  either missing (blank) or do not have proper mm/dd/yyyy format.   **********")
+    print ("**********  Please correct the Earnings file 'Date' column and run again      **********")
+    sys.exit(1)
+
   qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
   print("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
   print("The Earnings list for qtr_eps is ", qtr_eps_list, "\nand the number of elements are", len(qtr_eps_list))
+
+  # Set the length of qtr_eps_list same as qtr_eps_date_list.
+  # This gets rid of any earnings that are beyond the last date.
+  # This is not a common case but could occur because of copy and paste and then
+  # ignorance on the part of the user to not remove the "extra" earnings
+  # This also makes sure that the eps date list and eps value list have the same
+  # number of entries.
+  if (len(qtr_eps_date_list) < len(qtr_eps_list)):
+    del qtr_eps_list[len_qtr_eps_date_list:]
+  print("The Earnings list for qtr_eps is ", qtr_eps_list)
+
+  # Check if now the qtr_eps_list still has any undefined elements...flag an error and exit
+  # This will indicate any empty cells are either the beginning or in the middle of the eps
+  # column in the csv
+  if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
+    print ("**********                                ERROR                               **********")
+    print ("**********  There seems to be either blank cells for Earnings or their        **********")
+    print ("**********  format is undefined. Please correct the rerun the script          **********")
+    sys.exit()
+
+  # So - if we are successful till this point - we have made sure that
+  # 1. There are no nan in the date list
+  # 2. There are no nan in the eps list
+  # 3. Number of elements in the qtr_eps_date_list are equal to the number of
+  #    element in the qtr_eps_list
   # =============================================================================
 
   # =============================================================================
@@ -232,7 +281,8 @@ for ticker_raw in ticker_list:
   # =============================================================================
 
   # =============================================================================
-  # Read the config file and decide all the parms that are needed for plot
+  # Check if there is data in the config file corresponding to the ticker that
+  # is being processed
   # =============================================================================
   print("The configuration df", config_df)
   try:
@@ -291,38 +341,6 @@ for ticker_raw in ticker_list:
       print("\"Splits\" does not exist for ", ticker)
   # =============================================================================
 
-
-  # ============================================================================
-  # Get the eps value list to the same length as eps date list and
-  # check if these list has any nan. If it has any nan then error out and let
-  # the user correct the earning file.
-
-  # Set the length of qtr_eps_list same as date_list.
-  # This gets rid of any earnings that are beyond the last date.
-  # This is not a common case but could occur because of copy and paste and then
-  # ignorance on the part of the user to not remove the "extra" earnings
-  # This also makes sure that the eps date list and eps value list have the same
-  # number of entries.
-  len_qtr_eps_date_list = len(qtr_eps_date_list)
-  len_qtr_eps_list = len(qtr_eps_list)
-  if (len_qtr_eps_date_list < len_qtr_eps_list):
-    del qtr_eps_list[len_qtr_eps_date_list:]
-  print("The Earnings list for qtr_eps is ", qtr_eps_list)
-
-  # Check if now the qtr_eps_list still has any undefined elements...flag an error and exit
-  # This will indicate any empty cells are either the beginning or in the middle of the eps
-  # column in the csv
-  if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
-    print("ERROR : There are some undefined EPS numbers in the Earnings file, Please correct and rerun")
-    exit()
-
-  # So - if we are successful till this point - we have made sure that
-  # 1. There are no nan in the date list
-  # 2. There are no nan in the eps list
-  # 3. Number of elements in the qtr_eps_date_list are equal to the number of
-  #    element in the qtr_eps_list
-  # =============================================================================
-
   # =============================================================================
   # Create a qtr_eps_expanded and dividend_expanded list
   # We are here trying to create the list that has the same number of elements
@@ -372,6 +390,8 @@ for ticker_raw in ticker_list:
   # =============================================================================
 
   # =============================================================================
+  # There are many yr eps list
+  # 1. The yr eps list that has all the earnings
   # Create annual eps date list and then create
   # Expanded annual EPS list just like the expanded Quarter EPS list was created
   # However the expanded Annual EPS list is really three lists...to create a different
@@ -388,11 +408,11 @@ for ticker_raw in ticker_list:
   # the the last but 4th Quarter EPS
   # =============================================================================
   # Remove the last 3 dates from the qtr_eps_date_list to create yr_eps_date_list
-  yr_eps_date_list = qtr_eps_date_list[0:len(qtr_eps_date_list) - 3]
+  yr_eps_date_list = qtr_eps_date_list[0:len(qtr_eps_date_list) - 3].copy()
   i_int = 0
   yr_eps_list = list()
   while (i_int < (len(qtr_eps_list) - 3)):
-    annual_average_eps = (qtr_eps_list[i_int] + \
+    yr_average_eps = (qtr_eps_list[i_int] + \
                           qtr_eps_list[i_int + 1] + \
                           qtr_eps_list[i_int + 2] + \
                           qtr_eps_list[i_int + 3]) / 4
@@ -402,12 +422,15 @@ for ticker_raw in ticker_list:
           qtr_eps_list[i_int + 1], \
           qtr_eps_list[i_int + 2], \
           qtr_eps_list[i_int + 3], \
-          annual_average_eps)
-    yr_eps_list.append(annual_average_eps)
+          yr_average_eps)
+    yr_eps_list.append(yr_average_eps)
     i_int += 1
   print("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(yr_eps_list))
 
-  # Adjust the yr_eps if the user wants to...This happens if there was an unusual quarter
+  # ---------------------------------------------------------------------------
+  # Adjust the yr_eps if the user wants to...This happens if there was an
+  # unusual quarter. The data is availalbe in the json file
+  # ---------------------------------------------------------------------------
   yr_eps_adj_start_date_list = []
   yr_eps_adj_stop_date_list = []
   yr_eps_adj_amount_list = []
@@ -437,49 +460,119 @@ for ticker_raw in ticker_list:
             "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
           sys.exit(1)
 
-  # Now we have 3 lists - start date, stop data and the adjustment amount
+  # Now we have 3 lists - start date list, stop date list and the adjustment amount list
   print("The yr eps adjust Start Date List", yr_eps_adj_start_date_list)
   print("The yr eps adjust Stop Date List", yr_eps_adj_stop_date_list)
   print("The yr eps adjust List", yr_eps_adj_amount_list)
 
-  # Now Process the yr eps adjustment lists to make the adjustments to the yr eps
-  # The adjusted amount with be adjusted in a separate list as the original list is
-  # plotted in the chart. The adjusted list will be used to create the price channels later
-  yr_eps_adjusted_date_list = yr_eps_date_list.copy()
-  yr_eps_adjusted_list = yr_eps_list.copy()
-  yr_eps_has_been_adjusted_index_list = []
-  for i_idx in range(len_yr_eps_adj):
-    yr_eps_adj_start_date = yr_eps_adj_start_date_list[i_idx]
-    yr_eps_adj_stop_date = yr_eps_adj_stop_date_list[i_idx]
-    yr_eps_adj_amount = yr_eps_adj_amount_list[i_idx]
-    for i_date in yr_eps_adjusted_date_list:
-      if (yr_eps_adj_start_date <= i_date <= yr_eps_adj_stop_date):
-        i_index = yr_eps_adjusted_date_list.index(i_date)
-        print("Date ", i_date, "lies between start Date", yr_eps_adj_start_date, "and stop Date",
-              yr_eps_adj_stop_date, "at index ", i_index)
-        yr_eps_adjusted_list[i_index] = yr_eps_adjusted_list[i_index] + yr_eps_adj_amount
-        yr_eps_has_been_adjusted_index_list.append(i_index)
-  print ("The original yr EPS is", yr_eps_list)
-  print ("The adjusted yr EPS is", yr_eps_adjusted_list)
-  print ("The adjustments has been done at indices", yr_eps_has_been_adjusted_index_list)
+  # ---------------------------------------------------------------------------
+  # Now Process the yr_eps_adj_* lists created above  to make the adjustments 
+  # to the yr eps. 
+  # We will create a separate list yr_eps_adj_list - this list will be used to
+  #   create price channel lines later
+  # The original list - which will be used to create two lists - past and future 
+  #   is used to plot 
+  # ---------------------------------------------------------------------------
+  yr_eps_adj_date_list = yr_eps_date_list.copy()
+  yr_eps_adj_list = yr_eps_list.copy()
+  yr_eps_has_been_adj_index_list = []
+  if (annual_eps_adjust_json == 1):
+    for i_idx in range(len_yr_eps_adj):
+      yr_eps_adj_start_date = yr_eps_adj_start_date_list[i_idx]
+      yr_eps_adj_stop_date = yr_eps_adj_stop_date_list[i_idx]
+      yr_eps_adj_amount = yr_eps_adj_amount_list[i_idx]
+      for i_date in yr_eps_adj_date_list:
+        if (yr_eps_adj_start_date <= i_date <= yr_eps_adj_stop_date):
+          i_index = yr_eps_adj_date_list.index(i_date)
+          print("Date ", i_date, "lies between start Date", yr_eps_adj_start_date, "and stop Date",
+                yr_eps_adj_stop_date, "at index ", i_index)
+          yr_eps_adj_list[i_index] = yr_eps_adj_list[i_index] + yr_eps_adj_amount
+          yr_eps_has_been_adj_index_list.append(i_index)
 
-  yr_eps_adjusted_slice_list = []
-  yr_eps_adjusted_slice_date_list = []
-  for i_idx in range(len(yr_eps_adjusted_list)):
-    if (i_idx in yr_eps_has_been_adjusted_index_list):
-      print ("The index", i_idx,"was adjusted")
-      yr_eps_adjusted_slice_date_list.append(yr_eps_adjusted_date_list[i_idx])
-      yr_eps_adjusted_slice_list.append(yr_eps_adjusted_list[i_idx])
+    print ("The original yr EPS is", yr_eps_list)
+    print ("The adjusted yr EPS is", yr_eps_adj_list)
+    print ("The adjustments has been done at indices", yr_eps_has_been_adj_index_list)
+    # ---------------------------------------------------------------------------
+    # Create a list that ONLY has the yr_eps that has been adjusted (in other words
+    # the yr_eps values that have been adjusted above - This will be used to plot 
+    # as a separate plot - for easier visualization that the user has adjusted 
+    # yr_eps
+    # ---------------------------------------------------------------------------
+    yr_eps_adj_slice_list = []
+    yr_eps_adj_slice_date_list = []
+    for i_idx in range(len(yr_eps_adj_list)):
+      if (i_idx in yr_eps_has_been_adj_index_list):
+        print ("The index", i_idx,"was adjusted")
+        yr_eps_adj_slice_date_list.append(yr_eps_adj_date_list[i_idx])
+        yr_eps_adj_slice_list.append(yr_eps_adj_list[i_idx])
+    # ---------------------------------------------------------------------------
 
-  print ("The date list of adjusted slice of the yr eps", yr_eps_adjusted_slice_date_list)
-  print ("The of adjusted slice of the yr eps", yr_eps_adjusted_slice_list)
+    print ("The date list of adjusted slice of the yr eps", yr_eps_adj_slice_date_list)
+    print ("The of adjusted slice of the yr eps", yr_eps_adj_slice_list)
+  # ---------------------------------------------------------------------------
 
+  # ---------------------------------------------------------------------------
+  # So - in the section above, we have created three yr_eps
+  #   (and their corresponding date) lists - 
+  # 1. The normal yr_eps list that contains all the yr_eps directly calculated from 
+  #   qtr_eps
+  # 2. The yr_eps_adj list that is same as yr_eps_list except that it some of the 
+  #   eps adjusted to what user specified from json file. 
+  # 3. The yr_eps_adj_slice_list that ONLY has the yr_eps that was modified based
+  #   on the user input from jsom file
+  #
+  # Now that we have all the 3 versions of yr_eps lists - start creating expanded
+  # versions of the list
+  # Here the normal yr_eps list will be divided into two (expanded lists)
+  # 4. One for all the dates that are in the past (older than current date)
+  # 5. One for all the dates that are in the future (younger dates)
+  # This is done so that we can have black diamonds (for older dates) and
+  # white diamomds (for younger dates)
+  # ---------------------------------------------------------------------------
+  yr_eps_expanded_list = []
+  yr_eps_adj_expanded_list = []
+  yr_past_eps_expanded_list = []
+  yr_projected_eps_expanded_list = []
+  for i in range(len(date_list)):
+    yr_eps_expanded_list.append(float('nan'))
+    yr_eps_adj_expanded_list.append(float('nan'))
+    yr_past_eps_expanded_list.append(float('nan'))
+    yr_projected_eps_expanded_list.append(float('nan'))
 
+  for yr_eps_date in yr_eps_date_list:
+    curr_index = yr_eps_date_list.index(yr_eps_date)
+    print("Looking for ", yr_eps_date)
+    match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
+    print("The matching date for YR EPS date",  yr_eps_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_list[curr_index])
+    yr_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
+    yr_eps_adj_expanded_list[date_list.index(match_date)] = yr_eps_adj_list[curr_index]
+    # Check if the matching data is in the past or in the future
+    if (match_date < dt.date.today()):
+      print("The matching date is in the past")
+      yr_past_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
+    else:
+      print("The matching date is in the future")
+      yr_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
+  print("The Expanded Annual EPS List is: ", yr_eps_expanded_list)
+
+  yr_eps_adj_slice_date_expanded_list = []
+  yr_eps_adj_slice_expanded_list = []
+  for i in range(len(date_list)):
+    yr_eps_adj_slice_date_expanded_list.append(float('nan'))
+    yr_eps_adj_slice_expanded_list.append(float('nan'))
+
+  for yr_eps_adj_slice_date in yr_eps_adj_slice_date_list:
+    curr_index = yr_eps_adj_slice_date_list.index(yr_eps_adj_slice_date)
+    print("Looking for ", yr_eps_adj_slice_date)
+    match_date = min(date_list, key=lambda d: abs(d - yr_eps_adj_slice_date))
+    print("The matching date for YR EPS date",  yr_eps_adj_slice_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_adj_slice_list[curr_index])
+    yr_eps_adj_slice_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_list[curr_index]
+    yr_eps_adj_slice_date_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_date_list[curr_index]
 
   # I am not sure why I wanted this but seems like a good thing to be able to make
   # a dataframe from lists. This is not used anywhere in the code ahead...so commented
   # out for now7
-  # yr_eps_list_tmp = yr_eps_list
+  # yr_eps_list_tmp = yr_eps_list.copy()
   # yr_eps_list_tmp.append('Not_calculated')
   # yr_eps_list_tmp.append('Not_calculated')
   # yr_eps_list_tmp.append('Not_calculated')
@@ -490,49 +583,142 @@ for ticker_raw in ticker_list:
   # =============================================================================
 
 
-  yr_eps_expanded_list = []
-  yr_eps_adjusted_expanded_list = []
-  yr_past_eps_expanded_list = []
-  yr_projected_eps_expanded_list = []
-  for i in range(len(date_list)):
-    yr_eps_expanded_list.append(float('nan'))
-    yr_eps_adjusted_expanded_list.append(float('nan'))
-    yr_past_eps_expanded_list.append(float('nan'))
-    yr_projected_eps_expanded_list.append(float('nan'))
+  # =============================================================================
+  # Create the price channels using the yr eps sdj list
+  # This section also take json input if the user wants to modify the price channels
+  # =============================================================================
+  # This variable is added to the adjustments that are done to the channels because
+  # this is also the nubmer of days by which the channels get shifted left (or these
+  #  are the number of nan entries that are inserted in the channel list
+  days_in_2_qtrs = 126
 
-  for yr_eps_date in yr_eps_date_list:
-    curr_index = yr_eps_date_list.index(yr_eps_date)
-    print("Looking for ", yr_eps_date)
-    match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
-    print("The matching date for YR EPS date",  yr_eps_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_list[curr_index])
-    yr_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
-    yr_eps_adjusted_expanded_list[date_list.index(match_date)] = yr_eps_adjusted_list[curr_index]
-    # Check if the matching data is in the past or in the future
-    if (match_date < dt.date.today()):
-      print("The matching date is in the past")
-      yr_past_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
-    else:
-      print("The matching date is in the future")
-      yr_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
-  print("The Expanded Annual EPS List is: ", yr_eps_expanded_list)
+  # Get the upper and lower guide lines separation from the annual EPS
+  # Use the default value of .1 (10 cents) for separation
+  if (math.isnan(ticker_config_series['Upper Price Channel'])):
+    upper_price_channel_list_unsmooth = [float(eps) + .1 for eps in yr_eps_adj_expanded_list]
+  else:
+    upper_price_channel_separation = float(ticker_config_series['Upper Price Channel'])
+    upper_price_channel_list_unsmooth = [float(eps) + upper_price_channel_separation for eps in yr_eps_adj_expanded_list]
 
-  yr_eps_adjusted_slice_date_expanded_list = []
-  yr_eps_adjusted_slice_expanded_list = []
-  for i in range(len(date_list)):
-    yr_eps_adjusted_slice_date_expanded_list.append(float('nan'))
-    yr_eps_adjusted_slice_expanded_list.append(float('nan'))
+  if (math.isnan(ticker_config_series['Lower Price Channel'])):
+    lower_price_channel_list_unsmooth = [float(eps) - .1 for eps in yr_eps_adj_expanded_list]
+  else:
+    lower_price_channel_separation = float(ticker_config_series['Lower Price Channel'])
+    lower_price_channel_list_unsmooth = [float(eps) - lower_price_channel_separation for eps in yr_eps_adj_expanded_list]
 
-  for yr_eps_date in yr_eps_adjusted_slice_date_list:
-    curr_index = yr_eps_adjusted_slice_date_list.index(yr_eps_date)
-    print("Looking for ", yr_eps_date)
-    match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
-    print("The matching date for YR EPS date",  yr_eps_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_adjusted_slice_list[curr_index])
-    yr_eps_adjusted_slice_expanded_list[date_list.index(match_date)] = yr_eps_adjusted_slice_list[curr_index]
-    yr_eps_adjusted_slice_date_expanded_list[date_list.index(match_date)] = yr_eps_adjusted_slice_date_list[curr_index]
+  print("The upper channel unsmooth list is : ", upper_price_channel_list_unsmooth)
+  upper_price_channel_list = smooth_list(upper_price_channel_list_unsmooth)
+  lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
+  print("The upper Guide is ", upper_price_channel_list, "\nand the number of element is ", len(upper_price_channel_list))
+  print("The upper Guide is ", lower_price_channel_list, "\nand the number of element is ", len(lower_price_channel_list))
+
+  # ---------------------------------------------------------------------------
+  # Get the adjustments that need to be done and do the price channels
+  # First read from the json file to know how may adjustments need to be done
+  # for the upper and lower price channels and store them in their separate lists
+  # respectively. After than process those separate list to make actual adjustments
+  # to the channel lines
+  # ---------------------------------------------------------------------------
+  # It is better to define the list and the variables that are getting created in the read of the json
+  # file...as the for loops that use the lists are separated out from the creation of the lists
+  upper_price_channel_adj_start_date_list = []
+  upper_price_channel_adj_stop_date_list = []
+  upper_price_channel_adj_amount_list = []
+  len_upper_price_channel_adj = 0
+  lower_price_channel_adj_start_date_list = []
+  lower_price_channel_adj_stop_date_list = []
+  lower_price_channel_adj_amount_list = []
+  len_lower_price_channel_adj = 0
+
+  # Read the json file to get the adjustments for the upper and lower channels in
+  # their respective list
+  if (ticker not in config_json.keys()):
+    print("json data for ", ticker, "does not exist in", configuration_json, "file")
+  else:
+    if ("Upper_Price_Channel_Adj" in config_json[ticker]):
+      len_upper_price_channel_adj = len(config_json[ticker]["Upper_Price_Channel_Adj"])
+      print("The number of Upper channel adjustments specified", len_upper_price_channel_adj)
+      for i in range(len_upper_price_channel_adj):
+        i_start_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Start_Date"]
+        i_stop_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Stop_Date"]
+        i_adj_amount = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Adj_Amount"]
+        try:
+          upper_price_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+          upper_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+          upper_price_channel_adj_amount_list.append(float(i_adj_amount))
+        except (ValueError):
+          print(
+            "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Upper_Price_Channel_Adj in Configuration json file.\n"
+            "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
+            "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
+          sys.exit(1)
+
+  print("The Upper Channel Start Date List", upper_price_channel_adj_start_date_list)
+  print("The Upper Channel Stop Date List", upper_price_channel_adj_stop_date_list)
+  print("The Upper Channel Adjust List", upper_price_channel_adj_amount_list)
+
+  if (ticker not in config_json.keys()):
+    print("json data for ", ticker, "does not exist in", configuration_json, "file")
+  else:
+    if ("Lower_Price_Channel_Adj" in config_json[ticker]):
+      len_lower_price_channel_adj = len(config_json[ticker]["Lower_Price_Channel_Adj"])
+      print("The number of Lower channel adjustments specified", len_lower_price_channel_adj)
+      for i in range(len_lower_price_channel_adj):
+        i_start_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Start_Date"]
+        i_stop_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Stop_Date"]
+        i_adj_amount = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Adj_Amount"]
+        try:
+          lower_price_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
+          lower_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
+          lower_price_channel_adj_amount_list.append(float(i_adj_amount))
+        except (ValueError):
+          print(
+            "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Lower_Price_Channel_Adj in Configuration json file.\n"
+            "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
+            "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
+          sys.exit(1)
+  print("The Lower Channel Start Date List", lower_price_channel_adj_start_date_list)
+  print("The Lower Channel Stop Date List", lower_price_channel_adj_stop_date_list)
+  print("The Lower Channel Adjust List", lower_price_channel_adj_amount_list)
+
+  # Now Process the upper and lower price channel adjustment lists to make the adjustments to the
+  # actual price channel list...for the length of the lists created above...and that is why it
+  # was a good ides to initialize the length to '0' and crate empty lists above
+  for i_idx in range(len_upper_price_channel_adj):
+    upper_price_channel_adj_start_date = upper_price_channel_adj_start_date_list[i_idx]
+    upper_price_channel_adj_stop_date = upper_price_channel_adj_stop_date_list[i_idx]
+    upper_price_channel_adj_amount = upper_price_channel_adj_amount_list[i_idx]
+    for i_date in date_list:
+      if (upper_price_channel_adj_start_date <= i_date <= upper_price_channel_adj_stop_date):
+        i_index = date_list.index(i_date)
+        print("Date ", i_date, "lies between start Date", upper_price_channel_adj_start_date, "and stop Date",
+              upper_price_channel_adj_stop_date, "at index ", i_index)
+        upper_price_channel_list[i_index - days_in_2_qtrs] = upper_price_channel_list[
+                                                               i_index - days_in_2_qtrs] + upper_price_channel_adj_amount
+
+  for i_idx in range(len_lower_price_channel_adj):
+    lower_price_channel_adj_start_date = lower_price_channel_adj_start_date_list[i_idx]
+    lower_price_channel_adj_stop_date = lower_price_channel_adj_stop_date_list[i_idx]
+    lower_price_channel_adj_amount = lower_price_channel_adj_amount_list[i_idx]
+    for i_date in date_list:
+      if (lower_price_channel_adj_start_date <= i_date <= lower_price_channel_adj_stop_date):
+        i_index = date_list.index(i_date)
+        print("Date ", i_date, "lies between start Date", lower_price_channel_adj_start_date, "and stop Date",
+              lower_price_channel_adj_stop_date, "at index ", i_index)
+        lower_price_channel_list[i_index - days_in_2_qtrs] = lower_price_channel_list[
+                                                               i_index - days_in_2_qtrs] + lower_price_channel_adj_amount
+  # ---------------------------------------------------------------------------
+
+  # Now shift the price channels by two quarters
+  # Approximately 6 months = 126 business days by inserting 126 nan at location 0
+  nan_list = []
+  for i in range(days_in_2_qtrs):
+    upper_price_channel_list.insert(0, float('nan'))
+    lower_price_channel_list.insert(0, float('nan'))
   # =============================================================================
 
   # =============================================================================
-  # Handle the earning Growth projection overlays
+  # Create the earning Growth projection overlays
   # =============================================================================
   # Read the json to get the information for the earnings projection overlays
   # At the end of this - we should have
@@ -662,8 +848,6 @@ for ticker_raw in ticker_list:
       yr_eps_20_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_20_0_growth_expanded_list_unsmooth)
   # =============================================================================
 
-
-
   # -----------------------------------------------------------------------------
   # Find out how many years need to be plotted. If the historical data is available
   # for lesser time, then adjust the period to the length of the data_list
@@ -683,9 +867,7 @@ for ticker_raw in ticker_list:
     float(plot_period_int/252), "years (or", plot_period_int, "days)")
   else:
     print ("Will plot for", plot_period_int, "years")
-
   # ---------------------------------------------------------
-
 
   # Get the index factor to pin/anchor/align the index and the price of the stock
   # to the same point at the start of the plot
@@ -700,140 +882,6 @@ for ticker_raw in ticker_list:
     else:
       spy_adjust_factor = spy_adj_close_list[plot_period_int] / ticker_adj_close_list[plot_period_int]
     spy_adj_close_list[:] = [x / spy_adjust_factor for x in spy_adj_close_list]
-
-  # ---------------------------------------------------------
-  # Get the upper and lower guide lines separation from the annual EPS
-  # ---------------------------------------------------------
-  # todo : what if the eps is negative then the multiplication makes it more negative
-  if (math.isnan(ticker_config_series['Upper Price Channel'])):
-    upper_price_channel_list_unsmooth = [float(eps) + .5 * float(eps) for eps in yr_eps_adjusted_expanded_list]
-  else:
-    upper_price_channel_separation = float(ticker_config_series['Upper Price Channel'])
-    upper_price_channel_list_unsmooth = [float(eps) + upper_price_channel_separation for eps in yr_eps_adjusted_expanded_list]
-
-  if (math.isnan(ticker_config_series['Lower Price Channel'])):
-    lower_price_channel_list_unsmooth = [float(eps) - .5 * float(eps) for eps in yr_eps_adjusted_expanded_list]
-  else:
-    lower_price_channel_separation = float(ticker_config_series['Lower Price Channel'])
-    lower_price_channel_list_unsmooth = [float(eps) - lower_price_channel_separation for eps in yr_eps_adjusted_expanded_list]
-
-  print("The upper channel unsmooth list is : ", upper_price_channel_list_unsmooth)
-  upper_price_channel_list = smooth_list(upper_price_channel_list_unsmooth)
-  lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
-  print("The upper Guide is ", upper_price_channel_list, "\nand the number of element is ", len(upper_price_channel_list))
-  print("The upper Guide is ", lower_price_channel_list, "\nand the number of element is ", len(lower_price_channel_list))
-
-  # This variable is added to the adjustments that are done to the channels because
-  # this is also the nubmer of days by which the channels get shifted left (or these
-  #  are the number of nan entries that are inserted in the channel list
-  days_in_2_qtrs = 126
-
-  # =============================================================================
-  # Get the adjustments that need to be done and do the price channels
-  # First read from the json file to know how may adjustments need to be done
-  # for the upper and lower price channels and store them in their separate lists
-  # respectively. After than process those separate list to make actual adjustments
-  # to the channel lines
-  # =============================================================================
-  # It is better to define the list and the variables that are getting created in the read of the json
-  # file...as the for loops that use the lists are separated out from the creation of the lists
-  upper_price_channel_adj_start_date_list = []
-  upper_price_channel_adj_stop_date_list = []
-  upper_price_channel_adj_amount_list = []
-  len_upper_price_channel_adj = 0
-  lower_price_channel_adj_start_date_list = []
-  lower_price_channel_adj_stop_date_list = []
-  lower_price_channel_adj_amount_list = []
-  len_lower_price_channel_adj = 0
-
-  # Read the json file to get the adjustments for the upper and lower channels in
-  # their respective list
-  if (ticker not in config_json.keys()):
-    print("json data for ", ticker, "does not exist in", configuration_json, "file")
-  else:
-    if ("Upper_Price_Channel_Adj" in config_json[ticker]):
-      len_upper_price_channel_adj = len(config_json[ticker]["Upper_Price_Channel_Adj"])
-      print("The number of Upper channel adjustments specified", len_upper_price_channel_adj)
-      for i in range(len_upper_price_channel_adj):
-        i_start_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Start_Date"]
-        i_stop_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Stop_Date"]
-        i_adj_amount = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Adj_Amount"]
-        try:
-          upper_price_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
-          upper_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
-          upper_price_channel_adj_amount_list.append(float(i_adj_amount))
-        except (ValueError):
-          print(
-            "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Upper_Price_Channel_Adj in Configuration json file.\n"
-            "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
-            "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
-          sys.exit(1)
-
-  print("The Upper Channel Start Date List", upper_price_channel_adj_start_date_list)
-  print("The Upper Channel Stop Date List", upper_price_channel_adj_stop_date_list)
-  print("The Upper Channel Adjust List", upper_price_channel_adj_amount_list)
-
-  if (ticker not in config_json.keys()):
-    print("json data for ", ticker, "does not exist in", configuration_json, "file")
-  else:
-    if ("Lower_Price_Channel_Adj" in config_json[ticker]):
-      len_lower_price_channel_adj = len(config_json[ticker]["Lower_Price_Channel_Adj"])
-      print("The number of Lower channel adjustments specified", len_lower_price_channel_adj)
-      for i in range(len_lower_price_channel_adj):
-        i_start_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Start_Date"]
-        i_stop_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Stop_Date"]
-        i_adj_amount = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Adj_Amount"]
-        try:
-          lower_price_channel_adj_start_date_list.append(dt.datetime.strptime(i_start_date, "%m/%d/%Y").date())
-          lower_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
-          lower_price_channel_adj_amount_list.append(float(i_adj_amount))
-        except (ValueError):
-          print(
-            "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Lower_Price_Channel_Adj in Configuration json file.\n"
-            "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
-            "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
-          sys.exit(1)
-  print("The Lower Channel Start Date List", lower_price_channel_adj_start_date_list)
-  print("The Lower Channel Stop Date List", lower_price_channel_adj_stop_date_list)
-  print("The Lower Channel Adjust List", lower_price_channel_adj_amount_list)
-
-  # Now Process the upper and lower price channel adjustment lists to make the adjustments to the
-  # actual price channel list...for the length of the lists created above...and that is why it
-  # was a good ides to initialize the length to '0' and crate empty lists above
-  for i_idx in range(len_upper_price_channel_adj):
-    upper_price_channel_adj_start_date = upper_price_channel_adj_start_date_list[i_idx]
-    upper_price_channel_adj_stop_date = upper_price_channel_adj_stop_date_list[i_idx]
-    upper_price_channel_adj_amount = upper_price_channel_adj_amount_list[i_idx]
-    for i_date in date_list:
-      if (upper_price_channel_adj_start_date <= i_date <= upper_price_channel_adj_stop_date):
-        i_index = date_list.index(i_date)
-        print("Date ", i_date, "lies between start Date", upper_price_channel_adj_start_date, "and stop Date",
-              upper_price_channel_adj_stop_date, "at index ", i_index)
-        upper_price_channel_list[i_index - days_in_2_qtrs] = upper_price_channel_list[
-                                                               i_index - days_in_2_qtrs] + upper_price_channel_adj_amount
-
-  for i_idx in range(len_lower_price_channel_adj):
-    lower_price_channel_adj_start_date = lower_price_channel_adj_start_date_list[i_idx]
-    lower_price_channel_adj_stop_date = lower_price_channel_adj_stop_date_list[i_idx]
-    lower_price_channel_adj_amount = lower_price_channel_adj_amount_list[i_idx]
-    for i_date in date_list:
-      if (lower_price_channel_adj_start_date <= i_date <= lower_price_channel_adj_stop_date):
-        i_index = date_list.index(i_date)
-        print("Date ", i_date, "lies between start Date", lower_price_channel_adj_start_date, "and stop Date",
-              lower_price_channel_adj_stop_date, "at index ", i_index)
-        lower_price_channel_list[i_index - days_in_2_qtrs] = lower_price_channel_list[
-                                                               i_index - days_in_2_qtrs] + lower_price_channel_adj_amount
-  # =============================================================================
-
-  # Now shift the price channels by two quarters
-  # Approximately 6 months = 126 business days by inserting 126 nan at location 0
-  nan_list = []
-  for i in range(days_in_2_qtrs):
-    upper_price_channel_list.insert(0, float('nan'))
-    lower_price_channel_list.insert(0, float('nan'))
-
-  # ---------------------------------------------------------
-
 
   # ---------------------------------------------------------
   # Create the lower and upper Price limit
@@ -1228,18 +1276,18 @@ for ticker_raw in ticker_list:
                                                                 markersize='4')
 
   if (annual_eps_adjust_json):
-    # If the annual eps was ajusted, then plot those diamonds in green
+    # If the annual eps was ajusted, then plot those diamonds in <the color Ann likes>
     annual_eps_adjusted_slice_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     annual_eps_adjusted_slice_plt.set_yticks([])
     annual_eps_adjusted_slice_plt_inst = annual_eps_adjusted_slice_plt.plot(date_list[0:plot_period_int],
-                                                        yr_eps_adjusted_slice_expanded_list[0:plot_period_int], label='4 qtrs/4',
-                                                        color="teal", marker='D', markersize='4')
-    for i in range(len(yr_eps_adjusted_slice_date_list)):
-      print("The Date is ", yr_eps_adjusted_slice_date_list[i], " Corresponding EPS ", yr_eps_adjusted_slice_list[i])
+                                                        yr_eps_adj_slice_expanded_list[0:plot_period_int], label='4 qtrs/4',
+                                                        color="gold", marker='D', markersize='4')
+    for i in range(len(yr_eps_adj_slice_date_list)):
+      print("The Date is ", yr_eps_adj_slice_date_list[i], " Corresponding EPS ", yr_eps_adj_slice_list[i])
       # check if the date is in the plot range
-      if (date_list[plot_period_int] <= yr_eps_adjusted_slice_date_list[i] <= date_list[0]):
-        x = float("{0:.2f}".format(yr_eps_adjusted_slice_list[i]))
-        main_plt.text(yr_eps_adjusted_slice_date_list[i], yr_eps_adjusted_slice_list[i], x, fontsize=11, horizontalalignment='center',
+      if (date_list[plot_period_int] <= yr_eps_adj_slice_date_list[i] <= date_list[0]):
+        x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
+        main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
                       verticalalignment='bottom')
 
 
@@ -1458,8 +1506,6 @@ for ticker_raw in ticker_list:
   yr_dates_tmp = []
   for x in qtr_dates:
     print("The original Quarterly Date is :", x)
-    if (x.is_year_end is True):
-      print("This quarter is also year end date. Removing ", type(x))
     if (x in yr_dates):
       print("This quarter is also year end date. Removing ", type(x))
     else:
