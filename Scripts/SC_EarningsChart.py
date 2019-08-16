@@ -561,13 +561,14 @@ for ticker_raw in ticker_list:
     yr_eps_adj_slice_date_expanded_list.append(float('nan'))
     yr_eps_adj_slice_expanded_list.append(float('nan'))
 
-  for yr_eps_adj_slice_date in yr_eps_adj_slice_date_list:
-    curr_index = yr_eps_adj_slice_date_list.index(yr_eps_adj_slice_date)
-    print("Looking for ", yr_eps_adj_slice_date)
-    match_date = min(date_list, key=lambda d: abs(d - yr_eps_adj_slice_date))
-    print("The matching date for YR EPS date",  yr_eps_adj_slice_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_adj_slice_list[curr_index])
-    yr_eps_adj_slice_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_list[curr_index]
-    yr_eps_adj_slice_date_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_date_list[curr_index]
+  if (annual_eps_adjust_json == 1):
+    for yr_eps_adj_slice_date in yr_eps_adj_slice_date_list:
+      curr_index = yr_eps_adj_slice_date_list.index(yr_eps_adj_slice_date)
+      print("Looking for ", yr_eps_adj_slice_date)
+      match_date = min(date_list, key=lambda d: abs(d - yr_eps_adj_slice_date))
+      print("The matching date for YR EPS date",  yr_eps_adj_slice_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_adj_slice_list[curr_index])
+      yr_eps_adj_slice_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_list[curr_index]
+      yr_eps_adj_slice_date_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_date_list[curr_index]
 
   # I am not sure why I wanted this but seems like a good thing to be able to make
   # a dataframe from lists. This is not used anywhere in the code ahead...so commented
@@ -1258,6 +1259,13 @@ for ticker_raw in ticker_list:
   annual_past_eps_plt_inst = annual_past_eps_plt.plot(date_list[0:plot_period_int],
                                                       yr_past_eps_expanded_list[0:plot_period_int], label='4 qtrs/4',
                                                       color="black", marker='D', markersize='4')
+  annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  annual_projected_eps_plt.set_yticks([])
+  annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_period_int],
+                                                                yr_projected_eps_expanded_list[0:plot_period_int],
+                                                                label='4 qtrs/4', color="White", marker='D',
+                                                                markersize='4')
+
   # todo : maybe change this to only have the value printed out at the year ends
   for i in range(len(yr_eps_date_list)):
     print("The Date is ", yr_eps_date_list[i], " Corresponding EPS ", yr_eps_list[i])
@@ -1267,13 +1275,6 @@ for ticker_raw in ticker_list:
       main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
                     verticalalignment='bottom')
       # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
-
-  annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  annual_projected_eps_plt.set_yticks([])
-  annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_period_int],
-                                                                yr_projected_eps_expanded_list[0:plot_period_int],
-                                                                label='4 qtrs/4', color="White", marker='D',
-                                                                markersize='4')
 
   if (annual_eps_adjust_json):
     # If the annual eps was ajusted, then plot those diamonds in <the color Ann likes>
@@ -1289,8 +1290,6 @@ for ticker_raw in ticker_list:
         x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
         main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
                       verticalalignment='bottom')
-
-
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
