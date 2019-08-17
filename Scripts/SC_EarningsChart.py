@@ -1494,10 +1494,29 @@ for ticker_raw in ticker_list:
   # This works - Good resource
   # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
   # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
-  # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='BA-Jan')
-  # qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='BQ-Jan')
-  yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
-  qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
+  if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
+    fiscal_year_str = str(ticker_config_series['Fiscal_Year'])
+    if not (all(x.isalpha() for x in fiscal_year_str)):
+      print("**********                                           ERROR                                       **********")
+      print("**********     Entry for ", str(ticker).center(10), " 'Fiscal_Year' in the configurations file  is", fiscal_year_str,"   **********")
+      print("**********     It is not a 3 character month. Valid values(string) are:     **********")
+      print("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
+      print("**********     Please correct and then run the script again                                      **********")
+  else:
+    fiscal_year_str = "Dec"
+
+  major_xgrid_color = "black"
+  if (fiscal_year_str != "Dec"):
+    major_xgrid_color = "peru"
+
+  fiscal_qtr_str  = "BQ-"+fiscal_year_str
+  fiscal_year_str = "BA-"+fiscal_year_str
+  print("The fiscal Year is", fiscal_year_str)
+
+  yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_year_str)
+  qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_qtr_str)
+  # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
+  # qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
   print("Yearly Dates are ", yr_dates)
   print("Quarterly Dates are ", type(qtr_dates))
 
@@ -1524,7 +1543,7 @@ for ticker_raw in ticker_list:
   main_plt.xaxis.set_tick_params(width=5)
   main_plt.set_xticklabels(qtr_dates_tmp, rotation=90, fontsize=7,  color='k',  minor=True)
   main_plt.set_xticklabels(yr_dates_tmp, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
-  main_plt.grid(which='major', axis='x', linestyle='-', color='black', linewidth=1.5)
+  main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=1.5)
   main_plt.grid(which='minor', axis='x', linestyle='--', color='blue')
   main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=1)
 
