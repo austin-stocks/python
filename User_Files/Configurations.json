@@ -455,6 +455,12 @@
     ]
   },
 
+  "WMT" : {
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "07/25/2018", "Stop_Date" :   "05/05/2019", "Adj_Amount" : ".3"}
+    ]
+  },
+
   "XOYO" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"},
