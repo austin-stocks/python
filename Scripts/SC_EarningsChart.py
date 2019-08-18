@@ -588,6 +588,13 @@ for ticker_raw in ticker_list:
   # Create the price channels using the yr eps sdj list
   # This section also take json input if the user wants to modify the price channels
   # =============================================================================
+  chart_type = "Linear"
+  if (str(ticker_config_series['Chart_Type']) != 'nan'):
+    chart_type = str(ticker_config_series['Chart_Type'])
+    if not (all(x.isalpha() for x in chart_type)):
+      print ("Error")
+      sys.exit()
+
   # This variable is added to the adjustments that are done to the channels because
   # this is also the nubmer of days by which the channels get shifted left (or these
   #  are the number of nan entries that are inserted in the channel list
@@ -595,16 +602,16 @@ for ticker_raw in ticker_list:
 
   # Get the upper and lower guide lines separation from the annual EPS
   # Use the default value of .1 (10 cents) for separation
-  if (math.isnan(ticker_config_series['Upper Price Channel'])):
+  if (math.isnan(ticker_config_series[chart_type + '_Upper_Price_Channel'])):
     upper_price_channel_list_unsmooth = [float(eps) + .1 for eps in yr_eps_adj_expanded_list]
   else:
-    upper_price_channel_separation = float(ticker_config_series['Upper Price Channel'])
+    upper_price_channel_separation = float(ticker_config_series[chart_type + '_Upper_Price_Channel'])
     upper_price_channel_list_unsmooth = [float(eps) + upper_price_channel_separation for eps in yr_eps_adj_expanded_list]
 
-  if (math.isnan(ticker_config_series['Lower Price Channel'])):
+  if (math.isnan(ticker_config_series[chart_type + '_Lower_Price_Channel'])):
     lower_price_channel_list_unsmooth = [float(eps) - .1 for eps in yr_eps_adj_expanded_list]
   else:
-    lower_price_channel_separation = float(ticker_config_series['Lower Price Channel'])
+    lower_price_channel_separation = float(ticker_config_series[chart_type + '_Lower_Price_Channel'])
     lower_price_channel_list_unsmooth = [float(eps) - lower_price_channel_separation for eps in yr_eps_adj_expanded_list]
 
   print("The upper channel unsmooth list is : ", upper_price_channel_list_unsmooth)
@@ -859,7 +866,7 @@ for ticker_raw in ticker_list:
     # user specified in the config file
     plot_period_int = 252 * 10
   else:
-    plot_period_int = 252 * int(ticker_config_series['Linear_Chart_Duration_Years'])
+    plot_period_int = 252 * int(ticker_config_series[chart_type+'_Chart_Duration_Years'])
 
   if (len(date_list) < plot_period_int):
     plot_period_int = len(date_list) -1
@@ -867,7 +874,7 @@ for ticker_raw in ticker_list:
     the years that user is asking to plot for, so adjusting the plot for",\
     float(plot_period_int/252), "years (or", plot_period_int, "days)")
   else:
-    print ("Will plot for", plot_period_int, "years")
+    print ("Will plot for", int(plot_period_int/252), "years")
   # ---------------------------------------------------------
 
   # Get the index factor to pin/anchor/align the index and the price of the stock
@@ -887,43 +894,43 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------
   # Create the lower and upper Price limit
   # ---------------------------------------------------------
-  if (math.isnan(ticker_config_series['Price_Scale_Low'])):
+  if math.isnan(ticker_config_series[chart_type + '_Price_Scale_Low']):
     price_lim_lower = 0
     print("Price_Scale_Low is set to 0")
   else:
-    price_lim_lower = int(ticker_config_series['Price_Scale_Low'])
+    # price_lim_lower = int(ticker_config_series[chart_type + '_Price_Scale_Low'])
+    price_lim_lower = ticker_config_series[chart_type + '_Price_Scale_Low']
     print("Price_Scale_Low from Config file is ", price_lim_lower)
-
-  if (math.isnan(ticker_config_series['Price_Scale_High'])):
+  if math.isnan(ticker_config_series[chart_type +'_Price_Scale_High']):
     ticker_adj_close_list_nonan = [x for x in ticker_adj_close_list if math.isnan(x) is False]
     price_lim_upper = 1.25 * max(ticker_adj_close_list_nonan)
     print("Price_Scale_High from historical ticker_adj_close_list is ", price_lim_upper)
   else:
-    price_lim_upper = int(ticker_config_series['Price_Scale_High'])
+    price_lim_upper = ticker_config_series[chart_type+'_Price_Scale_High']
     print("Price_Scale_High from Config file is ", price_lim_upper)
   # ---------------------------------------------------------
 
   # ---------------------------------------------------------
   # Create the Upper and Lower EPS Limit
   # ---------------------------------------------------------
-  if (math.isnan(ticker_config_series['Earnings Scale - High'])):
+  if math.isnan(ticker_config_series[chart_type + '_Earnings_Scale_High']):
     if (max(qtr_eps_list) > 0):
       qtr_eps_lim_upper = 1.25 * max(qtr_eps_list)
     else:
       qtr_eps_lim_upper = max(qtr_eps_list) / 1.25
     print("EPS Scale - Low from Earnings List is ", qtr_eps_lim_upper)
   else:
-    qtr_eps_lim_upper = ticker_config_series['Earnings Scale - High']
+    qtr_eps_lim_upper = ticker_config_series[chart_type + '_Earnings_Scale_High']
     print("EPS Scale - High from Config file ", qtr_eps_lim_upper)
 
-  if (math.isnan(ticker_config_series['Earnings Scale - Low'])):
+  if math.isnan(ticker_config_series[chart_type + '_Earnings_Scale_Low']):
     if (min(qtr_eps_list) < 0):
       qtr_eps_lim_lower = 1.25 * min(qtr_eps_list)
     else:
       qtr_eps_lim_lower = min(qtr_eps_list) / 1.25
     print("EPS Scale - Low from Earnings List is ", qtr_eps_lim_lower)
   else:
-    qtr_eps_lim_lower = ticker_config_series['Earnings Scale - Low']
+    qtr_eps_lim_lower = ticker_config_series[chart_type + '_Earnings_Scale_Low']
     print("EPS Scale - Low from Config file ", qtr_eps_lim_lower)
   # =============================================================================
 
@@ -1159,7 +1166,6 @@ for ticker_raw in ticker_list:
   # #############################################################################
   # #############################################################################
   # #############################################################################
-  chart_type = 'linear'
   # fig, main_plt = plt.subplots()
 
   fig=plt.figure()
@@ -1224,6 +1230,7 @@ for ticker_raw in ticker_list:
   # main_plt.set_xlabel('Date')
   main_plt.set_ylabel('Earnings')
   main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  main_plt.set_yscale(chart_type)
   main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
                                 color="deeppink", marker='.')
   # -----------------------------------------------------------------------------
@@ -1255,11 +1262,13 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
   # Find the eps points that fall in the plot range
   annual_past_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  annual_past_eps_plt.set_yscale(chart_type)
   annual_past_eps_plt.set_yticks([])
   annual_past_eps_plt_inst = annual_past_eps_plt.plot(date_list[0:plot_period_int],
                                                       yr_past_eps_expanded_list[0:plot_period_int], label='4 qtrs/4',
                                                       color="black", marker='D', markersize='4')
   annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  annual_projected_eps_plt.set_yscale(chart_type)
   annual_projected_eps_plt.set_yticks([])
   annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_period_int],
                                                                 yr_projected_eps_expanded_list[0:plot_period_int],
@@ -1297,6 +1306,7 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
   if (pays_dividend == 1):
     dividend_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    dividend_plt.set_yscale(chart_type)
     dividend_plt.set_yticks([])
     dividend_plt_inst = dividend_plt.plot(date_list[0:plot_period_int], dividend_expanded_list[0:plot_period_int],
                                           label='Dividend', color="Orange", marker='x', markersize='6')
@@ -1424,11 +1434,13 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
   # upper_channel_plt.set_ylabel('Upper_guide', color = 'b')
   # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
-  upper_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  upper_channel_plt.set_yticks([])
-  upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
-                                                  upper_price_channel_list[0:plot_period_int], label='Channel', color="blue",
-                                                  linestyle='-')
+  if (chart_type == "Linear"):
+    upper_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    upper_channel_plt.set_yscale(chart_type)
+    upper_channel_plt.set_yticks([])
+    upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
+                                                    upper_price_channel_list[0:plot_period_int], label='Channel', color="blue",
+                                                    linestyle='-')
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
@@ -1436,11 +1448,13 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
   # upper_channel_plt.set_ylabel('Upper_guide', color = 'b')
   # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
-  lower_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  lower_channel_plt.set_yticks([])
-  lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
-                                                  lower_price_channel_list[0:plot_period_int], label='Price Channel', color="blue",
-                                                  linestyle='-')
+  if (chart_type == "Linear"):
+    lower_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    lower_channel_plt.set_yscale(chart_type)
+    lower_channel_plt.set_yticks([])
+    lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
+                                                    lower_price_channel_list[0:plot_period_int], label='Price Channel', color="blue",
+                                                    linestyle='-')
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
@@ -1541,10 +1555,12 @@ for ticker_raw in ticker_list:
   main_plt.set_xticks(yr_dates_tmp, minor=False)
   main_plt.set_xticks(qtr_dates_tmp, minor=True)
   main_plt.xaxis.set_tick_params(width=5)
-  main_plt.set_xticklabels(qtr_dates_tmp, rotation=90, fontsize=7,  color='k',  minor=True)
+  if (chart_type == "Linear"):
+    main_plt.set_xticklabels(qtr_dates_tmp, rotation=90, fontsize=7,  color='k',  minor=True)
   main_plt.set_xticklabels(yr_dates_tmp, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
   main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=1.5)
-  main_plt.grid(which='minor', axis='x', linestyle='--', color='blue')
+  if (chart_type == "Linear"):
+    main_plt.grid(which='minor', axis='x', linestyle='--', color='blue')
   main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=1)
 
   # candle_plt.set_xticks([])
@@ -1678,6 +1694,9 @@ for ticker_raw in ticker_list:
   now = dt.datetime.now()
   date_time = now.strftime("%Y_%m_%d_%H_%M")
   date_time = now.strftime("%Y_%m_%d")
-  fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+  if (chart_type == "Log"):
+    fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+  else:
+    fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
   plt.show()
   # -----------------------------------------------------------------------------
