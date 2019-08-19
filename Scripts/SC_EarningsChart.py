@@ -1253,6 +1253,7 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
   if (plot_spy):
     spy_plt.set_ylim(price_lim_lower, price_lim_upper)
+    spy_plt.set_yscale(chart_type)
     spy_plt_inst = spy_plt.plot(date_list[0:plot_period_int], spy_adj_close_list[0:plot_period_int], label='S&P',
                                 color="green", linestyle='-')
   # -----------------------------------------------------------------------------
