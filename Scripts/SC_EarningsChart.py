@@ -81,27 +81,27 @@ def smooth_list(l):
 
     i_int += 1
 
-  print("The original List is ", l)
-  print("The clean List is ", l_clean)
-  print("The indices of non non values is ", l_indices)
+  # print("The original List is ", l)
+  # print("The clean List is ", l_clean)
+  # print("The indices of non non values is ", l_indices)
 
   i_int = 0
   while (i_int < len(l_clean) - 1):
-    print("Clean List index:", i_int, ", Clean List value:", l_clean[i_int], ", Corresponding List index:",
-          l_indices[i_int])
+    # print("Clean List index:", i_int, ", Clean List value:", l_clean[i_int], ", Corresponding List index:",
+    #       l_indices[i_int])
     step = (l_clean[i_int] - l_clean[i_int + 1]) / (l_indices[i_int + 1] - l_indices[i_int])
     start_index = l_indices[i_int]
     stop_index = l_indices[i_int + 1]
-    print("The step is ", step, "Start and Stop Indices are ", start_index, stop_index)
+    # print("The step is ", step, "Start and Stop Indices are ", start_index, stop_index)
     j_int = start_index + 1
     while (j_int < stop_index):
       l_mod[j_int] = float(l_mod[j_int - 1]) - step
-      print("Updating index", j_int, "to ", l_mod[j_int])
+      # print("Updating index", j_int, "to ", l_mod[j_int])
       j_int += 1
 
     i_int += 1
 
-  print("Modified List is", l_mod)
+  # print("Modified List is", l_mod)
   return (l_mod)
 
 
@@ -161,11 +161,16 @@ if (plot_nasdaq):
 # =============================================================================
 
 
+# =============================================================================
+# Extract the schiller PE into a dataframe 
+# =============================================================================
 print ("The schiller PE df is", schiller_pe_df)
 schiller_pe_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in schiller_pe_df.Date.tolist()]
-schiller_pe_value_list_raw =  schiller_pe_df.Value.tolist()
+schiller_pe_value_list =  schiller_pe_df.Value.tolist()
 print ("The Schiller PE Date list is", schiller_pe_date_list)
-print ("The Schiller PE Value list is", schiller_pe_value_list_raw)
+print ("The Schiller PE Value list is", schiller_pe_value_list)
+# =============================================================================
+
 
 # print ("The Tracklist df is", tracklist_df)
 ticker_list_unclean = tracklist_df['Tickers'].tolist()
@@ -601,41 +606,6 @@ for ticker_raw in ticker_list:
       print ("Error")
       sys.exit()
 
-  # schiller_pe_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in schiller_pe_df.Date.tolist()]
-  # schiller_pe_value_list = schiller_pe_df.Value.tolist()
-  average_pe = 15
-  schiller_pe_value_list = [float(schiller_pe/average_pe) for schiller_pe in schiller_pe_value_list_raw]
-
-  schiller_pe_expanded_list = []
-  oldest_date_in_date_list = date_list[len(date_list)-1]
-  print ("Oldest Date in Historical Date List is", oldest_date_in_date_list)
-  for i in range(len(date_list)):
-    schiller_pe_expanded_list.append(float('nan'))
-  # Now look for the date in pe datelist, match it with the closest index in the
-  # date list from historical and then assign the qtr eps to that index in the qtr
-  # eps expanded list. Do the same for divident expanded list
-  for schiller_pe_date in schiller_pe_date_list:
-    if (schiller_pe_date > oldest_date_in_date_list):
-      curr_index = schiller_pe_date_list.index(schiller_pe_date)
-      # print("Looking for ", qtr_eps_date)
-      match_date = min(date_list, key=lambda d: abs(d - schiller_pe_date))
-      print("The matching date for Schiller PE Date: ", schiller_pe_date, "is ", match_date, " at index ",
-            date_list.index(match_date), "and the Schiller PE is", schiller_pe_value_list[curr_index])
-      schiller_pe_expanded_list[date_list.index(match_date)] = schiller_pe_value_list[curr_index]
-  # print("The expanded Schiller PE list is ", schiller_pe_expanded_list, "\nand the number of elements are",len(schiller_pe_expanded_list))
-  schiller_pe_list_smooth = smooth_list(schiller_pe_expanded_list)
-  yr_eps_adj_expanded_list_smooth = smooth_list(yr_eps_adj_expanded_list)
-  # >> > from operator import mul
-  # >> > c
-  # [1, 2, 3]
-  # >> > d
-  # [1, 2, 3]
-  # >> > map(mul, c, d)
-  schiller_pe_times_yr_eps_list = [a*b for a,b in zip(schiller_pe_list_smooth,yr_eps_adj_expanded_list_smooth)]
-  print ("The smooth Schiller PE list is ", schiller_pe_times_yr_eps_list)
-  # sys.exit()
-
-
   # This variable is added to the adjustments that are done to the channels because
   # this is also the nubmer of days by which the channels get shifted left (or these
   #  are the number of nan entries that are inserted in the channel list
@@ -660,6 +630,41 @@ for ticker_raw in ticker_list:
   lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
   print("The upper Guide is ", upper_price_channel_list, "\nand the number of element is ", len(upper_price_channel_list))
   print("The upper Guide is ", lower_price_channel_list, "\nand the number of element is ", len(lower_price_channel_list))
+
+  # ---------------------------------------------------------------------------
+  # Create the schiller PE line for the plot 
+  # ---------------------------------------------------------------------------
+  avearge_schiller_pe = 15
+  # Divide the schiller PE values by average_schiller_pe to normalize it 
+  schiller_pe_normalized_list = [float(schiller_pe/avearge_schiller_pe) for schiller_pe in schiller_pe_value_list]
+
+  schiller_pe_normalized_expanded_list = []
+  oldest_date_in_date_list = date_list[len(date_list)-1]
+  print ("Oldest Date in Historical Date List is", oldest_date_in_date_list)
+  for i in range(len(date_list)):
+    schiller_pe_normalized_expanded_list.append(float('nan'))
+
+  for schiller_pe_date in schiller_pe_date_list:
+    if (schiller_pe_date > oldest_date_in_date_list):
+      curr_index = schiller_pe_date_list.index(schiller_pe_date)
+      # print("Looking for ", qtr_eps_date)
+      match_date = min(date_list, key=lambda d: abs(d - schiller_pe_date))
+      print("The matching date for Schiller PE Date: ", schiller_pe_date, "is ", match_date, " at index ",
+            date_list.index(match_date), "and the Schiller PE is", schiller_pe_normalized_list[curr_index])
+      schiller_pe_normalized_expanded_list[date_list.index(match_date)] = schiller_pe_normalized_list[curr_index]
+  # print("The expanded Schiller PE list is ", schiller_pe_normalized_expanded_list, "\nand the number of elements are",len(schiller_pe_normalized_expanded_list))
+
+  # make sure that the lenght of the two expanded lists are the same
+  if (len(schiller_pe_normalized_expanded_list) != len(yr_eps_adj_expanded_list)):
+    print ("Error ")
+    sys.exit()
+  schiller_pe_normalized_list_smooth = smooth_list(schiller_pe_normalized_expanded_list)
+  yr_eps_adj_expanded_list_smooth = smooth_list(yr_eps_adj_expanded_list)
+
+  # Now multiply the schiller expanded list with the yr eps expanded list 
+  schiller_pe_times_yr_eps_list = [a*b for a,b in zip(schiller_pe_normalized_list_smooth,yr_eps_adj_expanded_list_smooth)]
+  print ("The smooth Schiller Normalized PE list mulitplied by YR EPS list is ", schiller_pe_times_yr_eps_list)
+  # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Get the adjustments that need to be done and do the price channels
@@ -975,9 +980,56 @@ for ticker_raw in ticker_list:
     print("EPS Scale - Low from Config file ", qtr_eps_lim_lower)
   # =============================================================================
 
-  # =============================================================================
+  # ---------------------------------------------------------------------------
+  # Do the calcuations needed to xtick and xtick lables for main plt
+  # ---------------------------------------------------------------------------
+  # This works - Good resource
+  # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
+  # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
+  if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
+    fiscal_yr_str = str(ticker_config_series['Fiscal_Year'])
+    if not (all(x.isalpha() for x in fiscal_yr_str)):
+      print("**********                                           ERROR                                       **********")
+      print("**********     Entry for ", str(ticker).center(10), " 'Fiscal_Year' in the configurations file  is", fiscal_yr_str,"   **********")
+      print("**********     It is not a 3 character month. Valid values(string) are:     **********")
+      print("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
+      print("**********     Please correct and then run the script again                                      **********")
+  else:
+    fiscal_yr_str = "Dec"
+
+  fiscal_qtr_str  = "BQ-"+fiscal_yr_str
+  fiscal_yr_str = "BA-"+fiscal_yr_str
+  print("The fiscal Year is", fiscal_yr_str)
+
+  fiscal_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_yr_str)
+  fiscal_qtr_and_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_qtr_str)
+  # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
+  # qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
+  print("Yearly Dates are ", fiscal_yr_dates_raw)
+  print("Quarterly Dates are ", type(fiscal_qtr_and_yr_dates_raw))
+
+  fiscal_qtr_dates = []
+  fiscal_yr_dates = []
+  for x in fiscal_qtr_and_yr_dates_raw:
+    print("The original Quarterly Date is :", x)
+    if (x in fiscal_yr_dates_raw):
+      print("This quarter is also year end date. Removing ", type(x))
+    else:
+      fiscal_qtr_dates.append(x.date().strftime('%m/%d/%Y'))
+
+  for x in fiscal_yr_dates_raw:
+    print("The original Yearly Date is :", x)
+    fiscal_yr_dates.append(x.date().strftime('%m/%d/%Y'))
+
+  print("The original yr dates list is: ", fiscal_yr_dates_raw)
+  print("The original qtr dates list is: ", fiscal_qtr_and_yr_dates_raw)
+  print("The modified qtr dates list is: ", fiscal_qtr_dates)
+  print("The modified yr dates list is: ", fiscal_yr_dates)
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
   # Find out the growth for 1yr, 3yr and 5yr for eps and price
-  # =============================================================================
+  # ---------------------------------------------------------------------------
   get_eps_and_price_growth = 1
   price_eps_growth_str_textbox = "This is the box in top center"
   if (get_eps_and_price_growth):
@@ -1092,12 +1144,12 @@ for ticker_raw in ticker_list:
     price_eps_growth_str_textbox += ("| "+str(ticker_5_yr_ago_price)+"("+str(price_growth_5_yr)+"%)").ljust(20)
 
     print (price_eps_growth_str_textbox)
-  # =============================================================================
+  # ---------------------------------------------------------------------------
 
 
-  # =============================================================================
+  # ---------------------------------------------------------------------------
   # Get the company info for company name, sector and industry
-  # =============================================================================
+  # ---------------------------------------------------------------------------
   yahoo_comany_info_df = pd.read_excel(dir_path + user_dir + "\\" + 'Yahoo_Company_Info.xlsm', sheet_name="Company_Info")
   yahoo_comany_info_df.set_index('Ticker', inplace=True)
   # print (yahoo_comany_info_df)
@@ -1110,11 +1162,11 @@ for ticker_raw in ticker_list:
     ticker_sector = yahoo_comany_info_df.loc[ticker, 'Sector']
     ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
   print (ticker_company_name, ticker_sector, ticker_industry)
-  # =============================================================================
+  # ---------------------------------------------------------------------------
 
-  # =============================================================================
+  # ---------------------------------------------------------------------------
   # Extract and generate information needed for candlesticks and volume chart
-  # =============================================================================
+  # ---------------------------------------------------------------------------
   if (math.isnan(ticker_config_series['Candle_Chart_Duration_Days'])):
     candle_chart_duration = 65
   else:
@@ -1193,7 +1245,7 @@ for ticker_raw in ticker_list:
     candle_sunday_dates_str.append(x.date().strftime('%m/%d/%Y'))
 
   print ("The modified Sunday dates are", candle_sunday_dates_str)
-  # =============================================================================
+  # ---------------------------------------------------------------------------
 
 
   # #############################################################################
@@ -1236,15 +1288,11 @@ for ticker_raw in ticker_list:
   # This works too...may use that is set the subtitle for the plot
   # main_plt.set_title(ticker_company_name + "("  +ticker +")", fontsize=18,horizontalalignment='right')
 
-
-
-
-
   # Various plots that share the same x axis(date)
   price_plt = main_plt.twinx()
   annual_past_eps_plt = main_plt.twinx()
   annual_projected_eps_plt = main_plt.twinx()
-  schiller_pe_plt = main_plt.twinx()
+  schiller_pe_times_yr_eps_plt = main_plt.twinx()
   schiller_pe_normalized_plt  = main_plt.twinx()
   upper_channel_plt = main_plt.twinx()
   lower_channel_plt = main_plt.twinx()
@@ -1345,26 +1393,34 @@ for ticker_raw in ticker_list:
                       verticalalignment='bottom')
   # -----------------------------------------------------------------------------
 
-
-
+  # -----------------------------------------------------------------------------
+  # Plot normalzied Schiller PE
+  # -----------------------------------------------------------------------------
   schiller_pe_normalized_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
   schiller_pe_normalized_plt.set_yticks([])
   schiller_pe_normalized_plt_inst = schiller_pe_normalized_plt.plot(date_list[0:plot_period_int],
-                                              schiller_pe_list_smooth[0:plot_period_int],
+                                              schiller_pe_normalized_list_smooth[0:plot_period_int],
                                               label='Normalized Schiller PE', color='green', linestyle='-')
+  # -----------------------------------------------------------------------------
 
-  schiller_pe_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  schiller_pe_plt.set_yticks([])
-  schiller_pe_plt_inst = schiller_pe_plt.plot(date_list[0:plot_period_int],
+  # -----------------------------------------------------------------------------
+  # Plot normalized Schiller PE mulitpled by YR EPS
+  # -----------------------------------------------------------------------------
+  schiller_pe_times_yr_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  schiller_pe_times_yr_eps_plt.set_yticks([])
+  schiller_pe_times_yr_eps_plt_inst = schiller_pe_times_yr_eps_plt.plot(date_list[0:plot_period_int],
                                               schiller_pe_times_yr_eps_list[0:plot_period_int],
-                                              label='Normalized Schiller PE', color='darkviolet', linestyle='-')
-  # for i in range(len(yr_eps_date_list)):
-  #   print("The Date is ", yr_eps_date_list[i], " Corresponding EPS ", yr_eps_list[i])
-  #   # check if the date is in the plot range
-  #   if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
-  #     x = float("{0:.2f}".format(schiller_pe_times_yr_eps_list[i]))
-  #     main_plt.text(yr_eps_date_list[i], schiller_pe_times_yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
-  #                   verticalalignment='bottom')
+                                              label='Schiller PE time EPS', color='darkviolet', linestyle='-')
+  for i_date_str in fiscal_yr_dates:
+    i_date = dt.datetime.strptime(i_date_str, '%m/%d/%Y').date()
+    if (i_date < dt.datetime.now().date()):
+      match_date = min(date_list, key=lambda d: abs(d - i_date))
+      i_idx = date_list.index(match_date)
+      if (date_list[plot_period_int] <= match_date <= date_list[0]):
+        x = float("{0:.2f}".format(schiller_pe_times_yr_eps_list[i_idx]))
+        main_plt.text(date_list[i_idx], schiller_pe_times_yr_eps_list[i_idx], x, fontsize=11, horizontalalignment='center',
+                      verticalalignment='bottom')
+  # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
   # Dividend plot
@@ -1570,59 +1626,16 @@ for ticker_raw in ticker_list:
   # main_plt.minorticks_on()
   # main_plt.yaxis.grid(True)
   #
-  # This works - Good resource
-  # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
-  # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
-  if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
-    fiscal_year_str = str(ticker_config_series['Fiscal_Year'])
-    if not (all(x.isalpha() for x in fiscal_year_str)):
-      print("**********                                           ERROR                                       **********")
-      print("**********     Entry for ", str(ticker).center(10), " 'Fiscal_Year' in the configurations file  is", fiscal_year_str,"   **********")
-      print("**********     It is not a 3 character month. Valid values(string) are:     **********")
-      print("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
-      print("**********     Please correct and then run the script again                                      **********")
-  else:
-    fiscal_year_str = "Dec"
-
   major_xgrid_color = "black"
-  if (fiscal_year_str != "Dec"):
+  if (fiscal_yr_str != "Dec"):
     major_xgrid_color = "peru"
 
-  fiscal_qtr_str  = "BQ-"+fiscal_year_str
-  fiscal_year_str = "BA-"+fiscal_year_str
-  print("The fiscal Year is", fiscal_year_str)
-
-  yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_year_str)
-  qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_qtr_str)
-  # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
-  # qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
-  print("Yearly Dates are ", yr_dates)
-  print("Quarterly Dates are ", type(qtr_dates))
-
-  qtr_dates_tmp = []
-  yr_dates_tmp = []
-  for x in qtr_dates:
-    print("The original Quarterly Date is :", x)
-    if (x in yr_dates):
-      print("This quarter is also year end date. Removing ", type(x))
-    else:
-      qtr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
-
-  for x in yr_dates:
-    print("The original Yearly Date is :", x)
-    yr_dates_tmp.append(x.date().strftime('%m/%d/%Y'))
-
-  print("The original yr dates list is: ", yr_dates)
-  print("The original qtr dates list is: ", qtr_dates)
-  print("The modified qtr dates list is: ", qtr_dates_tmp)
-  print("The modified yr dates list is: ", yr_dates_tmp)
-
-  main_plt.set_xticks(yr_dates_tmp, minor=False)
-  main_plt.set_xticks(qtr_dates_tmp, minor=True)
+  main_plt.set_xticks(fiscal_yr_dates, minor=False)
+  main_plt.set_xticks(fiscal_qtr_dates, minor=True)
   main_plt.xaxis.set_tick_params(width=5)
   if (chart_type == "Linear"):
-    main_plt.set_xticklabels(qtr_dates_tmp, rotation=90, fontsize=7,  color='k',  minor=True)
-  main_plt.set_xticklabels(yr_dates_tmp, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+    main_plt.set_xticklabels(fiscal_qtr_dates, rotation=90, fontsize=7,  color='k',  minor=True)
+  main_plt.set_xticklabels(fiscal_yr_dates, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
   main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=1.5)
   if (chart_type == "Linear"):
     main_plt.grid(which='minor', axis='x', linestyle='--', color='blue')
