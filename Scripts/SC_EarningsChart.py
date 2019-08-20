@@ -131,13 +131,16 @@ earnings_dir = "\\..\\" + "Earnings"
 dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
 tracklist_file = "Tracklist.csv"
+schiller_pe_monthly_file = "Schiller_PE_by_Month.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
 configuration_json = "Configurations.json"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 
+tracklist_df = pd.read_csv(tracklist_file_full_path)
 config_df = pd.read_csv(dir_path + user_dir + "\\" + configuration_file)
 config_df.set_index('Ticker', inplace=True)
+schiller_pe_df = pd.read_csv(dir_path + user_dir + "\\" + schiller_pe_monthly_file)
 with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
   config_json = json.load(json_file)
 # =============================================================================
@@ -158,9 +161,12 @@ if (plot_nasdaq):
 # =============================================================================
 
 
+print ("The schiller PE df is", schiller_pe_df)
+schiller_pe_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in schiller_pe_df.Date.tolist()]
+schiller_pe_value_list_raw =  schiller_pe_df.Value.tolist()
+print ("The Schiller PE Date list is", schiller_pe_date_list)
+print ("The Schiller PE Value list is", schiller_pe_value_list_raw)
 
-# Read the trracklist and convert the read tickers into a list
-tracklist_df = pd.read_csv(tracklist_file_full_path)
 # print ("The Tracklist df is", tracklist_df)
 ticker_list_unclean = tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
@@ -594,6 +600,41 @@ for ticker_raw in ticker_list:
     if not (all(x.isalpha() for x in chart_type)):
       print ("Error")
       sys.exit()
+
+  # schiller_pe_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in schiller_pe_df.Date.tolist()]
+  # schiller_pe_value_list = schiller_pe_df.Value.tolist()
+  average_pe = 15
+  schiller_pe_value_list = [float(schiller_pe/average_pe) for schiller_pe in schiller_pe_value_list_raw]
+
+  schiller_pe_expanded_list = []
+  oldest_date_in_date_list = date_list[len(date_list)-1]
+  print ("Oldest Date in Historical Date List is", oldest_date_in_date_list)
+  for i in range(len(date_list)):
+    schiller_pe_expanded_list.append(float('nan'))
+  # Now look for the date in pe datelist, match it with the closest index in the
+  # date list from historical and then assign the qtr eps to that index in the qtr
+  # eps expanded list. Do the same for divident expanded list
+  for schiller_pe_date in schiller_pe_date_list:
+    if (schiller_pe_date > oldest_date_in_date_list):
+      curr_index = schiller_pe_date_list.index(schiller_pe_date)
+      # print("Looking for ", qtr_eps_date)
+      match_date = min(date_list, key=lambda d: abs(d - schiller_pe_date))
+      print("The matching date for Schiller PE Date: ", schiller_pe_date, "is ", match_date, " at index ",
+            date_list.index(match_date), "and the Schiller PE is", schiller_pe_value_list[curr_index])
+      schiller_pe_expanded_list[date_list.index(match_date)] = schiller_pe_value_list[curr_index]
+  # print("The expanded Schiller PE list is ", schiller_pe_expanded_list, "\nand the number of elements are",len(schiller_pe_expanded_list))
+  schiller_pe_list_smooth = smooth_list(schiller_pe_expanded_list)
+  yr_eps_adj_expanded_list_smooth = smooth_list(yr_eps_adj_expanded_list)
+  # >> > from operator import mul
+  # >> > c
+  # [1, 2, 3]
+  # >> > d
+  # [1, 2, 3]
+  # >> > map(mul, c, d)
+  schiller_pe_times_yr_eps_list = [a*b for a,b in zip(schiller_pe_list_smooth,yr_eps_adj_expanded_list_smooth)]
+  print ("The smooth Schiller PE list is ", schiller_pe_times_yr_eps_list)
+  # sys.exit()
+
 
   # This variable is added to the adjustments that are done to the channels because
   # this is also the nubmer of days by which the channels get shifted left (or these
@@ -1179,7 +1220,7 @@ for ticker_raw in ticker_list:
   fig.set_size_inches(16, 10)  # Length x height
   fig.subplots_adjust(right=0.90)
   # fig.autofmt_xdate()
-  # This works - Named colors in matplotlib
+  # This works - Named colors / color palette in matplotlib
   # https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib
   main_plt.set_facecolor("lightgrey")
   candle_plt.set_facecolor("aliceblue")
@@ -1203,6 +1244,8 @@ for ticker_raw in ticker_list:
   price_plt = main_plt.twinx()
   annual_past_eps_plt = main_plt.twinx()
   annual_projected_eps_plt = main_plt.twinx()
+  schiller_pe_plt = main_plt.twinx()
+  schiller_pe_normalized_plt  = main_plt.twinx()
   upper_channel_plt = main_plt.twinx()
   lower_channel_plt = main_plt.twinx()
   # yr_eps_02_5_plt = main_plt.twinx()
@@ -1301,6 +1344,27 @@ for ticker_raw in ticker_list:
         main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
                       verticalalignment='bottom')
   # -----------------------------------------------------------------------------
+
+
+
+  schiller_pe_normalized_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  schiller_pe_normalized_plt.set_yticks([])
+  schiller_pe_normalized_plt_inst = schiller_pe_normalized_plt.plot(date_list[0:plot_period_int],
+                                              schiller_pe_list_smooth[0:plot_period_int],
+                                              label='Normalized Schiller PE', color='green', linestyle='-')
+
+  schiller_pe_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  schiller_pe_plt.set_yticks([])
+  schiller_pe_plt_inst = schiller_pe_plt.plot(date_list[0:plot_period_int],
+                                              schiller_pe_times_yr_eps_list[0:plot_period_int],
+                                              label='Normalized Schiller PE', color='darkviolet', linestyle='-')
+  # for i in range(len(yr_eps_date_list)):
+  #   print("The Date is ", yr_eps_date_list[i], " Corresponding EPS ", yr_eps_list[i])
+  #   # check if the date is in the plot range
+  #   if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
+  #     x = float("{0:.2f}".format(schiller_pe_times_yr_eps_list[i]))
+  #     main_plt.text(yr_eps_date_list[i], schiller_pe_times_yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
+  #                   verticalalignment='bottom')
 
   # -----------------------------------------------------------------------------
   # Dividend plot
