@@ -10,7 +10,8 @@ The following is the list of items that needs to be worked on
 1. Keep on extracting Earnings from xlsm
 2. Logging for scripts
 3. Log charts - Done but keep on preparing more to see if there are any bugs
-4. Schiller PE chart overlay - maybe refine it more with some projections from -20% to +20% - but first let Ann experiment with it
+4. Schiller PE chart overlay - maybe refine it more with some projections from -20% to +20% 
+   - but first let Ann experiment with it
 5. Price channels with Analyst accuracy based adjustment - Needs more though and discussion with Ann
 6. Financial Analysis - Peter Lynch, Phil Town, CSW, Manan Shroff - others
 7. Long term SPY and DOW charts with their earnings?
