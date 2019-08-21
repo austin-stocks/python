@@ -1,25 +1,22 @@
                                  REMEMBER
 THERE WILL ALWAYS MORE THINGS TO DO THAN YOU CAN PROBABLY DO - 
-AND THAT IS A GOOD THING - JIM ROHN SAID - IT IS GREAT THE KNOW
+AND THAT IS A GOOD THING - JIM ROHN SAID - IT IS GREAT TO KNOW
 THAT YOU HAVE MORE TO DO THAN YOU CAN DO
 So, you should probably feel grateful that you have more things
 to do - than you can probably do. 
 
 The following is the list of items that needs to be worked on 
 --------------------------------------------------------------
-1. Bug in channel adjustments
+1. Keep on extracting Earnings from xlsm
 2. Logging for scripts
-3. Log charts
-2. Price channels with Analyst accuracy based adjustment - Needs more though
-   and discussion with Ann
-4. As per Ann - want to turn off the numbers besides the black and white
-   diamonds
-5. As per Ann - have a file that tells about individual buys and sells
-5. Financial Analysis - Peter Lynch, Phil Town, CSW, Manan Shroff - others
-6. Schiller PE chart overlay? 
+3. Log charts - Done but keep on preparing more to see if there are any bugs
+4. Schiller PE chart overlay - maybe refine it more with some projections from -20% to +20% - but first let Ann experiment with it
+5. Price channels with Analyst accuracy based adjustment - Needs more though and discussion with Ann
+6. Financial Analysis - Peter Lynch, Phil Town, CSW, Manan Shroff - others
 7. Long term SPY and DOW charts with their earnings?
-9. Keep on extracting Earnings from xlsm
-10. Think about your own TrackList - where to get earnings date?
-11. Get the fiscal quarter lined up with gridlines
-12. How to increase the figure area and reduce the white space in the file
-13. Do you need more than one git to experiment etc?
+8. Think about your own TrackList - where to get earnings date?
+8. How to increase the figure area and reduce the white space in the file
+10. Do you need more than one git to experiment etc?
+11. As per Ann - have a file that tells about individual buys and sells
+12. As per Ann - want to turn off the numbers besides the black and white diamonds
+13. Remove the weekend dates from Candlestick and Volume
