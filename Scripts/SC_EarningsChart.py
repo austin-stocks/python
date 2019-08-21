@@ -1627,7 +1627,7 @@ for ticker_raw in ticker_list:
   # main_plt.yaxis.grid(True)
   #
   major_xgrid_color = "black"
-  if (fiscal_yr_str != "Dec"):
+  if (fiscal_yr_str != "BA-Dec"):
     major_xgrid_color = "peru"
 
   main_plt.set_xticks(fiscal_yr_dates, minor=False)
