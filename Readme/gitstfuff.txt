@@ -1,3 +1,7 @@
+-- Set notepad++ as the editor
+git config --global core.editor "'C:/Program Files (x86)/Notepad++/notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
+
+
 -- This is a file that to get some shortcuts etc going for git education
 
 --==============================================================================
