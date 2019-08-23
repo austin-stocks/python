@@ -120,6 +120,14 @@ def smooth_list(l):
 # How to show values when you click
 # If possible superimpose the PE line in the chart
 
+import socket
+
+who_am_i = os.getlogin()
+my_hostname = socket.gethostname()
+print ("I am ", who_am_i, "and I am running on ", my_hostname)
+# I am  SundeepChadha and I am running on  LaptopOffice-T480
+# sys.exit()
+
 # =============================================================================
 # Define the various filenames and Directory Paths to be used
 # =============================================================================
@@ -631,40 +639,6 @@ for ticker_raw in ticker_list:
   print("The upper Guide is ", upper_price_channel_list, "\nand the number of element is ", len(upper_price_channel_list))
   print("The upper Guide is ", lower_price_channel_list, "\nand the number of element is ", len(lower_price_channel_list))
 
-  # ---------------------------------------------------------------------------
-  # Create the schiller PE line for the plot 
-  # ---------------------------------------------------------------------------
-  avearge_schiller_pe = 15
-  # Divide the schiller PE values by average_schiller_pe to normalize it 
-  schiller_pe_normalized_list = [float(schiller_pe/avearge_schiller_pe) for schiller_pe in schiller_pe_value_list]
-
-  schiller_pe_normalized_expanded_list = []
-  oldest_date_in_date_list = date_list[len(date_list)-1]
-  print ("Oldest Date in Historical Date List is", oldest_date_in_date_list)
-  for i in range(len(date_list)):
-    schiller_pe_normalized_expanded_list.append(float('nan'))
-
-  for schiller_pe_date in schiller_pe_date_list:
-    if (schiller_pe_date > oldest_date_in_date_list):
-      curr_index = schiller_pe_date_list.index(schiller_pe_date)
-      # print("Looking for ", qtr_eps_date)
-      match_date = min(date_list, key=lambda d: abs(d - schiller_pe_date))
-      print("The matching date for Schiller PE Date: ", schiller_pe_date, "is ", match_date, " at index ",
-            date_list.index(match_date), "and the Schiller PE is", schiller_pe_normalized_list[curr_index])
-      schiller_pe_normalized_expanded_list[date_list.index(match_date)] = schiller_pe_normalized_list[curr_index]
-  # print("The expanded Schiller PE list is ", schiller_pe_normalized_expanded_list, "\nand the number of elements are",len(schiller_pe_normalized_expanded_list))
-
-  # make sure that the lenght of the two expanded lists are the same
-  if (len(schiller_pe_normalized_expanded_list) != len(yr_eps_adj_expanded_list)):
-    print ("Error ")
-    sys.exit()
-  schiller_pe_normalized_list_smooth = smooth_list(schiller_pe_normalized_expanded_list)
-  yr_eps_adj_expanded_list_smooth = smooth_list(yr_eps_adj_expanded_list)
-
-  # Now multiply the schiller expanded list with the yr eps expanded list 
-  schiller_pe_times_yr_eps_list = [a*b for a,b in zip(schiller_pe_normalized_list_smooth,yr_eps_adj_expanded_list_smooth)]
-  print ("The smooth Schiller Normalized PE list mulitplied by YR EPS list is ", schiller_pe_times_yr_eps_list)
-  # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Get the adjustments that need to be done and do the price channels
@@ -981,6 +955,56 @@ for ticker_raw in ticker_list:
   # =============================================================================
 
   # ---------------------------------------------------------------------------
+  # Create the schiller PE line for the plot
+  # ---------------------------------------------------------------------------
+  avearge_schiller_pe = 15
+  # Divide the schiller PE values by average_schiller_pe to normalize it
+  schiller_pe_normalized_list = [float(schiller_pe/avearge_schiller_pe) for schiller_pe in schiller_pe_value_list]
+
+  schiller_pe_value_expanded_list = []
+  schiller_pe_normalized_expanded_list = []
+  oldest_date_in_date_list = date_list[len(date_list)-1]
+  print ("Oldest Date in Historical Date List is", oldest_date_in_date_list)
+  for i in range(len(date_list)):
+    schiller_pe_value_expanded_list.append(float('nan'))
+    schiller_pe_normalized_expanded_list.append(float('nan'))
+
+  for schiller_pe_date in schiller_pe_date_list:
+    if (schiller_pe_date > oldest_date_in_date_list):
+      curr_index = schiller_pe_date_list.index(schiller_pe_date)
+      # print("Looking for ", qtr_eps_date)
+      match_date = min(date_list, key=lambda d: abs(d - schiller_pe_date))
+      print("The matching date for Schiller PE Date: ", schiller_pe_date, "is ", match_date, " at index ",
+            date_list.index(match_date), "and the Schiller PE is", schiller_pe_normalized_list[curr_index])
+      schiller_pe_value_expanded_list[date_list.index(match_date)] = schiller_pe_value_list[curr_index]
+      schiller_pe_normalized_expanded_list[date_list.index(match_date)] = schiller_pe_normalized_list[curr_index]
+  # print("The expanded Schiller PE list is ", schiller_pe_normalized_expanded_list, "\nand the number of elements are",len(schiller_pe_normalized_expanded_list))
+
+  # make sure that the lenght of the two expanded lists are the same
+  if (len(schiller_pe_normalized_expanded_list) != len(yr_eps_adj_expanded_list)):
+    print ("Error ")
+    sys.exit()
+  schiller_pe_value_list_smooth = smooth_list(schiller_pe_value_expanded_list)
+  schiller_pe_normalized_list_smooth = smooth_list(schiller_pe_normalized_expanded_list)
+  yr_eps_adj_expanded_list_smooth = smooth_list(yr_eps_adj_expanded_list)
+
+  ann_constant = (4 * qtr_eps_lim_upper)/price_lim_upper
+  print ("Earning Limit upper", qtr_eps_lim_upper)
+  print ("Price Limit upper", price_lim_upper)
+  print ("Ann Constant", ann_constant)
+  import time
+  time.sleep(3)
+  schiller_ann_requested_red_line_list_0 = [a*b for a,b in zip(schiller_pe_value_list_smooth,yr_eps_adj_expanded_list_smooth)]
+  schiller_ann_requested_red_line_list_3 = [i * ann_constant for i in schiller_ann_requested_red_line_list_0]
+  # schiller_ann_requested_red_line_list_1 = [i * 4 for i in schiller_ann_requested_red_line_list_0]
+  # schiller_ann_requested_red_line_list_2 = [i * qtr_eps_lim_upper for i in schiller_ann_requested_red_line_list_1]
+  # schiller_ann_requested_red_line_list_3 = [i / price_lim_upper for i in schiller_ann_requested_red_line_list_2]
+  # Now multiply the schiller expanded list with the yr eps expanded list
+  schiller_pe_times_yr_eps_list = [a*b for a,b in zip(schiller_pe_normalized_list_smooth,yr_eps_adj_expanded_list_smooth)]
+  print ("The smooth Schiller Normalized PE list mulitplied by YR EPS list is ", schiller_pe_times_yr_eps_list)
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
   # Do the calcuations needed to xtick and xtick lables for main plt
   # ---------------------------------------------------------------------------
   # This works - Good resource
@@ -1294,6 +1318,7 @@ for ticker_raw in ticker_list:
   annual_projected_eps_plt = main_plt.twinx()
   schiller_pe_times_yr_eps_plt = main_plt.twinx()
   schiller_pe_normalized_plt  = main_plt.twinx()
+  schiller_ann_requested_red_line_plt = main_plt.twinx()
   upper_channel_plt = main_plt.twinx()
   lower_channel_plt = main_plt.twinx()
   # yr_eps_02_5_plt = main_plt.twinx()
@@ -1401,7 +1426,15 @@ for ticker_raw in ticker_list:
   schiller_pe_normalized_plt_inst = schiller_pe_normalized_plt.plot(date_list[0:plot_period_int],
                                               schiller_pe_normalized_list_smooth[0:plot_period_int],
                                               label='Normalized Schiller PE', color='green', linestyle='-')
+
+  schiller_ann_requested_red_line_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  schiller_ann_requested_red_line_plt.set_yticks([])
+  schiller_ann_requested_red_line_plt_inst = schiller_ann_requested_red_line_plt.plot(date_list[0:plot_period_int],
+                                              schiller_ann_requested_red_line_list_3[0:plot_period_int],
+                                              label='Normalized Schiller PE', color='red', linestyle='-')
+
   # -----------------------------------------------------------------------------
+
 
   # -----------------------------------------------------------------------------
   # Plot normalized Schiller PE mulitpled by YR EPS
@@ -1418,8 +1451,11 @@ for ticker_raw in ticker_list:
       i_idx = date_list.index(match_date)
       if (date_list[plot_period_int] <= match_date <= date_list[0]):
         x = float("{0:.2f}".format(schiller_pe_times_yr_eps_list[i_idx]))
-        main_plt.text(date_list[i_idx], schiller_pe_times_yr_eps_list[i_idx], x, fontsize=11, horizontalalignment='center',
-                      verticalalignment='bottom')
+        y = float("{0:.2f}".format(schiller_pe_normalized_list_smooth[i_idx]))
+        z = float("{0:.2f}".format(schiller_ann_requested_red_line_list_3[i_idx]))
+        main_plt.text(date_list[i_idx], schiller_pe_times_yr_eps_list[i_idx], x, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+        main_plt.text(date_list[i_idx], schiller_pe_normalized_list_smooth[i_idx], y, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+        main_plt.text(date_list[i_idx], schiller_ann_requested_red_line_list_3[i_idx], z, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
@@ -1716,7 +1752,7 @@ for ticker_raw in ticker_list:
   for i in range(number_of_anchored_texts):
     if (i == 0):
       location = 9
-      my_text = "Test Box in upper center"
+      my_text = "Ann Constant is: " +  str(round(ann_constant,4))
     elif (i == 1):
       location = 6
       my_text = "Test for Box number 2"
