@@ -499,6 +499,21 @@
     ]
   },
 
+
+  "CACC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2016", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "CAI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2017", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.25"}
+    ]
+  },
   "MSI" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2015", "Stop_Date" :   "06/30/2019"}
@@ -506,6 +521,15 @@
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "1.35"},
       {"Start_Date" : "06/25/2014", "Stop_Date" :   "04/05/2015", "Adj_Amount" : "-.55"}
+    ]
+  },
+
+  "CACI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2015", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.9"}
     ]
   },
 
