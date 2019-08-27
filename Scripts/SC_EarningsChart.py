@@ -4,6 +4,9 @@ import os
 import math
 import json
 import sys
+import time
+import socket
+import re
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -120,17 +123,18 @@ def smooth_list(l):
 # How to show values when you click
 # If possible superimpose the PE line in the chart
 
-import socket
-
+# Find who is running the script and then read the json file for
+# that individual, if it exists
 who_am_i = os.getlogin()
 my_hostname = socket.gethostname()
 print ("I am ", who_am_i, "and I am running on ", my_hostname)
 # I am  SundeepChadha and I am running on  LaptopOffice-T480
-# sys.exit()
 
 # =============================================================================
 # Define the various filenames and Directory Paths to be used
 # =============================================================================
+
+
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
 chart_dir = "..\\" + "Charts"
@@ -144,6 +148,16 @@ tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
 configuration_json = "Configurations.json"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
+if re.search('ann', who_am_i, re.IGNORECASE):
+  print ("Looks like Ann is running the script")
+  personal_json_file = "Ann.json"
+elif re.search('alan', who_am_i, re.IGNORECASE):
+  print ("Looks like Alan is running the script")
+  personal_json_file = "Alan.json"
+elif re.search('sundeep', who_am_i, re.IGNORECASE):
+  print ("Looks like Sundeep is running the script")
+  personal_json_file = "Sundeep.json"
+
 
 tracklist_df = pd.read_csv(tracklist_file_full_path)
 config_df = pd.read_csv(dir_path + user_dir + "\\" + configuration_file)
@@ -151,6 +165,11 @@ config_df.set_index('Ticker', inplace=True)
 schiller_pe_df = pd.read_csv(dir_path + user_dir + "\\" + schiller_pe_monthly_file)
 with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
   config_json = json.load(json_file)
+
+if (os.path.exists(dir_path + user_dir + "\\" + personal_json_file) is True):
+  with open(dir_path + user_dir + "\\" + personal_json_file) as json_file:
+    personal_json = json.load(json_file)
+print ("Individual Json ", personal_json)
 # =============================================================================
 
 # =============================================================================
@@ -992,7 +1011,6 @@ for ticker_raw in ticker_list:
   print ("Earning Limit upper", qtr_eps_lim_upper)
   print ("Price Limit upper", price_lim_upper)
   print ("Ann Constant", ann_constant)
-  import time
   time.sleep(3)
   schiller_ann_requested_red_line_list_0 = [a*b for a,b in zip(schiller_pe_value_list_smooth,yr_eps_adj_expanded_list_smooth)]
   schiller_ann_requested_red_line_list_3 = [i * ann_constant for i in schiller_ann_requested_red_line_list_0]
@@ -1169,6 +1187,7 @@ for ticker_raw in ticker_list:
 
     print (price_eps_growth_str_textbox)
   # ---------------------------------------------------------------------------
+
 
 
   # ---------------------------------------------------------------------------
@@ -1362,6 +1381,36 @@ for ticker_raw in ticker_list:
   price_plt.set_yscale(chart_type)
   price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
                                   label='Adj Close', color="brown", linestyle='-')
+
+  if (ticker not in personal_json.keys()):
+    print("json data for ", ticker, "does not exist in", personal_json_file, "file")
+  else:
+    for i_idx in range(len(personal_json[ticker]["Buy_Sell"])):
+      buy_date_to_annotate = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Date"]
+      buy_date_to_annotate_datetime = dt.datetime.strptime(buy_date_to_annotate, '%m/%d/%Y').date()
+      sell_date_to_annotate = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Date"]
+      sell_date_to_annotate_datetime = dt.datetime.strptime(sell_date_to_annotate, '%m/%d/%Y').date()
+      print ("Index ", i_idx, "Buy Date", buy_date_to_annotate_datetime, "Sell Date", sell_date_to_annotate_datetime)
+      buy_match_date = min(date_list, key=lambda d: abs(d - buy_date_to_annotate_datetime))
+      sell_match_date = min(date_list, key=lambda d: abs(d - sell_date_to_annotate_datetime))
+      markers_buy = [date_list.index(buy_match_date)]
+      markers_sell = [date_list.index(sell_match_date)]
+      print ("The marker should be on index", markers_buy)
+      # The text cannot be empty otherwise annotate does not work
+      # annotate_text = " "
+      # price_plt.annotate(annotate_text,
+      #                xy=(date_list[date_list.index(buy_match_date)], ticker_adj_close_list[date_list.index(buy_match_date)]),
+      #                arrowprops=dict(facecolor='black', width=.25),
+      #                bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
+      # price_plt.annotate(annotate_text,
+      #                xy=(date_list[date_list.index(sell_match_date)], ticker_adj_close_list[date_list.index(sell_match_date)]),
+      #                arrowprops=dict(facecolor='black', width=.25),
+      #                bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
+
+  # sys.exit()
+      # This works - refine it with marker colors and style for each user      
+      price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],marker="D",markevery=markers_buy,linestyle='None')
+      price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int], marker=">",markevery=markers_sell, linestyle='None')
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
