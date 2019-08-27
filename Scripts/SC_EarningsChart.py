@@ -1385,6 +1385,8 @@ for ticker_raw in ticker_list:
   if (ticker not in personal_json.keys()):
     print("json data for ", ticker, "does not exist in", personal_json_file, "file")
   else:
+    markers_buy = []
+    markers_sell = []
     for i_idx in range(len(personal_json[ticker]["Buy_Sell"])):
       buy_date_to_annotate = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Date"]
       buy_date_to_annotate_datetime = dt.datetime.strptime(buy_date_to_annotate, '%m/%d/%Y').date()
@@ -1393,9 +1395,8 @@ for ticker_raw in ticker_list:
       print ("Index ", i_idx, "Buy Date", buy_date_to_annotate_datetime, "Sell Date", sell_date_to_annotate_datetime)
       buy_match_date = min(date_list, key=lambda d: abs(d - buy_date_to_annotate_datetime))
       sell_match_date = min(date_list, key=lambda d: abs(d - sell_date_to_annotate_datetime))
-      markers_buy = [date_list.index(buy_match_date)]
-      markers_sell = [date_list.index(sell_match_date)]
-      print ("The marker should be on index", markers_buy)
+      markers_buy.append(date_list.index(buy_match_date))
+      markers_sell.append(date_list.index(sell_match_date))
       # The text cannot be empty otherwise annotate does not work
       # annotate_text = " "
       # price_plt.annotate(annotate_text,
@@ -1408,9 +1409,9 @@ for ticker_raw in ticker_list:
       #                bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
 
   # sys.exit()
-      # This works - refine it with marker colors and style for each user      
-      price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],marker="D",markevery=markers_buy,linestyle='None')
-      price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int], marker=">",markevery=markers_sell, linestyle='None')
+      # This works - refine it with marker colors and style for each user
+    price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],marker="^",markerfacecolor='red',markeredgewidth=0,markersize=13,markevery=markers_buy,linestyle='None')
+    price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],marker="s",markerfacecolor='red',markeredgewidth=0,markersize=12,markevery=markers_sell, linestyle='None')
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
