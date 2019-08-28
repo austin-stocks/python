@@ -1342,7 +1342,7 @@ for ticker_raw in ticker_list:
   annual_past_eps_plt = main_plt.twinx()
   annual_projected_eps_plt = main_plt.twinx()
   schiller_pe_times_yr_eps_plt = main_plt.twinx()
-  schiller_pe_normalized_plt  = main_plt.twinx()
+  # schiller_pe_normalized_plt  = main_plt.twinx()
   schiller_ann_requested_red_line_plt = main_plt.twinx()
   upper_channel_plt = main_plt.twinx()
   lower_channel_plt = main_plt.twinx()
@@ -1387,7 +1387,9 @@ for ticker_raw in ticker_list:
   price_plt.set_yscale(chart_type)
   price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
                                   label='Adj Close', color="brown", linestyle='-')
-
+  # Get the buy and sells from the personal json file, along with the comments.
+  # The buy and sells are plotted throught markers while the comments are
+  # plotted through the annotate
   if (ticker not in personal_json.keys()):
     print("json data for ", ticker, "does not exist in", personal_json_file, "file")
   else:
@@ -1405,8 +1407,8 @@ for ticker_raw in ticker_list:
         if ("Buy_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
           buy_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Price_str"]
           price_plt.annotate(buy_price_str, xy=(date_list[date_list.index(buy_match_date)], ticker_adj_close_list[date_list.index(buy_match_date)]),
-                             xytext = (0,-18), textcoords='offset points',ha='left',
-                             bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5',alpha=.5))
+                             xytext = (-15,-30), textcoords='offset points',ha='left',fontweight='bold',
+                             bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5',alpha=.25))
       if ("Sell_Date" in personal_json[ticker]["Buy_Sell"][i_idx]):
         sell_date_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Date"]
         sell_date_datetime = dt.datetime.strptime(sell_date_str, '%m/%d/%Y').date()
@@ -1416,10 +1418,10 @@ for ticker_raw in ticker_list:
         if ("Sell_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
           sell_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Price_str"]
           price_plt.annotate(sell_price_str, xy=(date_list[date_list.index(sell_match_date)], ticker_adj_close_list[date_list.index(sell_match_date)]),
-                             xytext = (0, -18), textcoords = 'offset points', ha = 'left',
-                             bbox = dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5', alpha=.5))
+                             xytext = (-15, -30), textcoords = 'offset points', ha = 'left',fontweight='bold',
+                             bbox = dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5', alpha=.25))
 
-    # This is outside the for loop becuase it has the list for markevery
+    # This works : This is outside the for loop becuase it has the list for markevery
     price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
                    marker="^",markerfacecolor=buy_sell_color,markeredgewidth=1,markeredgecolor='k',
                    markersize=13,markevery=markers_buy_date,linestyle='None')
@@ -1485,11 +1487,11 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
   # Plot normalzied Schiller PE
   # -----------------------------------------------------------------------------
-  schiller_pe_normalized_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  schiller_pe_normalized_plt.set_yticks([])
-  schiller_pe_normalized_plt_inst = schiller_pe_normalized_plt.plot(date_list[0:plot_period_int],
-                                              schiller_pe_normalized_list_smooth[0:plot_period_int],
-                                              label='Normalized Schiller PE', color='green', linestyle='-')
+  # schiller_pe_normalized_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  # schiller_pe_normalized_plt.set_yticks([])
+  # schiller_pe_normalized_plt_inst = schiller_pe_normalized_plt.plot(date_list[0:plot_period_int],
+  #                                             schiller_pe_normalized_list_smooth[0:plot_period_int],
+  #                                             label='Normalized Schiller PE', color='green', linestyle='-')
 
   schiller_ann_requested_red_line_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
   schiller_ann_requested_red_line_plt.set_yticks([])
@@ -1518,7 +1520,7 @@ for ticker_raw in ticker_list:
         y = float("{0:.2f}".format(schiller_pe_normalized_list_smooth[i_idx]))
         z = float("{0:.2f}".format(schiller_ann_requested_red_line_list_3[i_idx]))
         main_plt.text(date_list[i_idx], schiller_pe_times_yr_eps_list[i_idx], x, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
-        main_plt.text(date_list[i_idx], schiller_pe_normalized_list_smooth[i_idx], y, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+        # main_plt.text(date_list[i_idx], schiller_pe_normalized_list_smooth[i_idx], y, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
         main_plt.text(date_list[i_idx], schiller_ann_requested_red_line_list_3[i_idx], z, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
   # -----------------------------------------------------------------------------
 
