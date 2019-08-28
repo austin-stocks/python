@@ -150,12 +150,18 @@ configuration_json = "Configurations.json"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 if re.search('ann', who_am_i, re.IGNORECASE):
   print ("Looks like Ann is running the script")
+  user_name = "ann"
+  buy_sell_color = "red"
   personal_json_file = "Ann.json"
 elif re.search('alan', who_am_i, re.IGNORECASE):
   print ("Looks like Alan is running the script")
+  buy_sell_color = "teal"
+  user_name = "alan"
   personal_json_file = "Alan.json"
 elif re.search('sundeep', who_am_i, re.IGNORECASE):
   print ("Looks like Sundeep is running the script")
+  user_name = "sundeep"
+  buy_sell_color = "wheat"
   personal_json_file = "Sundeep.json"
 
 
@@ -1385,33 +1391,34 @@ for ticker_raw in ticker_list:
   if (ticker not in personal_json.keys()):
     print("json data for ", ticker, "does not exist in", personal_json_file, "file")
   else:
-    markers_buy = []
-    markers_sell = []
+    markers_buy_date = []
+    markers_sell_date = []
     for i_idx in range(len(personal_json[ticker]["Buy_Sell"])):
-      buy_date_to_annotate = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Date"]
-      buy_date_to_annotate_datetime = dt.datetime.strptime(buy_date_to_annotate, '%m/%d/%Y').date()
-      sell_date_to_annotate = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Date"]
-      sell_date_to_annotate_datetime = dt.datetime.strptime(sell_date_to_annotate, '%m/%d/%Y').date()
-      print ("Index ", i_idx, "Buy Date", buy_date_to_annotate_datetime, "Sell Date", sell_date_to_annotate_datetime)
-      buy_match_date = min(date_list, key=lambda d: abs(d - buy_date_to_annotate_datetime))
-      sell_match_date = min(date_list, key=lambda d: abs(d - sell_date_to_annotate_datetime))
-      markers_buy.append(date_list.index(buy_match_date))
-      markers_sell.append(date_list.index(sell_match_date))
-      # The text cannot be empty otherwise annotate does not work
-      # annotate_text = " "
-      # price_plt.annotate(annotate_text,
-      #                xy=(date_list[date_list.index(buy_match_date)], ticker_adj_close_list[date_list.index(buy_match_date)]),
-      #                arrowprops=dict(facecolor='black', width=.25),
-      #                bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
-      # price_plt.annotate(annotate_text,
-      #                xy=(date_list[date_list.index(sell_match_date)], ticker_adj_close_list[date_list.index(sell_match_date)]),
-      #                arrowprops=dict(facecolor='black', width=.25),
-      #                bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
+      buy_price = ""
+      sell_price = ""
+      buy_date_to_str = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Date"]
+      sell_date_to_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Date"]
+      if ("Buy_Price" in personal_json[ticker]["Buy_Sell"][i_idx]):
+        buy_price = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Price"]
+      if ("Sell_Price" in personal_json[ticker]["Buy_Sell"][i_idx]):
+        sell_price = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Price"]
+      buy_date_datetime = dt.datetime.strptime(buy_date_to_str, '%m/%d/%Y').date()
+      sell_date_datetime = dt.datetime.strptime(sell_date_to_str, '%m/%d/%Y').date()
+      print ("Index ", i_idx, "Buy Date", buy_date_datetime, "Sell Date", sell_date_datetime)
+      buy_match_date = min(date_list, key=lambda d: abs(d - buy_date_datetime))
+      sell_match_date = min(date_list, key=lambda d: abs(d - sell_date_datetime))
+      markers_buy_date.append(date_list.index(buy_match_date))
+      markers_sell_date.append(date_list.index(sell_match_date))
+      price_plt.annotate(buy_price, xy=(date_list[date_list.index(buy_match_date)], ticker_adj_close_list[date_list.index(buy_match_date)]),
+                         xytext = (0,-18), textcoords='offset points',ha='left',
+                         bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5',alpha=.5))
+      price_plt.annotate(sell_price, xy=(date_list[date_list.index(sell_match_date)], ticker_adj_close_list[date_list.index(sell_match_date)]),
+                         xytext = (0, -18), textcoords = 'offset points', ha = 'left',
+                         bbox = dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5', alpha=.5))
 
-  # sys.exit()
-      # This works - refine it with marker colors and style for each user
-    price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],marker="^",markerfacecolor='red',markeredgewidth=0,markersize=13,markevery=markers_buy,linestyle='None')
-    price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],marker="s",markerfacecolor='red',markeredgewidth=0,markersize=12,markevery=markers_sell, linestyle='None')
+    # This is outside the for loop becuase it has the list for markevery
+    price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],marker="^",markerfacecolor=buy_sell_color,markeredgewidth=0,markersize=13,markevery=markers_buy_date,linestyle='None')
+    price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],marker="s",markerfacecolor=buy_sell_color,markeredgewidth=0,markersize=12,markevery=markers_sell_date, linestyle='None')
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
