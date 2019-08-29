@@ -561,6 +561,55 @@
     ]
   },
 
+  "CP" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2011", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "CPRT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "04/30/2014", "Stop_Date" :   "04/30/2019"}
+    ]
+  },
+
+  "CRM" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "01/30/2018", "Stop_Date" :   "07/30/2019"}
+    ]
+  },
+
+  "CRS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2017", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "CRVL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "CSCO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "10/30/2017", "Stop_Date" :   "07/30/2019"},
+       {"Start_Date" : "01/30/2015", "Stop_Date" :   "07/30/2017"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "01/25/2018", "Stop_Date" :   "11/05/2018", "Adj_Amount" : ".6"}
+    ]
+  },
+
+  "CSFL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2014", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".1"}
+    ]
+  },
+
   "CHRW" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2018", "Stop_Date" :   "06/30/2019"},
