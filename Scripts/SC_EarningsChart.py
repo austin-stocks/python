@@ -148,7 +148,7 @@ tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
 configuration_json = "Configurations.json"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
-if re.search('ann', who_am_i, re.IGNORECASE):
+if (re.search('ann', who_am_i, re.IGNORECASE)):
   print ("Looks like Ann is running the script")
   user_name = "ann"
   buy_sell_color = "red"
@@ -158,7 +158,7 @@ elif re.search('alan', who_am_i, re.IGNORECASE):
   buy_sell_color = "teal"
   user_name = "alan"
   personal_json_file = "Alan.json"
-elif re.search('sundeep', who_am_i, re.IGNORECASE):
+elif (re.search('sundeep', who_am_i, re.IGNORECASE)) or re.search('DesktopNew-Optiplex',my_hostname,re.IGNORECASE):
   print ("Looks like Sundeep is running the script")
   user_name = "sundeep"
   buy_sell_color = "magenta"
