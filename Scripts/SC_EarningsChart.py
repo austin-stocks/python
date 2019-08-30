@@ -110,6 +110,8 @@ def smooth_list(l):
 
 # =============================================================================
 
+
+
 # todo :
 # deal with fiscal quarter
 # Handle Annotated text
@@ -123,17 +125,42 @@ def smooth_list(l):
 # How to show values when you click
 # If possible superimpose the PE line in the chart
 
+
+# ---------------------------------------------------------------------------
+# Set Logging
+# critical, error, warning, info, debug
+# set up logging to file - see previous section for more details
+import logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename='Logging_Experiment.txt',
+                    filemode='w')
+# define a Handler which writes INFO messages or higher to the sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+# set a format which is simpler for console use
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+# tell the handler to use this format
+console.setFormatter(formatter)
+# add the handler to the root logger
+logging.getLogger('').addHandler(console)
+
+# Disnable and enable global level logging
+logging.disable(sys.maxsize)
+logging.disable(logging.NOTSET)
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Define the various filenames and Directory Paths to be used
+# ---------------------------------------------------------------------------
+logger_setup = logging.getLogger('Setup')
 # Find who is running the script and then read the json file for
 # that individual, if it exists
 who_am_i = os.getlogin()
 my_hostname = socket.gethostname()
-print ("I am ", who_am_i, "and I am running on ", my_hostname)
-# I am  SundeepChadha and I am running on  LaptopOffice-T480
-
-# =============================================================================
-# Define the various filenames and Directory Paths to be used
-# =============================================================================
-
+debug_str = "I am " + who_am_i + "and I am running on " + my_hostname
+logger_setup.debug(debug_str)
 
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
@@ -149,33 +176,46 @@ configuration_file = "Configurations.csv"
 configuration_json = "Configurations.json"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 if (re.search('ann', who_am_i, re.IGNORECASE)):
-  print ("Looks like Ann is running the script")
+  debug_str = "Looks like Ann is running the script"
+  logger_setup.debug(debug_str)
   user_name = "ann"
   buy_sell_color = "red"
   personal_json_file = "Ann.json"
 elif re.search('alan', who_am_i, re.IGNORECASE):
-  print ("Looks like Alan is running the script")
+  debug_str = "Looks like Alan is running the script"
+  logger_setup.debug(debug_str)
   buy_sell_color = "teal"
   user_name = "alan"
   personal_json_file = "Alan.json"
 elif (re.search('sundeep', who_am_i, re.IGNORECASE)) or re.search('DesktopNew-Optiplex',my_hostname,re.IGNORECASE):
-  print ("Looks like Sundeep is running the script")
+  debug_str = "Looks like Sundeep is running the script"
+  logger_setup.debug(debug_str)
   user_name = "sundeep"
   buy_sell_color = "magenta"
   personal_json_file = "Sundeep.json"
-
+debug_str = "Setting the personal json file to " + personal_json_file
+logger_setup.info(debug_str)
 
 tracklist_df = pd.read_csv(tracklist_file_full_path)
 config_df = pd.read_csv(dir_path + user_dir + "\\" + configuration_file)
 config_df.set_index('Ticker', inplace=True)
 schiller_pe_df = pd.read_csv(dir_path + user_dir + "\\" + schiller_pe_monthly_file)
+
 with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
   config_json = json.load(json_file)
 
 if (os.path.exists(dir_path + user_dir + "\\" + personal_json_file) is True):
   with open(dir_path + user_dir + "\\" + personal_json_file) as json_file:
     personal_json = json.load(json_file)
-print ("Individual Json ", personal_json)
+
+schiller_pe_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in schiller_pe_df.Date.tolist()]
+schiller_pe_value_list =  schiller_pe_df.Value.tolist()
+debug_str = "The schiller PE df is\n" + schiller_pe_df.to_string()
+logger_setup.debug(debug_str)
+debug_str = "The Schiller PE Date list is\n" + str(schiller_pe_date_list)
+logger_setup.debug(debug_str)
+debug_str = "The Schiller PE Value list is\n" + str(schiller_pe_value_list)
+logger_setup.debug(debug_str)
 # =============================================================================
 
 # =============================================================================
@@ -195,14 +235,6 @@ if (plot_nasdaq):
 
 
 # =============================================================================
-# Extract the schiller PE into a dataframe 
-# =============================================================================
-print ("The schiller PE df is", schiller_pe_df)
-schiller_pe_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in schiller_pe_df.Date.tolist()]
-schiller_pe_value_list =  schiller_pe_df.Value.tolist()
-print ("The Schiller PE Date list is", schiller_pe_date_list)
-print ("The Schiller PE Value list is", schiller_pe_value_list)
-# =============================================================================
 
 
 # print ("The Tracklist df is", tracklist_df)
@@ -219,7 +251,9 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 for ticker_raw in ticker_list:
 
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
-  print ("Preparing chart for ", ticker)
+  logging.info("========================================================")
+  logging.info("Preparing chart for " + ticker)
+  logging.info("========================================================")
   # ticker = "NMIH"
 
   # Open the Log file in write mode
@@ -236,25 +270,20 @@ for ticker_raw in ticker_list:
   # the date list and adj_close list so that all the prior earnings are included.
   # The back date adj_close needs to be initialized to whatever value (nan likely)
   historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
-  print("The Historical df is \n", historical_df)
+  logging.debug("The Historical df is \n" + historical_df.to_string())
   ticker_adj_close_list = historical_df.Adj_Close.tolist()
-  print ("Historical Adj. Prices", type(ticker_adj_close_list))
   date_str_list = historical_df.Date.tolist()
-  print("The date list from historical df is ", date_str_list)
+  logging.debug("The date list - in raw - from historical df is\n" + str(date_str_list))
   date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
-  print("The date list for historical is ", date_list, "\nit has ", len(date_list), " entries")
+  logging.debug("The date list - in datetime - from historical is\n" + str(date_list) + "\nit has" + str(len(date_list)) + " entries")
+  logging.info("Read the Historical DF")
   # =============================================================================
 
   # =============================================================================
   # Read the Earnings file for the ticker
   # =============================================================================
   qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv",delimiter=",")
-  log_lvl = "error"
-  debug_str = "The Earnings df is \n" + qtr_eps_df.to_string()
-  stdout = 0;
-  my_print(debug_fh, debug_str, stdout, log_lvl.upper())
-
-  print ("The Earnings df is \n", qtr_eps_df)
+  logging.debug("The Earnings df is \n" + qtr_eps_df.to_string())
   # Remove all rows after the last valid value for row for Column 'Date'
   qtr_eps_df_copy = qtr_eps_df.loc[0:qtr_eps_df.Date.last_valid_index()].copy()
   # This works - but removes the rows after the longest (any)column has last
@@ -262,7 +291,7 @@ for ticker_raw in ticker_list:
   # qtr_eps_df_copy = qtr_eps_df.loc[0:qtr_eps_df.last_valid_index()].copy()
   qtr_eps_df = qtr_eps_df_copy.copy()
   qtr_eps_df_copy = pd.DataFrame()
-  print ("The Earnings df after removing all trailing NaN from the 'Date' column is \n", qtr_eps_df)
+  logging.debug("The Earnings df after removing all trailing NaN from the 'Date' column is \n" + qtr_eps_df.to_string())
 
   # I can do dropna right away from the df 'Date' column but I want to make sure
   # that all the values in the Date column are in the format that can be converted
@@ -279,8 +308,8 @@ for ticker_raw in ticker_list:
     sys.exit(1)
 
   qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
-  print("The date list for qtr_eps is ", qtr_eps_date_list, "\nand the number of elements are", len(qtr_eps_date_list))
-  print("The Earnings list for qtr_eps is ", qtr_eps_list, "\nand the number of elements are", len(qtr_eps_list))
+  logging.debug("The date list for qtr_eps is\n" + str(qtr_eps_date_list) + "\nand the number of elements are " + str(len(qtr_eps_date_list)))
+  logging.debug("The Earnings list for qtr_eps is\n" + str(qtr_eps_list) + "\nand the number of elements are " + str(len(qtr_eps_list)))
 
   # Set the length of qtr_eps_list same as qtr_eps_date_list.
   # This gets rid of any earnings that are beyond the last date.
@@ -290,7 +319,7 @@ for ticker_raw in ticker_list:
   # number of entries.
   if (len(qtr_eps_date_list) < len(qtr_eps_list)):
     del qtr_eps_list[len_qtr_eps_date_list:]
-  print("The Earnings list for qtr_eps is ", qtr_eps_list)
+  logging.debug("The Earnings list for qtr_eps is\n" + str(qtr_eps_list) + "\nand the number of elements are " + str(len(qtr_eps_list)))
 
   # Check if now the qtr_eps_list still has any undefined elements...flag an error and exit
   # This will indicate any empty cells are either the beginning or in the middle of the eps
@@ -306,6 +335,7 @@ for ticker_raw in ticker_list:
   # 2. There are no nan in the eps list
   # 3. Number of elements in the qtr_eps_date_list are equal to the number of
   #    element in the qtr_eps_list
+  logging.info("Read the Earnings DF")
   # =============================================================================
 
   # =============================================================================
