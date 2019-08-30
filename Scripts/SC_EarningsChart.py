@@ -923,9 +923,9 @@ for ticker_raw in ticker_list:
 
       for yr_eps_date in yr_eps_date_list:
         curr_index = yr_eps_date_list.index(yr_eps_date)
-        print("Looking for ", yr_eps_date)
+        # logging.debug("Looking for " + str(yr_eps_date))
         match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
-        print("The matching date is ", match_date, " at index ", date_list.index(match_date))
+        logging.debug("The matching date is " + str(match_date) + " at index " + str(date_list.index(match_date)))
         yr_eps_02_5_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_02_5_growth_list[curr_index]
         yr_eps_05_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_05_0_growth_list[curr_index]
         yr_eps_10_0_growth_expanded_list_unsmooth[date_list.index(match_date)] = yr_eps_10_0_growth_list[curr_index]
@@ -944,7 +944,7 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
   # todo : Maybe support a date there?
   if (math.isnan(ticker_config_series['Linear_Chart_Duration_Years'])):
-    # Deal with if the data availalbe in the historical tab is less than
+    # Deal with if the data available in the historical tab is less than
     # user specified in the config file
     plot_period_int = 252 * 10
   else:
@@ -952,11 +952,11 @@ for ticker_raw in ticker_list:
 
   if (len(date_list) < plot_period_int):
     plot_period_int = len(date_list) -1
-    print("Since the Historical Data (Length of the date list) is not available for all\
-    the years that user is asking to plot for, so adjusting the plot for",\
-    float(plot_period_int/252), "years (or", plot_period_int, "days)")
+    logging.debug("Since the Historical Data (Length of the date list) is not available for all\
+    the years that user is asking to plot for, so adjusting the plot for " +
+    str(float(plot_period_int/252)), " years (or " + str(plot_period_int) +  " days)")
   else:
-    print ("Will plot for", int(plot_period_int/252), "years")
+    logging.debug ("Will plot for " + str(int(plot_period_int/252)) + " years")
   # ---------------------------------------------------------
 
   # Get the index factor to pin/anchor/align the index and the price of the stock
@@ -978,18 +978,18 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------
   if math.isnan(ticker_config_series[chart_type + '_Price_Scale_Low']):
     price_lim_lower = 0
-    print("Price_Scale_Low is set to 0")
+    logging.debug("Price_Scale_Low - by default - is set to 0")
   else:
     # price_lim_lower = int(ticker_config_series[chart_type + '_Price_Scale_Low'])
     price_lim_lower = ticker_config_series[chart_type + '_Price_Scale_Low']
-    print("Price_Scale_Low from Config file is ", price_lim_lower)
+    logging.debug("Price_Scale_Low from Config file is " + str(price_lim_lower))
   if math.isnan(ticker_config_series[chart_type +'_Price_Scale_High']):
     ticker_adj_close_list_nonan = [x for x in ticker_adj_close_list if math.isnan(x) is False]
     price_lim_upper = 1.25 * max(ticker_adj_close_list_nonan)
-    print("Price_Scale_High from historical ticker_adj_close_list is ", price_lim_upper)
+    logging.debug("Price_Scale_High from historical ticker_adj_close_list is " + str(price_lim_upper))
   else:
     price_lim_upper = ticker_config_series[chart_type+'_Price_Scale_High']
-    print("Price_Scale_High from Config file is ", price_lim_upper)
+    logging.debug("Price_Scale_High from Config file is " + str(price_lim_upper))
   # ---------------------------------------------------------
 
   # ---------------------------------------------------------
@@ -1000,20 +1000,20 @@ for ticker_raw in ticker_list:
       qtr_eps_lim_upper = 1.25 * max(qtr_eps_list)
     else:
       qtr_eps_lim_upper = max(qtr_eps_list) / 1.25
-    print("EPS Scale - Low from Earnings List is ", qtr_eps_lim_upper)
+    logging.debug("EPS Scale - Low from Earnings List is " + str(qtr_eps_lim_upper))
   else:
     qtr_eps_lim_upper = ticker_config_series[chart_type + '_Earnings_Scale_High']
-    print("EPS Scale - High from Config file ", qtr_eps_lim_upper)
+    logging.debug("EPS Scale - High from Config file " + str(qtr_eps_lim_upper))
 
   if math.isnan(ticker_config_series[chart_type + '_Earnings_Scale_Low']):
     if (min(qtr_eps_list) < 0):
       qtr_eps_lim_lower = 1.25 * min(qtr_eps_list)
     else:
       qtr_eps_lim_lower = min(qtr_eps_list) / 1.25
-    print("EPS Scale - Low from Earnings List is ", qtr_eps_lim_lower)
+    logging.debug("EPS Scale - Low from Earnings List is " + str(qtr_eps_lim_lower))
   else:
     qtr_eps_lim_lower = ticker_config_series[chart_type + '_Earnings_Scale_Low']
-    print("EPS Scale - Low from Config file ", qtr_eps_lim_lower)
+    logging.debug("EPS Scale - Low from Config file " + str(qtr_eps_lim_lower))
   # =============================================================================
 
   # ---------------------------------------------------------------------------
@@ -1026,7 +1026,7 @@ for ticker_raw in ticker_list:
   schiller_pe_value_expanded_list = []
   schiller_pe_normalized_expanded_list = []
   oldest_date_in_date_list = date_list[len(date_list)-1]
-  print ("Oldest Date in Historical Date List is", oldest_date_in_date_list)
+  logging.debug("Oldest Date in Historical Date List is" + str(oldest_date_in_date_list))
   for i in range(len(date_list)):
     schiller_pe_value_expanded_list.append(float('nan'))
     schiller_pe_normalized_expanded_list.append(float('nan'))
@@ -1036,24 +1036,24 @@ for ticker_raw in ticker_list:
       curr_index = schiller_pe_date_list.index(schiller_pe_date)
       # print("Looking for ", qtr_eps_date)
       match_date = min(date_list, key=lambda d: abs(d - schiller_pe_date))
-      print("The matching date for Schiller PE Date: ", schiller_pe_date, "is ", match_date, " at index ",
-            date_list.index(match_date), "and the Schiller PE is", schiller_pe_normalized_list[curr_index])
+      logging.debug("The matching date for Schiller PE Date : " + str(schiller_pe_date) + " in historical datelist is " +
+                    str(match_date) + " at index " + str(date_list.index(match_date)) + " and the Schiller PE is " + str(schiller_pe_normalized_list[curr_index]))
       schiller_pe_value_expanded_list[date_list.index(match_date)] = schiller_pe_value_list[curr_index]
       schiller_pe_normalized_expanded_list[date_list.index(match_date)] = schiller_pe_normalized_list[curr_index]
   # print("The expanded Schiller PE list is ", schiller_pe_normalized_expanded_list, "\nand the number of elements are",len(schiller_pe_normalized_expanded_list))
 
   # make sure that the lenght of the two expanded lists are the same
   if (len(schiller_pe_normalized_expanded_list) != len(yr_eps_adj_expanded_list)):
-    print ("Error ")
+    logging.debug("Error ")
     sys.exit()
   schiller_pe_value_list_smooth = smooth_list(schiller_pe_value_expanded_list)
   schiller_pe_normalized_list_smooth = smooth_list(schiller_pe_normalized_expanded_list)
   yr_eps_adj_expanded_list_smooth = smooth_list(yr_eps_adj_expanded_list)
 
   ann_constant = (4 * qtr_eps_lim_upper)/price_lim_upper
-  print ("Earning Limit upper", qtr_eps_lim_upper)
-  print ("Price Limit upper", price_lim_upper)
-  print ("Ann Constant", ann_constant)
+  logging.debug ("Earning Limit upper" + str(qtr_eps_lim_upper))
+  logging.debug ("Price Limit upper" + str(price_lim_upper))
+  logging.debug ("Ann Constant" + str(ann_constant))
   time.sleep(3)
   schiller_ann_requested_red_line_list_0 = [a*b for a,b in zip(schiller_pe_value_list_smooth,yr_eps_adj_expanded_list_smooth)]
   schiller_ann_requested_red_line_list_3 = [i * ann_constant for i in schiller_ann_requested_red_line_list_0]
@@ -1062,7 +1062,7 @@ for ticker_raw in ticker_list:
   # schiller_ann_requested_red_line_list_3 = [i / price_lim_upper for i in schiller_ann_requested_red_line_list_2]
   # Now multiply the schiller expanded list with the yr eps expanded list
   schiller_pe_times_yr_eps_list = [a*b for a,b in zip(schiller_pe_normalized_list_smooth,yr_eps_adj_expanded_list_smooth)]
-  print ("The smooth Schiller Normalized PE list mulitplied by YR EPS list is ", schiller_pe_times_yr_eps_list)
+  logging.debug ("The smooth Schiller Normalized PE list mulitplied by YR EPS list is " + str(schiller_pe_times_yr_eps_list))
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -1084,32 +1084,32 @@ for ticker_raw in ticker_list:
 
   fiscal_qtr_str  = "BQ-"+fiscal_yr_str
   fiscal_yr_str = "BA-"+fiscal_yr_str
-  print("The fiscal Year is", fiscal_yr_str)
+  logging.debug("The fiscal Year is" + str(fiscal_yr_str))
 
   fiscal_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_yr_str)
   fiscal_qtr_and_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_qtr_str)
   # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
   # qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
-  print("Yearly Dates are ", fiscal_yr_dates_raw)
-  print("Quarterly Dates are ", type(fiscal_qtr_and_yr_dates_raw))
+  logging.debug("Yearly Dates are " + str(fiscal_yr_dates_raw))
+  logging.debug("Quarterly Dates are " + str(type(fiscal_qtr_and_yr_dates_raw)))
 
   fiscal_qtr_dates = []
   fiscal_yr_dates = []
   for x in fiscal_qtr_and_yr_dates_raw:
-    print("The original Quarterly Date is :", x)
+    logging.debug("The original Quarterly Date is :" + str(x))
     if (x in fiscal_yr_dates_raw):
-      print("This quarter is also year end date. Removing ", type(x))
+      logging.debug("This quarter is also year end date. Removing " + str(type(x)))
     else:
       fiscal_qtr_dates.append(x.date().strftime('%m/%d/%Y'))
 
   for x in fiscal_yr_dates_raw:
-    print("The original Yearly Date is :", x)
+    logging.debug("The original Yearly Date is : " + str(x))
     fiscal_yr_dates.append(x.date().strftime('%m/%d/%Y'))
 
-  print("The original yr dates list is: ", fiscal_yr_dates_raw)
-  print("The original qtr dates list is: ", fiscal_qtr_and_yr_dates_raw)
-  print("The modified qtr dates list is: ", fiscal_qtr_dates)
-  print("The modified yr dates list is: ", fiscal_yr_dates)
+  logging.debug("The original yr dates list is\n" + str(fiscal_yr_dates_raw))
+  logging.debug("The original qtr dates list is\n" + str(fiscal_qtr_and_yr_dates_raw))
+  logging.debug("The modified qtr dates list is\n" + str(fiscal_qtr_dates))
+  logging.debug("The modified yr dates list is\n" + str(fiscal_yr_dates))
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -1143,22 +1143,22 @@ for ticker_raw in ticker_list:
     # of the latest reported quarter
     yr_eps_curr_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_curr_date))
     if (yr_eps_curr_date > dt.date.today()):
-      print ("The match date for yr eps is newer than the current date. Will use yr eps from one quarter ago")
+      logging.debug("The match date for yr eps is newer than the current date. Will use yr eps from one quarter ago")
       yr_eps_curr_date = min(yr_eps_date_list, key=lambda d: abs(d - (ticker_curr_date - dt.timedelta(days=60))))
 
     yr_eps_curr = round(yr_eps_list[yr_eps_date_list.index(yr_eps_curr_date)],2)
 
     yr_eps_next_q_date  = min(yr_eps_date_list, key=lambda d: abs(d - ticker_curr_date))
-    print ("The date for next quarter is", yr_eps_next_q_date)
+    logging.debug ("The date for next quarter is " + str(yr_eps_next_q_date))
     if (yr_eps_next_q_date <= dt.date.today()):
-      print ("The match date for next quarter eps is older than the current date. Will use date from one quarter ahead")
+      logging.debug ("The match date for next quarter eps is older than the current date. Will use date from one quarter ahead")
       yr_eps_next_q_date = min(yr_eps_date_list, key=lambda d: abs(d - (ticker_curr_date + dt.timedelta(days=60))))
 
     yr_eps_next_yr_date = min(yr_eps_date_list, key=lambda d: abs(d - (yr_eps_next_q_date + dt.timedelta(days=273))))
     yr_eps_next_q = round(yr_eps_list[yr_eps_date_list.index(yr_eps_next_q_date)],2)
     yr_eps_next_yr = round(yr_eps_list[yr_eps_date_list.index(yr_eps_next_yr_date)],2)
-    print ("The date for next quarter is", yr_eps_next_q_date, "and the projected eps is",yr_eps_next_q)
-    print ("The date for next year is", yr_eps_next_yr_date, "and the projected eps is",yr_eps_next_yr)
+    logging.debug ("The date for next quarter is " + str(yr_eps_next_q_date) + " and the projected eps is " + str(yr_eps_next_q))
+    logging.debug ("The date for next year is " + str(yr_eps_next_yr_date) + " and the projected eps is " + str(yr_eps_next_yr))
 
 
     # Get dates 1, 3 and 5 yr ago - based on curr eps date
@@ -1188,10 +1188,10 @@ for ticker_raw in ticker_list:
     yr_eps_3_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_3_yr_ago_date_for_eps)],2)
     yr_eps_5_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_5_yr_ago_date_for_eps)],2)
 
-    print ("The Last     price for ticker is", ticker_curr_price,     "on date", ticker_curr_date,               "with earnings at", yr_eps_curr,     "is at index", date_list.index(ticker_curr_date))
-    print ("The 1 Yr ago price for ticker is", ticker_1_yr_ago_price, "on date", ticker_1_yr_ago_date_for_price, "with earnings at", yr_eps_1_yr_ago, "is at index", date_list.index(ticker_1_yr_ago_date_for_price))
-    print ("The 3 Yr ago price for ticker is", ticker_3_yr_ago_price, "on date", ticker_3_yr_ago_date_for_price, "with earnings at", yr_eps_3_yr_ago, "is at index", date_list.index(ticker_3_yr_ago_date_for_price))
-    print ("The 5 Yr ago price for ticker is", ticker_5_yr_ago_price, "on date", ticker_5_yr_ago_date_for_price, "with earnings at", yr_eps_5_yr_ago, "is at index", date_list.index(ticker_5_yr_ago_date_for_price))
+    logging.debug("The Last     price for ticker is " + str(ticker_curr_price) +     " on date " + str(ticker_curr_date) +               " with earnings at " + str(yr_eps_curr) +     " is at index" + str(date_list.index(ticker_curr_date)))
+    logging.debug("The 1 Yr ago price for ticker is " + str(ticker_1_yr_ago_price) + " on date " + str(ticker_1_yr_ago_date_for_price) + " with earnings at " + str(yr_eps_1_yr_ago) + " is at index" + str(date_list.index(ticker_1_yr_ago_date_for_price)))
+    logging.debug("The 3 Yr ago price for ticker is " + str(ticker_3_yr_ago_price) + " on date " + str(ticker_3_yr_ago_date_for_price) + " with earnings at " + str(yr_eps_3_yr_ago) + " is at index" + str(date_list.index(ticker_3_yr_ago_date_for_price)))
+    logging.debug("The 5 Yr ago price for ticker is " + str(ticker_5_yr_ago_price) + " on date " + str(ticker_5_yr_ago_date_for_price) + " with earnings at " + str(yr_eps_5_yr_ago) + " is at index" + str(date_list.index(ticker_5_yr_ago_date_for_price)))
 
     eps_growth_next_yr  = get_growth(yr_eps_next_yr, yr_eps_curr)
     eps_growth_next_q   = get_growth(yr_eps_next_q, yr_eps_curr)
@@ -1228,7 +1228,7 @@ for ticker_raw in ticker_list:
     price_eps_growth_str_textbox += ("| "+str(yr_eps_5_yr_ago)+"("+str(eps_growth_5_yr_ago)+"%)").ljust(20)
     price_eps_growth_str_textbox += ("| "+str(ticker_5_yr_ago_price)+"("+str(price_growth_5_yr)+"%)").ljust(20)
 
-    print (price_eps_growth_str_textbox)
+    logging.debug("\n" + str(price_eps_growth_str_textbox))
   # ---------------------------------------------------------------------------
 
 
@@ -1247,7 +1247,7 @@ for ticker_raw in ticker_list:
     ticker_company_name = yahoo_comany_info_df.loc[ticker, 'Company_Name']
     ticker_sector = yahoo_comany_info_df.loc[ticker, 'Sector']
     ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
-  print (ticker_company_name, ticker_sector, ticker_industry)
+  logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry))
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -1259,17 +1259,17 @@ for ticker_raw in ticker_list:
     candle_chart_duration = int(ticker_config_series['Candle_Chart_Duration_Days'])
 
   historical_columns_list = list(historical_df)
-  print ("The columns in Historical Dataframe ", historical_columns_list)
+  logging.debug("The columns in Historical Dataframe " + str(historical_columns_list))
   # Get the candlestick_df from historical_df - candlesticks_df has all the data
   # past the first date when the prices are available.
   candlestick_df = historical_df.loc[ticker_adj_close_list.index(ticker_curr_price):]
   candlestick_df.columns =  historical_columns_list
-  print ("Candlestick Dataframe is ",candlestick_df)
+  logging.debug("Candlestick Dataframe is " + candlestick_df.to_string())
 
   date_str_list_candles = candlestick_df.Date.tolist()
   # Change the Date to mdates - This gives out warning - todo : Take care of the warning.
   candlestick_df['Date'] = [mdates.date2num(dt.datetime.strptime(d, '%m/%d/%Y').date()) for d in date_str_list_candles]
-  print ("Candlestick Dataframe after chanings the Dates to mdates is ",candlestick_df)
+  logging.debug("Candlestick Dataframe after chanings the Dates to mdates is " + candlestick_df.to_string())
   MA_Price_200_list = candlestick_df.MA_Price_200_day.tolist()
   MA_Price_50_list = candlestick_df.MA_Price_50_day.tolist()
   MA_Price_20_list = candlestick_df.MA_Price_20_day.tolist()
@@ -1280,8 +1280,8 @@ for ticker_raw in ticker_list:
   quotes = [tuple(x) for x in candlestick_df[['Date', 'Open', 'High', 'Low', 'Close']].values]
   date_list_candles = candlestick_df.Date.tolist()
   volume = candlestick_df.Volume.tolist()
-  print ("The type of quotes is",quotes)
-  print ("The type of volume is",volume)
+  logging.debug ("The type of quotes is " + str(quotes))
+  logging.debug ("The type of volume is " + str(volume))
 
   # Set the bar color for volume by comparing the open and close prices
   price_open_list = candlestick_df.Open.tolist()
@@ -1292,7 +1292,7 @@ for ticker_raw in ticker_list:
     if (price_close_list[i_idx] > price_open_list[i_idx]):
       bar_color_list[i_idx] = 'mediumseagreen'
 
-  print ("The bar color list is ",bar_color_list)
+  logging.debug ("The bar color list is " + str(bar_color_list))
 
   # ---------------------------------------------------------
   # Generate the data that will be used for ticks and
@@ -1301,7 +1301,7 @@ for ticker_raw in ticker_list:
   ticker_volume_max = max(volume[0:candle_chart_duration])
   ticker_volume_max_no_of_digits = len(str(abs(int(ticker_volume_max))))
   ticker_volume_max_first_digit = int(str(ticker_volume_max)[:1])
-  print ("The max volume is", ticker_volume_max, "and the number of digits are", ticker_volume_max_no_of_digits, "and the first digit is", ticker_volume_max_first_digit)
+  logging.debug ("The max volume is" + str(ticker_volume_max) + " and the number of digits are" + str(ticker_volume_max_no_of_digits) + "and the first digit is " + str(ticker_volume_max_first_digit))
   if (ticker_volume_max_first_digit == 1):
     ticker_volume_upper_limit = 2 * math.pow(10,ticker_volume_max_no_of_digits-1)
   elif (ticker_volume_max_first_digit == 2):
@@ -1313,24 +1313,24 @@ for ticker_raw in ticker_list:
   else:
     ticker_volume_upper_limit = 10 * math.pow(10,ticker_volume_max_no_of_digits-1)
 
-  print ("The upper limit for volume is", ticker_volume_upper_limit)
+  logging.debug ("The upper limit for volume is" + str(ticker_volume_upper_limit))
   ticker_volume_ytick_list = []
   ticker_volume_yticklabels_list = []
   for i_idx in range(0,5,1):
     ticker_volume_ytick_list.append(i_idx*(ticker_volume_upper_limit/4))
     ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx],precision=1))
-    print("Index", i_idx, "Tick Label", ticker_volume_ytick_list[i_idx], "Tick label Text", ticker_volume_yticklabels_list[i_idx])
+    logging.debug("Index " + str(i_idx) + " Tick Label " + str(ticker_volume_ytick_list[i_idx]) + " Tick label Text " + str(ticker_volume_yticklabels_list[i_idx]))
 
   # Get the Sundays in the date range to act as grid in the candle and volume plots
   candle_sunday_dates = pd.date_range(date_str_list_candles[candle_chart_duration], date_str_list_candles[0], freq='W-SUN')
-  print ("The Sunday dates are", candle_sunday_dates)
+  logging.debug ("The Sunday dates are" + str(candle_sunday_dates))
 
   candle_sunday_dates_str = []
   for x in candle_sunday_dates:
-    print("The original Sunday Date is :", x)
+    logging.debug("The original Sunday Date is :" + str(x))
     candle_sunday_dates_str.append(x.date().strftime('%m/%d/%Y'))
 
-  print ("The modified Sunday dates are", candle_sunday_dates_str)
+  logging.debug ("The modified Sunday dates are" + str(candle_sunday_dates_str))
   # ---------------------------------------------------------------------------
 
 
@@ -1395,11 +1395,11 @@ for ticker_raw in ticker_list:
   if (pays_dividend == 1):
     dividend_plt = main_plt.twinx()
 
-  print("Type of fig ", type(fig), \
-        "\nType of main_plt ", type(main_plt), \
-        "\nType of price_plt: ", type(price_plt), \
-        "\nType of yr_eps_plt: ", type(annual_past_eps_plt), \
-        "\nType of upper_channel_plt: ", type(upper_channel_plt))
+  logging.debug("Type of fig " + str(type(fig)) +  \
+        "\nType of main_plt " + str(type(main_plt)) + \
+        "\nType of price_plt: " + str(type(price_plt)) + \
+        "\nType of yr_eps_plt: " + str(type(annual_past_eps_plt)) + \
+        "\nType of upper_channel_plt: " + str(type(upper_channel_plt)))
   # -----------------------------------------------------------------------------
   # Main Plot - This is the Q EPS vs Date
   # -----------------------------------------------------------------------------
@@ -1428,7 +1428,7 @@ for ticker_raw in ticker_list:
   # The buy and sells are plotted throught markers while the comments are
   # plotted through the annotate
   if (ticker not in personal_json.keys()):
-    print("json data for ", ticker, "does not exist in", personal_json_file, "file")
+    logging.debug("json data for " + str(ticker) + "does not exist in " + str(personal_json_file) + " file")
   else:
     markers_buy_date = []
     markers_sell_date = []
@@ -1440,7 +1440,7 @@ for ticker_raw in ticker_list:
         buy_date_datetime = dt.datetime.strptime(buy_date_str, '%m/%d/%Y').date()
         buy_match_date = min(date_list, key=lambda d: abs(d - buy_date_datetime))
         markers_buy_date.append(date_list.index(buy_match_date))
-        print("Index ", i_idx, "Buy Match Date", buy_match_date)
+        logging.debug("Index " + str(i_idx) + " Buy Match Date " + str(buy_match_date))
         if ("Buy_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
           buy_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Price_str"]
           price_plt.annotate(buy_price_str, xy=(date_list[date_list.index(buy_match_date)], ticker_adj_close_list[date_list.index(buy_match_date)]),
@@ -1451,7 +1451,7 @@ for ticker_raw in ticker_list:
         sell_date_datetime = dt.datetime.strptime(sell_date_str, '%m/%d/%Y').date()
         sell_match_date = min(date_list, key=lambda d: abs(d - sell_date_datetime))
         markers_sell_date.append(date_list.index(sell_match_date))
-        print("Index ", i_idx, "Sell Match Date", sell_match_date)
+        logging.debug("Index " + str(i_idx) +  " Sell Match Date " + str(sell_match_date))
         if ("Sell_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
           sell_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Price_str"]
           price_plt.annotate(sell_price_str, xy=(date_list[date_list.index(sell_match_date)], ticker_adj_close_list[date_list.index(sell_match_date)]),
@@ -1497,7 +1497,7 @@ for ticker_raw in ticker_list:
 
   # todo : maybe change this to only have the value printed out at the year ends
   for i in range(len(yr_eps_date_list)):
-    print("The Date is ", yr_eps_date_list[i], " Corresponding EPS ", yr_eps_list[i])
+    logging.debug("The Date is " + str(yr_eps_date_list[i]) +  " Corresponding EPS " + str(yr_eps_list[i]))
     # check if the date is in the plot range
     if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
       x = float("{0:.2f}".format(yr_eps_list[i]))
@@ -1513,7 +1513,7 @@ for ticker_raw in ticker_list:
                                                         yr_eps_adj_slice_expanded_list[0:plot_period_int], label='4 qtrs/4',
                                                         color="gold", marker='D', markersize='4')
     for i in range(len(yr_eps_adj_slice_date_list)):
-      print("The Date is ", yr_eps_adj_slice_date_list[i], " Corresponding EPS ", yr_eps_adj_slice_list[i])
+      logging.debug("The Date is " + str(yr_eps_adj_slice_date_list[i]) +  " Corresponding EPS " + str(yr_eps_adj_slice_list[i]))
       # check if the date is in the plot range
       if (date_list[plot_period_int] <= yr_eps_adj_slice_date_list[i] <= date_list[0]):
         x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
@@ -1882,10 +1882,10 @@ for ticker_raw in ticker_list:
   # choose the appropriate plot
   # -----------------------------------------------------------------------------
   if (ticker not in config_json.keys()):
-    print("json data for ", ticker, "does not exist in", configuration_json, "file")
+    logging.debug("json data for " + str(ticker) +  " does not exist in " + str(configuration_json) +  " file")
   else:
     if ("Plot_Annotate" in config_json[ticker]):
-      print("The number of plot annotates requested by the user are", len(config_json[ticker]["Plot_Annotate"]))
+      logging.debug("The number of plot annotates requested by the user are " + str(len(config_json[ticker]["Plot_Annotate"])))
       for i_idx in range(len(config_json[ticker]["Plot_Annotate"])):
         date_to_annotate = config_json[ticker]["Plot_Annotate"][i_idx]["Date"]
         date_to_annotate_datetime = dt.datetime.strptime(date_to_annotate, '%m/%d/%Y').date()
@@ -1893,8 +1893,8 @@ for ticker_raw in ticker_list:
         (x_coord,y_coord) =  config_json[ticker]["Plot_Annotate"][i_idx]["Line_Length"].split(":")
 
         match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
-        print("The matching date is ", match_date, " at index ", date_list.index(match_date), " and the price is ",
-              ticker_adj_close_list[date_list.index(match_date)])
+        logging.debug("The matching date is " + str(match_date) + " at index " + str(date_list.index(match_date)) +
+                      " and the price is " + str(ticker_adj_close_list[date_list.index(match_date)]))
         price_plt.annotate(annotate_text,
                            xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
                            xytext=(int(x_coord), int(y_coord)), textcoords='offset points', arrowprops=dict(facecolor='black', width=.25),
