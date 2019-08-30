@@ -208,6 +208,7 @@ if (os.path.exists(dir_path + user_dir + "\\" + personal_json_file) is True):
   with open(dir_path + user_dir + "\\" + personal_json_file) as json_file:
     personal_json = json.load(json_file)
 
+# print("The configuration df", config_df)
 schiller_pe_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in schiller_pe_df.Date.tolist()]
 schiller_pe_value_list =  schiller_pe_df.Value.tolist()
 debug_str = "The schiller PE df is\n" + schiller_pe_df.to_string()
@@ -349,19 +350,17 @@ for ticker_raw in ticker_list:
     # print (dividend_df)
     dividend_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in dividend_df.Date.dropna().tolist()]
     dividend_list = dividend_df.Amount.tolist()
-    print("The date list for Dividends is ", dividend_date_list, "\nand the number of elements are",
-          len(dividend_date_list))
-    print("The Amounts for dividends is ", dividend_list)
+    logging.debug("The date list for Dividends is\n" + str(dividend_date_list) + "\nand the number of elements are" + str(len(dividend_date_list)))
+    logging.debug("The Amounts for dividends is " + str(dividend_list))
   # =============================================================================
 
   # =============================================================================
   # Check if there is data in the config file corresponding to the ticker that
   # is being processed
   # =============================================================================
-  print("The configuration df", config_df)
   try:
     ticker_config_series = config_df.loc[ticker]
-    print("Then configurations for ", ticker, " is ", ticker_config_series)
+    logging.debug("The configurations for " + ticker + " is\n" + str(ticker_config_series))
   except KeyError:
     # Todo : Create a default series with all nan so that it can be cleaned up in the next step
     print ("**********                                  ERROR                              **********")
@@ -375,44 +374,43 @@ for ticker_raw in ticker_list:
   # todo : Test out various cases of splits so that the code is robust
   split_dates = list()
   split_multiplier = list()
-  print("Tickers in json data: ", config_json.keys())
+  # print("Tickers in json data: ", config_json.keys())
   if (ticker not in config_json.keys()):
-    print("json data for ", ticker, "does not exist in", configuration_json, "file")
+    logging.debug("json data for " + ticker + "does not exist in" + configuration_json + "file")
   else:
     if ("Splits" in config_json[ticker]):
       # if the length of the keys is > 0
       if (len(config_json[ticker]["Splits"].keys()) > 0):
         split_keys = config_json[ticker]["Splits"].keys()
-        print("Split Date list is: ", split_keys)
+        logging.debug("Split Date list is: " + str(split_keys))
         for i_key in split_keys:
-          print("Split Date :", i_key, "Split Factor :", config_json[ticker]["Splits"][i_key])
+          logging.debug("Split Date : " + str(i_key) + ", Split Factor : " + str(config_json[ticker]["Splits"][i_key]))
           try:
             split_dates.append(dt.datetime.strptime(str(i_key), "%m/%d/%Y").date())
           except (ValueError):
-            print("\n***** Error : The split Date: ", i_key,
-                  "does not seem to be right. Should be in the format %m/%d/%Y...please check *****")
+            logging.error("\n***** Error : The split Date: " + str(i_key) +
+                          "does not seem to be right. Should be in the format %m/%d/%Y...please check *****")
             sys.exit(1)
           try:
             (numerator, denominator) = config_json[ticker]["Splits"][i_key].split(":")
             split_multiplier.append(float(denominator) / float(numerator))
           except (ValueError):
-            print("\n***** Error : The split factor: ", config_json[ticker]["Splits"][i_key], "for split date :", i_key,
+            logging.error("\n***** Error : The split factor: " + str(config_json[ticker]["Splits"][i_key]) + "for split date :" + str(i_key) +
                   "does not seem to have right format [x:y]...please check *****")
             sys.exit(1)
         for i in range(len(split_dates)):
           qtr_eps_list_mod = qtr_eps_list.copy()
-          print("Split Date :", split_dates[i], " Multiplier : ", split_multiplier[i])
+          logging.debug("Split Date :" + str(split_dates[i]) + " Multiplier : " + str(split_multiplier[i]))
           for j in range(len(qtr_eps_date_list)):
             if (split_dates[i] > qtr_eps_date_list[j]):
               qtr_eps_list_mod[j] = round(qtr_eps_list[j] * split_multiplier[i], 4)
-              print("Earnings date ", qtr_eps_date_list[j], " is older than split date. Changed ", qtr_eps_list[j],
-                    " to ",
-                    qtr_eps_list_mod[j])
+              logging.debug("Earnings date " + str(qtr_eps_date_list[j]) +  " is older than split date. " +
+                            "Changed " + str(qtr_eps_list[j]) + " to "  + str(qtr_eps_list_mod[j]))
           qtr_eps_list = qtr_eps_list_mod.copy()
       else:
-        print("\"Splits\" exits but seems empty for ", ticker)
+        logging.debug("\"Splits\" exits but seems empty for " + ticker)
     else:
-      print("\"Splits\" does not exist for ", ticker)
+      logging.debug("\"Splits\" does not exist for " + ticker)
   # =============================================================================
 
   # =============================================================================
@@ -436,10 +434,10 @@ for ticker_raw in ticker_list:
     curr_index = qtr_eps_date_list.index(qtr_eps_date)
     # print("Looking for ", qtr_eps_date)
     match_date = min(date_list, key=lambda d: abs(d - qtr_eps_date))
-    print("The matching date for QTR EPS Date: ", qtr_eps_date, "is ", match_date, " at index ",
-          date_list.index(match_date), "and the QTR EPS is", qtr_eps_list[curr_index])
+    logging.debug("The matching date in historical datelist for QTR EPS Date: " + str(qtr_eps_date) + " is " + str(match_date) + " at index " +
+          str(date_list.index(match_date)) +  " and the QTR EPS is " +  str(qtr_eps_list[curr_index]))
     qtr_eps_expanded_list[date_list.index(match_date)] = qtr_eps_list[curr_index]
-  print("The expanded qtr eps list is ", qtr_eps_expanded_list, "\nand the number of elements are",len(qtr_eps_expanded_list))
+  logging.debug("The expanded qtr eps list is " + str(qtr_eps_expanded_list) + "\nand the number of elements are" + str(len(qtr_eps_expanded_list)))
 
 
   if (pays_dividend == 1):
@@ -448,19 +446,20 @@ for ticker_raw in ticker_list:
     else:
       dividend_multiplier = float(ticker_config_series['Dividend_Multiplier_Factor'])
     dividend_list_multiplied = [x * dividend_multiplier for x in dividend_list]
-    print ("Dividend List is", dividend_list)
-    print ("Multiplied Divided List is", dividend_list_multiplied)
+    logging.debug("Dividend List is" + str(dividend_list))
+    logging.debug("Multiplied Divided List is" + str(dividend_list_multiplied))
 
     for dividend_date in dividend_date_list:
       curr_index = dividend_date_list.index(dividend_date)
-      print("Looking for ", dividend_date)
+      # print("Looking for ", dividend_date)
       match_date = min(date_list, key=lambda d: abs(d - dividend_date))
-      print("The matching date for QTR EPS Date: ", dividend_date, "is ", match_date, " at index ",
-            date_list.index(match_date))
+      logging.debug("The matching date in historical datelist for Dividend Date: " + str(dividend_date) + " is " +
+                    str(match_date) + " at index " + str(date_list.index(match_date)) +
+                    " and the Dividend is" + str(dividend_list_multiplied[curr_index]))
       dividend_expanded_list[date_list.index(match_date)] = dividend_list_multiplied[curr_index]
 
-    print("The expanded Dividend list is ", dividend_expanded_list, "\nand the number of elements are",
-          len(dividend_expanded_list))
+    logging.debug("The expanded Dividend list is " + str(dividend_expanded_list) + \
+                  "\nand the number of elements are " + str(len(dividend_expanded_list)))
   # =============================================================================
 
   # =============================================================================
@@ -491,15 +490,15 @@ for ticker_raw in ticker_list:
                           qtr_eps_list[i_int + 2] + \
                           qtr_eps_list[i_int + 3]) / 4
 
-    print("Iteration #, ", i_int, " Quartely EPS, Annual EPS", \
-          qtr_eps_list[i_int], \
-          qtr_eps_list[i_int + 1], \
-          qtr_eps_list[i_int + 2], \
-          qtr_eps_list[i_int + 3], \
-          yr_average_eps)
+    logging.debug("Iteration #, " + str(i_int) + " Quartely EPS, Annual EPS " + \
+          str(qtr_eps_list[i_int]) + " " + \
+          str(qtr_eps_list[i_int + 1]) + " " + \
+          str(qtr_eps_list[i_int + 2]) + " " + \
+          str(qtr_eps_list[i_int + 3]) +  " " +\
+          str(yr_average_eps))
     yr_eps_list.append(yr_average_eps)
     i_int += 1
-  print("Annual EPS List ", yr_eps_list, "\nand the number of elements are", len(yr_eps_list))
+  logging.debug("Annual EPS List " + str(yr_eps_list) + "\nand the number of elements are " + str(len(yr_eps_list)))
 
   # ---------------------------------------------------------------------------
   # Adjust the yr_eps if the user wants to...This happens if there was an
@@ -534,10 +533,12 @@ for ticker_raw in ticker_list:
             "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
           sys.exit(1)
 
-  # Now we have 3 lists - start date list, stop date list and the adjustment amount list
   print("The yr eps adjust Start Date List", yr_eps_adj_start_date_list)
   print("The yr eps adjust Stop Date List", yr_eps_adj_stop_date_list)
   print("The yr eps adjust List", yr_eps_adj_amount_list)
+  # ---------------------------------------------------------------------------
+  # Now we have 3 lists - start date list, stop date list and the adjustment amount list
+  # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Now Process the yr_eps_adj_* lists created above  to make the adjustments 
