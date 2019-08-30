@@ -640,9 +640,11 @@ for ticker_raw in ticker_list:
   if (annual_eps_adjust_json == 1):
     for yr_eps_adj_slice_date in yr_eps_adj_slice_date_list:
       curr_index = yr_eps_adj_slice_date_list.index(yr_eps_adj_slice_date)
-      print("Looking for ", yr_eps_adj_slice_date)
+      # logging.debug("Looking for " + str(yr_eps_adj_slice_date))
       match_date = min(date_list, key=lambda d: abs(d - yr_eps_adj_slice_date))
-      print("The matching date for YR EPS date",  yr_eps_adj_slice_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_adj_slice_list[curr_index])
+      logging.debug("The matching date for Adjusted YR EPS date " + str(yr_eps_adj_slice_date) +  " is " +
+                    str(match_date) + " in historical datelist at index " + str(date_list.index(match_date)) +
+                    " and the Adjusted YR EPS is " + str(yr_eps_adj_slice_list[curr_index]))
       yr_eps_adj_slice_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_list[curr_index]
       yr_eps_adj_slice_date_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_date_list[curr_index]
 
@@ -668,7 +670,7 @@ for ticker_raw in ticker_list:
   if (str(ticker_config_series['Chart_Type']) != 'nan'):
     chart_type = str(ticker_config_series['Chart_Type'])
     if not (all(x.isalpha() for x in chart_type)):
-      print ("Error")
+      logger.debug("Error - The chart type has non-alphabet characters in the Configuration File")
       sys.exit()
 
   # This variable is added to the adjustments that are done to the channels because
@@ -690,11 +692,12 @@ for ticker_raw in ticker_list:
     lower_price_channel_separation = float(ticker_config_series[chart_type + '_Lower_Price_Channel'])
     lower_price_channel_list_unsmooth = [float(eps) - lower_price_channel_separation for eps in yr_eps_adj_expanded_list]
 
-  print("The upper channel unsmooth list is : ", upper_price_channel_list_unsmooth)
+  logging.debug("The upper channel unsmooth list is : " +  str(upper_price_channel_list_unsmooth))
+  logging.debug("The lower channel unsmooth list is : " + str(lower_price_channel_list_unsmooth))
   upper_price_channel_list = smooth_list(upper_price_channel_list_unsmooth)
   lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
-  print("The upper Guide is ", upper_price_channel_list, "\nand the number of element is ", len(upper_price_channel_list))
-  print("The upper Guide is ", lower_price_channel_list, "\nand the number of element is ", len(lower_price_channel_list))
+  logging.debug("The upper channel smooth is " + str(upper_price_channel_list) + "\nand the number of element is " + str(len(upper_price_channel_list)))
+  logging.debug("The lower channel smooth is " + str(lower_price_channel_list) + "\nand the number of element is " + str(len(lower_price_channel_list)))
 
 
   # ---------------------------------------------------------------------------
@@ -718,11 +721,11 @@ for ticker_raw in ticker_list:
   # Read the json file to get the adjustments for the upper and lower channels in
   # their respective list
   if (ticker not in config_json.keys()):
-    print("json data for ", ticker, "does not exist in", configuration_json, "file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) +  "file")
   else:
     if ("Upper_Price_Channel_Adj" in config_json[ticker]):
       len_upper_price_channel_adj = len(config_json[ticker]["Upper_Price_Channel_Adj"])
-      print("The number of Upper channel adjustments specified", len_upper_price_channel_adj)
+      logging.debug("The number of Upper channel adjustments specified : " + str(len_upper_price_channel_adj))
       for i in range(len_upper_price_channel_adj):
         i_start_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Start_Date"]
         i_stop_date = config_json[ticker]["Upper_Price_Channel_Adj"][i]["Stop_Date"]
@@ -737,17 +740,16 @@ for ticker_raw in ticker_list:
             "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
             "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
           sys.exit(1)
-
-  print("The Upper Channel Start Date List", upper_price_channel_adj_start_date_list)
-  print("The Upper Channel Stop Date List", upper_price_channel_adj_stop_date_list)
-  print("The Upper Channel Adjust List", upper_price_channel_adj_amount_list)
+      logging.debug("The Upper Channel Start Date List" + str(upper_price_channel_adj_start_date_list))
+      logging.debug("The Upper Channel Stop Date List" + str(upper_price_channel_adj_stop_date_list))
+      logging.debug("The Upper Channel Adjust List" + str(upper_price_channel_adj_amount_list))
 
   if (ticker not in config_json.keys()):
-    print("json data for ", ticker, "does not exist in", configuration_json, "file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) +  "file")
   else:
     if ("Lower_Price_Channel_Adj" in config_json[ticker]):
       len_lower_price_channel_adj = len(config_json[ticker]["Lower_Price_Channel_Adj"])
-      print("The number of Lower channel adjustments specified", len_lower_price_channel_adj)
+      logging.debug("The number of Upper channel adjustments specified : " + str(len_lower_price_channel_adj))
       for i in range(len_lower_price_channel_adj):
         i_start_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Start_Date"]
         i_stop_date = config_json[ticker]["Lower_Price_Channel_Adj"][i]["Stop_Date"]
@@ -762,9 +764,9 @@ for ticker_raw in ticker_list:
             "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
             "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
           sys.exit(1)
-  print("The Lower Channel Start Date List", lower_price_channel_adj_start_date_list)
-  print("The Lower Channel Stop Date List", lower_price_channel_adj_stop_date_list)
-  print("The Lower Channel Adjust List", lower_price_channel_adj_amount_list)
+      logging.debug("The Upper Channel Start Date List" + str(lower_price_channel_adj_start_date_list))
+      logging.debug("The Upper Channel Stop Date List" + str(lower_price_channel_adj_stop_date_list))
+      logging.debug("The Upper Channel Adjust List" + str(lower_price_channel_adj_amount_list))
 
   # Now Process the upper and lower price channel adjustment lists to make the adjustments to the
   # actual price channel list...for the length of the lists created above...and that is why it
