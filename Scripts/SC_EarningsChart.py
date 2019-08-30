@@ -512,12 +512,12 @@ for ticker_raw in ticker_list:
 
   # Read the json file to get the adjustments for the yr eps in lists
   if (ticker not in config_json.keys()):
-    print("json data for ", ticker, "does not exist in", configuration_json, "file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) + " file")
   else:
     if ("Annual_EPS_Adjust" in config_json[ticker]):
       annual_eps_adjust_json = 1
       len_yr_eps_adj = len(config_json[ticker]["Annual_EPS_Adjust"])
-      print("The number of YR EPS adjustments specified", len_yr_eps_adj)
+      logging.debug("The number of YR EPS adjustments specified " + str(len_yr_eps_adj))
       for i in range(len_yr_eps_adj):
         i_start_date = config_json[ticker]["Annual_EPS_Adjust"][i]["Start_Date"]
         i_stop_date = config_json[ticker]["Annual_EPS_Adjust"][i]["Stop_Date"]
@@ -533,9 +533,9 @@ for ticker_raw in ticker_list:
             "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
           sys.exit(1)
 
-  print("The yr eps adjust Start Date List", yr_eps_adj_start_date_list)
-  print("The yr eps adjust Stop Date List", yr_eps_adj_stop_date_list)
-  print("The yr eps adjust List", yr_eps_adj_amount_list)
+  logging.debug("The yr eps adjust Start Date List " + str(yr_eps_adj_start_date_list))
+  logging.debug("The yr eps adjust Stop Date List" + str(yr_eps_adj_stop_date_list))
+  logging.debug("The yr eps adjust List" + str(yr_eps_adj_amount_list))
   # ---------------------------------------------------------------------------
   # Now we have 3 lists - start date list, stop date list and the adjustment amount list
   # ---------------------------------------------------------------------------
@@ -559,14 +559,14 @@ for ticker_raw in ticker_list:
       for i_date in yr_eps_adj_date_list:
         if (yr_eps_adj_start_date <= i_date <= yr_eps_adj_stop_date):
           i_index = yr_eps_adj_date_list.index(i_date)
-          print("Date ", i_date, "lies between start Date", yr_eps_adj_start_date, "and stop Date",
-                yr_eps_adj_stop_date, "at index ", i_index)
+          logging.debug("Date " + str(i_date) + " lies between EPS Adjust start Date " + str(yr_eps_adj_start_date) +
+                        " and EPS Adjust stop Date " + str(yr_eps_adj_stop_date) + " at index " + str(i_index))
           yr_eps_adj_list[i_index] = yr_eps_adj_list[i_index] + yr_eps_adj_amount
           yr_eps_has_been_adj_index_list.append(i_index)
 
-    print ("The original yr EPS is", yr_eps_list)
-    print ("The adjusted yr EPS is", yr_eps_adj_list)
-    print ("The adjustments has been done at indices", yr_eps_has_been_adj_index_list)
+    logging.debug("The original yr EPS is " + str(yr_eps_list))
+    logging.debug("The adjusted yr EPS is " + str(yr_eps_adj_list))
+    logging.debug("The adjustments has been done at indices " + str(yr_eps_has_been_adj_index_list))
     # ---------------------------------------------------------------------------
     # Create a list that ONLY has the yr_eps that has been adjusted (in other words
     # the yr_eps values that have been adjusted above - This will be used to plot 
@@ -577,13 +577,12 @@ for ticker_raw in ticker_list:
     yr_eps_adj_slice_date_list = []
     for i_idx in range(len(yr_eps_adj_list)):
       if (i_idx in yr_eps_has_been_adj_index_list):
-        print ("The index", i_idx,"was adjusted")
+        # logging.debug("The YR EPS at index " + str(i_idx) + " was adjusted")
         yr_eps_adj_slice_date_list.append(yr_eps_adj_date_list[i_idx])
         yr_eps_adj_slice_list.append(yr_eps_adj_list[i_idx])
-    # ---------------------------------------------------------------------------
 
-    print ("The date list of adjusted slice of the yr eps", yr_eps_adj_slice_date_list)
-    print ("The of adjusted slice of the yr eps", yr_eps_adj_slice_list)
+    logging.debug("The date list of adjusted slice of the YR EPS is " + str(yr_eps_adj_slice_date_list))
+    logging.debug("The values of YR EPS that were adjusted are " + str(yr_eps_adj_slice_list))
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -614,21 +613,23 @@ for ticker_raw in ticker_list:
     yr_past_eps_expanded_list.append(float('nan'))
     yr_projected_eps_expanded_list.append(float('nan'))
 
+  logging.debug("\n\nNow working on Expanding the YR EPS Lists\n")
   for yr_eps_date in yr_eps_date_list:
     curr_index = yr_eps_date_list.index(yr_eps_date)
-    print("Looking for ", yr_eps_date)
+    # logging.debug("Looking for " + str(yr_eps_date))
     match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
-    print("The matching date for YR EPS date",  yr_eps_date, "is ", match_date, " at index ", date_list.index(match_date), "and the YR EPS is", yr_eps_list[curr_index])
+    logging.debug("The matching date for YR EPS date " + str(yr_eps_date) + " is " + str(match_date) +
+                  " in historical datalist at index " + str(date_list.index(match_date)) + " and the YR EPS is " + str(yr_eps_list[curr_index]))
     yr_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
     yr_eps_adj_expanded_list[date_list.index(match_date)] = yr_eps_adj_list[curr_index]
     # Check if the matching data is in the past or in the future
     if (match_date < dt.date.today()):
-      print("The matching date is in the past")
+      logging.debug("The matching date is in the past...so adding to the past eps expanded list - Black diamond")
       yr_past_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
     else:
-      print("The matching date is in the future")
+      logging.debug("The matching date is in the future...so adding to the projected eps expanded list - White diamond")
       yr_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
-  print("The Expanded Annual EPS List is: ", yr_eps_expanded_list)
+  logging.debug("The Normal Expanded Annual EPS List is: " + str(yr_eps_expanded_list))
 
   yr_eps_adj_slice_date_expanded_list = []
   yr_eps_adj_slice_expanded_list = []
