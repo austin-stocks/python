@@ -778,8 +778,9 @@ for ticker_raw in ticker_list:
     for i_date in date_list:
       if (upper_price_channel_adj_start_date <= i_date <= upper_price_channel_adj_stop_date):
         i_index = date_list.index(i_date)
-        print("Date ", i_date, "lies between start Date", upper_price_channel_adj_start_date, "and stop Date",
-              upper_price_channel_adj_stop_date, "at index ", i_index)
+        logging.debug("Historical Date " + str(i_date) + " lies between Upper Channel Adjust Start Date " +
+                      str(upper_price_channel_adj_start_date) + " and stop Date" + str(upper_price_channel_adj_stop_date) +
+                      " at index " + str(i_index))
         upper_price_channel_list[i_index - days_in_2_qtrs] = upper_price_channel_list[
                                                                i_index - days_in_2_qtrs] + upper_price_channel_adj_amount
 
@@ -790,8 +791,9 @@ for ticker_raw in ticker_list:
     for i_date in date_list:
       if (lower_price_channel_adj_start_date <= i_date <= lower_price_channel_adj_stop_date):
         i_index = date_list.index(i_date)
-        print("Date ", i_date, "lies between start Date", lower_price_channel_adj_start_date, "and stop Date",
-              lower_price_channel_adj_stop_date, "at index ", i_index)
+        logging.debug("Historical Date " + str(i_date) + " lies between Lower Channel Adjust Start Date " +
+                      str(lower_price_channel_adj_start_date) + " and stop Date" + str(lower_price_channel_adj_stop_date) +
+                      " at index " + str(i_index))
         lower_price_channel_list[i_index - days_in_2_qtrs] = lower_price_channel_list[
                                                                i_index - days_in_2_qtrs] + lower_price_channel_adj_amount
   # ---------------------------------------------------------------------------
@@ -813,17 +815,18 @@ for ticker_raw in ticker_list:
   # 2. A list that contains the start dates for each of the overlays and
   # 3. A corresponding list that contains the stop dates for each of the overlay
 
+  logging.debug("\n\n##########     Now working on Growth Projection Lines    ##########\n\n")
   number_of_growth_proj_overlays = 0
   start_date_for_yr_eps_growth_proj_list = []
   stop_date_for_yr_eps_growth_proj_list = []
   if (ticker not in config_json.keys()):
-    print("json data for ", ticker, "does not exist in", configuration_json, "file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) + " file")
   else:
     if ("Earnings_growth_projection_overlay" in config_json[ticker]):
       tmp_df = pd.DataFrame(config_json[ticker]["Earnings_growth_projection_overlay"])
       number_of_growth_proj_overlays = len(tmp_df.index)
-      print("The Sorted and reindexed dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is",
-            number_of_growth_proj_overlays)
+      logging.debug("The Sorted and reindexed dataframe is \n" + tmp_df.to_string() +
+                    "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
       # This works : Delete the rows that have Ignore in any column
       tmp_df.drop(tmp_df[(tmp_df.Start_Date == "Ignore") | (tmp_df.Stop_Date == "Ignore")].index, inplace=True)
       # Conver the start Dates to datetime, add it as a separate column, and then
@@ -833,8 +836,8 @@ for ticker_raw in ticker_list:
       tmp_df.reset_index(inplace=True, drop=True)
       # tmp_df.set_index('Start_Date', inplace=True)
       number_of_growth_proj_overlays = len(tmp_df.index)
-      print("The Sorted and reindexed dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is",
-            number_of_growth_proj_overlays)
+      logging.debug("The Sorted and reindexed dataframe is \n" + tmp_df.to_string() +
+                    "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
       # Replace the "End" and "Next" in the stop dates with the appropriate value
       # "End" gets replaced by the end date (which it at index 0) that the historical date list has
       # (So the overlay will extent all the way to the right of the chart)
@@ -844,8 +847,8 @@ for ticker_raw in ticker_list:
       tmp_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
       # This works : Replaces the stop date of the current row with the value of start date from the next row
       tmp_df.Stop_Date.replace(to_replace='Next', value=tmp_df.Start_Date.shift(-1), inplace=True)
-      print("The Sorted and reindexed and cleaned dataframe is \n", tmp_df, "\nAnd the length of the DateFrame is",
-            number_of_growth_proj_overlays)
+      logging.debug("The Sorted and reindexed dataframe is \n" + tmp_df.to_string() +
+                    "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
       # This works : Finally put those start and stop dates as datetimes in their own lists
       # start_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
       #                                           tmp_df.Start_Date.tolist()]
@@ -895,17 +898,17 @@ for ticker_raw in ticker_list:
       # Then grow the growth list from the start date to the stop date by multiplying
       # with the grwoth factor
       for i in reversed(range(growth_proj_stop_index, growth_proj_start_index)):
-        print("Updating for index", i)
+        logging.debug("Updating for index" + str(i))
         yr_eps_02_5_growth_list[i] = 1.025 * float(yr_eps_02_5_growth_list[i + 1])
         yr_eps_05_0_growth_list[i] = 1.05 * float(yr_eps_05_0_growth_list[i + 1])
         yr_eps_10_0_growth_list[i] = 1.10 * float(yr_eps_10_0_growth_list[i + 1])
         yr_eps_20_0_growth_list[i] = 1.20 * float(yr_eps_20_0_growth_list[i + 1])
 
-      print("The Annual eps list", yr_eps_list)
-      print("The 2.5% growth rate eps list", yr_eps_02_5_growth_list)
-      print("The   5% growth rate eps list", yr_eps_05_0_growth_list)
-      print("The  10% growth rate eps list", yr_eps_10_0_growth_list)
-      print("The  20% growth rate eps list", yr_eps_20_0_growth_list)
+      logging.debug("The Annual eps list" + str(yr_eps_list))
+      logging.debug("The 2.5% growth rate eps list" + str(yr_eps_02_5_growth_list))
+      logging.debug("The   5% growth rate eps list" + str(yr_eps_05_0_growth_list))
+      logging.debug("The  10% growth rate eps list" + str(yr_eps_10_0_growth_list))
+      logging.debug("The  20% growth rate eps list" + str(yr_eps_20_0_growth_list))
 
       # Now expand the list to all the dates (from historical date list)
       yr_eps_02_5_growth_expanded_list_unsmooth = []
