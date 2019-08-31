@@ -277,7 +277,7 @@ for ticker_raw in ticker_list:
   logging.debug("The date list - in raw - from historical df is\n" + str(date_str_list))
   date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
   logging.debug("The date list - in datetime - from historical is\n" + str(date_list) + "\nit has" + str(len(date_list)) + " entries")
-  logging.info("Read the Historical DF")
+  logging.info("Read in the Historical Data...")
   # =============================================================================
 
   # =============================================================================
@@ -336,7 +336,7 @@ for ticker_raw in ticker_list:
   # 2. There are no nan in the eps list
   # 3. Number of elements in the qtr_eps_date_list are equal to the number of
   #    element in the qtr_eps_list
-  logging.info("Read the Earnings DF")
+  logging.info("Read in the Earnings Data...")
   # =============================================================================
 
   # =============================================================================
@@ -352,6 +352,7 @@ for ticker_raw in ticker_list:
     dividend_list = dividend_df.Amount.tolist()
     logging.debug("The date list for Dividends is\n" + str(dividend_date_list) + "\nand the number of elements are" + str(len(dividend_date_list)))
     logging.debug("The Amounts for dividends is " + str(dividend_list))
+    logging.info("Read in the Dividend Data...")
   # =============================================================================
 
   # =============================================================================
@@ -407,6 +408,7 @@ for ticker_raw in ticker_list:
               logging.debug("Earnings date " + str(qtr_eps_date_list[j]) +  " is older than split date. " +
                             "Changed " + str(qtr_eps_list[j]) + " to "  + str(qtr_eps_list_mod[j]))
           qtr_eps_list = qtr_eps_list_mod.copy()
+        logging.info("Read in and processed Splits")
       else:
         logging.debug("\"Splits\" exits but seems empty for " + ticker)
     else:
@@ -438,7 +440,7 @@ for ticker_raw in ticker_list:
           str(date_list.index(match_date)) +  " and the QTR EPS is " +  str(qtr_eps_list[curr_index]))
     qtr_eps_expanded_list[date_list.index(match_date)] = qtr_eps_list[curr_index]
   logging.debug("The expanded qtr eps list is " + str(qtr_eps_expanded_list) + "\nand the number of elements are" + str(len(qtr_eps_expanded_list)))
-
+  logging.info("Prepared the Expanded Q EPS List")
 
   if (pays_dividend == 1):
     if (math.isnan(ticker_config_series['Dividend_Multiplier_Factor'])):
@@ -460,6 +462,8 @@ for ticker_raw in ticker_list:
 
     logging.debug("The expanded Dividend list is " + str(dividend_expanded_list) + \
                   "\nand the number of elements are " + str(len(dividend_expanded_list)))
+    logging.info("Prepared the Expanded Dividend List")
+
   # =============================================================================
 
   # =============================================================================
@@ -499,7 +503,7 @@ for ticker_raw in ticker_list:
     yr_eps_list.append(yr_average_eps)
     i_int += 1
   logging.debug("Annual EPS List " + str(yr_eps_list) + "\nand the number of elements are " + str(len(yr_eps_list)))
-
+  logging.info("Prepared the YR EPS List")
   # ---------------------------------------------------------------------------
   # Adjust the yr_eps if the user wants to...This happens if there was an
   # unusual quarter. The data is availalbe in the json file
@@ -567,6 +571,7 @@ for ticker_raw in ticker_list:
     logging.debug("The original yr EPS is " + str(yr_eps_list))
     logging.debug("The adjusted yr EPS is " + str(yr_eps_adj_list))
     logging.debug("The adjustments has been done at indices " + str(yr_eps_has_been_adj_index_list))
+    logging.info("Prepared the Adjusted YR EPS List")
     # ---------------------------------------------------------------------------
     # Create a list that ONLY has the yr_eps that has been adjusted (in other words
     # the yr_eps values that have been adjusted above - This will be used to plot 
@@ -581,8 +586,11 @@ for ticker_raw in ticker_list:
         yr_eps_adj_slice_date_list.append(yr_eps_adj_date_list[i_idx])
         yr_eps_adj_slice_list.append(yr_eps_adj_list[i_idx])
 
-    logging.debug("The date list of adjusted slice of the YR EPS is " + str(yr_eps_adj_slice_date_list))
-    logging.debug("The values of YR EPS that were adjusted are " + str(yr_eps_adj_slice_list))
+    if (annual_eps_adjust_json == 1):
+      logging.debug("The date list of adjusted slice of the YR EPS is " + str(yr_eps_adj_slice_date_list))
+      logging.debug("The values of YR EPS that were adjusted are " + str(yr_eps_adj_slice_list))
+      logging.info("Prepared the Adjusted Slice YR EPS List")
+
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
