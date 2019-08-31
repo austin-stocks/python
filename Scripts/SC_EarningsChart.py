@@ -1281,9 +1281,10 @@ for ticker_raw in ticker_list:
   logging.debug("Candlestick Dataframe is " + candlestick_df.to_string())
 
   date_str_list_candles = candlestick_df.Date.tolist()
-  # Change the Date to mdates - This gives out warning - todo : Take care of the warning.
-  candlestick_df['Date'] = [mdates.date2num(dt.datetime.strptime(d, '%m/%d/%Y').date()) for d in date_str_list_candles]
-  logging.debug("Candlestick Dataframe after chanings the Dates to mdates is " + candlestick_df.to_string())
+  # Change the Date to mdates
+  dates_2_mdates = [mdates.date2num(dt.datetime.strptime(d, '%m/%d/%Y').date()) for d in date_str_list_candles]
+  candlestick_df.insert(loc=1,column='MDate', value=dates_2_mdates)
+  logging.debug("Candlestick Dataframe after chanings the Dates to mdates is \n" + candlestick_df.to_string())
   MA_Price_200_list = candlestick_df.MA_Price_200_day.tolist()
   MA_Price_50_list = candlestick_df.MA_Price_50_day.tolist()
   MA_Price_20_list = candlestick_df.MA_Price_20_day.tolist()
@@ -1291,8 +1292,8 @@ for ticker_raw in ticker_list:
   MA_volume_50_list = candlestick_df.MA_Volume_50_day.tolist()
 
   # Canclesticks likes to put everything in tuple before plotting
-  quotes = [tuple(x) for x in candlestick_df[['Date', 'Open', 'High', 'Low', 'Close']].values]
-  date_list_candles = candlestick_df.Date.tolist()
+  quotes = [tuple(x) for x in candlestick_df[['MDate', 'Open', 'High', 'Low', 'Close']].values]
+  date_list_candles = candlestick_df.MDate.tolist()
   volume = candlestick_df.Volume.tolist()
   logging.debug ("The type of quotes is " + str(quotes))
   logging.debug ("The type of volume is " + str(volume))
