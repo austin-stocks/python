@@ -638,6 +638,7 @@ for ticker_raw in ticker_list:
       logging.debug("The matching date is in the future...so adding to the projected eps expanded list - White diamond")
       yr_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
   logging.debug("The Normal Expanded Annual EPS List is: " + str(yr_eps_expanded_list))
+  logging.info("Prepared the YR EPS Expanded List, YR Past EPS Expanded List (black Diamonds) and YR Projected EPS List (white Diamonds)")
 
   yr_eps_adj_slice_date_expanded_list = []
   yr_eps_adj_slice_expanded_list = []
@@ -655,6 +656,7 @@ for ticker_raw in ticker_list:
                     " and the Adjusted YR EPS is " + str(yr_eps_adj_slice_list[curr_index]))
       yr_eps_adj_slice_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_list[curr_index]
       yr_eps_adj_slice_date_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_date_list[curr_index]
+    logging.info("Prepared the YR EPS Adjusted Slice Expanded List (Golden Diamonds)")
 
   # I am not sure why I wanted this but seems like a good thing to be able to make
   # a dataframe from lists. This is not used anywhere in the code ahead...so commented
@@ -706,7 +708,7 @@ for ticker_raw in ticker_list:
   lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
   logging.debug("The upper channel smooth is " + str(upper_price_channel_list) + "\nand the number of element is " + str(len(upper_price_channel_list)))
   logging.debug("The lower channel smooth is " + str(lower_price_channel_list) + "\nand the number of element is " + str(len(lower_price_channel_list)))
-
+  logging.info("Prepared the Upper and Lower Price Channels")
 
   # ---------------------------------------------------------------------------
   # Get the adjustments that need to be done and do the price channels
@@ -944,6 +946,8 @@ for ticker_raw in ticker_list:
       yr_eps_05_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_05_0_growth_expanded_list_unsmooth)
       yr_eps_10_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_10_0_growth_expanded_list_unsmooth)
       yr_eps_20_0_growth_expanded_list[i_idx] = smooth_list(yr_eps_20_0_growth_expanded_list_unsmooth)
+
+    logging.info("Prepared the Earnings Growth Overlays")
   # =============================================================================
 
   # -----------------------------------------------------------------------------
@@ -1118,6 +1122,7 @@ for ticker_raw in ticker_list:
   logging.debug("The original qtr dates list is\n" + str(fiscal_qtr_and_yr_dates_raw))
   logging.debug("The modified qtr dates list is\n" + str(fiscal_qtr_dates))
   logging.debug("The modified yr dates list is\n" + str(fiscal_yr_dates))
+  logging.info("Prepared the Fiscal year and Quarter ticks")
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -1237,6 +1242,7 @@ for ticker_raw in ticker_list:
     price_eps_growth_str_textbox += ("| "+str(ticker_5_yr_ago_price)+"("+str(price_growth_5_yr)+"%)").ljust(20)
 
     logging.debug("\n" + str(price_eps_growth_str_textbox))
+    logging.info("Prepared the Earnings growth Text box")
   # ---------------------------------------------------------------------------
 
 
@@ -1301,6 +1307,7 @@ for ticker_raw in ticker_list:
       bar_color_list[i_idx] = 'mediumseagreen'
 
   logging.debug ("The bar color list is " + str(bar_color_list))
+  logging.info("Prepared the Data for Candlesticks and the Moving Averages")
 
   # ---------------------------------------------------------
   # Generate the data that will be used for ticks and
@@ -1339,6 +1346,8 @@ for ticker_raw in ticker_list:
     candle_sunday_dates_str.append(x.date().strftime('%m/%d/%Y'))
 
   logging.debug ("The modified Sunday dates are" + str(candle_sunday_dates_str))
+  logging.info("Prepared the Data for Volume Bars")
+
   # ---------------------------------------------------------------------------
 
 
@@ -1355,13 +1364,12 @@ for ticker_raw in ticker_list:
   # #############################################################################
   # fig, main_plt = plt.subplots()
 
+  logging.info("Now starting to Plot everything that was prepared")
   fig=plt.figure()
   main_plt = plt.subplot2grid((5,6), (0,0), colspan=5,rowspan=5)
   candle_plt = plt.subplot2grid((5,6), (0,5), colspan=1,rowspan=4)
   volume_plt = plt.subplot2grid((5,6), (4,5), colspan=1,rowspan=1)
   plt.subplots_adjust(hspace=0,wspace=0)
-
-
 
   fig.set_size_inches(16, 10)  # Length x height
   fig.subplots_adjust(right=0.90)
@@ -1473,6 +1481,7 @@ for ticker_raw in ticker_list:
     price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
                    marker="s",markerfacecolor=buy_sell_color,markeredgewidth=1,markeredgecolor='k',
                    markersize=12,markevery=markers_sell_date, linestyle='None')
+    logger.info("Inserted Buy and Sell Points on the Chart, if specified")
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
@@ -1512,7 +1521,7 @@ for ticker_raw in ticker_list:
       main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
                     verticalalignment='bottom')
       # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
-
+  logging.info("Printed the YR EPS numbers on the chart (For Black and White Diamonds)")
   if (annual_eps_adjust_json):
     # If the annual eps was ajusted, then plot those diamonds in <the color Ann likes>
     annual_eps_adjusted_slice_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
@@ -1527,6 +1536,7 @@ for ticker_raw in ticker_list:
         x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
         main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
                       verticalalignment='bottom')
+    logging.info("Printed the Adjusted YR EPS numbers on the chart (For Golden Diamonds)")
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
@@ -1583,6 +1593,7 @@ for ticker_raw in ticker_list:
         x = float("{0:.2f}".format(dividend_list[i]))
         main_plt.text(dividend_date_list[i], dividend_list_multiplied[i], x, fontsize=6, horizontalalignment='center',
                       verticalalignment='bottom')
+    logging.info("Printed the Dividend numbers on the chart")
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
@@ -1923,5 +1934,6 @@ for ticker_raw in ticker_list:
     fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
   else:
     fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+  logging.info("All Done")
   plt.show()
   # -----------------------------------------------------------------------------
