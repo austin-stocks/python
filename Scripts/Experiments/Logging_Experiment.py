@@ -2,6 +2,7 @@ import logging
 import pandas as pd
 import sys
 
+# https://stackoverflow.com/questions/14058453/making-python-loggers-output-all-messages-to-stdout-in-addition-to-log-file
 # critical, error, warning, info, debug
 
 # set up logging to file - see previous section for more details
@@ -26,13 +27,13 @@ logging.disable(logging.NOTSET)
 
 # Now, we can log to the root logger, or any other logger. First the root...
 tmp_str = "This is tmp string"
-tmp_list = [0,1,2,3,4]
+tmp_list = [0,1,2,3,14]
 tmp_df = pd.DataFrame(index = [0,1,2],columns=['A','B','D'])
 tmp_df.A = 0
 tmp_df.B = 4
 tmp_df.D = "EMPTY"
-print ("The dataframe is\n",tmp_df)
-print ("The type of the structure is\n",type(tmp_df))
+# print ("The dataframe is\n",tmp_df)
+# print ("The type of the structure is\n",type(tmp_df))
 
 logging.debug("Debug Level")
 logging.info('Info Level')
@@ -41,20 +42,24 @@ logging.error('Error Level')
 logging.critical('Critical Level')
 logging.critical("I am trying to print a string "f'tmp_str')
 logging.critical("I am trying to print a list "f'{tmp_list}')
+for i_idx in range(len(tmp_list)):
+    logging.critical("The value of index %d : is %f",i_idx,(tmp_list[i_idx]))
 logging.critical("I am trying to print a df\n "f'{tmp_df}')
+logging.critical("I am trying to print a df \n%s",tmp_df.to_string())
 logging.critical("The type of the structure is\n %s",type(tmp_df))
 
-
+# print ("Will now make multiple loogers")
 # Now, define a couple of other loggers which might represent areas in your
 # application:
 #
-# logger1 = logging.getLogger('myapp.area1')
-# logger2 = logging.getLogger('myapp.area2')
-#
-# logger1.debug('Quick zephyrs blow, vexing daft Jim.')
-# logger1.info('How quickly daft jumping zebras vex.')
-# logger2.warning('Jail zesty vixen who grabbed pay from quack.')
-# logger2.error('The five boxing wizards jump quickly.')
+logger1 = logging.getLogger('myapp.area1')
+logger2 = logging.getLogger('myapp.area2')
+
+logger1.debug('Quick zephyrs blow, vexing daft Jim.')
+logger1.info('How quickly daft jumping zebras vex.')
+# print ("Printed from one area, now printing from another area")
+logger2.warning('Jail zesty vixen who grabbed pay from quack.')
+logger2.error('The five boxing wizards jump quickly.')
 
 
 '''

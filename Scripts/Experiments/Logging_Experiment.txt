@@ -1,14 +1,28 @@
-08-11 15:49 root         DEBUG    Debug Level
-08-11 15:49 root         INFO     Info Level
-08-11 15:49 root         WARNING  Warning Level
-08-11 15:49 root         ERROR    Error Level
-08-11 15:49 root         CRITICAL Critical Level
-08-11 15:49 root         CRITICAL I am trying to print a string tmp_str
-08-11 15:49 root         CRITICAL I am trying to print a list [0, 1, 2, 3, 4]
-08-11 15:49 root         CRITICAL I am trying to print a df
+08-29 20:38 root         DEBUG    Debug Level
+08-29 20:38 root         INFO     Info Level
+08-29 20:38 root         WARNING  Warning Level
+08-29 20:38 root         ERROR    Error Level
+08-29 20:38 root         CRITICAL Critical Level
+08-29 20:38 root         CRITICAL I am trying to print a string tmp_str
+08-29 20:38 root         CRITICAL I am trying to print a list [0, 1, 2, 3, 14]
+08-29 20:38 root         CRITICAL The value of index 0 : is 0.000000
+08-29 20:38 root         CRITICAL The value of index 1 : is 1.000000
+08-29 20:38 root         CRITICAL The value of index 2 : is 2.000000
+08-29 20:38 root         CRITICAL The value of index 3 : is 3.000000
+08-29 20:38 root         CRITICAL The value of index 4 : is 14.000000
+08-29 20:38 root         CRITICAL I am trying to print a df
     A  B      D
 0  0  4  EMPTY
 1  0  4  EMPTY
 2  0  4  EMPTY
-08-11 15:49 root         CRITICAL The type of the structure is
+08-29 20:38 root         CRITICAL I am trying to print a df 
+   A  B      D
+0  0  4  EMPTY
+1  0  4  EMPTY
+2  0  4  EMPTY
+08-29 20:38 root         CRITICAL The type of the structure is
  <class 'pandas.core.frame.DataFrame'>
+08-29 20:38 myapp.area1  DEBUG    Quick zephyrs blow, vexing daft Jim.
+08-29 20:38 myapp.area1  INFO     How quickly daft jumping zebras vex.
+08-29 20:38 myapp.area2  WARNING  Jail zesty vixen who grabbed pay from quack.
+08-29 20:38 myapp.area2  ERROR    The five boxing wizards jump quickly.
