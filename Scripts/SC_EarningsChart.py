@@ -171,6 +171,7 @@ dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
 tracklist_file = "Tracklist.csv"
 schiller_pe_monthly_file = "Schiller_PE_by_Month.csv"
+master_tracklist_file = "Master_Tracklist.xlsx"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
 configuration_json = "Configurations.json"
@@ -200,6 +201,8 @@ tracklist_df = pd.read_csv(tracklist_file_full_path)
 config_df = pd.read_csv(dir_path + user_dir + "\\" + configuration_file)
 config_df.set_index('Ticker', inplace=True)
 schiller_pe_df = pd.read_csv(dir_path + user_dir + "\\" + schiller_pe_monthly_file)
+master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
+master_tracklist_df.set_index('Ticker', inplace=True)
 
 with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
   config_json = json.load(json_file)
@@ -1096,7 +1099,7 @@ for ticker_raw in ticker_list:
 
   fiscal_qtr_str  = "BQ-"+fiscal_yr_str
   fiscal_yr_str = "BA-"+fiscal_yr_str
-  logging.debug("The fiscal Year is" + str(fiscal_yr_str))
+  logging.debug("The fiscal Year is " + str(fiscal_yr_str))
 
   fiscal_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_yr_str)
   fiscal_qtr_and_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_qtr_str)
@@ -1108,7 +1111,7 @@ for ticker_raw in ticker_list:
   fiscal_qtr_dates = []
   fiscal_yr_dates = []
   for x in fiscal_qtr_and_yr_dates_raw:
-    logging.debug("The original Quarterly Date is :" + str(x))
+    logging.debug("The original Quarterly Date is : " + str(x))
     if (x in fiscal_yr_dates_raw):
       logging.debug("This quarter is also year end date. Removing " + str(type(x)))
     else:
@@ -1249,6 +1252,8 @@ for ticker_raw in ticker_list:
 
   # ---------------------------------------------------------------------------
   # Get the company info for company name, sector and industry
+  # Also Get the Last date when the Earnings Projections were updated and
+  # tack it on to ticker industry
   # ---------------------------------------------------------------------------
   yahoo_comany_info_df = pd.read_excel(dir_path + user_dir + "\\" + 'Yahoo_Company_Info.xlsm', sheet_name="Company_Info")
   yahoo_comany_info_df.set_index('Ticker', inplace=True)
@@ -1261,6 +1266,18 @@ for ticker_raw in ticker_list:
     ticker_company_name = yahoo_comany_info_df.loc[ticker, 'Company_Name']
     ticker_sector = yahoo_comany_info_df.loc[ticker, 'Sector']
     ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
+
+  try:
+    ticker_master_tracklist_series = master_tracklist_df.loc[ticker]
+    logging.debug("The Master Tracklist configurations for " + ticker + " is\n" + str(ticker_master_tracklist_series))
+  except KeyError:
+    # Todo : Create a default series with all nan so that it can be cleaned up in the next step
+    print("**********                                  ERROR                              **********")
+    print("**********     Entry for ", str(ticker).center(10), " not found in the Master Tracklist file     **********")
+    print("**********     Please create one and then run the script again                 **********")
+    sys.exit()
+  last_projected_eps_update_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
+  ticker_industry = ticker_industry + " - Earnings Projections Last Update - " + str(last_projected_eps_update_date)
   logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry))
   # ---------------------------------------------------------------------------
 
@@ -1317,7 +1334,7 @@ for ticker_raw in ticker_list:
   ticker_volume_max = max(volume[0:candle_chart_duration])
   ticker_volume_max_no_of_digits = len(str(abs(int(ticker_volume_max))))
   ticker_volume_max_first_digit = int(str(ticker_volume_max)[:1])
-  logging.debug ("The max volume is" + str(ticker_volume_max) + " and the number of digits are" + str(ticker_volume_max_no_of_digits) + "and the first digit is " + str(ticker_volume_max_first_digit))
+  logging.debug ("The max volume is " + str(ticker_volume_max) + " and the number of digits are " + str(ticker_volume_max_no_of_digits) + " and the first digit is " + str(ticker_volume_max_first_digit))
   if (ticker_volume_max_first_digit == 1):
     ticker_volume_upper_limit = 2 * math.pow(10,ticker_volume_max_no_of_digits-1)
   elif (ticker_volume_max_first_digit == 2):
@@ -1329,7 +1346,7 @@ for ticker_raw in ticker_list:
   else:
     ticker_volume_upper_limit = 10 * math.pow(10,ticker_volume_max_no_of_digits-1)
 
-  logging.debug ("The upper limit for volume is" + str(ticker_volume_upper_limit))
+  logging.debug ("The upper limit for volume is " + str(ticker_volume_upper_limit))
   ticker_volume_ytick_list = []
   ticker_volume_yticklabels_list = []
   for i_idx in range(0,5,1):
@@ -1339,14 +1356,14 @@ for ticker_raw in ticker_list:
 
   # Get the Sundays in the date range to act as grid in the candle and volume plots
   candle_sunday_dates = pd.date_range(date_str_list_candles[candle_chart_duration], date_str_list_candles[0], freq='W-SUN')
-  logging.debug ("The Sunday dates are" + str(candle_sunday_dates))
+  logging.debug ("The Sunday dates are\n" + str(candle_sunday_dates))
 
   candle_sunday_dates_str = []
   for x in candle_sunday_dates:
     logging.debug("The original Sunday Date is :" + str(x))
     candle_sunday_dates_str.append(x.date().strftime('%m/%d/%Y'))
 
-  logging.debug ("The modified Sunday dates are" + str(candle_sunday_dates_str))
+  logging.debug ("The modified Sunday dates are\n" + str(candle_sunday_dates_str))
   logging.info("Prepared the Data for Volume Bars")
 
   # ---------------------------------------------------------------------------
