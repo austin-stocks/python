@@ -188,7 +188,9 @@ elif re.search('alan', who_am_i, re.IGNORECASE):
   buy_sell_color = "teal"
   user_name = "alan"
   personal_json_file = "Alan.json"
-elif (re.search('sundeep', who_am_i, re.IGNORECASE)) or re.search('DesktopNew-Optiplex',my_hostname,re.IGNORECASE):
+elif (re.search('sundeep', who_am_i, re.IGNORECASE)) or \
+      re.search('DesktopNew-Optiplex',my_hostname,re.IGNORECASE) or \
+      re.search('LaptopNew-Inspiron-5570', my_hostname, re.IGNORECASE):
   debug_str = "Looks like Sundeep is running the script"
   logger_setup.debug(debug_str)
   user_name = "sundeep"
