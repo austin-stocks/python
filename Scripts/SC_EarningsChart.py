@@ -263,8 +263,8 @@ for ticker_raw in ticker_list:
   # ticker = "NMIH"
 
   # Open the Log file in write mode
-  logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
-  debug_fh = open(logfile, "w+")
+  # logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
+  # debug_fh = open(logfile, "w+")
 
   # =============================================================================
   # Read the Historical file for the ticker
