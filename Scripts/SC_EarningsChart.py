@@ -971,7 +971,7 @@ for ticker_raw in ticker_list:
     plot_period_int = len(date_list) -1
     logging.debug("Since the Historical Data (Length of the date list) is not available for all\
     the years that user is asking to plot for, so adjusting the plot for " +
-    str(float(plot_period_int/252)), " years (or " + str(plot_period_int) +  " days)")
+    str(float(plot_period_int/252)) + " years (or " + str(plot_period_int) +  " days)")
   else:
     logging.debug ("Will plot for " + str(int(plot_period_int/252)) + " years")
   # ---------------------------------------------------------
