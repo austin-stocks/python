@@ -39,7 +39,7 @@ likely_earnings_date_df.set_index('Ticker', inplace=True)
 
 today = dt.date.today()
 one_qtr_ago_date = today - dt.timedelta(days=90)
-one_month_ago_date = today - dt.timedelta(days=1)
+one_month_ago_date = today - dt.timedelta(days=25)
 print ("Today is", today, "one month ago", one_month_ago_date, "one qtr ago", one_qtr_ago_date)
 # -----------------------------------------------------------------------------
 
