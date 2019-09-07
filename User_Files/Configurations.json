@@ -15,7 +15,8 @@
       {"id": "valore"}
     ],
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "06/30/2017", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "03/30/2017", "Stop_Date" :   "06/30/2019"},
+       {"Start_Date" : "09/30/2013", "Stop_Date" :   "12/30/2017"}
     ],
     "Anchored_Text" : {
       "9": "Analysts are accurate",
@@ -194,6 +195,9 @@
   "ABMD" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2013", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2015", "Stop_Date" :   "01/05/2016", "Adj_Amount" : "-.5"}
     ]
   },
 
@@ -213,6 +217,9 @@
   "AAN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2017", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.4"}
     ]
   },
 
@@ -246,7 +253,7 @@
   "NCLH" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2013", "Stop_Date" :   "12/31/2015"},
-       {"Start_Date" : "03/31/2017", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "03/31/2016", "Stop_Date" :   "06/30/2019"}
     ]
   },
 
