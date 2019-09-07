@@ -38,7 +38,7 @@ gt_1_month_old_earnings_df.set_index('Ticker', inplace=True)
 likely_earnings_date_df.set_index('Ticker', inplace=True)
 
 today = dt.date.today()
-one_qtr_ago_date = today - dt.timedelta(days=90)
+one_qtr_ago_date = today - dt.timedelta(days=80)
 one_month_ago_date = today - dt.timedelta(days=25)
 print ("Today is", today, "one month ago", one_month_ago_date, "one qtr ago", one_qtr_ago_date)
 # -----------------------------------------------------------------------------
@@ -89,8 +89,8 @@ for ticker_raw in ticker_list:
 
   if (not pd.isnull(last_earnings_date)):
     last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
-    if (today > (last_earnings_date_dt  + dt.timedelta(days=80))):
-      likely_earnings_date_df.loc[ticker] = [date_updated_financials_dt]
+    if (today > (last_earnings_date_dt  + dt.timedelta(days=20))):
+      likely_earnings_date_df.loc[ticker] = [last_earnings_date_dt]
 
 # -----------------------------------------------------------------------------
 # Print all the df to their respective files

@@ -1501,7 +1501,7 @@ for ticker_raw in ticker_list:
     price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
                    marker="s",markerfacecolor=buy_sell_color,markeredgewidth=1,markeredgecolor='k',
                    markersize=12,markevery=markers_sell_date, linestyle='None')
-    logger.info("Inserted Buy and Sell Points on the Chart, if specified")
+    logging.info("Inserted Buy and Sell Points on the Chart, if specified")
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------

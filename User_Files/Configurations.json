@@ -253,7 +253,8 @@
   "CYBR" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2014", "Stop_Date" :   "12/30/2017"},
-       {"Start_Date" : "03/30/2018", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "03/30/2018", "Stop_Date" :   "06/30/2019"},
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
     ]
   },
 
@@ -261,6 +262,9 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2012", "Stop_Date" :   "12/30/2016"},
        {"Start_Date" : "03/30/2017", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".25"}
     ]
   },
 
@@ -364,11 +368,8 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
     ],
-    "Upper_Price_Channel_Adj" : [
-      {"Start_Date" : "06/30/2017", "Stop_Date" :   "03/31/2018", "Adj_Amount" : "-.16"}
-    ],
-    "Lower_Price_Channel_Adj" : [
-      {"Start_Date" : "06/30/2017", "Stop_Date" :   "03/31/2018", "Adj_Amount" : "-.16"}
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/15/2018", "Adj_Amount" : "-.16"}
     ]
   },
 
@@ -429,6 +430,26 @@
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2015", "Stop_Date" :   "10/05/2016", "Adj_Amount" : ".1"},
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.4"}
+    ]
+  },
+
+  "NMIH" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2016", "Stop_Date" :   "10/05/2017", "Adj_Amount" : "-.2"},
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".1"}
+    ]
+  },
+
+  "QLYS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2014", "Stop_Date" :   "10/05/2015", "Adj_Amount" : "-.1"},
+      {"Start_Date" : "03/25/2017", "Stop_Date" :   "01/05/2018", "Adj_Amount" : "-.05"}
     ]
   },
 
