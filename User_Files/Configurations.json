@@ -61,6 +61,87 @@
     ]
   },
 
+  "DXPE" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2017", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "DRI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "08/30/2015", "Stop_Date" :   "05/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "08/25/2014", "Stop_Date" :   "06/05/2015", "Adj_Amount" : "-.75"}
+    ]
+  },
+
+  "EBF" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "05/30/2017", "Stop_Date" :   "05/30/2019"}
+    ]
+  },
+
+  "ET" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "ETFC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2014", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "EXPD" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+
+  "EW" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2012", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".17"},
+      {"Start_Date" : "12/25/2018", "Stop_Date" :   "10/05/2019", "Adj_Amount" : ".17"},
+      {"Start_Date" : "06/25/2014", "Stop_Date" :   "04/05/2015", "Adj_Amount" : "-.55"}
+    ]
+  },
+
+  "EQIX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "EVR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2016", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "EPD" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "ECOL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "EPAY" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2018", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
   "MED" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
