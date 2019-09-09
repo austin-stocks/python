@@ -69,17 +69,17 @@ for ticker_raw in ticker_list:
   date_updated_financials = master_tracklist_df.loc[ticker, 'Last_Updated_Financials']
   last_earnings_date = master_tracklist_df.loc[ticker, 'Last_Earnings_Date']
 
-  print ("Processing", ticker, "Last date for updated Earnings", date_updated_earnings, "Last Date for updated Fiancials", date_updated_financials)
+  # print ("Processing", ticker, "Last date for updated Earnings", date_updated_earnings, "Last Date for updated Fiancials", date_updated_financials)
 
   # Check if the last_updated_earnings date is NOT NaT then compare it against todays date
   if (not pd.isnull(date_updated_earnings)):
     # Compare with the dates
     date_updated_earnings_dt = dt.datetime.strptime(str(date_updated_earnings), '%Y-%m-%d %H:%M:%S').date()
     if (date_updated_earnings_dt < one_qtr_ago_date):
-      print("Earnings were updated more than a quarter ago")
+      print("Processing", ticker," : Earnings were updated on:", date_updated_earnings_dt, "more than a quarter ago")
       gt_1_qtr_old_earnings_df.loc[ticker]= [date_updated_earnings_dt]
-    elif (date_updated_earnings_dt < one_month_ago_date):
-      print("Earnings were updated more than a month ago")
+    if (date_updated_earnings_dt < one_month_ago_date):
+      print("Processing", ticker," : Earnings were updated on:", date_updated_earnings_dt, " more than a month ago")
       gt_1_month_old_earnings_df.loc[ticker]= [date_updated_earnings_dt]
 
   if (not pd.isnull(date_updated_financials)):
@@ -90,6 +90,7 @@ for ticker_raw in ticker_list:
   if (not pd.isnull(last_earnings_date)):
     last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
     if (today > (last_earnings_date_dt  + dt.timedelta(days=20))):
+      print("Processing", ticker," : Last Earnings Reported Date was :", last_earnings_date_dt, " Maybe the company will report soon again")
       likely_earnings_date_df.loc[ticker] = [last_earnings_date_dt]
 
 # -----------------------------------------------------------------------------
