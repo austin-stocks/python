@@ -106,6 +106,15 @@
     ]
   },
 
+  "GPN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2013", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.25"}
+    ]
+  },
+
   "GPC" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2018", "Stop_Date" :   "06/30/2019"}
