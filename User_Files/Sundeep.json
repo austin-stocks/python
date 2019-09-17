@@ -2,13 +2,19 @@
 
   "CYBR" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "08/09/2017","Buy_Price_str" :  "$22.01"}
+       {"Buy_Date" : "08/09/2019","Buy_Price_str" :  "$22.01"}
+    ]
+  },
+
+  "COHR" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "03/23/2018","Buy_Price_str" :  "$191.69"}
     ]
   },
 
   "AUDC" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "08/20/2017","Buy_Price_str" :  "$17.50"}
+       {"Buy_Date" : "08/20/2019","Buy_Price_str" :  "$17.50"}
     ]
   },
 
