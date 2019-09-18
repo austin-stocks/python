@@ -1414,9 +1414,9 @@ for ticker_raw in ticker_list:
   price_plt = main_plt.twinx()
   annual_past_eps_plt = main_plt.twinx()
   annual_projected_eps_plt = main_plt.twinx()
-  schiller_pe_times_yr_eps_plt = main_plt.twinx()
-  # schiller_pe_normalized_plt  = main_plt.twinx()
-  schiller_ann_requested_red_line_plt = main_plt.twinx()
+  # schiller_pe_times_yr_eps_plt = main_plt.twinx()
+  # # schiller_pe_normalized_plt  = main_plt.twinx()
+  # schiller_ann_requested_red_line_plt = main_plt.twinx()
   upper_channel_plt = main_plt.twinx()
   lower_channel_plt = main_plt.twinx()
   # yr_eps_02_5_plt = main_plt.twinx()
@@ -1537,10 +1537,11 @@ for ticker_raw in ticker_list:
     logging.debug("The Date is " + str(yr_eps_date_list[i]) +  " Corresponding EPS " + str(yr_eps_list[i]))
     # check if the date is in the plot range
     if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
-      x = float("{0:.2f}".format(yr_eps_list[i]))
-      main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
-                    verticalalignment='bottom')
-      # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
+      if (qtr_eps_lim_lower <= yr_eps_list[i] <= qtr_eps_lim_upper):
+        x = float("{0:.2f}".format(yr_eps_list[i]))
+        main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
+                      verticalalignment='bottom')
+        # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
   logging.info("Printed the YR EPS numbers on the chart (For Black and White Diamonds)")
   if (annual_eps_adjust_json):
     # If the annual eps was ajusted, then plot those diamonds in <the color Ann likes>
@@ -1553,51 +1554,53 @@ for ticker_raw in ticker_list:
       logging.debug("The Date is " + str(yr_eps_adj_slice_date_list[i]) +  " Corresponding EPS " + str(yr_eps_adj_slice_list[i]))
       # check if the date is in the plot range
       if (date_list[plot_period_int] <= yr_eps_adj_slice_date_list[i] <= date_list[0]):
-        x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
-        main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
-                      verticalalignment='bottom')
+        if (qtr_eps_lim_lower <= yr_eps_list[i] <= qtr_eps_lim_upper):
+          x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
+          main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
+                        verticalalignment='bottom')
     logging.info("Printed the Adjusted YR EPS numbers on the chart (For Golden Diamonds)")
   # -----------------------------------------------------------------------------
 
-  # -----------------------------------------------------------------------------
-  # Plot normalzied Schiller PE
-  # -----------------------------------------------------------------------------
-  # schiller_pe_normalized_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  # schiller_pe_normalized_plt.set_yticks([])
-  # schiller_pe_normalized_plt_inst = schiller_pe_normalized_plt.plot(date_list[0:plot_period_int],
-  #                                             schiller_pe_normalized_list_smooth[0:plot_period_int],
-  #                                             label='Normalized Schiller PE', color='green', linestyle='-')
-
-  schiller_ann_requested_red_line_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  schiller_ann_requested_red_line_plt.set_yticks([])
-  schiller_ann_requested_red_line_plt_inst = schiller_ann_requested_red_line_plt.plot(date_list[0:plot_period_int],
-                                              schiller_ann_requested_red_line_list_3[0:plot_period_int],
-                                              label='Normalized Schiller PE', color='red', linestyle='-')
-
-  # -----------------------------------------------------------------------------
-
-
-  # -----------------------------------------------------------------------------
-  # Plot normalized Schiller PE mulitpled by YR EPS
-  # -----------------------------------------------------------------------------
-  schiller_pe_times_yr_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  schiller_pe_times_yr_eps_plt.set_yticks([])
-  schiller_pe_times_yr_eps_plt_inst = schiller_pe_times_yr_eps_plt.plot(date_list[0:plot_period_int],
-                                              schiller_pe_times_yr_eps_list[0:plot_period_int],
-                                              label='Schiller PE time EPS', color='darkviolet', linestyle='-')
-  for i_date_str in fiscal_yr_dates:
-    i_date = dt.datetime.strptime(i_date_str, '%m/%d/%Y').date()
-    if (i_date < dt.datetime.now().date()):
-      match_date = min(date_list, key=lambda d: abs(d - i_date))
-      i_idx = date_list.index(match_date)
-      if (date_list[plot_period_int] <= match_date <= date_list[0]):
-        x = float("{0:.2f}".format(schiller_pe_times_yr_eps_list[i_idx]))
-        y = float("{0:.2f}".format(schiller_pe_normalized_list_smooth[i_idx]))
-        z = float("{0:.2f}".format(schiller_ann_requested_red_line_list_3[i_idx]))
-        main_plt.text(date_list[i_idx], schiller_pe_times_yr_eps_list[i_idx], x, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
-        # main_plt.text(date_list[i_idx], schiller_pe_normalized_list_smooth[i_idx], y, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
-        main_plt.text(date_list[i_idx], schiller_ann_requested_red_line_list_3[i_idx], z, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
-  # -----------------------------------------------------------------------------
+  # Comment out the plotting of Ann Schiller PE stuff temporarily
+  # # -----------------------------------------------------------------------------
+  # # Plot normalzied Schiller PE
+  # # -----------------------------------------------------------------------------
+  # # schiller_pe_normalized_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  # # schiller_pe_normalized_plt.set_yticks([])
+  # # schiller_pe_normalized_plt_inst = schiller_pe_normalized_plt.plot(date_list[0:plot_period_int],
+  # #                                             schiller_pe_normalized_list_smooth[0:plot_period_int],
+  # #                                             label='Normalized Schiller PE', color='green', linestyle='-')
+  #
+  # schiller_ann_requested_red_line_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  # schiller_ann_requested_red_line_plt.set_yticks([])
+  # schiller_ann_requested_red_line_plt_inst = schiller_ann_requested_red_line_plt.plot(date_list[0:plot_period_int],
+  #                                             schiller_ann_requested_red_line_list_3[0:plot_period_int],
+  #                                             label='Normalized Schiller PE', color='red', linestyle='-')
+  #
+  # # -----------------------------------------------------------------------------
+  #
+  #
+  # # -----------------------------------------------------------------------------
+  # # Plot normalized Schiller PE mulitpled by YR EPS
+  # # -----------------------------------------------------------------------------
+  # schiller_pe_times_yr_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  # schiller_pe_times_yr_eps_plt.set_yticks([])
+  # schiller_pe_times_yr_eps_plt_inst = schiller_pe_times_yr_eps_plt.plot(date_list[0:plot_period_int],
+  #                                             schiller_pe_times_yr_eps_list[0:plot_period_int],
+  #                                             label='Schiller PE time EPS', color='darkviolet', linestyle='-')
+  # for i_date_str in fiscal_yr_dates:
+  #   i_date = dt.datetime.strptime(i_date_str, '%m/%d/%Y').date()
+  #   if (i_date < dt.datetime.now().date()):
+  #     match_date = min(date_list, key=lambda d: abs(d - i_date))
+  #     i_idx = date_list.index(match_date)
+  #     if (date_list[plot_period_int] <= match_date <= date_list[0]):
+  #       x = float("{0:.2f}".format(schiller_pe_times_yr_eps_list[i_idx]))
+  #       y = float("{0:.2f}".format(schiller_pe_normalized_list_smooth[i_idx]))
+  #       z = float("{0:.2f}".format(schiller_ann_requested_red_line_list_3[i_idx]))
+  #       main_plt.text(date_list[i_idx], schiller_pe_times_yr_eps_list[i_idx], x, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+  #       # main_plt.text(date_list[i_idx], schiller_pe_normalized_list_smooth[i_idx], y, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+  #       main_plt.text(date_list[i_idx], schiller_ann_requested_red_line_list_3[i_idx], z, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+  # # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
   # Dividend plot
