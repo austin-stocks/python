@@ -89,7 +89,7 @@ for ticker_raw in ticker_list:
 
   if (not pd.isnull(last_earnings_date)):
     last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
-    if (today > (last_earnings_date_dt  + dt.timedelta(days=20))):
+    if (today > (last_earnings_date_dt  + dt.timedelta(days=60))):
       print("Processing", ticker," : Last Earnings Reported Date was :", last_earnings_date_dt, " Maybe the company will report soon again")
       likely_earnings_date_df.loc[ticker] = [last_earnings_date_dt]
 
