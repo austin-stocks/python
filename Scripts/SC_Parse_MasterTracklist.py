@@ -31,11 +31,14 @@ gt_1_qtr_old_financials_df = pd.DataFrame(columns=['Ticker','Date'])
 gt_1_qtr_old_earnings_df = pd.DataFrame(columns=['Ticker','Date'])
 gt_1_month_old_earnings_df = pd.DataFrame(columns=['Ticker','Date'])
 likely_earnings_date_df = pd.DataFrame(columns=['Ticker','Date'])
+report_newer_than_earnings_df = pd.DataFrame(columns=['Ticker','Date_Report', 'Date_Earnings'])
+
 
 gt_1_qtr_old_financials_df.set_index('Ticker', inplace=True)
 gt_1_qtr_old_earnings_df.set_index('Ticker', inplace=True)
 gt_1_month_old_earnings_df.set_index('Ticker', inplace=True)
 likely_earnings_date_df.set_index('Ticker', inplace=True)
+report_newer_than_earnings_df.set_index('Ticker', inplace=True)
 
 today = dt.date.today()
 one_qtr_ago_date = today - dt.timedelta(days=80)
@@ -93,6 +96,12 @@ for ticker_raw in ticker_list:
       print("Processing", ticker," : Last Earnings Reported Date was :", last_earnings_date_dt, " Maybe the company will report soon again")
       likely_earnings_date_df.loc[ticker] = [last_earnings_date_dt]
 
+  if (not pd.isnull(date_updated_earnings)) and (not pd.isnull(last_earnings_date)):
+    # Compare with the dates
+    last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
+    date_updated_earnings_dt = dt.datetime.strptime(str(date_updated_earnings), '%Y-%m-%d %H:%M:%S').date()
+    if (last_earnings_date_dt >= date_updated_earnings_dt):
+      report_newer_than_earnings_df.loc[ticker] = [last_earnings_date_dt,date_updated_earnings_dt]
 # -----------------------------------------------------------------------------
 # Print all the df to their respective files
 # -----------------------------------------------------------------------------
@@ -100,5 +109,6 @@ gt_1_qtr_old_earnings_df.sort_values(by='Date').to_csv('gt_1_qtr_old_earnings_df
 gt_1_month_old_earnings_df.sort_values(by='Date').to_csv('gt_1_month_old_earnings.txt',sep=' ', index=True, header=False)
 gt_1_qtr_old_financials_df.sort_values(by='Date').to_csv('gt_1_qtr_old_financials.txt',sep=' ', index=True, header=False)
 likely_earnings_date_df.sort_values(by='Date').to_csv('likely_earnings_date.txt',sep=' ', index=True, header=False)
+report_newer_than_earnings_df.sort_values(by='Date_Report').to_csv('report_newer_than_earnings.txt',sep=' ', index=True, header=False)
 # -----------------------------------------------------------------------------
 
