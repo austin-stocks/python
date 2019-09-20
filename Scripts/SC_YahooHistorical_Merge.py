@@ -75,7 +75,7 @@ else:
 # main Loop for Tickers
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
-  print("Merging Historical Data with Calendar for ", ticker)
+  # print("Merging Historical Data with Calendar for ", ticker)
 
   if (ticker == "BRK.B"):
     ticker = "BRK-B"
@@ -165,6 +165,7 @@ for ticker_raw in ticker_list:
 
   # print ("Will use the Calendar date list from index : ", calendar_future_date_index, " to index : ",cal_match_date_with_historical_index)
   calendar_date_list_mod = calendar_date_list[calendar_future_date_index:cal_match_date_with_historical_index]
+  print("Merging Historical Data with Calendar for ", ticker, "until the future date",calendar_date_list[calendar_future_date_index])
   # print("The modified Calendar list is ", calendar_date_list_mod, "and it has \n", len(calendar_date_list_mod), "elements")
 
   # ===========================================================================
