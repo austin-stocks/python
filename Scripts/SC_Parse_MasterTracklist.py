@@ -68,40 +68,59 @@ print ("Today is", today, "one month ago", one_month_ago_date, "one qtr ago", on
 # -----------------------------------------------------------------------------
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
-  date_updated_earnings = master_tracklist_df.loc[ticker, 'Last_Updated_EPS_Projections']
+  date_updated_eps_projections = master_tracklist_df.loc[ticker, 'Last_Updated_EPS_Projections']
   date_updated_financials = master_tracklist_df.loc[ticker, 'Last_Updated_Financials']
   last_earnings_date = master_tracklist_df.loc[ticker, 'Last_Earnings_Date']
 
-  # print ("Processing", ticker, "Last date for updated Earnings", date_updated_earnings, "Last Date for updated Fiancials", date_updated_financials)
+  # date_updated_eps_projections_null = pd.isnull(date_updated_eps_projections)
+  # print (date_updated_eps_projections_null)
+  # print ("Processing", ticker, "Last date for updated Earnings", date_updated_eps_projections, "Last Date for updated Fiancials", date_updated_financials)
 
   # Check if the last_updated_earnings date is NOT NaT then compare it against todays date
-  if (not pd.isnull(date_updated_earnings)):
+  if (not pd.isnull(date_updated_eps_projections)):
     # Compare with the dates
-    date_updated_earnings_dt = dt.datetime.strptime(str(date_updated_earnings), '%Y-%m-%d %H:%M:%S').date()
-    if (date_updated_earnings_dt < one_qtr_ago_date):
-      print("Processing", ticker," : Earnings were updated on:", date_updated_earnings_dt, "more than a quarter ago")
-      gt_1_qtr_old_earnings_df.loc[ticker]= [date_updated_earnings_dt]
-    if (date_updated_earnings_dt < one_month_ago_date):
-      print("Processing", ticker," : Earnings were updated on:", date_updated_earnings_dt, " more than a month ago")
-      gt_1_month_old_earnings_df.loc[ticker]= [date_updated_earnings_dt]
+    date_updated_eps_projections_dt = dt.datetime.strptime(str(date_updated_eps_projections), '%Y-%m-%d %H:%M:%S').date()
+    date_year = date_updated_eps_projections_dt.year
+    print ("The Year in the date is", date_year)
+    if (date_year < 2019):
+      print ("\n\n==========     Error : The date for ", ticker, " EPS Projections is older than 2019     ==========")
+      sys.exit()
+    if (date_updated_eps_projections_dt < one_qtr_ago_date):
+      print("Processing", ticker," : Earnings were updated on:", date_updated_eps_projections_dt, "more than a quarter ago")
+      gt_1_qtr_old_earnings_df.loc[ticker]= [date_updated_eps_projections_dt]
+    if (date_updated_eps_projections_dt < one_month_ago_date):
+      print("Processing", ticker," : Earnings were updated on:", date_updated_eps_projections_dt, " more than a month ago")
+      gt_1_month_old_earnings_df.loc[ticker]= [date_updated_eps_projections_dt]
 
   if (not pd.isnull(date_updated_financials)):
     date_updated_financials_dt = dt.datetime.strptime(str(date_updated_financials), '%Y-%m-%d %H:%M:%S').date()
+    date_year = date_updated_financials_dt.year
+    print ("The Year in the date is", date_year)
+    if (date_year < 2019):
+      print ("Error : The date for Financial Update is older than 2019")
+      sys.exit()
     if (date_updated_financials_dt < one_month_ago_date):
       gt_1_qtr_old_financials_df.loc[ticker] = [date_updated_financials_dt]
 
   if (not pd.isnull(last_earnings_date)):
     last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
+
+    date_year = last_earnings_date_dt.year
+    print ("The Year in the date is", date_year)
+    if (date_year < 2019):
+      print ("Error : The date for Last Earnings is older than 2019")
+      sys.exit()
+
     if (today > (last_earnings_date_dt  + dt.timedelta(days=60))):
       print("Processing", ticker," : Last Earnings Reported Date was :", last_earnings_date_dt, " Maybe the company will report soon again")
       likely_earnings_date_df.loc[ticker] = [last_earnings_date_dt]
 
-  if (not pd.isnull(date_updated_earnings)) and (not pd.isnull(last_earnings_date)):
+  if (not pd.isnull(date_updated_eps_projections)) and (not pd.isnull(last_earnings_date)):
     # Compare with the dates
     last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
-    date_updated_earnings_dt = dt.datetime.strptime(str(date_updated_earnings), '%Y-%m-%d %H:%M:%S').date()
-    if (last_earnings_date_dt >= date_updated_earnings_dt):
-      report_newer_than_earnings_df.loc[ticker] = [last_earnings_date_dt,date_updated_earnings_dt]
+    date_updated_eps_projections_dt = dt.datetime.strptime(str(date_updated_eps_projections), '%Y-%m-%d %H:%M:%S').date()
+    if (last_earnings_date_dt >= date_updated_eps_projections_dt):
+      report_newer_than_earnings_df.loc[ticker] = [last_earnings_date_dt,date_updated_eps_projections_dt]
 # -----------------------------------------------------------------------------
 # Print all the df to their respective files
 # -----------------------------------------------------------------------------

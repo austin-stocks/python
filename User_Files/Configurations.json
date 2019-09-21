@@ -569,6 +569,24 @@
     ]
   },
 
+  "ANF" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "04/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "AMAT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "04/30/2014", "Stop_Date" :   "07/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "01/25/2018", "Stop_Date" :   "11/05/2018", "Adj_Amount" : ".2"},
+      {"Start_Date" : "10/25/2013", "Stop_Date" :   "02/05/2014", "Adj_Amount" : ".07"},
+      {"Start_Date" : "04/25/2013", "Stop_Date" :   "08/05/2013", "Adj_Amount" : ".17"},
+      {"Start_Date" : "10/25/2012", "Stop_Date" :   "02/05/2013", "Adj_Amount" : ".1"}
+    ]
+  },
+
   "NTAP" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "04/30/2017", "Stop_Date" :   "End"}
