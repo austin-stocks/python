@@ -575,6 +575,38 @@
     ]
   },
 
+  "OKE" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "ORLY" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2016", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "OLLI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "07/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "01/25/2018", "Stop_Date" :   "11/05/2018", "Adj_Amount" : "-.15"}
+    ]
+  },
+
+  "OLED" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "06/25/2017", "Stop_Date" :   "04/05/2018", "Adj_Amount" : "-.08"},
+      {"Start_Date" : "06/25/2015", "Stop_Date" :   "04/05/2016", "Adj_Amount" : ".16"},
+      {"Start_Date" : "12/25/2013", "Stop_Date" :   "10/05/2014", "Adj_Amount" : "-.23"}
+    ]
+  },
+
   "AMAT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "04/30/2014", "Stop_Date" :   "07/30/2019"}
