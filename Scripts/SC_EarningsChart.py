@@ -1554,7 +1554,7 @@ for ticker_raw in ticker_list:
       logging.debug("The Date is " + str(yr_eps_adj_slice_date_list[i]) +  " Corresponding EPS " + str(yr_eps_adj_slice_list[i]))
       # check if the date is in the plot range
       if (date_list[plot_period_int] <= yr_eps_adj_slice_date_list[i] <= date_list[0]):
-        if (qtr_eps_lim_lower <= yr_eps_list[i] <= qtr_eps_lim_upper):
+        if (qtr_eps_lim_lower <= yr_eps_adj_slice_list[i] <= qtr_eps_lim_upper):
           x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
           main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
                         verticalalignment='bottom')
