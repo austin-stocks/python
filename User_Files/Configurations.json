@@ -1164,6 +1164,13 @@
     ]
   },
 
+  "SCHW" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2013", "Stop_Date" :   "Next"},
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
   "RUSHA" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
@@ -1173,9 +1180,41 @@
     ]
   },
 
+  "SBUX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2011", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.25"},
+      {"Start_Date" : "12/25/2014", "Stop_Date" :   "10/05/2015", "Adj_Amount" : "-.06"},
+      {"Start_Date" : "09/25/2013", "Stop_Date" :   "07/05/2014", "Adj_Amount" : ".28"}
+    ]
+  },
+
+  "SCCO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2015", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".18"}
+    ]
+  },
+
+  "SCVL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "01/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
   "RF" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "SBNY" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2011", "Stop_Date" :   "End"}
     ]
   },
 
