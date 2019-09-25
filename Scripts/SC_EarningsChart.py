@@ -685,7 +685,7 @@ for ticker_raw in ticker_list:
   if (str(ticker_config_series['Chart_Type']) != 'nan'):
     chart_type = str(ticker_config_series['Chart_Type'])
     if not (all(x.isalpha() for x in chart_type)):
-      logger.debug("Error - The chart type has non-alphabet characters in the Configuration File")
+      logging.error("Error - The chart type has non-alphabet characters in the Configuration File")
       sys.exit()
 
   # This variable is added to the adjustments that are done to the channels because
