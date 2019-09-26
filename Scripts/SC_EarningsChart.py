@@ -1613,9 +1613,10 @@ for ticker_raw in ticker_list:
                                           label='Dividend', color="Orange", marker='x', markersize='6')
     for i in range(len(dividend_date_list)):
       if (date_list[plot_period_int] <= dividend_date_list[i] <= date_list[0]):
-        x = float("{0:.2f}".format(dividend_list[i]))
-        main_plt.text(dividend_date_list[i], dividend_list_multiplied[i], x, fontsize=6, horizontalalignment='center',
-                      verticalalignment='bottom')
+        if (qtr_eps_lim_lower <= dividend_list[i] <= qtr_eps_lim_upper):
+          x = float("{0:.2f}".format(dividend_list[i]))
+          main_plt.text(dividend_date_list[i], dividend_list_multiplied[i], x, fontsize=6, horizontalalignment='center',
+                        verticalalignment='bottom')
     logging.info("Printed the Dividend numbers on the chart")
   # -----------------------------------------------------------------------------
 
