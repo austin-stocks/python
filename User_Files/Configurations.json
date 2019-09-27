@@ -1220,9 +1220,54 @@
     ]
   },
 
+  "TDG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2015", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "09/25/2018", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.5"},
+      {"Start_Date" : "09/25/2017", "Stop_Date" :   "10/05/2017", "Adj_Amount" : ".5"},
+      {"Start_Date" : "09/25/2014", "Stop_Date" :   "04/05/2015", "Adj_Amount" : ".75"},
+      {"Start_Date" : "06/25/2014", "Stop_Date" :   "07/05/2014", "Adj_Amount" : "1.25"},
+      {"Start_Date" : "09/25/2013", "Stop_Date" :   "04/05/2014", "Adj_Amount" : ".5"}
+    ]
+  },
+
+  "TCBI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "TER" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2015", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2018", "Stop_Date" :   "10/05/2019", "Adj_Amount" : "-.1"},
+      {"Start_Date" : "06/25/2018", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".2"},
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "04/05/2018", "Adj_Amount" : ".1"},
+      {"Start_Date" : "06/25/2017", "Stop_Date" :   "10/05/2017", "Adj_Amount" : "-.1"},
+      {"Start_Date" : "06/25/2016", "Stop_Date" :   "04/05/2017", "Adj_Amount" : ".3"},
+      {"Start_Date" : "12/25/2014", "Stop_Date" :   "10/05/2015", "Adj_Amount" : ".15"}
+    ]
+  },
+
   "SYY" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2015", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "TJX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "10/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "TESS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2017", "Stop_Date" :   "End"}
     ]
   },
 
