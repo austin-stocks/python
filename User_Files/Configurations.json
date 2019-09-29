@@ -1520,15 +1520,59 @@
     ]
   },
 
+  "URI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-2"}
+    ]
+  },
+
+  "USNA" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".3"}
+    ]
+  },
+
   "UFPT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"}
     ]
   },
 
+  "V" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "06/25/2012", "Stop_Date" :   "07/05/2012", "Adj_Amount" : ".29"},
+      {"Start_Date" : "09/25/2012", "Stop_Date" :   "04/05/2013", "Adj_Amount" : ".24"},
+      {"Start_Date" : "06/25/2013", "Stop_Date" :   "07/05/2013", "Adj_Amount" : "-.05"},
+      {"Start_Date" : "06/25/2016", "Stop_Date" :   "01/05/2017", "Adj_Amount" : ".15"},
+      {"Start_Date" : "03/25/2017", "Stop_Date" :   "04/05/2017", "Adj_Amount" : ".30"},
+      {"Start_Date" : "06/25/2017", "Stop_Date" :   "01/05/2018", "Adj_Amount" : ".15"}
+    ]
+  },
+
+  "UVE" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2012", "Stop_Date" :   "End"}
+    ]
+  },
+
   "ULTA" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "04/30/2014", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "VEEV" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "01/30/2015", "Stop_Date" :   "End"}
     ]
   },
 
