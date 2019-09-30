@@ -499,11 +499,11 @@ for ticker_raw in ticker_list:
                           qtr_eps_list[i_int + 2] + \
                           qtr_eps_list[i_int + 3]) / 4
 
-    logging.debug("Iteration #, " + str(i_int) + " Quartely EPS, Annual EPS " + \
+    logging.debug("Iteration # " + str(i_int).ljust(2) + ", Date : " + str(yr_eps_date_list[i_int]) + " : Quartely EPS(es) : Annual EPS " + \
           str(qtr_eps_list[i_int]) + " " + \
           str(qtr_eps_list[i_int + 1]) + " " + \
           str(qtr_eps_list[i_int + 2]) + " " + \
-          str(qtr_eps_list[i_int + 3]) +  " " +\
+          str(qtr_eps_list[i_int + 3]) +  " : " +\
           str(yr_average_eps))
     yr_eps_list.append(yr_average_eps)
     i_int += 1
