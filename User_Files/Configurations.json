@@ -1679,6 +1679,16 @@
     ]
   },
 
+  "YNDX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "06/25/2018", "Stop_Date" :   "04/05/2019", "Adj_Amount" : "-22"},
+      {"Start_Date" : "12/25/2014", "Stop_Date" :   "10/05/2015", "Adj_Amount" : "-4"}
+    ]
+  },
+
   "WYNN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2015", "Stop_Date" :   "End"}
