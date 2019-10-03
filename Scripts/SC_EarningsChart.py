@@ -1263,6 +1263,7 @@ for ticker_raw in ticker_list:
   ticker_company_name = "#NA#"
   ticker_sector = "#NA#"
   ticker_industry = "#NA#"
+  chart_update_date_str = "#NA#"
   if (yahoo_comany_info_df.index.isin([(ticker)]).any()):
     # This works - get the value in the column corresponding to the index
     ticker_company_name = yahoo_comany_info_df.loc[ticker, 'Company_Name']
@@ -1279,8 +1280,9 @@ for ticker_raw in ticker_list:
     print("**********     Please create one and then run the script again                 **********")
     sys.exit()
   last_projected_eps_update_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
-  ticker_industry = ticker_industry + " - Earnings Projections Last Update - " + str(last_projected_eps_update_date)
-  logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry))
+  eps_report_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+  chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(last_projected_eps_update_date)
+  logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry) + str(chart_update_date_str))
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -1400,10 +1402,10 @@ for ticker_raw in ticker_list:
   candle_plt.set_facecolor("aliceblue")
   volume_plt.set_facecolor("honeydew")
 
-  plt.text(x=0.11, y=0.91, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
-  plt.text(x=0.11, y=0.89, s=ticker_sector + " - " + ticker_industry , fontsize=10, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+  plt.text(x=0.11, y=0.915, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
+  plt.text(x=0.11, y=0.90, s=ticker_sector + " - " + ticker_industry , fontsize=11, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+  plt.text(x=0.11, y=0.885, s=chart_update_date_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
   main_plt.text(x=.6,y=.89,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
-
 
   # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
   # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
