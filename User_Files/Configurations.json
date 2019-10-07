@@ -1668,6 +1668,17 @@
     ]
   },
 
+  "RECN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "11/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "05/25/2019", "Stop_Date" :   "06/05/2019", "Adj_Amount" : "-.015"},
+      {"Start_Date" : "05/25/2018", "Stop_Date" :   "06/05/2018", "Adj_Amount" : ".015"},
+      {"Start_Date" : "11/25/2011", "Stop_Date" :   "09/05/2012", "Adj_Amount" : "-.05"}
+    ]
+  },
+
   "ZTS" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"}
