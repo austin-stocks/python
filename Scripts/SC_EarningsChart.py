@@ -599,6 +599,26 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
+  # Get the last earning report date from Master Tracklist and the last date
+  # when EPS Projections were updated.
+  # The last earnings report date is to make white diamonds
+  # and both of them are dispalyed in the chart
+  # ---------------------------------------------------------------------------
+  try:
+    ticker_master_tracklist_series = master_tracklist_df.loc[ticker]
+    logging.debug("The Master Tracklist configurations for " + ticker + " is\n" + str(ticker_master_tracklist_series))
+  except KeyError:
+    # Todo : Create a default series with all nan so that it can be cleaned up in the next step
+    print("**********                                  ERROR                              **********")
+    print("**********     Entry for ", str(ticker).center(10), " not found in the Master Tracklist file     **********")
+    print("**********     Please create one and then run the script again                 **********")
+    sys.exit()
+  last_projected_eps_update_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
+  eps_report_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+  # ---------------------------------------------------------------------------
+
+
+  # ---------------------------------------------------------------------------
   # So - in the section above, we have created three yr_eps
   #   (and their corresponding date) lists - 
   # 1. The normal yr_eps list that contains all the yr_eps directly calculated from 
@@ -635,13 +655,14 @@ for ticker_raw in ticker_list:
                   " in historical datalist at index " + str(date_list.index(match_date)) + " and the YR EPS is " + str(yr_eps_list[curr_index]))
     yr_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
     yr_eps_adj_expanded_list[date_list.index(match_date)] = yr_eps_adj_list[curr_index]
-    # Check if the matching data is in the past or in the future
-    if (match_date < dt.date.today()):
-      logging.debug("The matching date is in the past...so adding to the past eps expanded list - Black diamond")
-      yr_past_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
-    else:
+    # Check if the matching data is in the future or if the match date is greater than
+    # when the company last reported earnings - Then it is white diamond
+    if ((match_date >= dt.date.today()) or (match_date >= eps_report_date)):
       logging.debug("The matching date is in the future...so adding to the projected eps expanded list - White diamond")
       yr_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
+    else:
+      logging.debug("The matching date is in the past...so adding to the past eps expanded list - Black diamond")
+      yr_past_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
   logging.debug("The Normal Expanded Annual EPS List is: " + str(yr_eps_expanded_list))
   logging.info("Prepared the YR EPS Expanded List, YR Past EPS Expanded List (black Diamonds) and YR Projected EPS List (white Diamonds)")
 
@@ -1270,17 +1291,6 @@ for ticker_raw in ticker_list:
     ticker_sector = yahoo_comany_info_df.loc[ticker, 'Sector']
     ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
 
-  try:
-    ticker_master_tracklist_series = master_tracklist_df.loc[ticker]
-    logging.debug("The Master Tracklist configurations for " + ticker + " is\n" + str(ticker_master_tracklist_series))
-  except KeyError:
-    # Todo : Create a default series with all nan so that it can be cleaned up in the next step
-    print("**********                                  ERROR                              **********")
-    print("**********     Entry for ", str(ticker).center(10), " not found in the Master Tracklist file     **********")
-    print("**********     Please create one and then run the script again                 **********")
-    sys.exit()
-  last_projected_eps_update_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
-  eps_report_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
   chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(last_projected_eps_update_date)
   logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry) + str(chart_update_date_str))
   # ---------------------------------------------------------------------------
