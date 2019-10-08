@@ -1975,6 +1975,10 @@
   "BABA" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "06/25/2015", "Stop_Date" :   "04/05/2016", "Adj_Amount" : "-2"},
+      {"Start_Date" : "09/25/2015", "Stop_Date" :   "07/05/2016", "Adj_Amount" : "-1.5"}
     ]
   },
 
@@ -2000,6 +2004,10 @@
   "BBT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2017", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2013", "Stop_Date" :   "01/05/2014", "Adj_Amount" : ".12"},
+      {"Start_Date" : "09/25/2013", "Stop_Date" :   "07/05/2014", "Adj_Amount" : ".1"}
     ]
   },
 

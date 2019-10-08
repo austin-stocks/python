@@ -24,6 +24,12 @@
     ]
   },
 
+  "BABA" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "12/07/2017","Buy_Price_str" :  "$174.81"}
+    ]
+  },
+
 
   "XOYO" : {
     "Buy_Sell" : [
