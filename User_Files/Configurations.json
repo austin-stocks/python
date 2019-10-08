@@ -1033,21 +1033,30 @@
        {"Start_Date" : "03/31/2014", "Stop_Date" :   "03/31/2017"},
        {"Start_Date" : "06/30/2017", "Stop_Date" :   "06/30/2019"}
     ],
-    "Plot_Annotate" : [
-      {"Date" :  "09/16/2018", "Text" : "This plot somehow does not plot correctly with ticklables\nTo see it properly, plot it without", "Line_Length" : "0:0"}
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "01/25/2015", "Stop_Date" :   "11/05/2015", "Adj_Amount" : ".03"},
+      {"Start_Date" : "01/25/2013", "Stop_Date" :   "11/05/2013", "Adj_Amount" : "-.18"},
+      {"Start_Date" : "01/25/2013", "Stop_Date" :   "02/05/2013", "Adj_Amount" : "-.04"},
+      {"Start_Date" : "01/25/2014", "Stop_Date" :   "02/05/2014", "Adj_Amount" : ".04"}
     ]
-
   },
 
   "AMOT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2012", "Stop_Date" :   "09/30/2017"},
        {"Start_Date" : "12/30/2017", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2015", "Stop_Date" :   "10/05/2016", "Adj_Amount" : ".1"}
     ]
   },
   "ALSN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.2"},
+      {"Start_Date" : "06/25/2012", "Stop_Date" :   "04/05/2013", "Adj_Amount" : "-.47"}
     ]
   },
 
@@ -1060,6 +1069,9 @@
   "ANSS" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2017", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".08"}
     ]
   },
 
@@ -1091,6 +1103,14 @@
   "ALB" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2017", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".8"},
+      {"Start_Date" : "06/25/2017", "Stop_Date" :   "10/05/2017", "Adj_Amount" : "-.95"},
+      {"Start_Date" : "06/25/2016", "Stop_Date" :   "10/05/2016", "Adj_Amount" : ".95"},
+      {"Start_Date" : "12/25/2014", "Stop_Date" :   "10/05/2015", "Adj_Amount" : ".4"},
+      {"Start_Date" : "12/25/2014", "Stop_Date" :   "01/05/2015", "Adj_Amount" : ".1"},
+      {"Start_Date" : "12/25/2013", "Stop_Date" :   "04/05/2014", "Adj_Amount" : "-.1"}
     ]
   },
 
@@ -1098,11 +1118,17 @@
   "AL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2012", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.78"}
     ]
   },
   "AGCO" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2011", "Stop_Date" :   "10/05/2012", "Adj_Amount" : "-.5"}
     ]
   },
   "ADI" : {
