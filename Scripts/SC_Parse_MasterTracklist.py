@@ -42,7 +42,7 @@ report_newer_than_earnings_df.set_index('Ticker', inplace=True)
 
 today = dt.date.today()
 one_qtr_ago_date = today - dt.timedelta(days=80)
-one_month_ago_date = today - dt.timedelta(days=25)
+one_month_ago_date = today - dt.timedelta(days=30)
 print ("Today is", today, "one month ago", one_month_ago_date, "one qtr ago", one_qtr_ago_date)
 # -----------------------------------------------------------------------------
 
@@ -138,7 +138,7 @@ for ticker_raw in ticker_list:
 # Print all the df to their respective files
 # -----------------------------------------------------------------------------
 gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_qtr_old_eps_projections_df.txt',sep=' ', index=True, header=False)
-gt_1_month_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_month_old_earnings.txt',sep=' ', index=True, header=False)
+gt_1_month_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_month_old_eps_projections.txt',sep=' ', index=True, header=False)
 gt_1_qtr_old_financials_df.sort_values(by='Date').to_csv('gt_1_qtr_old_financials.txt',sep=' ', index=True, header=False)
 likely_earnings_date_df.sort_values(by='Date').to_csv('likely_earnings_date.txt',sep=' ', index=True, header=False)
 report_newer_than_earnings_df.sort_values(by='Date_Report').to_csv('report_newer_than_earnings.txt',sep=' ', index=True, header=False)
