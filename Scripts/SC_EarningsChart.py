@@ -314,8 +314,11 @@ for ticker_raw in ticker_list:
     sys.exit(1)
 
   qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
+  print ("The name of the colums is", list(qtr_eps_df.columns.values))
+  qtr_eps_projections_list = qtr_eps_df['Unnamed: 2'].tolist()
   logging.debug("The date list for qtr_eps is\n" + str(qtr_eps_date_list) + "\nand the number of elements are " + str(len(qtr_eps_date_list)))
   logging.debug("The Earnings list for qtr_eps is\n" + str(qtr_eps_list) + "\nand the number of elements are " + str(len(qtr_eps_list)))
+  logging.debug("The Earnings Projections list for qtr_eps is\n" + str(qtr_eps_projections_list) + "\nand the number of elements are " + str(len(qtr_eps_projections_list)))
 
   # Set the length of qtr_eps_list same as qtr_eps_date_list.
   # This gets rid of any earnings that are beyond the last date.
