@@ -262,9 +262,28 @@ for ticker_raw in ticker_list:
   logging.info("========================================================")
   # ticker = "NMIH"
 
-  # Open the Log file in write mode
-  # logfile = dir_path + log_dir + "\\" + ticker + "_log.txt"
-  # debug_fh = open(logfile, "w+")
+  # ---------------------------------------------------------------------------
+  # From the Master Tracklist :
+  # Get the last earning report date
+  # and the last datewhen EPS Projections were updated.
+  # The last earnings report date is used to :
+  # Decide while vs black diamonds and Calculate the Analysts Adjustment factor
+  # Both of them are dispalyed in the chart
+  # ---------------------------------------------------------------------------
+  try:
+    ticker_master_tracklist_series = master_tracklist_df.loc[ticker]
+    logging.debug("The Master Tracklist configurations for " + ticker + " is\n" + str(ticker_master_tracklist_series))
+  except KeyError:
+    # Todo : Create a default series with all nan so that it can be cleaned up in the next step
+    print("**********                                  ERROR                              **********")
+    print("**********     Entry for ", str(ticker).center(10), " not found in the Master Tracklist file     **********")
+    print("**********     Please create one and then run the script again                 **********")
+    sys.exit()
+  last_projected_eps_update_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
+  eps_report_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+  logging.debug("The EPS Projections were last updated on : " + str(last_projected_eps_update_date))
+  logging.debug("The Last Earnings were reported on  : " + str(eps_report_date))
+  # ---------------------------------------------------------------------------
 
   # =============================================================================
   # Read the Historical file for the ticker
@@ -327,7 +346,8 @@ for ticker_raw in ticker_list:
   # This also makes sure that the eps date list and eps value list have the same
   # number of entries.
   if (len(qtr_eps_date_list) < len(qtr_eps_list)):
-    del qtr_eps_list[len_qtr_eps_date_list:]
+    del qtr_eps_list[len(qtr_eps_date_list):]
+    del qtr_eps_projections_list[len(qtr_eps_date_list):]
   logging.debug("The Earnings list for qtr_eps is\n" + str(qtr_eps_list) + "\nand the number of elements are " + str(len(qtr_eps_list)))
 
   # Check if now the qtr_eps_list still has any undefined elements...flag an error and exit
@@ -338,6 +358,56 @@ for ticker_raw in ticker_list:
     print ("**********  There seems to be either blank cells for Earnings or their        **********")
     print ("**********  format is undefined. Please correct the rerun the script          **********")
     sys.exit()
+
+
+  # Check if the eps projections list has atleat "x" years of data
+  match_date = min(qtr_eps_date_list, key=lambda d: abs(d - eps_report_date))
+  match_date_index = qtr_eps_date_list.index(match_date)
+  logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Earnings df is : " + str(match_date) + " at index " + str(match_date_index))
+  if ((match_date >= dt.date.today()) or (match_date >= eps_report_date)):
+    match_date_index += 1
+    match_date = qtr_eps_date_list[match_date_index]
+    logging.debug("Adjusting the match date to " + str(match_date) + " at index " + str(match_date_index))
+
+  years_of_analyst_eps_to_analyze = 4
+  del qtr_eps_projections_list[match_date_index+years_of_analyst_eps_to_analyze*4:]
+  logging.debug("Will keep (" + str(years_of_analyst_eps_to_analyze) + ") years of Analysts Projections to Analyze")
+  logging.debug("The Shortened Earnings Projections list for qtr_eps is\n" + str(qtr_eps_projections_list) + "\nand the number of elements are " + str(len(qtr_eps_projections_list)))
+  if (sum(math.isnan(x) for x in qtr_eps_projections_list) > 0):
+    print ("**********                                ERROR                                         **********")
+    print ("**********  There seems to be either blank cells for Projected Earnings or their        **********")
+    print ("**********  format is undefined. Please correct the rerun the script                    **********")
+    sys.exit()
+
+  # Now we have analysts data available...Do the math to calculate the adjustment factor
+  logging.debug("Now calculating EPS variation b/w actual and Analysts projections")
+  eps_projections_variation_list = [0 for i in range(match_date_index+years_of_analyst_eps_to_analyze*4)]
+  for i_int in range(match_date_index,match_date_index+years_of_analyst_eps_to_analyze*4):
+    variation = (qtr_eps_list[i_int] - qtr_eps_projections_list[i_int])/qtr_eps_list[i_int]*100
+    logging.debug("Report Date : " + str(qtr_eps_date_list[i_int]) + " Actual QTR EPS : " + str(qtr_eps_list[i_int]) + " Projected QTR EPS : " + str(qtr_eps_projections_list[i_int]) + " Variation : " + str(variation) + " percent")
+    eps_projections_variation_list[i_int] = variation
+
+  logging.debug("The EPS Varations list raw is : " + str(eps_projections_variation_list))
+  # Now smooth out the list
+  analyst_eps_projections_accuracy_list = [1 for i in range(len(qtr_eps_date_list))]
+  for i_int in range (years_of_analyst_eps_to_analyze):
+    smoothed_variation = (eps_projections_variation_list[match_date_index + i_int*4 + 0] + \
+                          eps_projections_variation_list[match_date_index + i_int*4 + 1] + \
+                          eps_projections_variation_list[match_date_index + i_int*4 + 2] + \
+                          eps_projections_variation_list[match_date_index + i_int*4 + 3])/4
+    smoothed_analyst_accuracy = 1 + smoothed_variation/100
+    logging.debug("For year " + str(i_int+1) + " smoothed variation is : " + str(smoothed_variation) + " Smoothed analyst accuracy is : " + str(smoothed_analyst_accuracy))
+    if (i_int == 0):
+      for j_int in range (match_date_index):
+        analyst_eps_projections_accuracy_list[j_int] = smoothed_analyst_accuracy
+    for j_int in range(4):
+      analyst_eps_projections_accuracy_list[match_date_index + i_int*4 + j_int] = smoothed_analyst_accuracy
+
+  logging.debug("The Analyst EPS Projections accuracy List is " + str(analyst_eps_projections_accuracy_list))
+
+  # Sundeep is here - Now this list needs to be mulitiplied with the qtr eps numbers to crate an adjusted list
+  # and then create the yr_eps_analyst_normalized_list and then create the channels or the yr eps normalized.
+
 
   # So - if we are successful till this point - we have made sure that
   # 1. There are no nan in the date list
@@ -600,26 +670,6 @@ for ticker_raw in ticker_list:
       logging.info("Prepared the Adjusted Slice YR EPS List")
 
   # ---------------------------------------------------------------------------
-
-  # ---------------------------------------------------------------------------
-  # Get the last earning report date from Master Tracklist and the last date
-  # when EPS Projections were updated.
-  # The last earnings report date is to make white diamonds
-  # and both of them are dispalyed in the chart
-  # ---------------------------------------------------------------------------
-  try:
-    ticker_master_tracklist_series = master_tracklist_df.loc[ticker]
-    logging.debug("The Master Tracklist configurations for " + ticker + " is\n" + str(ticker_master_tracklist_series))
-  except KeyError:
-    # Todo : Create a default series with all nan so that it can be cleaned up in the next step
-    print("**********                                  ERROR                              **********")
-    print("**********     Entry for ", str(ticker).center(10), " not found in the Master Tracklist file     **********")
-    print("**********     Please create one and then run the script again                 **********")
-    sys.exit()
-  last_projected_eps_update_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
-  eps_report_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
-  # ---------------------------------------------------------------------------
-
 
   # ---------------------------------------------------------------------------
   # So - in the section above, we have created three yr_eps
@@ -1301,7 +1351,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # Calculated the Analysts accuracy
   # ---------------------------------------------------------------------------
-  adjusted_eps_str = "Analysts Accuracy : "
+  adjusted_eps_str = "Analysts Accuracy : " + str(format(analyst_eps_projections_accuracy_list[0]*100,'^8.3f')) + "%"
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
