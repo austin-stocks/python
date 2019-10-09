@@ -1296,6 +1296,12 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
+  # Calculated the Analysts accuracy
+  # ---------------------------------------------------------------------------
+  adjusted_eps_str = "Analysts Accuracy : "
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
   # Extract and generate information needed for candlesticks and volume chart
   # ---------------------------------------------------------------------------
   if (math.isnan(ticker_config_series['Candle_Chart_Duration_Days'])):
@@ -1415,7 +1421,9 @@ for ticker_raw in ticker_list:
   plt.text(x=0.11, y=0.915, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
   plt.text(x=0.11, y=0.90, s=ticker_sector + " - " + ticker_industry , fontsize=11, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
   plt.text(x=0.11, y=0.885, s=chart_update_date_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-  main_plt.text(x=.6,y=.89,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+  # plt.text(x=0.4, y=0.915, s=adjusted_eps_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+  main_plt.text(x=.45,y=.95,s=adjusted_eps_str, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+  main_plt.text(x=.615,y=.89,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
 
   # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
   # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
