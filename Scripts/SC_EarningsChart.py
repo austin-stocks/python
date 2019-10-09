@@ -383,7 +383,7 @@ for ticker_raw in ticker_list:
   logging.debug("Now calculating EPS variation b/w actual and Analysts projections")
   eps_projections_variation_list = [0 for i in range(match_date_index+years_of_analyst_eps_to_analyze*4)]
   for i_int in range(match_date_index,match_date_index+years_of_analyst_eps_to_analyze*4):
-    variation = (qtr_eps_list[i_int] - qtr_eps_projections_list[i_int])/qtr_eps_list[i_int]*100
+    variation = (qtr_eps_list[i_int] - qtr_eps_projections_list[i_int])/qtr_eps_projections_list[i_int]*100
     logging.debug("Report Date : " + str(qtr_eps_date_list[i_int]) + " Actual QTR EPS : " + str(qtr_eps_list[i_int]) + " Projected QTR EPS : " + str(qtr_eps_projections_list[i_int]) + " Variation : " + str(variation) + " percent")
     eps_projections_variation_list[i_int] = variation
 
