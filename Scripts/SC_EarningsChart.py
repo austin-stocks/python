@@ -361,16 +361,19 @@ for ticker_raw in ticker_list:
 
 
   # Check if the eps projections list has atleat "x" years of data
-  match_date = min(qtr_eps_date_list, key=lambda d: abs(d - eps_report_date))
-  match_date_index = qtr_eps_date_list.index(match_date)
-  logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Earnings df is : " + str(match_date) + " at index " + str(match_date_index))
-  if ((match_date >= dt.date.today()) or (match_date >= eps_report_date)):
-    match_date_index += 1
-    match_date = qtr_eps_date_list[match_date_index]
-    logging.debug("Adjusting the match date to " + str(match_date) + " at index " + str(match_date_index))
+  eps_date_list_eps_report_date_match = min(qtr_eps_date_list, key=lambda d: abs(d - eps_report_date))
+  eps_date_list_eps_report_date_index = qtr_eps_date_list.index(eps_date_list_eps_report_date_match)
+  logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Earnings df is : " + str(eps_date_list_eps_report_date_match) + " at index " + str(eps_date_list_eps_report_date_index))
+  if ((eps_date_list_eps_report_date_match >= dt.date.today()) or (eps_date_list_eps_report_date_match >= eps_report_date)):
+    eps_date_list_eps_report_date_index += 1
+    eps_date_list_eps_report_date_match = qtr_eps_date_list[eps_date_list_eps_report_date_index]
+    logging.debug("Adjusting the match date to " + str(eps_date_list_eps_report_date_match) + " at index " + str(eps_date_list_eps_report_date_index))
+  historical_date_list_eps_report_date_match = min(date_list, key=lambda d: abs(d - eps_date_list_eps_report_date_match))
+  historical_date_list_eps_report_date_index = date_list.index(historical_date_list_eps_report_date_match)
+  logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Historical df is : " + str(historical_date_list_eps_report_date_match) + " at index " + str(historical_date_list_eps_report_date_index))
 
   years_of_analyst_eps_to_analyze = 4
-  del qtr_eps_projections_list[match_date_index+years_of_analyst_eps_to_analyze*4:]
+  del qtr_eps_projections_list[eps_date_list_eps_report_date_index+years_of_analyst_eps_to_analyze*4:]
   logging.debug("Will keep (" + str(years_of_analyst_eps_to_analyze) + ") years of Analysts Projections to Analyze")
   logging.debug("The Shortened Earnings Projections list for qtr_eps is\n" + str(qtr_eps_projections_list) + "\nand the number of elements are " + str(len(qtr_eps_projections_list)))
   if (sum(math.isnan(x) for x in qtr_eps_projections_list) > 0):
@@ -381,8 +384,8 @@ for ticker_raw in ticker_list:
 
   # Now we have analysts data available...Do the math to calculate the adjustment factor
   logging.debug("Now calculating EPS variation b/w actual and Analysts projections")
-  eps_projections_variation_list = [0 for i in range(match_date_index+years_of_analyst_eps_to_analyze*4)]
-  for i_int in range(match_date_index,match_date_index+years_of_analyst_eps_to_analyze*4):
+  eps_projections_variation_list = [0 for i in range(eps_date_list_eps_report_date_index+years_of_analyst_eps_to_analyze*4)]
+  for i_int in range(eps_date_list_eps_report_date_index,eps_date_list_eps_report_date_index+years_of_analyst_eps_to_analyze*4):
     variation = (qtr_eps_list[i_int] - qtr_eps_projections_list[i_int])/qtr_eps_projections_list[i_int]*100
     logging.debug("Report Date : " + str(qtr_eps_date_list[i_int]) + " Actual QTR EPS : " + str(qtr_eps_list[i_int]) + " Projected QTR EPS : " + str(qtr_eps_projections_list[i_int]) + " Variation : " + str(variation) + " percent")
     eps_projections_variation_list[i_int] = variation
@@ -391,17 +394,17 @@ for ticker_raw in ticker_list:
   # Now smooth out the list
   analyst_eps_projections_accuracy_list = [1 for i in range(len(qtr_eps_date_list))]
   for i_int in range (years_of_analyst_eps_to_analyze):
-    smoothed_variation = (eps_projections_variation_list[match_date_index + i_int*4 + 0] + \
-                          eps_projections_variation_list[match_date_index + i_int*4 + 1] + \
-                          eps_projections_variation_list[match_date_index + i_int*4 + 2] + \
-                          eps_projections_variation_list[match_date_index + i_int*4 + 3])/4
+    smoothed_variation = (eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int*4 + 0] + \
+                          eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int*4 + 1] + \
+                          eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int*4 + 2] + \
+                          eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int*4 + 3])/4
     smoothed_analyst_accuracy = 1 + smoothed_variation/100
     logging.debug("For year " + str(i_int+1) + " smoothed variation is : " + str(smoothed_variation) + " Smoothed analyst accuracy is : " + str(smoothed_analyst_accuracy))
     if (i_int == 0):
-      for j_int in range (match_date_index):
+      for j_int in range (eps_date_list_eps_report_date_index):
         analyst_eps_projections_accuracy_list[j_int] = smoothed_analyst_accuracy
     for j_int in range(4):
-      analyst_eps_projections_accuracy_list[match_date_index + i_int*4 + j_int] = smoothed_analyst_accuracy
+      analyst_eps_projections_accuracy_list[eps_date_list_eps_report_date_index + i_int*4 + j_int] = smoothed_analyst_accuracy
 
   logging.debug("The Analyst EPS Projections accuracy List is " + str(analyst_eps_projections_accuracy_list))
 
@@ -640,7 +643,7 @@ for ticker_raw in ticker_list:
       yr_eps_adj_amount = yr_eps_adj_amount_list[i_idx]
       for i_date in yr_eps_adj_date_list:
         if (yr_eps_adj_start_date <= i_date <= yr_eps_adj_stop_date):
-          i_index = yr_eps_adj_date_list.index(i_date)
+          i_index: int = yr_eps_adj_date_list.index(i_date)
           logging.debug("Date " + str(i_date) + " lies between EPS Adjust start Date " + str(yr_eps_adj_start_date) +
                         " and EPS Adjust stop Date " + str(yr_eps_adj_stop_date) + " at index " + str(i_index))
           yr_eps_adj_list[i_index] = yr_eps_adj_list[i_index] + yr_eps_adj_amount
@@ -693,6 +696,7 @@ for ticker_raw in ticker_list:
   yr_eps_adj_expanded_list = []
   yr_past_eps_expanded_list = []
   yr_projected_eps_expanded_list = []
+  white_diamond_index_list = []
   for i in range(len(date_list)):
     yr_eps_expanded_list.append(float('nan'))
     yr_eps_adj_expanded_list.append(float('nan'))
@@ -713,11 +717,17 @@ for ticker_raw in ticker_list:
     if ((match_date >= dt.date.today()) or (match_date >= eps_report_date)):
       logging.debug("The matching date is in the future...so adding to the projected eps expanded list - White diamond")
       yr_projected_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
+      white_diamond_index_list.append(date_list.index(match_date))
     else:
       logging.debug("The matching date is in the past...so adding to the past eps expanded list - Black diamond")
       yr_past_eps_expanded_list[date_list.index(match_date)] = yr_eps_list[curr_index]
   logging.debug("The Normal Expanded Annual EPS List is: " + str(yr_eps_expanded_list))
   logging.info("Prepared the YR EPS Expanded List, YR Past EPS Expanded List (black Diamonds) and YR Projected EPS List (white Diamonds)")
+  logging.debug("The white Diamond index list is :" + str(white_diamond_index_list))
+  # Now append the
+  analyst_channel_adjust_index_list = white_diamond_index_list.copy()
+  analyst_channel_adjust_index_list.append(historical_date_list_eps_report_date_index)
+  logging.debug("The Analyst Channel Adjust Index list is :" + str(analyst_channel_adjust_index_list))
 
   yr_eps_adj_slice_date_expanded_list = []
   yr_eps_adj_slice_expanded_list = []
@@ -887,12 +897,29 @@ for ticker_raw in ticker_list:
                                                                i_index - days_in_2_qtrs] + lower_price_channel_adj_amount
   # ---------------------------------------------------------------------------
 
+  # Now create the analyst adjusted channel
+  analyst_adjusted_channel_upper = []
+  analyst_adjusted_channel_lower = []
+  for i in range(len(date_list)):
+    analyst_adjusted_channel_upper.append(float('nan'))
+    analyst_adjusted_channel_lower.append(float('nan'))
+
+  analyst_channel_adjust_index_list.reverse()
+  for i_tmp in range(len(analyst_channel_adjust_index_list)-1):
+    start_adjust_index = analyst_channel_adjust_index_list[i_tmp]
+    stop_adjust_index =analyst_channel_adjust_index_list[i_tmp+1]
+    logging.debug("Starting to work on analyst channel adjust_upper at index " + str(i_tmp) + " with Start adjust index " + str(start_adjust_index) + " and stop adjust index " + str(stop_adjust_index))
+    for j_tmp in range(start_adjust_index,stop_adjust_index-1,-1):
+      analyst_adjusted_channel_upper[j_tmp] = upper_price_channel_list[j_tmp]*analyst_eps_projections_accuracy_list[0]
+      analyst_adjusted_channel_lower[j_tmp] = lower_price_channel_list[j_tmp] * analyst_eps_projections_accuracy_list[0]
   # Now shift the price channels by two quarters
   # Approximately 6 months = 126 business days by inserting 126 nan at location 0
   nan_list = []
   for i in range(days_in_2_qtrs):
     upper_price_channel_list.insert(0, float('nan'))
     lower_price_channel_list.insert(0, float('nan'))
+    analyst_adjusted_channel_upper.insert(0, float('nan'))
+    analyst_adjusted_channel_lower.insert(0, float('nan'))
   # =============================================================================
 
   # =============================================================================
@@ -1492,6 +1519,8 @@ for ticker_raw in ticker_list:
   # schiller_ann_requested_red_line_plt = main_plt.twinx()
   upper_channel_plt = main_plt.twinx()
   lower_channel_plt = main_plt.twinx()
+  analyst_adjusted_channel_upper_plt = main_plt.twinx()
+  analyst_adjusted_channel_lower_plt = main_plt.twinx()
   # yr_eps_02_5_plt = main_plt.twinx()
   # yr_eps_05_0_plt = main_plt.twinx()
   # yr_eps_10_0_plt = main_plt.twinx()
@@ -1817,6 +1846,13 @@ for ticker_raw in ticker_list:
     upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
                                                     upper_price_channel_list[0:plot_period_int], label='Channel', color="blue",
                                                     linestyle='-')
+  analyst_adjusted_channel_upper_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  analyst_adjusted_channel_upper_plt.set_yscale(chart_type)
+  analyst_adjusted_channel_upper_plt.set_yticks([])
+  analyst_adjusted_channel_upper_plt_inst = analyst_adjusted_channel_upper_plt.plot(date_list[0:plot_period_int],
+                                                  analyst_adjusted_channel_upper[0:plot_period_int], label='Channel',
+                                                  color="Green",
+                                                  linestyle='-')
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
