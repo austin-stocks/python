@@ -937,7 +937,7 @@ for ticker_raw in ticker_list:
   # [382, 318, 254, 192, 129, 65, 1]
   analyst_channel_adjust_index_list.reverse()
   logging.debug("The Analyst Channel Adjust Index list (reversed) is :" + str(analyst_channel_adjust_index_list))
-  del analyst_channel_adjust_index_list[:2]
+  # del analyst_channel_adjust_index_list[:2]
 
   chunk_size = (analyst_eps_projections_accuracy_list[0] - 1) / 4
   for i_tmp in range(len(analyst_channel_adjust_index_list)-1):
@@ -1600,7 +1600,7 @@ for ticker_raw in ticker_list:
   main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
   main_plt.set_yscale(chart_type)
   main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
-                                color="deeppink", marker='.')
+                                color="deeppink", marker='.',markersize='10')
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
