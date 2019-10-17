@@ -2237,7 +2237,7 @@
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".2"},
-      {"Start_Date" : "12/25/2018", "Stop_Date" :   "04/05/2019", "Adj_Amount" : ".1"}
+      {"Start_Date" : "12/25/2018", "Stop_Date" :   "10/05/2019", "Adj_Amount" : ".1"}
     ]
   },
 
