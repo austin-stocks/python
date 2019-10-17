@@ -162,10 +162,19 @@ for ticker_raw in ticker_list:
     calendar_future_date_index = cal_match_date_with_historical_index - int(future_cal_quarter*64)
   # ===========================================================================
 
+  fiscal_year_ends = ticker_config_series['Fiscal_Year']
+  if (str(fiscal_year_ends) == 'nan'):
+    fiscal_year_ends = "Dec"
 
+  month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  if (fiscal_year_ends not in month_list):
+    print ("**********                                  ERROR                                 **********")
+    print ("**********     Fiscal Year ==>(", fiscal_year_ends, ")<== for ", str(ticker).center(10) , " is not a valid month    **********")
+    print ("**********     Please correct the fiscal Year and then run the script again       **********")
+    sys.exit(1)
   # print ("Will use the Calendar date list from index : ", calendar_future_date_index, " to index : ",cal_match_date_with_historical_index)
   calendar_date_list_mod = calendar_date_list[calendar_future_date_index:cal_match_date_with_historical_index]
-  print("Merging Historical Data with Calendar for ", ticker, "until the future date",calendar_date_list[calendar_future_date_index])
+  print(ticker, ": Fiscal Year ends in ",fiscal_year_ends,  ": Merging Historical Data with Calendar until the future date :",calendar_date_list[calendar_future_date_index])
   # print("The modified Calendar list is ", calendar_date_list_mod, "and it has \n", len(calendar_date_list_mod), "elements")
 
   # ===========================================================================
