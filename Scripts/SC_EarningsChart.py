@@ -1541,8 +1541,10 @@ for ticker_raw in ticker_list:
   volume_plt = plt.subplot2grid((5,6), (4,5), colspan=1,rowspan=1)
   plt.subplots_adjust(hspace=0,wspace=0)
 
-  fig.set_size_inches(16, 10)  # Length x height
-  fig.subplots_adjust(right=0.90)
+  # fig.set_size_inches(16, 10)  # Length x height
+  fig.set_size_inches(14.431, 7.639)  # Length x height
+  # fig.subplots_adjust(right=0.90)
+
   # fig.autofmt_xdate()
   # This works - Named colors / color palette in matplotlib
   # https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib
@@ -1550,12 +1552,12 @@ for ticker_raw in ticker_list:
   candle_plt.set_facecolor("aliceblue")
   volume_plt.set_facecolor("honeydew")
 
-  plt.text(x=0.11, y=0.915, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
-  plt.text(x=0.11, y=0.90, s=ticker_sector + " - " + ticker_industry , fontsize=11, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-  plt.text(x=0.11, y=0.885, s=chart_update_date_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+  plt.text(x=0.03, y=0.915, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
+  plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry , fontsize=11, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+  plt.text(x=0.03, y=0.885, s=chart_update_date_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
   # plt.text(x=0.4, y=0.915, s=adjusted_eps_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
   main_plt.text(x=.45,y=.95,s=adjusted_eps_str, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
-  main_plt.text(x=.615,y=.89,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+  main_plt.text(x=.615,y=.865,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
 
   # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
   # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
@@ -1596,8 +1598,9 @@ for ticker_raw in ticker_list:
   # This works - I have commented out so that the code does not print out the xlate
   # and I can get more space below the date ticks
   # main_plt.set_xlabel('Date')
-  main_plt.set_ylabel('Earnings')
+  # main_plt.set_ylabel('Earnings')
   main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+  main_plt.tick_params(axis="y",direction="in", pad=-22)
   main_plt.set_yscale(chart_type)
   main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
                                 color="deeppink", marker='.',markersize='10')
@@ -1685,16 +1688,26 @@ for ticker_raw in ticker_list:
                                                                 yr_projected_eps_expanded_list[0:plot_period_int],
                                                                 label='4 qtrs/4', color="White", marker='D',
                                                                 markersize='4')
-
+  import calendar
   # todo : maybe change this to only have the value printed out at the year ends
   for i in range(len(yr_eps_date_list)):
     logging.debug("The Date is " + str(yr_eps_date_list[i]) +  " Corresponding EPS " + str(yr_eps_list[i]))
     # check if the date is in the plot range
     if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
       if (qtr_eps_lim_lower <= yr_eps_list[i] <= qtr_eps_lim_upper):
-        x = float("{0:.2f}".format(yr_eps_list[i]))
-        main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
-                      verticalalignment='bottom')
+        # Only put the numbers for fiscal year
+        # Get the abbreviated month of the eps report date...sometimes the company
+        # will report a few days later after the end of the month - so get the prev
+        # month too and compare it against the Fiscal year end of the company
+        yr_eps_date_curr_month = yr_eps_date_list[i].month
+        yr_eps_date_prev_month = yr_eps_date_list[i].month-1 if yr_eps_date_list[i].month > 1 else 12
+        yr_eps_date_curr_month_abbr = calendar.month_abbr[yr_eps_date_curr_month]
+        yr_eps_date_prev_month_abbr = calendar.month_abbr[yr_eps_date_prev_month]
+        print ("The month for earnings is", yr_eps_date_curr_month_abbr, "and the previous month is ",yr_eps_date_prev_month_abbr)
+        if ( ("BA-"+yr_eps_date_curr_month_abbr == fiscal_yr_str) or ("BA-"+yr_eps_date_prev_month_abbr == fiscal_yr_str)):
+          x = float("{0:.2f}".format(yr_eps_list[i]))
+          main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
+                        verticalalignment='bottom')
         # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
   logging.info("Printed the YR EPS numbers on the chart (For Black and White Diamonds)")
   if (annual_eps_adjust_json):
@@ -1764,7 +1777,7 @@ for ticker_raw in ticker_list:
     dividend_plt.set_yscale(chart_type)
     dividend_plt.set_yticks([])
     dividend_plt_inst = dividend_plt.plot(date_list[0:plot_period_int], dividend_expanded_list[0:plot_period_int],
-                                          label='Dividend', color="Orange", marker='x', markersize='6')
+                                          label='Dividend', color="Saddlebrown", marker='x', markersize='8')
     for i in range(len(dividend_date_list)):
       if (date_list[plot_period_int] <= dividend_date_list[i] <= date_list[0]):
         if (qtr_eps_lim_lower <= dividend_list[i] <= qtr_eps_lim_upper):
@@ -1986,9 +1999,11 @@ for ticker_raw in ticker_list:
   main_plt.set_xticks(fiscal_yr_dates, minor=False)
   main_plt.set_xticks(fiscal_qtr_dates, minor=True)
   main_plt.xaxis.set_tick_params(width=5)
-  if (chart_type == "Linear"):
-    main_plt.set_xticklabels(fiscal_qtr_dates, rotation=90, fontsize=7,  color='k',  minor=True)
-  main_plt.set_xticklabels(fiscal_yr_dates, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+  # This works - Just turning this off as Ann did not want them...
+  # if (chart_type == "Linear"):
+    # main_plt.set_xticklabels(fiscal_qtr_dates, rotation=90, fontsize=7,  color='k',  minor=True)
+  # main_plt.set_xticklabels(fiscal_yr_dates, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+  main_plt.set_xticklabels(fiscal_yr_dates, rotation=0, fontsize=10, color='blue', minor=False, fontstyle='italic')
   main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=1.5)
   if (chart_type == "Linear"):
     main_plt.grid(which='minor', axis='x', linestyle='--', color='blue')
@@ -2000,14 +2015,15 @@ for ticker_raw in ticker_list:
   candle_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
   # This works - To turn individual grid axis off or on
   # candle_plt.grid(False,axis='y')
-  candle_plt.set_ylabel('Price', color='k')
+  # candle_plt.set_ylabel('Price', color='k')
   candle_plt.yaxis.set_label_position("right")
   candle_plt.yaxis.tick_right()
 
   volume_plt.set_xticks(candle_sunday_dates, minor=False)
   volume_plt.grid(True)
   volume_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
-  volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=7, color='k', minor=False)
+  # volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=7, color='k', minor=False)
+  volume_plt.set_xticklabels([])
   volume_plt.set_ylim(0, ticker_volume_upper_limit)
   volume_plt.yaxis.tick_right()
   volume_plt.set_yticks(ticker_volume_ytick_list)
@@ -2122,6 +2138,11 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
   # This works too instead of two line
   # date_time =  dt.datetime.now().strftime("%Y_%m_%d_%H_%M")
+
+  # This adjusts the dimensions (in relative tems of the plot area
+  # so example the plots take from 5% to 95% of the horizontal space (start the 5% and stop at 95%)
+  fig.subplots_adjust(left=.02, right=.97, bottom=0.05, top=.86)
+
   now = dt.datetime.now()
   date_time = now.strftime("%Y_%m_%d_%H_%M")
   date_time = now.strftime("%Y_%m_%d")
