@@ -35,24 +35,24 @@ for ticker_raw in ticker_list:
   # earnings_df = pd.read_excel(dir_path + "\\" + "Stock_Files" + "\\" + ticker + '.xlsm', sheet_name="historical")
   earnings_df = pd.read_excel('C:\Sundeep\Stocks_Automation\Scripts\Experiments\Stocks_Files' + "\\" + ticker + '.xlsm', sheet_name="historical")
 
-  print ("The Historical Tab (which contains earnings data) from the stock file is :", earnings_df)
-  print ("\nAll the columns in the historical tab are :\n")
-  for col in earnings_df.columns:
-    print(col)
+  # print ("The Historical Tab (which contains earnings data) from the stock file is :", earnings_df)
+  # print ("\nAll the columns in the historical tab are :\n")
+  # for col in earnings_df.columns:
+  #   print(col)
 
   # For some reason python reads the Date column as Timestamp
   # Convert it to string here We will convet it to Datetime later
   date_list = earnings_df['Date'].astype(str).tolist()
   qtr_eps_list = earnings_df['Q EPS'].tolist()
   projected_eps_list = earnings_df['projection'].tolist()
-  print ("The Raw Date list is :", date_list)
+  # print ("The Raw Date list is :", date_list)
 
   # Check if the length of all the columns are equal
 
   # This works : The create a dataframe from a list of lists
   step1_df=pd.DataFrame(list(zip(date_list, qtr_eps_list, projected_eps_list)),
                         columns=['Date','Q EPS', 'projection'])
-  print ("Dataframe that only has Date, Q EPS and projection columns :", step1_df)
+  # print ("Dataframe that only has Date, Q EPS and projection columns :", step1_df)
 
   # ===========================================================================
   # Clean up the dataframe
@@ -63,14 +63,14 @@ for ticker_raw in ticker_list:
   step1_df.dropna(subset=['Date'],inplace=True)
   tmp_df = step1_df[step1_df.Date != 'NaT']
   step1_df = tmp_df
-  print ("New dataframe after dropping all rows with null in Date column:", step1_df)
+  # print ("New dataframe after dropping all rows with null in Date column:", step1_df)
   # step1_df.to_csv('debug1.csv')
   # Now we should have a dataframe that does not have any rows that do not have a valid date
 
   # Drop ONLY the rows now that do not have any data in Q EPA AND projection column
   step1_df.dropna(subset=['Q EPS', 'projection'], how='all', inplace=True)
   # step1_df.to_csv('debug.csv')
-  print ("New dataframe after dropping all the rows with null in (Q EPS AND projection) columns:", step1_df)
+  # print ("New dataframe after dropping all the rows with null in (Q EPS AND projection) columns:", step1_df)
   # ===========================================================================
 
   # ===========================================================================
@@ -91,14 +91,14 @@ for ticker_raw in ticker_list:
   for x in step1_date_list:
     step1_eps = step1_eps_list[tmp_index]
     step1_projected_eps = step1_projected_eps_list[tmp_index]
-    print ("Index : ", tmp_index, ", Date is : ", x, ", Q EPS is : ", step1_eps, ", Projected EPS is : ", step1_projected_eps)
+    # print ("Index : ", tmp_index, ", Date is : ", x, ", Q EPS is : ", step1_eps, ", Projected EPS is : ", step1_projected_eps)
     if (str(step1_eps) != 'nan'):
-      print ("CSV String is :", csv_line)
+      # print ("CSV String is :", csv_line)
       if (tmp_index > 0):
         writer.writerow(csv_line)
 
       csv_line = []
-      print ("Found 1st Instance")
+      # print ("Found 1st Instance")
       csv_line.insert(0, x.strftime('%m/%d/%Y'))
       csv_line.insert(1, step1_eps)
       csv_line.insert(2, step1_projected_eps)
