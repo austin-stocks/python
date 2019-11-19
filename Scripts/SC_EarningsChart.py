@@ -124,6 +124,12 @@ def smooth_list(l):
 # Test out the values from the file
 # How to show values when you click
 # If possible superimpose the PE line in the chart
+# -----------------------------------------------------------------------
+# Todo : fixme :
+# Calcuate the delta b/w the projections_0 and projections_1 and show it on the chart (maybe as a string)
+#   For this need to find the white diamonds for both the lists
+# Fix the analyst accuracy for the new earnings file format
+# -----------------------------------------------------------------------
 
 
 # ---------------------------------------------------------------------------
@@ -279,9 +285,9 @@ for ticker_raw in ticker_list:
     print("**********     Entry for ", str(ticker).center(10), " not found in the Master Tracklist file     **********")
     print("**********     Please create one and then run the script again                 **********")
     sys.exit()
-  last_projected_eps_update_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
+
+
   eps_report_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
-  logging.debug("The EPS Projections were last updated on : " + str(last_projected_eps_update_date))
   logging.debug("The Last Earnings were reported on  : " + str(eps_report_date))
   # ---------------------------------------------------------------------------
 
@@ -310,20 +316,20 @@ for ticker_raw in ticker_list:
   qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv",delimiter=",")
   logging.debug("The Earnings df is \n" + qtr_eps_df.to_string())
   # Remove all rows after the last valid value for row for Column 'Date'
-  qtr_eps_df_copy = qtr_eps_df.loc[0:qtr_eps_df.Date.last_valid_index()].copy()
+  qtr_eps_df_copy = qtr_eps_df.loc[0:qtr_eps_df.Q_Date.last_valid_index()].copy()
   # This works - but removes the rows after the longest (any)column has last
   # valid value
   # qtr_eps_df_copy = qtr_eps_df.loc[0:qtr_eps_df.last_valid_index()].copy()
   qtr_eps_df = qtr_eps_df_copy.copy()
   qtr_eps_df_copy = pd.DataFrame()
-  logging.debug("The Earnings df after removing all trailing NaN from the 'Date' column is \n" + qtr_eps_df.to_string())
+  logging.debug("The Earnings df after removing all trailing NaN from the 'Q_Date' column is \n" + qtr_eps_df.to_string())
 
   # I can do dropna right away from the df 'Date' column but I want to make sure
   # that all the values in the Date column are in the format that can be converted
   # to Date so the try and except is more versatile
   # qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.dropna().tolist()]
   try:
-    qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Date.tolist()]
+    qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Q_Date.tolist()]
   except (TypeError):
     print ("**********                                ERROR                               **********")
     # print ("**********  while processing", date                                         ,"**********")
@@ -334,10 +340,24 @@ for ticker_raw in ticker_list:
 
   qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
   logging.debug("The name of the columns in the earnings file are" + str(list(qtr_eps_df.columns.values)))
-  qtr_eps_projections_list = qtr_eps_df['Unnamed: 2'].tolist()
+  if 'Q_EPS_Projections_Date_0' in qtr_eps_df.columns:
+    # Get the value from row0 of that column
+    qtr_eps_projections_date_0 = dt.datetime.strptime(qtr_eps_df.iloc[0]['Q_EPS_Projections_Date_0'], '%m/%d/%Y').date()
+  else:
+    logging.error("The Updated column for Earnings does not exist in the Qtr EPS df...this will soon change into error ")
+    # eps_projections_date_0 = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
+  if 'Q_EPS_Projections_Date_1' in qtr_eps_df.columns:
+    # Get the value from row0 of that column
+    qtr_eps_projections_date_1 = dt.datetime.strptime(qtr_eps_df.iloc[0]['Q_EPS_Projections_Date_1'], '%m/%d/%Y').date()
+  else:
+    qtr_eps_projections_date_1 = 'N/A'
+
+  qtr_eps_projections_list = qtr_eps_df['Q_EPS_Projections_1'].tolist()
   logging.debug("The date list for qtr_eps is\n" + str(qtr_eps_date_list) + "\nand the number of elements are " + str(len(qtr_eps_date_list)))
   logging.debug("The Earnings list for qtr_eps is\n" + str(qtr_eps_list) + "\nand the number of elements are " + str(len(qtr_eps_list)))
   logging.debug("The Earnings Projections list for qtr_eps is\n" + str(qtr_eps_projections_list) + "\nand the number of elements are " + str(len(qtr_eps_projections_list)))
+  logging.info("The EPS Projections were last updated on : " + str(qtr_eps_projections_date_0) + " and before that on " + str(qtr_eps_projections_date_1))
+  logging.debug("The EPS Projections were last updated on : " + str(qtr_eps_projections_date_0) + " and before that on " + str(qtr_eps_projections_date_1))
 
   # Set the length of qtr_eps_list same as qtr_eps_date_list.
   # This gets rid of any earnings that are beyond the last date.
@@ -1423,7 +1443,7 @@ for ticker_raw in ticker_list:
     ticker_sector = yahoo_comany_info_df.loc[ticker, 'Sector']
     ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
 
-  chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(last_projected_eps_update_date)
+  chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(qtr_eps_projections_date_0) + ", " + str(qtr_eps_projections_date_1)
   logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry) + str(chart_update_date_str))
   # ---------------------------------------------------------------------------
 
@@ -1703,7 +1723,7 @@ for ticker_raw in ticker_list:
         yr_eps_date_prev_month = yr_eps_date_list[i].month-1 if yr_eps_date_list[i].month > 1 else 12
         yr_eps_date_curr_month_abbr = calendar.month_abbr[yr_eps_date_curr_month]
         yr_eps_date_prev_month_abbr = calendar.month_abbr[yr_eps_date_prev_month]
-        print ("The month for earnings is", yr_eps_date_curr_month_abbr, "and the previous month is ",yr_eps_date_prev_month_abbr)
+        # print ("The month for earnings is", yr_eps_date_curr_month_abbr, "and the previous month is ",yr_eps_date_prev_month_abbr)
         if ( ("BA-"+yr_eps_date_curr_month_abbr == fiscal_yr_str) or ("BA-"+yr_eps_date_prev_month_abbr == fiscal_yr_str)):
           x = float("{0:.2f}".format(yr_eps_list[i]))
           main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
