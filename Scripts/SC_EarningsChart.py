@@ -348,7 +348,10 @@ for ticker_raw in ticker_list:
     # eps_projections_date_0 = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
   if 'Q_EPS_Projections_Date_1' in qtr_eps_df.columns:
     # Get the value from row0 of that column
-    qtr_eps_projections_date_1 = dt.datetime.strptime(qtr_eps_df.iloc[0]['Q_EPS_Projections_Date_1'], '%m/%d/%Y').date()
+    try:
+      qtr_eps_projections_date_1 = dt.datetime.strptime(qtr_eps_df.iloc[0]['Q_EPS_Projections_Date_1'], '%m/%d/%Y').date()
+    except:
+      qtr_eps_projections_date_1 = 'N/A'
   else:
     qtr_eps_projections_date_1 = 'N/A'
 
