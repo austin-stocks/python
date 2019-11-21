@@ -346,14 +346,22 @@ for ticker_raw in ticker_list:
   else:
     logging.error("The Updated column for Earnings does not exist in the Qtr EPS df...this will soon change into error ")
     # eps_projections_date_0 = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Updated_EPS_Projections']),'%Y-%m-%d %H:%M:%S').date()
+  qtr_eps_projections_date_1 = 'NA'
   if 'Q_EPS_Projections_Date_1' in qtr_eps_df.columns:
     # Get the value from row0 of that column
     try:
       qtr_eps_projections_date_1 = dt.datetime.strptime(qtr_eps_df.iloc[0]['Q_EPS_Projections_Date_1'], '%m/%d/%Y').date()
     except:
-      qtr_eps_projections_date_1 = 'N/A'
-  else:
-    qtr_eps_projections_date_1 = 'N/A'
+      qtr_eps_projections_date_1 = 'NA'
+
+  # Check -  _date_0 should be newer than the _date_1. This will catch if
+  # I forget to update the date
+  if (qtr_eps_projections_date_1 != 'NA'):
+    if (qtr_eps_projections_date_0 <= qtr_eps_projections_date_1):
+      logging.error("The Last Earnings update date " + str(qtr_eps_projections_date_0) + \
+                    " should be later than the update date from before that  " + str(qtr_eps_projections_date_1) + \
+                    "\n Did you forget to update the _date_0 while updating earnings csv?")
+      sys.exit(1)
 
   qtr_eps_projections_list = qtr_eps_df['Q_EPS_Projections_1'].tolist()
   logging.debug("The date list for qtr_eps is\n" + str(qtr_eps_date_list) + "\nand the number of elements are " + str(len(qtr_eps_date_list)))
