@@ -288,7 +288,12 @@ for ticker_raw in ticker_list:
 
 
   eps_report_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+  cnbc_matches_reported_eps = 'NA'
+  cnbc_matches_reported_eps = str(ticker_master_tracklist_series['CNBC_Matches_Reported_EPS'])
   logging.debug("The Last Earnings were reported on  : " + str(eps_report_date))
+  logging.debug("CNBC report match reported EPS = " + str(cnbc_matches_reported_eps) + \
+                "If it matches then it means that the future earnings projections should actual numbers and not adjusted numbers...though the company can adjust the earnings anytime :-))" + \
+                "If it does not match, then that means that the future projected earnings are likely to be adjusted by the company...It is your job to find out why the current earnings were adjusted")
   # ---------------------------------------------------------------------------
 
   # =============================================================================
@@ -359,8 +364,8 @@ for ticker_raw in ticker_list:
   if (qtr_eps_projections_date_1 != 'NA'):
     if (qtr_eps_projections_date_0 <= qtr_eps_projections_date_1):
       logging.error("The Last Earnings update date " + str(qtr_eps_projections_date_0) + \
-                    " should be later than the update date from before that  " + str(qtr_eps_projections_date_1) + \
-                    "\n Did you forget to update the _date_0 while updating earnings csv?")
+                    " in the earnings csv file should be later than the update date from before that  " + str(qtr_eps_projections_date_1) + \
+                    "\n*****     Did you forget to update the _date_0 while updating earnings csv?     *****")
       sys.exit(1)
 
   qtr_eps_projections_list = qtr_eps_df['Q_EPS_Projections_1'].tolist()
@@ -1455,6 +1460,7 @@ for ticker_raw in ticker_list:
     ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
 
   chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(qtr_eps_projections_date_0) + ", " + str(qtr_eps_projections_date_1)
+  chart_update_date_str +=  "\nCNBC Earnings match reported Earnings - " + str(cnbc_matches_reported_eps)
   logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry) + str(chart_update_date_str))
   # ---------------------------------------------------------------------------
 
@@ -1585,7 +1591,7 @@ for ticker_raw in ticker_list:
 
   plt.text(x=0.03, y=0.915, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
   plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry , fontsize=11, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-  plt.text(x=0.03, y=0.885, s=chart_update_date_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+  plt.text(x=0.03, y=0.866, s=chart_update_date_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
   # plt.text(x=0.4, y=0.915, s=adjusted_eps_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
   main_plt.text(x=.45,y=.95,s=adjusted_eps_str, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
   main_plt.text(x=.615,y=.865,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
