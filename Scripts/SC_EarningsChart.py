@@ -1732,20 +1732,25 @@ for ticker_raw in ticker_list:
     # check if the date is in the plot range
     if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
       if (qtr_eps_lim_lower <= yr_eps_list[i] <= qtr_eps_lim_upper):
+
+        # This works - This will only print out the yr_eps numbers at fiscal year end - This is desired by Ann
+        # I am just commeting it out for now as I want to see all yr_eps numbers for all the quarters
         # Only put the numbers for fiscal year
         # Get the abbreviated month of the eps report date...sometimes the company
         # will report a few days later after the end of the month - so get the prev
         # month too and compare it against the Fiscal year end of the company
-        yr_eps_date_curr_month = yr_eps_date_list[i].month
-        yr_eps_date_prev_month = yr_eps_date_list[i].month-1 if yr_eps_date_list[i].month > 1 else 12
-        yr_eps_date_curr_month_abbr = calendar.month_abbr[yr_eps_date_curr_month]
-        yr_eps_date_prev_month_abbr = calendar.month_abbr[yr_eps_date_prev_month]
-        # print ("The month for earnings is", yr_eps_date_curr_month_abbr, "and the previous month is ",yr_eps_date_prev_month_abbr)
-        if ( ("BA-"+yr_eps_date_curr_month_abbr == fiscal_yr_str) or ("BA-"+yr_eps_date_prev_month_abbr == fiscal_yr_str)):
-          x = float("{0:.2f}".format(yr_eps_list[i]))
-          main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
-                        verticalalignment='bottom')
-        # main_plt.text(yr_eps_date_list[i],yr_eps_list[i],x, bbox={'facecolor':'white'})
+        # yr_eps_date_curr_month = yr_eps_date_list[i].month
+        # yr_eps_date_prev_month = yr_eps_date_list[i].month-1 if yr_eps_date_list[i].month > 1 else 12
+        # yr_eps_date_curr_month_abbr = calendar.month_abbr[yr_eps_date_curr_month]
+        # yr_eps_date_prev_month_abbr = calendar.month_abbr[yr_eps_date_prev_month]
+        # # print ("The month for earnings is", yr_eps_date_curr_month_abbr, "and the previous month is ",yr_eps_date_prev_month_abbr)
+        # if ( ("BA-"+yr_eps_date_curr_month_abbr == fiscal_yr_str) or ("BA-"+yr_eps_date_prev_month_abbr == fiscal_yr_str)):
+        #   x = float("{0:.2f}".format(yr_eps_list[i]))
+        #   main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
+        #                 verticalalignment='bottom')
+
+        x = float("{0:.2f}".format(yr_eps_list[i]))
+        main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
   logging.info("Printed the YR EPS numbers on the chart (For Black and White Diamonds)")
   if (annual_eps_adjust_json):
     # If the annual eps was ajusted, then plot those diamonds in <the color Ann likes>
