@@ -2220,6 +2220,17 @@
     ]
   },
 
+
+  "UNF" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "08/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "08/25/2017", "Stop_Date" :   "12/05/2017", "Adj_Amount" : ".25"},
+      {"Start_Date" : "08/25/2018", "Stop_Date" :   "12/05/2018", "Adj_Amount" : "-.25"}
+    ]
+  },
+
   "LAD" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2013", "Stop_Date" :   "06/30/2019"}
