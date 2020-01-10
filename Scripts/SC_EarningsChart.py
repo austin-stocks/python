@@ -288,6 +288,9 @@ for ticker_raw in ticker_list:
 
 
   eps_report_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+  is_ticker_foreign = ""
+  is_ticker_foreign = str(ticker_master_tracklist_series['Is_Foreign'])
+  is_ticker_foreign = is_ticker_foreign.strip()
   cnbc_matches_reported_eps = 'NA'
   cnbc_matches_reported_eps = str(ticker_master_tracklist_series['CNBC_Matches_Reported_EPS'])
   logging.debug("The Last Earnings were reported on  : " + str(eps_report_date))
@@ -1460,7 +1463,9 @@ for ticker_raw in ticker_list:
     ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
 
   chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(qtr_eps_projections_date_0) + ", " + str(qtr_eps_projections_date_1)
-  chart_update_date_str +=  "\nCNBC Earnings match reported Earnings - " + str(cnbc_matches_reported_eps)
+  chart_update_date_str += "\nCNBC Earnings match reported Earnings - " + str(cnbc_matches_reported_eps)
+  if not ((is_ticker_foreign == 'nan') or (len(is_ticker_foreign) == 0)):
+    chart_update_date_str +=  " :: Country - " + is_ticker_foreign
   logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry) + str(chart_update_date_str))
   # ---------------------------------------------------------------------------
 
