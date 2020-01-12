@@ -97,6 +97,10 @@
   "FOXF" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2015", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "01/05/2018", "Adj_Amount" : ".05"},
+      {"Start_Date" : "12/25/2018", "Stop_Date" :   "01/05/2019", "Adj_Amount" : "-.05"}
     ]
   },
 
@@ -168,6 +172,9 @@
   "GNRC" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2016", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2011", "Stop_Date" :   "10/05/2012", "Adj_Amount" : "-.85"}
     ]
   },
 
