@@ -49,15 +49,15 @@ master_tracklist_df.set_index('Ticker', inplace=True)
 # gt_1_qtr_old_financials_df = pd.DataFrame(columns=['Ticker','Date'])
 gt_1_qtr_old_eps_projections_df = pd.DataFrame(columns=['Ticker','Date'])
 gt_1_month_old_eps_projections_df = pd.DataFrame(columns=['Ticker','Date'])
-# likely_earnings_date_df = pd.DataFrame(columns=['Ticker','Date'])
-# report_newer_than_earnings_df = pd.DataFrame(columns=['Ticker','Date_Report', 'Date_Earnings'])
+likely_earnings_date_df = pd.DataFrame(columns=['Ticker','Date'])
+report_newer_than_earnings_df = pd.DataFrame(columns=['Ticker','Date_Report', 'Date_Earnings'])
 #
 #
 # gt_1_qtr_old_financials_df.set_index('Ticker', inplace=True)
 gt_1_qtr_old_eps_projections_df.set_index('Ticker', inplace=True)
 gt_1_month_old_eps_projections_df.set_index('Ticker', inplace=True)
-# likely_earnings_date_df.set_index('Ticker', inplace=True)
-# report_newer_than_earnings_df.set_index('Ticker', inplace=True)
+likely_earnings_date_df.set_index('Ticker', inplace=True)
+report_newer_than_earnings_df.set_index('Ticker', inplace=True)
 #
 today = dt.date.today()
 one_qtr_ago_date = today - dt.timedelta(days=80)
@@ -88,8 +88,13 @@ print ("Today is", today, "one month ago", one_month_ago_date, "one qtr ago", on
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   print("\nProcessing : ", ticker)
-  if ticker in ["CCI", "CRZO", "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO","WCG","WLTW"]:
+  # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
+  if ticker in ["QQQ"]:
     print ("File for ", ticker, "does not exist in earnings directory. Skipping...")
+    continue
+  ticker_is_wheat = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
+  if (ticker_is_wheat != 'Wheat'):
+    print (ticker , " is not Wheat...skipping")
     continue
   # date_updated_eps_projections = master_tracklist_df.loc[ticker, 'Last_Updated_EPS_Projections']
   # date_updated_financials = master_tracklist_df.loc[ticker, 'Last_Updated_Financials']
@@ -145,36 +150,42 @@ for ticker_raw in ticker_list:
 #       gt_1_qtr_old_financials_df.loc[ticker] = [date_updated_financials_dt]
 #   # ---------------------------------------------------------------------------
 #
-#   # ---------------------------------------------------------------------------
-#   # Check for the last earnings date
-#   # ---------------------------------------------------------------------------
-#   if (not pd.isnull(last_earnings_date)):
-#     last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
-#     date_year = last_earnings_date_dt.year
-#     # print ("The Year of the last reported earnings is : ", date_year)
-#     if (date_year < 2019):
-#       print ("==========     Error : The date for ", ticker, " last earnings is older than 2019     ==========")
-#       sys.exit()
-#     if (today > (last_earnings_date_dt  + dt.timedelta(days=80))):
-#       print("Last Earnings Reported Date was : ", last_earnings_date_dt, " Maybe the company will report soon again")
-#       likely_earnings_date_df.loc[ticker] = [last_earnings_date_dt]
-#
-#   if (not pd.isnull(date_updated_eps_projections)) and (not pd.isnull(last_earnings_date)):
-#     # Compare with the earnings date with the eps projections updated date. If the earnings date is
-#     # newer than eps projections date, then the eps projections need to be updated...hopefully there
-#     # are none like that.
-#     last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
-#     date_updated_eps_projections_dt = dt.datetime.strptime(str(date_updated_eps_projections), '%Y-%m-%d %H:%M:%S').date()
-#     if (last_earnings_date_dt > date_updated_eps_projections_dt):
-#       print("Last Earnings Reported Date : ", last_earnings_date_dt, " is newer than EPS Projections Update Date : ", date_updated_eps_projections_dt, " This is unusal...please fix immediately")
-#       report_newer_than_earnings_df.loc[ticker] = [last_earnings_date_dt,date_updated_eps_projections_dt]
-# # -----------------------------------------------------------------------------
-# # Print all the df to their respective files
-# # -----------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # Check for the last earnings date
+  # ---------------------------------------------------------------------------
+  if ((ticker_is_wheat == "Wheat") and pd.isnull(last_earnings_date)):
+    print ("**********************  ERROR ERROR ERROR ERROR ****************************")
+    print ("Error - ", ticker , "is wheat and does not have a earnings date. Exiting....")
+    print ("**********************  ERROR ERROR ERROR ERROR ****************************")
+    sys.exit(1)
+
+  if (not pd.isnull(last_earnings_date)):
+    last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
+    date_year = last_earnings_date_dt.year
+    # print ("The Year of the last reported earnings is : ", date_year)
+    if (date_year < 2019):
+      print ("==========     Error : The date for ", ticker, " last earnings is older than 2019     ==========")
+      sys.exit()
+    if (today > (last_earnings_date_dt  + dt.timedelta(days=100))):
+      print("Last Earnings Reported Date was : ", last_earnings_date_dt, " Maybe the company will report soon again")
+      likely_earnings_date_df.loc[ticker] = [last_earnings_date_dt]
+
+  if (not pd.isnull(date_updated_eps_projections)) and (not pd.isnull(last_earnings_date)):
+    # Compare with the earnings date with the eps projections updated date. If the earnings date is
+    # newer than eps projections date, then the eps projections need to be updated...hopefully there
+    # are none like that.
+    last_earnings_date_dt = dt.datetime.strptime(str(last_earnings_date), '%Y-%m-%d %H:%M:%S').date()
+    date_updated_eps_projections_dt = dt.datetime.strptime(str(date_updated_eps_projections), '%m/%d/%Y').date()
+    if (last_earnings_date_dt > date_updated_eps_projections_dt):
+      print("Last Earnings Reported Date : ", last_earnings_date_dt, " is newer than EPS Projections Update Date : ", date_updated_eps_projections_dt, " This is unusal...please fix immediately")
+      report_newer_than_earnings_df.loc[ticker] = [last_earnings_date_dt,date_updated_eps_projections_dt]
+# -----------------------------------------------------------------------------
+# Print all the df to their respective files
+# -----------------------------------------------------------------------------
 gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_qtr_old_eps_projections_df.txt',sep=' ', index=True, header=False)
 gt_1_month_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_month_old_eps_projections.txt',sep=' ', index=True, header=False)
 # gt_1_qtr_old_financials_df.sort_values(by='Date').to_csv('gt_1_qtr_old_financials.txt',sep=' ', index=True, header=False)
-# likely_earnings_date_df.sort_values(by='Date').to_csv('likely_earnings_date.txt',sep=' ', index=True, header=False)
-# report_newer_than_earnings_df.sort_values(by='Date_Report').to_csv('report_newer_than_earnings.txt',sep=' ', index=True, header=False)
+likely_earnings_date_df.sort_values(by='Date').to_csv('likely_earnings_date.txt',sep=' ', index=True, header=False)
+report_newer_than_earnings_df.sort_values(by='Date_Report').to_csv('report_newer_than_earnings.txt',sep=' ', index=True, header=False)
 # # -----------------------------------------------------------------------------
 #
