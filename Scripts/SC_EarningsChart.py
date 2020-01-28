@@ -419,7 +419,7 @@ for ticker_raw in ticker_list:
   logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Historical df is : " + str(historical_date_list_eps_report_date_match) + " at index " + str(last_black_diamond_index))
 
   # Now we know the last quarter earning date index
-  years_of_analyst_eps_to_analyze = 4
+  years_of_analyst_eps_to_analyze = 2
   # Delete all entries from eps projection list that are older than the date we need for our calculations
   del qtr_eps_projections_list[eps_date_list_eps_report_date_index+years_of_analyst_eps_to_analyze*4:]
   logging.debug("Will keep (" + str(years_of_analyst_eps_to_analyze) + ") years of Analysts Projections to Analyze")
@@ -1413,7 +1413,7 @@ for ticker_raw in ticker_list:
     price_growth_3_yr = get_growth(ticker_curr_price, ticker_3_yr_ago_price)
     price_growth_5_yr = get_growth(ticker_curr_price, ticker_5_yr_ago_price)
 
-    price_eps_growth_str_textbox = "     Date".ljust(20," ") + "|  Earnings".ljust(20," ") + "| Price".ljust(16," ")
+    price_eps_growth_str_textbox = "     Date".ljust(20," ") + "|  Earnings".ljust(20," ") + ("| Price(" + str(ticker_curr_date) + ")").ljust(16," ")
     price_eps_growth_str_textbox +=  ("\nNext yr- " + str(yr_eps_next_yr_date)).ljust(21," ")
     price_eps_growth_str_textbox += ("| "+str(yr_eps_next_yr)+ "("+str(eps_growth_next_yr)+"%)").ljust(20," ")
     price_eps_growth_str_textbox += ("| ").ljust(20)
@@ -2198,5 +2198,7 @@ for ticker_raw in ticker_list:
   else:
     fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
   logging.info("All Done")
-  plt.show()
+  # Only show the plot if we are making only one chart
+  if (len(ticker_list) == 1):
+    plt.show()
   # -----------------------------------------------------------------------------
