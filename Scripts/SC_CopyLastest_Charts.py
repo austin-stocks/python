@@ -7,6 +7,9 @@ import numpy as np
 import re
 import shutil
 
+# Todo : Put the logger in
+# Todo : Maybe handle liner short/ linear long/ Log charts
+
 # # -----------------------------------------------------------------------------
 # # Read the master tracklist file into a dataframe
 # # -----------------------------------------------------------------------------
@@ -30,6 +33,8 @@ master_tracklist_df.set_index('Ticker', inplace=True)
 all_chart_files_list=os.listdir(dir_path + charts_dir + "\\")
 print ("The files in the chart direcotry are", all_chart_files_list)
 list( map( os.unlink, (os.path.join(dir_path + charts_latest_dir + "\\" ,f) for f in os.listdir(dir_path + charts_latest_dir + "\\")) ) )
+time.sleep(3)
+
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------

@@ -21,7 +21,8 @@
 
   "AUDC" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "08/20/2019","Buy_Price_str" :  "$17.50"}
+       {"Buy_Date" : "08/20/2019","Buy_Price_str" :  "$17.50"},
+       {"Buy_Date" : "01/28/2020","Buy_Price_str" :  "$24.75"}
     ]
   },
 

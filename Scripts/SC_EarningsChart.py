@@ -1263,7 +1263,7 @@ for ticker_raw in ticker_list:
   logging.debug ("Earning Limit upper" + str(qtr_eps_lim_upper))
   logging.debug ("Price Limit upper" + str(price_lim_upper))
   logging.debug ("Ann Constant" + str(ann_constant))
-  time.sleep(3)
+  # time.sleep(3)
   schiller_ann_requested_red_line_list_0 = [a*b for a,b in zip(schiller_pe_value_list_smooth,yr_eps_adj_expanded_list_smooth)]
   schiller_ann_requested_red_line_list_3 = [i * ann_constant for i in schiller_ann_requested_red_line_list_0]
   # schiller_ann_requested_red_line_list_1 = [i * 4 for i in schiller_ann_requested_red_line_list_0]
