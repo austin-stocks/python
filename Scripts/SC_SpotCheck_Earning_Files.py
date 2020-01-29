@@ -61,7 +61,7 @@ report_newer_than_earnings_df.set_index('Ticker', inplace=True)
 #
 today = dt.date.today()
 one_qtr_ago_date = today - dt.timedelta(days=80)
-one_month_ago_date = today - dt.timedelta(days=30)
+one_month_ago_date = today - dt.timedelta(days=15)
 print ("Today is", today, "one month ago", one_month_ago_date, "one qtr ago", one_qtr_ago_date)
 # # -----------------------------------------------------------------------------
 #
