@@ -48,8 +48,8 @@ for ticker_raw in ticker_list:
     print ("File for ", ticker, "does not exist in earnings directory. Skipping...")
     continue
   ticker_is_wheat = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
-  if (ticker_is_wheat != 'Wheat'):
-    print (ticker , " is not Wheat...skipping")
+  if (ticker_is_wheat != 'Wheat') and (ticker_is_wheat != 'Essential'):
+    print (ticker , " is not Wheat or Essential...skipping")
     continue
 
   # Find the corresponding jpg files from the charts directory list
