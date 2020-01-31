@@ -11,6 +11,7 @@ import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import calendar
 
 from matplotlib.offsetbox import AnchoredText
 from SC_logger import my_print as my_print
@@ -113,7 +114,8 @@ def smooth_list(l):
 
 
 # todo :
-# deal with fiscal quarter
+# Put the number besides the last pink dot - so that sanity check can be done
+# Always do a eps projection lines from the last black diamond
 # Handle Annotated text
 # See how you can add comments
 # What format the file should be save
@@ -121,8 +123,6 @@ def smooth_list(l):
 # How to create other subplots that have the book value etc
 #   Maybe use subplots for it
 # How to use earnings projections
-# Test out the values from the file
-# How to show values when you click
 # If possible superimpose the PE line in the chart
 # -----------------------------------------------------------------------
 # Todo : fixme :
@@ -1646,6 +1646,17 @@ for ticker_raw in ticker_list:
   main_plt.set_yscale(chart_type)
   main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
                                 color="deeppink", marker='.',markersize='10')
+
+  # Print out the last reported Q_EPS on the chart
+    # check if the date is in the plot range
+  logging.debug ("The last black diamond is at index" + str(eps_date_list_eps_report_date_index) +  "and the date is" + str(eps_date_list_eps_report_date_match) + "and the repored Q EPS is " + str(qtr_eps_list[eps_date_list_eps_report_date_index]))
+  # check if the date is in the plot range
+  if (date_list[plot_period_int] <= qtr_eps_date_list[eps_date_list_eps_report_date_index] <= date_list[0]):
+    if (qtr_eps_lim_lower <= qtr_eps_list[eps_date_list_eps_report_date_index] <= qtr_eps_lim_upper):
+      x = float("{0:.2f}".format(qtr_eps_list[eps_date_list_eps_report_date_index]))
+      main_plt.text(qtr_eps_date_list[eps_date_list_eps_report_date_index], qtr_eps_list[eps_date_list_eps_report_date_index], x, color='Purple',fontsize='small', fontstyle='italic',fontweight=1000,
+                    bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=0.1),horizontalalignment='center',verticalalignment='bottom')
+  logging.info("Printed the QTR EPS number on the chart (For the Last Black Diamond)")
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
@@ -1730,7 +1741,6 @@ for ticker_raw in ticker_list:
                                                                 yr_projected_eps_expanded_list[0:plot_period_int],
                                                                 label='4 qtrs/4', color="White", marker='D',
                                                                 markersize='4')
-  import calendar
   # todo : maybe change this to only have the value printed out at the year ends
   for i in range(len(yr_eps_date_list)):
     logging.debug("The Date is " + str(yr_eps_date_list[i]) +  " Corresponding EPS " + str(yr_eps_list[i]))
@@ -1958,7 +1968,7 @@ for ticker_raw in ticker_list:
     upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
                                                     upper_price_channel_list[0:plot_period_int], label='Channel', color="blue",
                                                     linestyle='-')
-    # Sundeep is here - work on it later
+
     analyst_adjusted_channel_upper_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
     analyst_adjusted_channel_upper_plt.set_yscale(chart_type)
     analyst_adjusted_channel_upper_plt.set_yticks([])
