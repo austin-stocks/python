@@ -13,6 +13,14 @@
     ]
   },
 
+
+  "IIPR" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/31/2020","Buy_Price_str" :  "$89.45"}
+    ]
+  },
+
+
   "COHR" : {
     "Buy_Sell" : [
        {"Buy_Date" : "03/23/2018","Buy_Price_str" :  "$191.69"}
