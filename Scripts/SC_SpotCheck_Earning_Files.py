@@ -4,11 +4,44 @@ import sys
 import time
 import datetime as dt
 import numpy as np
+import logging
 
 
+
+# -----------------------------------------------------------------------------
+# Logging
+# -----------------------------------------------------------------------------
 # todo
-# Get the next eps projections and compare them with the current eps projections to see if the projections
-# have been trending up or down and get the results in a csv file
+#  filename should be the name of the current file
+
+# Logging Levels
+# Level
+# CRITICAL
+# ERROR
+# WARNING
+# INFO
+# DEBUG
+# NOTSET
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename='SC_SpotCheck_Earning_files.txt',
+                    filemode='w')
+# define a Handler which writes INFO messages or higher to the sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+# set a format which is simpler for console use
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+# tell the handler to use this format
+console.setFormatter(formatter)
+# add the handler to the root logger
+logging.getLogger('').addHandler(console)
+
+# Disnable and enable global level logging
+logging.disable(sys.maxsize)
+logging.disable(logging.NOTSET)
+# -----------------------------------------------------------------------------
+
 
 # -----------------------------------------------------------------------------
 # Read the master tracklist file into a dataframe
@@ -33,33 +66,35 @@ master_tracklist_df.set_index('Ticker', inplace=True)
 today = dt.date.today()
 one_qtr_ago_date = today - dt.timedelta(days=80)
 one_month_ago_date = today - dt.timedelta(days=30)
-print ("Today is", today, "one month ago", one_month_ago_date, "one qtr ago", one_qtr_ago_date)
+logging.info("Today : " + str(today) +  " One month ago : " +str(one_month_ago_date) + " One qtr ago : " +str(one_qtr_ago_date))
 
 gt_1_month_old_eps_projections_df = pd.DataFrame(columns=['Ticker','Date'])
 gt_1_qtr_old_eps_projections_df = pd.DataFrame(columns=['Ticker','Date'])
 likely_earnings_date_df = pd.DataFrame(columns=['Ticker','Date'])
-eps_report_newer_tnan_eps_projection_df = pd.DataFrame(columns=['Ticker','Date_Report', 'Date_Earnings'])
+eps_report_newer_than_eps_projection_df = pd.DataFrame(columns=['Ticker','Earnings_Reported', 'Earnings_Projections_Updated'])
+projected_eps_direction_df = pd.DataFrame(columns=['Ticker','Earnings_Reported', 'Earnings_Projections_Updated_0', 'Earnings_Projections_Updated_1', 'Days_between_esp_projections_were_updated', 'Direction_of_latest_eps_projection', 'Direction_of_comparison_between_two_eps_projections'])
 
 gt_1_month_old_eps_projections_df.set_index('Ticker', inplace=True)
 gt_1_qtr_old_eps_projections_df.set_index('Ticker', inplace=True)
 likely_earnings_date_df.set_index('Ticker', inplace=True)
-eps_report_newer_tnan_eps_projection_df.set_index('Ticker', inplace=True)
+eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
 # Loop through all the tickers to check the dates when
 # -----------------------------------------------------------------------------
-# ticker_list = ['AUDC']
+# ticker_list = ['AUDC', 'MED']
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
-  print("\nProcessing : ", ticker)
+  logging.debug("\n")
+  logging.info("Processing : " + str(ticker))
   # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
   if ticker in ["QQQ"]:
     print ("File for ", ticker, "does not exist in earnings directory. Skipping...")
     continue
   ticker_is_wheat = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
   if (ticker_is_wheat != 'Wheat'):
-    print (ticker , " is not Wheat...skipping")
+    logging.debug(str(ticker) + " is not Wheat...skipping")
     continue
 
   # ---------------------------------------------------------------------------
@@ -70,23 +105,26 @@ for ticker_raw in ticker_list:
   qtr_eps_df = pd.read_csv(earnings_file_fullpath)
   if 'Q_EPS_Projections_Date_0' in qtr_eps_df.columns:
     eps_projection_date_0 = qtr_eps_df['Q_EPS_Projections_Date_0'].tolist()[0]
-    print ("Last Q EPS was updated in", earnings_file, " on ",eps_projection_date_0)
+    logging.debug ("Earnings file : " + str(earnings_file) + ", Projected EPS was last updated on " + str(eps_projection_date_0))
     eps_projection_date_0_dt = dt.datetime.strptime(str(eps_projection_date_0), '%m/%d/%Y').date()
   else:
-    print("Column Q_EPS_Projections_Date_0 DOES NOT exist in ", earnings_file)
+    logging.error("Column Q_EPS_Projections_Date_0 DOES NOT exist in " + str(earnings_file))
     sys.exit(1)
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Get the last earnings report date from Master Tracklist
+  # if ((ticker_is_wheat == "Wheat") and pd.isnull(eps_actual_report_date)):
   # ---------------------------------------------------------------------------
-  eps_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
-  if ((ticker_is_wheat == "Wheat") and pd.isnull(eps_report_date)):
-    print ("**********************  ERROR ERROR ERROR ERROR ****************************")
-    print ("Error - ", ticker , "is wheat and does not have a earnings date. Exiting....")
-    print ("**********************  ERROR ERROR ERROR ERROR ****************************")
-    sys.exit(1)
-  eps_report_date_dt = dt.datetime.strptime(str(eps_report_date), '%Y-%m-%d').date()
+  if (ticker_is_wheat == "Wheat"):
+    try:
+      eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+    except:
+      logging.error  ("**********************  ERROR ERROR ERROR ERROR ****************************")
+      logging.error (str(ticker) + " is wheat and does not have a earnings date in the Master Tracklist file. Exiting....")
+      logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
+      sys.exit(1)
+  eps_actual_report_date_dt = dt.datetime.strptime(str(eps_actual_report_date), '%Y-%m-%d').date()
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -100,11 +138,11 @@ for ticker_raw in ticker_list:
     sys.exit(1)
 
   if (eps_projection_date_0_dt < one_month_ago_date):
-    print("EPS Projections were updated on : ", eps_projection_date_0_dt, " more than a month ago")
+    logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a month ago")
     gt_1_month_old_eps_projections_df.loc[ticker]= [eps_projection_date_0_dt]
 
   if (eps_projection_date_0_dt < one_qtr_ago_date):
-    print("EPS Projections were updated on : ", eps_projection_date_0_dt, " more than a quarter ago")
+    logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a quarter ago")
     gt_1_qtr_old_eps_projections_df.loc[ticker]= [eps_projection_date_0_dt]
   # ---------------------------------------------------------------------------
 
@@ -112,14 +150,14 @@ for ticker_raw in ticker_list:
   # Check if the eps report date is older than - say 80 days - This means that
   # the company is likely to report earnings soon
   # ---------------------------------------------------------------------------
-  date_year = eps_report_date_dt.year
+  date_year = eps_actual_report_date_dt.year
   # print ("The Year of the last reported earnings is : ", date_year)
   if (date_year < 2019):
     print ("==========     Error : The date for ", ticker, " last earnings is older than 2019     ==========")
     sys.exit()
-  if (today > (eps_report_date_dt  + dt.timedelta(days=100))):
-    print("Last Earnings Reported Date was : ", eps_report_date_dt, " Maybe the company will report soon again")
-    likely_earnings_date_df.loc[ticker] = [eps_report_date_dt]
+  if (today > (eps_actual_report_date_dt  + dt.timedelta(days=50))):
+    logging.debug("Last Earnings Reported Date was : " +str(eps_actual_report_date_dt) + ", Maybe the company will report soon again")
+    likely_earnings_date_df.loc[ticker] = [eps_actual_report_date_dt]
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -127,10 +165,90 @@ for ticker_raw in ticker_list:
   # eps projection was updated in the earnings file
   # This means that the earnings projections was updated before the eps report date
   # and so the earnings file needs to be updated now with the eps projections
-  if (eps_report_date_dt > eps_projection_date_0_dt):
-    print("Last Earnings Reported Date : ", eps_report_date_dt, " is newer than EPS Projections Update Date : ", eps_projection_date_0_dt, " This is unusal...please fix immediately")
+  if (eps_actual_report_date_dt > eps_projection_date_0_dt):
+    logging.debug("EPS projections were updated on " + str(eps_projection_date_0_dt) + ", which is before the company reported Earnings : " + str(eps_actual_report_date_dt) + ". This is unusual...please fix immediately")
     eps_report_newer_tnan_eps_projection_df.loc[ticker] = [eps_report_date_dt,eps_projection_date_0_dt]
   # ---------------------------------------------------------------------------
+
+
+
+  # ---------------------------------------------------------------------------
+  # Get the last quarter of reported earning to match in the earnings csv file
+  # ---------------------------------------------------------------------------
+  qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Q_Date.tolist()]
+  # Now get the date
+  qtr_eps_date_list_eps_actual_report_date_match = min(qtr_eps_date_list, key=lambda d: abs(d - eps_actual_report_date))
+  qtr_eps_date_list_eps_actual_report_date_index = qtr_eps_date_list.index(qtr_eps_date_list_eps_actual_report_date_match)
+  logging.debug("Last Reported Earnings Date : " + str(eps_actual_report_date) + ", matches : " + str(qtr_eps_date_list_eps_actual_report_date_match) + ", in the earnings file df at index " + str(qtr_eps_date_list_eps_actual_report_date_index))
+  # If the date match in the eps_date_list is a date in the future date (that can happen if
+  # the eps_actual_report_date is more than 45 days after the quarter date. In this case we need to
+  # move the match date index back by a quarter (by adding 1 to it - as the index starts
+  # from 0 for the futuremost date)
+  if ((qtr_eps_date_list_eps_actual_report_date_match >= dt.date.today()) or (qtr_eps_date_list_eps_actual_report_date_match >= eps_actual_report_date)):
+    qtr_eps_date_list_eps_actual_report_date_index += 1
+    qtr_eps_date_list_eps_actual_report_date_match = qtr_eps_date_list[qtr_eps_date_list_eps_actual_report_date_index]
+    logging.debug("Since the match date was in the future, so getting the matching date from the immediate past")
+    logging.debug("Last Reported Earnings Date : " + str(eps_actual_report_date) + ", matches : " + str(qtr_eps_date_list_eps_actual_report_date_match) + ", in the earnings file df at index " + str(qtr_eps_date_list_eps_actual_report_date_index))
+
+  qtr_eps_actual_value = qtr_eps_df['Q_EPS_Diluted'].tolist()[qtr_eps_date_list_eps_actual_report_date_index]
+  # Once we get the index of the last quarted report date, then get all the earnings
+  # projections starting from 0 till that index. This gives all the future eps projections
+  eps_projections_most_recent_list =   qtr_eps_df['Q_EPS_Diluted'].tolist()[0:qtr_eps_date_list_eps_actual_report_date_index]
+  eps_projections_next_most_recent_list = qtr_eps_df['Q_EPS_Projections_1'].tolist()[0:qtr_eps_date_list_eps_actual_report_date_index]
+  logging.debug ("The Most recent EPS Projections list is " + str(eps_projections_most_recent_list))
+  logging.debug ("The Next Most recent EPS Projections list is " + str(eps_projections_next_most_recent_list))
+
+  # Now process those numbers
+  # 1. Find out if all the projections are positive
+  # 2. Find out if the projections are increasing
+  # 3. Find out the increase % of projections for each quarter
+  no_of_eps_projections = len(eps_projections_most_recent_list)
+
+  logging.info("Checking if ALL the Projected EPS are postive")
+  eps_projections_most_recent_all_positive = 1
+  for eps_projection_idx in range(no_of_eps_projections):
+    logging.debug ("\tEPS Projections Index :" + str(eps_projection_idx) + ", Projected EPS : " + str(eps_projections_most_recent_list[eps_projection_idx]))
+    eps_projection = eps_projections_most_recent_list[eps_projection_idx]
+    if (eps_projection < 0):
+      eps_projections_most_recent_all_positive = 0
+
+  if (eps_projections_most_recent_all_positive == 1):
+    logging.debug ("Good...All the EPS Projections are positive")
+
+    logging.info ("Comparing the Actual Last reported EPS with all the Projected EPS from most recent list to see if all the Projected EPS's are greater then the last reported EPS")
+    logging.debug ("Last Report Date : " + str(eps_actual_report_date) + " Matches with Quarter Date : " +str(qtr_eps_date_list_eps_actual_report_date_match) +  " and the EPS reported was : " + str(qtr_eps_actual_value))
+    eps_projections_most_recent_all_gt_last_reported_eps = 1
+    for eps_projection_idx in range(no_of_eps_projections):
+      logging.debug("\tEPS Projections Index :" + str(eps_projection_idx) + ", Projected EPS : " + str(eps_projections_most_recent_list[eps_projection_idx]))
+      eps_projection_x = eps_projections_most_recent_list[eps_projection_idx]
+      if (eps_projection_x < qtr_eps_actual_value):
+        eps_projections_most_recent_all_gt_last_reported_eps = 0
+    if (eps_projections_most_recent_all_gt_last_reported_eps == 1):
+      logging.debug ("Good...All the future Projected EPS from most recent updates are greater than the Most rencently reported Actual EPS")
+    else:
+      logging.debug ("Not necessarily bad...could mean seasonality. All the future Projected EPS most recent updates are NOT greater than the Most recently reported Actual EPS")
+
+    logging.info ("Comparing the Projected EPS quarter by quarter successively to see if they are all increasing with each projected quarter")
+    eps_projections_most_recent_all_increasing = 1
+    for eps_projection_idx in range(no_of_eps_projections-1):
+      logging.debug("\tEPS Projections Index :" + str(eps_projection_idx) + ", Projected EPS : " + str(eps_projections_most_recent_list[eps_projection_idx]))
+      eps_projection_x = eps_projections_most_recent_list[eps_projection_idx]
+      eps_projection_x_plus1 = eps_projections_most_recent_list[eps_projection_idx+1]
+      if (eps_projection_x < eps_projection_x_plus1):
+        eps_projections_most_recent_all_increasing = 0
+
+    if (eps_projections_most_recent_all_increasing == 1):
+      logging.debug ("Good...All the future EPS Projections from most recent updates are increasing")
+    else:
+      logging.debug ("Not necessarily bad...could mean seasonality. All the future EPS Projections from most recent updates are NOT increasing")
+
+  logging.info("")
+  # ---------------------------------------------------------------------------
+
+logging.info("")
+logging.info("********************")
+logging.info("***** All Done *****")
+logging.info("********************")
 
 
 # -----------------------------------------------------------------------------
@@ -139,7 +257,7 @@ for ticker_raw in ticker_list:
 gt_1_month_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_month_old_eps_projections.txt',sep=' ', index=True, header=False)
 gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_qtr_old_eps_projections_df.txt',sep=' ', index=True, header=False)
 likely_earnings_date_df.sort_values(by='Date').to_csv('likely_earnings_date.txt',sep=' ', index=True, header=False)
-eps_report_newer_tnan_eps_projection_df.sort_values(by='Date_Report').to_csv('report_newer_than_earnings.txt',sep=' ', index=True, header=False)
+eps_report_newer_than_eps_projection_df.sort_values(by='Earnings_Reported').to_csv('report_newer_than_earnings.txt',sep=' ', index=True, header=False)
 # -----------------------------------------------------------------------------
 
 
@@ -200,25 +318,3 @@ for file in os.listdir("C:\Sundeep\Stocks_Automation\Earnings"):
 # -----------------------------------------------------------------------------
 '''
 
-
-''' Not sure why is do we need this...
-# ---------------------------------------------------------------------------
-# Get the last quarter of reported earning to match in the earnings csv file
-# ---------------------------------------------------------------------------
-qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Q_Date.tolist()]
-# Now get the date
-eps_date_list_eps_report_date_match = min(qtr_eps_date_list, key=lambda d: abs(d - eps_report_date))
-eps_date_list_eps_report_date_index = qtr_eps_date_list.index(eps_date_list_eps_report_date_match)
-print("The match date for Last reported Earnings date : ", str(eps_report_date), " in the Earnings df is : ",
-      str(eps_date_list_eps_report_date_match), " at index ", str(eps_date_list_eps_report_date_index))
-# If the date match in the eps_date_list is a date in the future date (that can happen if
-# the eps_report_date is more than 45 days after the quarter date. In this case we need to
-# move the match date index back by a quarter (by adding 1 to it - as the index starts
-# from 0 for the futuremost date)
-if (
-  (eps_date_list_eps_report_date_match >= dt.date.today()) or (eps_date_list_eps_report_date_match >= eps_report_date)):
-  eps_date_list_eps_report_date_index += 1
-  eps_date_list_eps_report_date_match = qtr_eps_date_list[eps_date_list_eps_report_date_index]
-
-# ---------------------------------------------------------------------------
-'''
