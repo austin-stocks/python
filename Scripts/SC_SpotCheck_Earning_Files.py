@@ -86,7 +86,6 @@ eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
 # ticker_list = ['AUDC', 'MED']
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
-  logging.debug("\n")
   logging.info("Processing : " + str(ticker))
   # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
   if ticker in ["QQQ"]:
@@ -98,24 +97,18 @@ for ticker_raw in ticker_list:
     continue
 
   # ---------------------------------------------------------------------------
-  # Get the last and one before that projected earnings update date from the earnings.csv file
+  # Read the Earnings file
   # ---------------------------------------------------------------------------
   earnings_file = ticker + "_earnings.csv"
   earnings_file_fullpath = os.path.join("C:\Sundeep\Stocks_Automation\Earnings", earnings_file)
   qtr_eps_df = pd.read_csv(earnings_file_fullpath)
-  if 'Q_EPS_Projections_Date_0' in qtr_eps_df.columns:
-    eps_projection_date_0 = qtr_eps_df['Q_EPS_Projections_Date_0'].tolist()[0]
-    logging.debug ("Earnings file : " + str(earnings_file) + ", Projected EPS was last updated on " + str(eps_projection_date_0))
-    eps_projection_date_0_dt = dt.datetime.strptime(str(eps_projection_date_0), '%m/%d/%Y').date()
-  else:
-    logging.error("Column Q_EPS_Projections_Date_0 DOES NOT exist in " + str(earnings_file))
-    sys.exit(1)
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Get the last earnings report date from Master Tracklist
   # if ((ticker_is_wheat == "Wheat") and pd.isnull(eps_actual_report_date)):
   # ---------------------------------------------------------------------------
+  eps_actual_report_date = ""
   if (ticker_is_wheat == "Wheat"):
     try:
       eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
@@ -128,13 +121,24 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
-  # Check if the Last EPS Projections update date in older than a month or a qtr
+  # Get the earnings projected date from the earnings file
+  # ---------------------------------------------------------------------------
+  if 'Q_EPS_Projections_Date_0' in qtr_eps_df.columns:
+    eps_projection_date_0 = qtr_eps_df['Q_EPS_Projections_Date_0'].tolist()[0]
+    logging.debug ("Earnings file : " + str(earnings_file) + ", Projected EPS was last updated on " + str(eps_projection_date_0))
+    eps_projection_date_0_dt = dt.datetime.strptime(str(eps_projection_date_0), '%m/%d/%Y').date()
+  else:
+    logging.error("Column Q_EPS_Projections_Date_0 DOES NOT exist in " + str(earnings_file))
+    sys.exit(1)
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # Check if the Last EPS Projections update date is older than a month or a qtr
   # ---------------------------------------------------------------------------
   date_year = eps_projection_date_0_dt.year
   # print ("The Year when EPS Projection was updated is : ", date_year)
   if (date_year < 2019):
-    print ("\n\n==========     Error : The date for ", ticker, " EPS Projections is older than 2019     ==========")
-    continue
+    logging.error ("==========     Error : Seems like the projected EPS date is older than 2019. Please correct and rerun the script")
     sys.exit(1)
 
   if (eps_projection_date_0_dt < one_month_ago_date):
@@ -204,7 +208,7 @@ for ticker_raw in ticker_list:
   # 3. Find out the increase % of projections for each quarter
   no_of_eps_projections = len(eps_projections_most_recent_list)
 
-  logging.info("Checking if ALL the Projected EPS are postive")
+  logging.info("Checking if ALL the Projected EPS are positive")
   eps_projections_most_recent_all_positive = 1
   for eps_projection_idx in range(no_of_eps_projections):
     logging.debug ("\tEPS Projections Index :" + str(eps_projection_idx) + ", Projected EPS : " + str(eps_projections_most_recent_list[eps_projection_idx]))
@@ -241,6 +245,10 @@ for ticker_raw in ticker_list:
       logging.debug ("Good...All the future EPS Projections from most recent updates are increasing")
     else:
       logging.debug ("Not necessarily bad...could mean seasonality. All the future EPS Projections from most recent updates are NOT increasing")
+
+  # 1. if everything is looking good then find the growth rate of the projected EPS
+  # 2. Maybe also then find out if the ticker is below the channel or not - That can be calculated independently though...
+  # 3. Find out how to compare the most recent Projected Earnings with the second to last time they were updated....
 
   logging.info("")
   # ---------------------------------------------------------------------------
