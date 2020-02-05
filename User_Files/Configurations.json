@@ -172,6 +172,15 @@
     ]
   },
 
+  "GOOG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2015", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "2.5"}
+    ]
+  },
+
   "GNRC" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2016", "Stop_Date" :   "06/30/2019"}
@@ -383,7 +392,7 @@
     ]
   },
 
-  "JEC" : {
+  "J" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2018", "Stop_Date" :   "06/30/2019"}
     ],
@@ -1398,6 +1407,11 @@
   "ABG" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2013", "Stop_Date" :   "06/30/2019"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2016", "Stop_Date" :   "10/05/2017", "Adj_Amount" : "-.3"},
+      {"Start_Date" : "12/25/2015", "Stop_Date" :   "07/05/2016", "Adj_Amount" : "-.13"},
+      {"Start_Date" : "12/25/2014", "Stop_Date" :   "07/05/2015", "Adj_Amount" : ".13"}
     ]
   },
 
