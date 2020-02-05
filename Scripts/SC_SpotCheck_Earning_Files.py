@@ -80,12 +80,13 @@ gt_1_month_old_eps_projections_df = pd.DataFrame(columns=['Ticker','Date'])
 gt_1_qtr_old_eps_projections_df = pd.DataFrame(columns=['Ticker','Date'])
 likely_earnings_date_df = pd.DataFrame(columns=['Ticker','Date'])
 eps_report_newer_than_eps_projection_df = pd.DataFrame(columns=['Ticker','Earnings_Reported', 'Earnings_Projections_Updated'])
-projected_eps_direction_df = pd.DataFrame(columns=['Ticker','Earnings_Reported', 'Earnings_Projections_Updated_0', 'Earnings_Projections_Updated_1', 'Days_between_esp_projections_were_updated', 'Direction_of_latest_eps_projection', 'Direction_of_comparison_between_two_eps_projections'])
+projected_eps_analysis_df = pd.DataFrame(columns=['Ticker','All_Projected_EPS_Positive','EPS_2.5%','EPS_5%','EPS_7.5%','EPS_10%','Earnings_Reported', 'Earnings_Projections_Updated_0', 'Earnings_Projections_Updated_1', 'Days_between_esp_projections_were_updated', 'Direction_of_latest_eps_projection', 'Direction_of_comparison_between_two_eps_projections'])
 
 gt_1_month_old_eps_projections_df.set_index('Ticker', inplace=True)
 gt_1_qtr_old_eps_projections_df.set_index('Ticker', inplace=True)
 likely_earnings_date_df.set_index('Ticker', inplace=True)
 eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
+projected_eps_analysis_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -104,6 +105,14 @@ for ticker_raw in ticker_list:
   if (ticker_is_wheat != 'Wheat'):
     logging.debug(str(ticker) + " is not Wheat...skipping")
     continue
+
+  # Initialize the dataframe
+  projected_eps_analysis_df.loc[ticker, 'All_Projected_EPS_Positive'] = 0
+  projected_eps_analysis_df.loc[ticker, 'Earnings_Reported'] = "1900-01-01"
+  projected_eps_growth_rate_gt_10 = False
+  projected_eps_growth_rate_gt_7_5 = False
+  projected_eps_growth_rate_gt_5_0 = False
+  projected_eps_growth_rate_gt_2_5 = False
 
   # ---------------------------------------------------------------------------
   # Read the Earnings file
@@ -285,17 +294,23 @@ for ticker_raw in ticker_list:
     projected_eps_growth_rate_gt_5_0 = check_list_elements_with_val(projected_eps_growth_rate_list, 5)
     projected_eps_growth_rate_gt_2_5 = check_list_elements_with_val(projected_eps_growth_rate_list, 2.5)
     if (projected_eps_growth_rate_gt_10):
-      logging.debug("Projected EPS is growing at greater than 10% - compounded")
+      logging.debug("Projected EPS is growing at greater than 10% per quarter - compounded")
     elif (projected_eps_growth_rate_gt_7_5):
-      logging.debug("Projected EPS is growing at greater than 7.5% - compounded")
+      logging.debug("Projected EPS is growing at greater than 7.5% per quarter - compounded")
     elif (projected_eps_growth_rate_gt_5_0):
-      logging.debug("Projected EPS is growing at greater than 5% - compounded")
+      logging.debug("Projected EPS is growing at greater than 5% per quarter - compounded")
     elif (projected_eps_growth_rate_gt_2_5):
-      logging.debug("Projected EPS is growing at greater than 2.5% - compounded")
+      logging.debug("Projected EPS is growing at greater than 2.5% per quarter - compounded")
     else:
-      logging.debug("Projected EPS is growing at slower than 2.5% - compounded")
+      logging.debug("Projected EPS is growing at slower than 2.5% per quarter - compounded")
 
 
+  projected_eps_analysis_df.loc[ticker, 'All_Projected_EPS_Positive'] = eps_projections_most_recent_all_positive
+  projected_eps_analysis_df.loc[ticker, 'Earnings_Reported'] = eps_actual_report_date
+  projected_eps_analysis_df.loc[ticker, 'EPS_2.5%'] = projected_eps_growth_rate_gt_2_5
+  projected_eps_analysis_df.loc[ticker, 'EPS_5%'] = projected_eps_growth_rate_gt_5_0
+  projected_eps_analysis_df.loc[ticker, 'EPS_7.5%'] = projected_eps_growth_rate_gt_7_5
+  projected_eps_analysis_df.loc[ticker, 'EPS_10%'] = projected_eps_growth_rate_gt_10
 
   logging.debug("================================")
   logging.info("")
@@ -314,6 +329,7 @@ gt_1_month_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_month_old_
 gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_qtr_old_eps_projections_df.txt',sep=' ', index=True, header=False)
 likely_earnings_date_df.sort_values(by='Date').to_csv('likely_earnings_date.txt',sep=' ', index=True, header=False)
 eps_report_newer_than_eps_projection_df.sort_values(by='Earnings_Reported').to_csv('report_newer_than_earnings.txt',sep=' ', index=True, header=False)
+projected_eps_analysis_df.sort_values(by='Ticker').to_csv('projected_eps_analysis.csv', index=True, header=True)
 # -----------------------------------------------------------------------------
 
 
