@@ -7,6 +7,14 @@ import numpy as np
 import logging
 
 
+def check_list_elements_with_val(list1, val):
+  # traverse in the list
+  for x in list1:
+    # compare with all the values
+    # with val
+    if val >= x:
+      return False
+  return True
 
 # -----------------------------------------------------------------------------
 # Logging
@@ -86,6 +94,7 @@ eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
 # ticker_list = ['AUDC', 'MED']
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
+  logging.debug("================================")
   logging.info("Processing : " + str(ticker))
   # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
   if ticker in ["QQQ"]:
@@ -215,41 +224,80 @@ for ticker_raw in ticker_list:
     eps_projection = eps_projections_most_recent_list[eps_projection_idx]
     if (eps_projection < 0):
       eps_projections_most_recent_all_positive = 0
-
   if (eps_projections_most_recent_all_positive == 1):
     logging.debug ("Good...All the EPS Projections are positive")
+  else:
+    logging.debug ("Not necessarity bad...could mean seasonality, but certainly not the very best company. All the projected EPS are not positive...")
 
-    logging.info ("Comparing the Actual Last reported EPS with all the Projected EPS from most recent list to see if all the Projected EPS's are greater then the last reported EPS")
-    logging.debug ("Last Report Date : " + str(eps_actual_report_date) + " Matches with Quarter Date : " +str(qtr_eps_date_list_eps_actual_report_date_match) +  " and the EPS reported was : " + str(qtr_eps_actual_value))
-    eps_projections_most_recent_all_gt_last_reported_eps = 1
-    for eps_projection_idx in range(no_of_eps_projections):
-      logging.debug("\tEPS Projections Index :" + str(eps_projection_idx) + ", Projected EPS : " + str(eps_projections_most_recent_list[eps_projection_idx]))
-      eps_projection_x = eps_projections_most_recent_list[eps_projection_idx]
-      if (eps_projection_x < qtr_eps_actual_value):
-        eps_projections_most_recent_all_gt_last_reported_eps = 0
-    if (eps_projections_most_recent_all_gt_last_reported_eps == 1):
-      logging.debug ("Good...All the future Projected EPS from most recent updates are greater than the Most rencently reported Actual EPS")
-    else:
-      logging.debug ("Not necessarily bad...could mean seasonality. All the future Projected EPS most recent updates are NOT greater than the Most recently reported Actual EPS")
+  logging.info ("Comparing the Actual Last reported EPS with all the Projected EPS from most recent list to see if all(each) the Projected EPS's are greater then the last reported EPS")
+  logging.debug ("Last Report Date : " + str(eps_actual_report_date) + " Matches with Quarter Date : " +str(qtr_eps_date_list_eps_actual_report_date_match) +  " and the EPS reported was : " + str(qtr_eps_actual_value))
+  eps_projections_most_recent_all_gt_last_reported_eps = 1
+  for eps_projection_idx in range(no_of_eps_projections):
+    logging.debug("\tEPS Projections Index :" + str(eps_projection_idx) + ", Projected EPS : " + str(eps_projections_most_recent_list[eps_projection_idx]))
+    eps_projection_x = eps_projections_most_recent_list[eps_projection_idx]
+    if (eps_projection_x < qtr_eps_actual_value):
+      eps_projections_most_recent_all_gt_last_reported_eps = 0
+  if (eps_projections_most_recent_all_gt_last_reported_eps == 1):
+    logging.debug ("Good...All the future Projected EPS from most recent updates are greater than the Most rencently reported Actual EPS")
+  else:
+    logging.debug ("Not necessarily bad...could mean seasonality. All the future Projected EPS most recent updates are NOT greater than the Most recently reported Actual EPS")
 
-    logging.info ("Comparing the Projected EPS quarter by quarter successively to see if they are all increasing with each projected quarter")
-    eps_projections_most_recent_all_increasing = 1
-    for eps_projection_idx in range(no_of_eps_projections-1):
-      logging.debug("\tEPS Projections Index :" + str(eps_projection_idx) + ", Projected EPS : " + str(eps_projections_most_recent_list[eps_projection_idx]))
-      eps_projection_x = eps_projections_most_recent_list[eps_projection_idx]
-      eps_projection_x_plus1 = eps_projections_most_recent_list[eps_projection_idx+1]
-      if (eps_projection_x < eps_projection_x_plus1):
-        eps_projections_most_recent_all_increasing = 0
-
-    if (eps_projections_most_recent_all_increasing == 1):
-      logging.debug ("Good...All the future EPS Projections from most recent updates are increasing")
-    else:
-      logging.debug ("Not necessarily bad...could mean seasonality. All the future EPS Projections from most recent updates are NOT increasing")
+  logging.info ("Comparing the Projected EPS quarter by quarter successively to see if they are all increasing with each projected quarter")
+  eps_projections_most_recent_all_increasing = 1
+  for eps_projection_idx in range(no_of_eps_projections-1):
+    logging.debug("\tEPS Projections Index :" + str(eps_projection_idx) + ", Projected EPS : " + str(eps_projections_most_recent_list[eps_projection_idx]))
+    eps_projection_x = eps_projections_most_recent_list[eps_projection_idx]
+    eps_projection_x_plus1 = eps_projections_most_recent_list[eps_projection_idx+1]
+    if (eps_projection_x < eps_projection_x_plus1):
+      eps_projections_most_recent_all_increasing = 0
+  if (eps_projections_most_recent_all_increasing == 1):
+    logging.debug ("Good...All the future EPS Projections from most recent updates are increasing")
+  else:
+    logging.debug ("Not necessarily bad...could mean seasonality. All the future EPS Projections from most recent updates are NOT increasing")
 
   # 1. if everything is looking good then find the growth rate of the projected EPS
   # 2. Maybe also then find out if the ticker is below the channel or not - That can be calculated independently though...
   # 3. Find out how to compare the most recent Projected Earnings with the second to last time they were updated....
+  #   if (eps_projections_most_recent_all_positive == 1):
 
+  # if the projected earnings are all positive and are increasing then calculate the growth rate
+  projected_eps_growth_rate_list = []
+  for i in range(no_of_eps_projections-1):
+    projected_eps_growth_rate_list.append(float('nan'))
+
+  if (eps_projections_most_recent_all_positive == 1) and (eps_projections_most_recent_all_increasing == 1):
+    logging.info("Checking the growth rate of projected earnings. Will have to start in reverse to get the math right")
+    for eps_projection_idx in reversed(range(0,no_of_eps_projections)):
+      # logging.debug("\tEPS Projections Index : " + str(eps_projection_idx) + ", Projected EPS : " + str(eps_projections_most_recent_list[eps_projection_idx]))
+      if (eps_projection_idx == 0):
+        continue
+      eps_projection_x = eps_projections_most_recent_list[eps_projection_idx]
+      eps_projection_x_minus1 = eps_projections_most_recent_list[eps_projection_idx-1]
+      projected_eps_growth_rate = float((eps_projection_x_minus1 - eps_projection_x)/eps_projection_x)*100
+      logging.debug("\tEPS Projections Index : " + str(eps_projection_idx) + ", Next EPS Projections Index : " + str(eps_projection_idx-1) +
+                    ", Projected EPS : " + str(eps_projection_x) + ", Next Projected EPS : " + str(eps_projection_x_minus1) +
+                    ", Growth Rate : " + str(projected_eps_growth_rate))
+      projected_eps_growth_rate_list[eps_projection_idx-1] = projected_eps_growth_rate
+
+
+    projected_eps_growth_rate_gt_10 = check_list_elements_with_val(projected_eps_growth_rate_list, 10)
+    projected_eps_growth_rate_gt_7_5 = check_list_elements_with_val(projected_eps_growth_rate_list, 7.5)
+    projected_eps_growth_rate_gt_5_0 = check_list_elements_with_val(projected_eps_growth_rate_list, 5)
+    projected_eps_growth_rate_gt_2_5 = check_list_elements_with_val(projected_eps_growth_rate_list, 2.5)
+    if (projected_eps_growth_rate_gt_10):
+      logging.debug("Projected EPS is growing at greater than 10% - compounded")
+    elif (projected_eps_growth_rate_gt_7_5):
+      logging.debug("Projected EPS is growing at greater than 7.5% - compounded")
+    elif (projected_eps_growth_rate_gt_5_0):
+      logging.debug("Projected EPS is growing at greater than 5% - compounded")
+    elif (projected_eps_growth_rate_gt_2_5):
+      logging.debug("Projected EPS is growing at greater than 2.5% - compounded")
+    else:
+      logging.debug("Projected EPS is growing at slower than 2.5% - compounded")
+
+
+
+  logging.debug("================================")
   logging.info("")
   # ---------------------------------------------------------------------------
 
@@ -267,7 +315,6 @@ gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_qtr_old_eps_
 likely_earnings_date_df.sort_values(by='Date').to_csv('likely_earnings_date.txt',sep=' ', index=True, header=False)
 eps_report_newer_than_eps_projection_df.sort_values(by='Earnings_Reported').to_csv('report_newer_than_earnings.txt',sep=' ', index=True, header=False)
 # -----------------------------------------------------------------------------
-
 
 
 
