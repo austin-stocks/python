@@ -9,7 +9,6 @@ import shutil
 
 # Todo : Put the logger in
 # Todo : Maybe handle liner short/ linear long/ Log charts
-
 # # -----------------------------------------------------------------------------
 # # Read the master tracklist file into a dataframe
 # # -----------------------------------------------------------------------------
@@ -48,7 +47,7 @@ for ticker_raw in ticker_list:
     print ("File for ", ticker, "does not exist in earnings directory. Skipping...")
     continue
   ticker_is_wheat = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
-  if (ticker_is_wheat != 'Wheat') and (ticker_is_wheat != 'Essential'):
+  if (ticker_is_wheat != 'Wheat') and (ticker_is_wheat != 'Essential') and (ticker_is_wheat != 'Wheat_Chaff'):
     print (ticker , " is not Wheat or Essential...skipping")
     continue
 
