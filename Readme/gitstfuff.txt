@@ -1,3 +1,32 @@
+
+
+##=============================================================================
+-- how to setup GIT directory 
+## Go to the directory and execute the following commands (here I am assuming the directory is Lastest_Charts)
+AzureAD+SundeepChadha@LaptopOffice-T480 MINGW64 /c/Sundeep/Stocks_Automation/Latest_Charts (master)
+$ echo "# Latest_Charts" >> README.md
+
+AzureAD+SundeepChadha@LaptopOffice-T480 MINGW64 /c/Sundeep/Stocks_Automation/Latest_Charts (master)
+$ git init
+Initialized empty Git repository in C:/Sundeep/Stocks_Automation/Latest_Charts/.git/
+
+AzureAD+SundeepChadha@LaptopOffice-T480 MINGW64 /c/Sundeep/Stocks_Automation/Latest_Charts (master)
+$ git add README.md
+warning: LF will be replaced by CRLF in README.md.
+The file will have its original line endings in your working directory
+
+AzureAD+SundeepChadha@LaptopOffice-T480 MINGW64 /c/Sundeep/Stocks_Automation/Latest_Charts (master)
+$ git commit -m "First commit"
+[master (root-commit) 6fe6ac2] First commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+
+AzureAD+SundeepChadha@LaptopOffice-T480 MINGW64 /c/Sundeep/Stocks_Automation/Latest_Charts (master)
+$ git remote add origin https://github.com/austin-stocks/Latest_Charts.git
+
+## Then you can start adding/commit other files 
+##=============================================================================
+
 -- Set notepad++ as the editor
 git config --global core.editor "'C:/Program Files (x86)/Notepad++/notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
 
