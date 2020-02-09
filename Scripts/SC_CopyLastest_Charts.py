@@ -6,6 +6,7 @@ import datetime as dt
 import numpy as np
 import re
 import shutil
+import glob
 
 # Todo : Put the logger in
 # Todo : Maybe handle liner short/ linear long/ Log charts
@@ -31,7 +32,20 @@ master_tracklist_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 all_chart_files_list=os.listdir(dir_path + charts_dir + "\\")
 print ("The files in the chart direcotry are", all_chart_files_list)
-list( map( os.unlink, (os.path.join(dir_path + charts_latest_dir + "\\" ,f) for f in os.listdir(dir_path + charts_latest_dir + "\\")) ) )
+
+# This works - but it removes all the files in the directory - and that we don't want now
+# as it will delete (or try to delete) git stuff from the directory too.
+# list( map( os.unlink, (os.path.join(dir_path + charts_latest_dir + "\\" ,f) for f in os.listdir(dir_path + charts_latest_dir + "\\")) ) )
+# So now then get the jpg file in a list and then recurse over the list to
+# remove the files from the chart_latest_dir
+# jpg_file_list = [filename for filename in all_chart_files_list if 'jpg' in filename]
+jpg_file_list = glob.glob(dir_path + charts_latest_dir + "\\*.jpg" )
+print ("The Chart file list in the ", charts_latest_dir, " direcotory are :\n", jpg_file_list)
+for filePath in jpg_file_list:
+  try:
+    os.remove(filePath)
+  except:
+    print("Error while deleting file : ", filePath)
 time.sleep(3)
 
 # -----------------------------------------------------------------------------
