@@ -10,8 +10,7 @@ import logging
 def check_list_elements_with_val(list1, val):
   # traverse in the list
   for x in list1:
-    # compare with all the values
-    # with val
+    # compare with all the values with val
     if val >= x:
       return False
   return True
@@ -71,9 +70,15 @@ master_tracklist_df.set_index('Ticker', inplace=True)
 # Declare all the dataframes that we are going to need to write into txt file
 # and set their columns
 # -----------------------------------------------------------------------------
+ignore_qtr_eps_date_staleness_list = [
+'SNBR','CCI','GTLS','POOL','ACU','CDNS','PSB','CSGP','RUSHA','LAD','ASGN','BOOM','FAF','LH','SAH','YNDX','WCN',
+'TAYD','MEDP','OKE','LDOS','EME','ZBRA','MANT','MAS','MASI','CLH','FLS','QLYS','WYND','OLED','QDEL','FOXF','GNRC',
+'GPN','EQIX','AMT','ANET','AMOT','ALSN','HMSY','BABA',
+]
+
 today = dt.date.today()
 one_qtr_ago_date = today - dt.timedelta(days=80)
-one_month_ago_date = today - dt.timedelta(days=30)
+one_month_ago_date = today - dt.timedelta(days=15)
 logging.info("Today : " + str(today) +  " One month ago : " +str(one_month_ago_date) + " One qtr ago : " +str(one_qtr_ago_date))
 
 gt_1_month_old_eps_projections_df = pd.DataFrame(columns=['Ticker','Date'])
@@ -101,8 +106,8 @@ for ticker_raw in ticker_list:
   if ticker in ["QQQ"]:
     print ("File for ", ticker, "does not exist in earnings directory. Skipping...")
     continue
-  ticker_is_wheat = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
-  if (ticker_is_wheat != 'Wheat'):
+  quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
+  if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
     logging.debug(str(ticker) + " is not Wheat...skipping")
     continue
 
@@ -124,17 +129,16 @@ for ticker_raw in ticker_list:
 
   # ---------------------------------------------------------------------------
   # Get the last earnings report date from Master Tracklist
-  # if ((ticker_is_wheat == "Wheat") and pd.isnull(eps_actual_report_date)):
+  # if ((quality_of_stock == "Wheat") and pd.isnull(eps_actual_report_date)):
   # ---------------------------------------------------------------------------
   eps_actual_report_date = ""
-  if (ticker_is_wheat == "Wheat"):
-    try:
-      eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
-    except:
-      logging.error  ("**********************  ERROR ERROR ERROR ERROR ****************************")
-      logging.error (str(ticker) + " is wheat and does not have a earnings date in the Master Tracklist file. Exiting....")
-      logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
-      sys.exit(1)
+  try:
+    eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+  except:
+    logging.error  ("**********************  ERROR ERROR ERROR ERROR ****************************")
+    logging.error (str(ticker) + " is wheat and does not have a earnings date in the Master Tracklist file. Exiting....")
+    logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
+    sys.exit(1)
   eps_actual_report_date_dt = dt.datetime.strptime(str(eps_actual_report_date), '%Y-%m-%d').date()
   # ---------------------------------------------------------------------------
 
@@ -179,7 +183,18 @@ for ticker_raw in ticker_list:
     sys.exit()
   if (today > (eps_actual_report_date_dt  + dt.timedelta(days=50))):
     logging.debug("Last Earnings Reported Date was : " +str(eps_actual_report_date_dt) + ", Maybe the company will report soon again")
-    likely_earnings_date_df.loc[ticker] = [eps_actual_report_date_dt]
+    if (ticker not in ignore_qtr_eps_date_staleness_list):
+      likely_earnings_date_df.loc[ticker] = [eps_actual_report_date_dt]
+    else:
+      logging.info("**********************  WARNING WARNING WARNING ****************************")
+      logging.info("Found this ticker symbol in the ignore_qtr_eps_date_staleness_list and will IGNORE the date staleness")
+      logging.info("of the last earnings report date. I am assuming that that list is upto date")
+      logging.info("That YOU HAVE CHECKED FOR THE CORRECTNESS OF THE EARNINGS DATE (the company has actually NOT repored)")
+      logging.info("and you just want to ignore them getting reported in the likely_earnings_date for now to ")
+      logging.info("prevent clutter. Please remove the ticker from the ignore date as soon as the company reports earninga and")
+      logging.info("the earnings data is updated in the Master Tracklist file")
+      logging.info("**********************  WARNING WARNING WARNING ****************************")
+
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
