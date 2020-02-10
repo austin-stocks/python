@@ -27,6 +27,12 @@ $ git remote add origin https://github.com/austin-stocks/Latest_Charts.git
 ## Then you can start adding/commit other files 
 ##=============================================================================
 
+##=============================================================================
+If you want to clone the directory into a local machine - simply execute this command
+$ git clone  https://github.com/austin-stocks/Latest_Charts.git
+This will create a directory Latest_Charts and put stuff in there 
+##=============================================================================
+
 -- Set notepad++ as the editor
 git config --global core.editor "'C:/Program Files (x86)/Notepad++/notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
 
