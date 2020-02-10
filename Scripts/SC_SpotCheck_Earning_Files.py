@@ -15,12 +15,27 @@ def check_list_elements_with_val(list1, val):
       return False
   return True
 
+
+
+# -----------------------------------------------------------------------------
+# Read the master tracklist file into a dataframe
+# -----------------------------------------------------------------------------
+dir_path = os.getcwd()
+user_dir = "\\..\\" + "User_Files"
+log_dir = "\\..\\" + "Logs"
+master_tracklist_file = "Master_Tracklist.xlsx"
+master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
+master_tracklist_df.sort_values('Ticker', inplace=True)
+ticker_list_unclean = master_tracklist_df['Ticker'].tolist()
+ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+# The index can only be changed after the Ticker has been put to list
+# In other words index cannot be read as a list
+master_tracklist_df.set_index('Ticker', inplace=True)
+# -----------------------------------------------------------------------------
+
 # -----------------------------------------------------------------------------
 # Logging
 # -----------------------------------------------------------------------------
-# todo
-#  filename should be the name of the current file
-
 # Logging Levels
 # Level
 # CRITICAL
@@ -32,7 +47,7 @@ def check_list_elements_with_val(list1, val):
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
-                    filename='SC_SpotCheck_Earning_files.txt',
+                    filename=dir_path + log_dir + "\\" + 'SC_SpotCheck_Earning_files.txt',
                     filemode='w')
 # define a Handler which writes INFO messages or higher to the sys.stderr
 console = logging.StreamHandler()
@@ -47,22 +62,6 @@ logging.getLogger('').addHandler(console)
 # Disnable and enable global level logging
 logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
-# -----------------------------------------------------------------------------
-
-
-# -----------------------------------------------------------------------------
-# Read the master tracklist file into a dataframe
-# -----------------------------------------------------------------------------
-dir_path = os.getcwd()
-user_dir = "\\..\\" + "User_Files"
-master_tracklist_file = "Master_Tracklist.xlsx"
-master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
-master_tracklist_df.sort_values('Ticker', inplace=True)
-ticker_list_unclean = master_tracklist_df['Ticker'].tolist()
-ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
-# The index can only be changed after the Ticker has been put to list
-# In other words index cannot be read as a list
-master_tracklist_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 
 
@@ -340,11 +339,11 @@ logging.info("********************")
 # -----------------------------------------------------------------------------
 # Print all the df to their respective files
 # -----------------------------------------------------------------------------
-gt_1_month_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_month_old_eps_projections.txt',sep=' ', index=True, header=False)
-gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv('gt_1_qtr_old_eps_projections_df.txt',sep=' ', index=True, header=False)
-likely_earnings_date_df.sort_values(by='Date').to_csv('likely_earnings_date.txt',sep=' ', index=True, header=False)
-eps_report_newer_than_eps_projection_df.sort_values(by='Earnings_Reported').to_csv('report_newer_than_earnings.txt',sep=' ', index=True, header=False)
-projected_eps_analysis_df.sort_values(by='Ticker').to_csv('projected_eps_analysis.csv', index=True, header=True)
+gt_1_month_old_eps_projections_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_old_eps_projections.txt',sep=' ', index=True, header=False)
+gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_qtr_old_eps_projections_df.txt',sep=' ', index=True, header=False)
+likely_earnings_date_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'likely_earnings_date.txt',sep=' ', index=True, header=False)
+eps_report_newer_than_eps_projection_df.sort_values(by='Earnings_Reported').to_csv(dir_path + log_dir + "\\" + 'report_newer_than_earnings.txt',sep=' ', index=True, header=False)
+projected_eps_analysis_df.sort_values(by='Ticker').to_csv(dir_path + log_dir + "\\" + 'projected_eps_analysis.csv', index=True, header=True)
 # -----------------------------------------------------------------------------
 
 
