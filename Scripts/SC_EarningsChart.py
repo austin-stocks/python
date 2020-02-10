@@ -271,7 +271,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # From the Master Tracklist :
   # Get the last earning report date
-  # and the last datewhen EPS Projections were updated.
+  # and the last date when EPS Projections were updated.
   # The last earnings report date is used to :
   # Decide while vs black diamonds and Calculate the Analysts Adjustment factor
   # Both of them are dispalyed in the chart
@@ -2205,8 +2205,10 @@ for ticker_raw in ticker_list:
   date_time = now.strftime("%Y_%m_%d")
   if (chart_type == "Log"):
     fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+    plt.close(fig)
   else:
     fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+    plt.close(fig)
   logging.info("All Done")
   # Only show the plot if we are making only one chart
   if (len(ticker_list) == 1):
