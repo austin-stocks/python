@@ -1651,12 +1651,13 @@ for ticker_raw in ticker_list:
     # check if the date is in the plot range
   logging.debug ("The last black diamond is at index" + str(eps_date_list_eps_report_date_index) +  "and the date is" + str(eps_date_list_eps_report_date_match) + "and the repored Q EPS is " + str(qtr_eps_list[eps_date_list_eps_report_date_index]))
   # check if the date is in the plot range
-  if (date_list[plot_period_int] <= qtr_eps_date_list[eps_date_list_eps_report_date_index] <= date_list[0]):
-    if (qtr_eps_lim_lower <= qtr_eps_list[eps_date_list_eps_report_date_index] <= qtr_eps_lim_upper):
-      x = float("{0:.2f}".format(qtr_eps_list[eps_date_list_eps_report_date_index]))
-      main_plt.text(qtr_eps_date_list[eps_date_list_eps_report_date_index], qtr_eps_list[eps_date_list_eps_report_date_index], x, color='Purple',fontsize='small', fontstyle='italic',fontweight=1000,
-                    bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=0.1),horizontalalignment='center',verticalalignment='bottom')
-  logging.info("Printed the QTR EPS number on the chart (For the Last Black Diamond)")
+  for i in range(4):
+    if (date_list[plot_period_int] <= qtr_eps_date_list[eps_date_list_eps_report_date_index+i] <= date_list[0]):
+      if (qtr_eps_lim_lower <= qtr_eps_list[eps_date_list_eps_report_date_index+i] <= qtr_eps_lim_upper):
+        x = float("{0:.2f}".format(qtr_eps_list[eps_date_list_eps_report_date_index+i]))
+        main_plt.text(qtr_eps_date_list[eps_date_list_eps_report_date_index+i], qtr_eps_list[eps_date_list_eps_report_date_index+i], x, color='Purple',fontsize='small', fontstyle='italic',fontweight=1000,
+                      bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=0.1),horizontalalignment='center',verticalalignment='bottom')
+  logging.info("Printed the QTR EPS number on the chart (For the Last 4 reported quarters)")
   # -----------------------------------------------------------------------------
 
   # -----------------------------------------------------------------------------
@@ -2203,14 +2204,15 @@ for ticker_raw in ticker_list:
   now = dt.datetime.now()
   date_time = now.strftime("%Y_%m_%d_%H_%M")
   date_time = now.strftime("%Y_%m_%d")
-  if (chart_type == "Log"):
-    fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
-    plt.close(fig)
-  else:
-    fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
-    plt.close(fig)
-  logging.info("All Done")
   # Only show the plot if we are making only one chart
   if (len(ticker_list) == 1):
     plt.show()
+  else:
+    if (chart_type == "Log"):
+      fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+      plt.close(fig)
+    else:
+      fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+      plt.close(fig)
+  logging.info("All Done")
   # -----------------------------------------------------------------------------
