@@ -2327,7 +2327,7 @@
 
   "NMIH" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2016", "Stop_Date" :   "10/05/2017", "Adj_Amount" : "-.2"},
