@@ -5,6 +5,7 @@ import time
 import datetime as dt
 import numpy as np
 import logging
+import math
 
 
 def check_list_elements_with_val(list1, val):
@@ -14,8 +15,6 @@ def check_list_elements_with_val(list1, val):
     if val >= x:
       return False
   return True
-
-
 
 # -----------------------------------------------------------------------------
 # Read the master tracklist file into a dataframe
@@ -97,7 +96,6 @@ eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
 projected_eps_analysis_df.set_index('Ticker', inplace=True)
 eps_report_newer_tnan_eps_projection_df.set_index('Ticker', inplace=True)
 gt_1_month_old_historical_update_df.set_index('Ticker', inplace=True)
-
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -133,9 +131,10 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
-  # Read the Historical data file
+  # Read the Historical data file and check the date of the last date where the
+  # historical data is available. If it is more than a month then it is time to
+  # update historical data for the ticker
   # ---------------------------------------------------------------------------
-  import math
   historical_df = pd.read_csv(dir_path + historical_dir + "\\" + ticker + "_historical.csv")
   date_str_list = historical_df.Date.tolist()
   date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
