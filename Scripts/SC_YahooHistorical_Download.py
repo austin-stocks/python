@@ -7,6 +7,7 @@ import datetime
 import openpyxl
 import os
 import xlrd
+import time
 
 import pandas as pd
 from yahoofinancials import YahooFinancials
@@ -98,7 +99,7 @@ else:
 # =============================================================================
 i = 1
 for ticker_raw in ticker_list:
-
+  # time.sleep(1)
   missing_data_found = 0
   missing_data_index = ""
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
