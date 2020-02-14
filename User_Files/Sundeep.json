@@ -16,7 +16,7 @@
 
   "NMIH" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "02/13/2020","Buy_Price_str" :  "$30.12"}
+       {"Buy_Date" : "02/13/2020","Buy_Price_str" :  "$30.12\nInvestors wanted dividends/share repurchase.\nCompany said it needs capital to grow and can\nprovide very good ROI\nShares dropped anyway though"}
     ]
   },
 
@@ -30,7 +30,7 @@
   "AUDC" : {
     "Buy_Sell" : [
        {"Buy_Date" : "08/20/2019","Buy_Price_str" :  "$17.50"},
-       {"Buy_Date" : "01/28/2020","Buy_Price_str" :  "$24.75"}
+       {"Buy_Date" : "01/28/2020","Buy_Price_str" :  "$24.75\nCompany paid one time payment to get rid\nroyalty payments. It was a GAP only loss\nShares dropped 30%(intraday) in 3 days"}
     ]
   },
 

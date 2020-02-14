@@ -1,5 +1,5 @@
 Tickers,All Tickers,,VL_SS_Aggresive,,,VL_SS_Conservative,,VL_SS_Tickers,,,Indices,,,,,,,,,,,,,,,,,,,,
-CMG,YT ERP  ,,alrm,Hold,,ATSG,Esp_Rec,alrm,,,^GSPC,,,,,,,,,,,,,,,,,,,,
+AUDC,YT ERP  ,,alrm,Hold,,ATSG,Esp_Rec,alrm,,,^GSPC,,,,,,,,,,,,,,,,,,,,
 ,appf,,appf,Hold,,AGX,Esp_Rec,appf,,,^DJI,,,,,,,,,,,,,,,,,,,,
 ,A,,appn,Buy,,bcor,Esp_Rec,appn,,,^IXIC,,,,,,,,,,,,,,,,,,,,
 ,AA,,cvna,Hold,,bfam,Hold,cvna,,,,,,,,,,,,,,,,,,,,,,,
