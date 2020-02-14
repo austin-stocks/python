@@ -23,6 +23,8 @@ def check_list_elements_with_val(list1, val):
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
 log_dir = "\\..\\" + "Logs"
+earnings_dir = "\\..\\" + "Earnings"
+historical_dir = "\\..\\" + "Historical"
 master_tracklist_file = "Master_Tracklist.xlsx"
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
 master_tracklist_df.sort_values('Ticker', inplace=True)
@@ -85,12 +87,17 @@ gt_1_qtr_old_eps_projections_df = pd.DataFrame(columns=['Ticker','Date'])
 likely_earnings_date_df = pd.DataFrame(columns=['Ticker','Date'])
 eps_report_newer_than_eps_projection_df = pd.DataFrame(columns=['Ticker','Earnings_Reported', 'Earnings_Projections_Updated'])
 projected_eps_analysis_df = pd.DataFrame(columns=['Ticker','All_Projected_EPS_Positive','EPS_2.5%','EPS_5%','EPS_7.5%','EPS_10%','Earnings_Reported', 'Earnings_Projections_Updated_0', 'Earnings_Projections_Updated_1', 'Days_between_esp_projections_were_updated', 'Direction_of_latest_eps_projection', 'Direction_of_comparison_between_two_eps_projections'])
+eps_report_newer_tnan_eps_projection_df = pd.DataFrame(columns=['Ticker','Actual_EPS_Report','EPS_Projections_Last_Updated'])
+gt_1_month_old_historical_update_df = pd.DataFrame(columns=['Ticker','Date'])
 
 gt_1_month_old_eps_projections_df.set_index('Ticker', inplace=True)
 gt_1_qtr_old_eps_projections_df.set_index('Ticker', inplace=True)
 likely_earnings_date_df.set_index('Ticker', inplace=True)
 eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
 projected_eps_analysis_df.set_index('Ticker', inplace=True)
+eps_report_newer_tnan_eps_projection_df.set_index('Ticker', inplace=True)
+gt_1_month_old_historical_update_df.set_index('Ticker', inplace=True)
+
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -122,9 +129,24 @@ for ticker_raw in ticker_list:
   # Read the Earnings file
   # ---------------------------------------------------------------------------
   earnings_file = ticker + "_earnings.csv"
-  earnings_file_fullpath = os.path.join("C:\Sundeep\Stocks_Automation\Earnings", earnings_file)
-  qtr_eps_df = pd.read_csv(earnings_file_fullpath)
+  qtr_eps_df = pd.read_csv(dir_path + earnings_dir + "\\" + earnings_file)
   # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # Read the Historical data file
+  # ---------------------------------------------------------------------------
+  import math
+  historical_df = pd.read_csv(dir_path + historical_dir + "\\" + ticker + "_historical.csv")
+  date_str_list = historical_df.Date.tolist()
+  date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
+  ticker_adj_close_list = historical_df.Adj_Close.tolist()
+  ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
+  ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
+  if (ticker_curr_date < one_month_ago_date):
+    logging.debug("Historical Data was last updated on : " + str(ticker_curr_date) + ", more than a month ago")
+    gt_1_month_old_historical_update_df.loc[ticker]= [ticker_curr_date]
+  # ---------------------------------------------------------------------------
+
 
   # ---------------------------------------------------------------------------
   # Get the last earnings report date from Master Tracklist
@@ -203,7 +225,7 @@ for ticker_raw in ticker_list:
   # and so the earnings file needs to be updated now with the eps projections
   if (eps_actual_report_date_dt > eps_projection_date_0_dt):
     logging.debug("EPS projections were updated on " + str(eps_projection_date_0_dt) + ", which is before the company reported Earnings : " + str(eps_actual_report_date_dt) + ". This is unusual...please fix immediately")
-    eps_report_newer_tnan_eps_projection_df.loc[ticker] = [eps_report_date_dt,eps_projection_date_0_dt]
+    eps_report_newer_tnan_eps_projection_df.loc[ticker] = [eps_actual_report_date_dt,eps_projection_date_0_dt]
   # ---------------------------------------------------------------------------
 
 
@@ -344,6 +366,7 @@ gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv(dir_path + log_dir
 likely_earnings_date_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'likely_earnings_date.txt',sep=' ', index=True, header=False)
 eps_report_newer_than_eps_projection_df.sort_values(by='Earnings_Reported').to_csv(dir_path + log_dir + "\\" + 'report_newer_than_earnings.txt',sep=' ', index=True, header=False)
 projected_eps_analysis_df.sort_values(by='Ticker').to_csv(dir_path + log_dir + "\\" + 'projected_eps_analysis.csv', index=True, header=True)
+gt_1_month_old_historical_update_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_historica_update.txt',sep=' ', index=True, header=False)
 # -----------------------------------------------------------------------------
 
 
