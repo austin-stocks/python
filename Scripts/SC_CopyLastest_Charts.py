@@ -17,6 +17,7 @@ dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
 charts_dir = "\\..\\" + "Charts"
 charts_latest_dir = "\\..\\" + "Latest_Charts"
+log_dir = "\\..\\" + "Logs"
 
 master_tracklist_file = "Master_Tracklist.xlsx"
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
@@ -47,8 +48,10 @@ for filePath in jpg_file_list:
   except:
     print("Error while deleting file : ", filePath)
 time.sleep(3)
-
 # -----------------------------------------------------------------------------
+
+charts_by_age_df = pd.DataFrame(columns=['Ticker','Date'])
+charts_by_age_df.set_index('Ticker', inplace=True)
 
 # -----------------------------------------------------------------------------
 # Loop through all the wheat tickers in the master Tracklist file
@@ -97,6 +100,17 @@ for ticker_raw in ticker_list:
     ticker_latest_chart_filename = ticker + "_" + ticker_latest_chart + ".jpg"
     print ("The latest file for ", ticker, "is", ticker_latest_chart_filename)
 
+  # Get the date of the latest chart for the ticker in a dataframe
+  # We will use this to find out how old(ageed) the chart is and whether it
+  # is time to make the chart for the ticker again.
+  # The idea is to not have a chart that is more than one month old. If there is
+  # then it is time to update the chart - and this helps to find out whether
+  # there are any charts that are old
+  charts_by_age_df.loc[ticker] = [ticker_chart_date_list[0]]
+
   # Copy the chart file - that was the youngest - to the desitnation directory as ticker_Latest.jpg
   shutil.copy2(dir_path + charts_dir + "\\" + ticker_latest_chart_filename, dir_path + charts_latest_dir + "\\" + ticker + "_Latest.jpg")
+
+# Put this in a file in log directory
+charts_by_age_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'charts_by_age.txt',sep=' ', index=True, header=False)
 
