@@ -2205,14 +2205,17 @@ for ticker_raw in ticker_list:
   date_time = now.strftime("%Y_%m_%d_%H_%M")
   date_time = now.strftime("%Y_%m_%d")
   # Only show the plot if we are making only one chart
-  if (len(ticker_list) == 1):
-    plt.show()
-  else:
-    if (chart_type == "Log"):
-      fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
-      plt.close(fig)
+  if (chart_type == "Log"):
+    fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+    if (len(ticker_list) == 1):
+      plt.show()
     else:
-      fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+      plt.close(fig)
+  else:
+    fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+    if (len(ticker_list) == 1):
+      plt.show()
+    else:
       plt.close(fig)
   logging.info("All Done")
   # -----------------------------------------------------------------------------
