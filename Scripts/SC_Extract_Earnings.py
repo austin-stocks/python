@@ -25,6 +25,10 @@ dir_path = os.getcwd()
 
 print ("The current directory is", dir_path)
 user_dir = "\\..\\" + "User_Files"
+stock_files_dir = "\\Experiments\\" + "Stock_Files"
+yesterday_dt = dt.datetime.now() - dt.timedelta(days=1)
+yesterday_str = yesterday_dt.strftime("%m/%d/%Y")
+
 tracklist_df = pd.read_csv(dir_path + user_dir + "\\" + 'Tracklist.csv')
 ticker_list_unclean = tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
@@ -34,7 +38,7 @@ for ticker_raw in ticker_list:
   print("Getting Earnings for ", ticker)
 
   # todo : Why does this not work here?
-  # earnings_df = pd.read_excel(dir_path + "\\" + "Stock_Files" + "\\" + ticker + '.xlsm', sheet_name="historical")
+  # earnings_df = pd.read_excel(dir_path + stock_files_dir + "\\" + ticker + '.xlsm', sheet_name="historical")
   earnings_df = pd.read_excel('C:\Sundeep\Stocks_Automation\Scripts\Experiments\Stocks_Files' + "\\" + ticker + '.xlsm', sheet_name="historical")
 
   # print ("The Historical Tab (which contains earnings data) from the stock file is :", earnings_df)
@@ -48,8 +52,6 @@ for ticker_raw in ticker_list:
   qtr_eps_list = earnings_df['Q EPS'].tolist()
   projected_eps_list = earnings_df['projection'].tolist()
   # print ("The Raw Date list is :", date_list)
-
-  # Check if the length of all the columns are equal
 
   # This works : The create a dataframe from a list of lists
   step1_df=pd.DataFrame(list(zip(date_list, qtr_eps_list, projected_eps_list)),
@@ -79,12 +81,12 @@ for ticker_raw in ticker_list:
   # Extract the lists and write csv file
   # ===========================================================================
   csvFile=open('Experiments\\Extracted_Earnings' + "\\" + ticker + "_earnings.csv", 'w+', newline='')
-  writer = csv.writer(csvFile)
+  writer = csv.writer(csvFile, delimiter=',')
   # Put the Header Row in the csv
-  writer.writerow(["Date", "Q_EPS_Diluted"])
+  writer.writerow(["Q_Date", "Q_EPS_Diluted","Q_EPS_Projections_Date_0","Q_EPS_Projections_1","Q_EPS_Projections_Date_1","Q_EPS_Projections_2","Q_EPS_Projections_Date_2","Q_EPS_Projections_2","Q_EPS_Projections_Date_2"])
 
-  # step1_date_list = [dt.datetime.strptime(date, '%Y-%m-%d').date() for date in step1_df.Date.tolist()]
-  step1_date_list = [dt.datetime.strptime(date, '%Y-%m-%d %H:%M:%S').date() for date in step1_df.Date.tolist()]
+  step1_date_list = [dt.datetime.strptime(date, '%Y-%m-%d').date() for date in step1_df.Date.tolist()]
+  # step1_date_list = [dt.datetime.strptime(date, '%Y-%m-%d %H:%M:%S').date() for date in step1_df.Date.tolist()]
   step1_eps_list = step1_df['Q EPS'].tolist()
   step1_projected_eps_list = step1_df['projection'].tolist()
 
@@ -94,6 +96,8 @@ for ticker_raw in ticker_list:
     step1_eps = step1_eps_list[tmp_index]
     step1_projected_eps = step1_projected_eps_list[tmp_index]
     # print ("Index : ", tmp_index, ", Date is : ", x, ", Q EPS is : ", step1_eps, ", Projected EPS is : ", step1_projected_eps)
+
+    # If this is the date where the earnings are present
     if (str(step1_eps) != 'nan'):
       # print ("CSV String is :", csv_line)
       if (tmp_index > 0):
@@ -103,12 +107,21 @@ for ticker_raw in ticker_list:
       # print ("Found 1st Instance")
       csv_line.insert(0, x.strftime('%m/%d/%Y'))
       csv_line.insert(1, step1_eps)
-      csv_line.insert(2, step1_projected_eps)
-      insert_index = 3
+      if (tmp_index == 0):
+        csv_line.insert(2, yesterday_str)
+      else:
+        csv_line.insert(2, "")
+      csv_line.insert(3, step1_projected_eps)
+      insert_index = 4
+    # We have finished all the projections
     else:
-      csv_line.insert(insert_index, step1_projected_eps)
-      insert_index = insert_index+1
+      csv_line.insert(insert_index, "")
+      csv_line.insert(insert_index+1, step1_projected_eps)
+      insert_index = insert_index+2
     tmp_index = tmp_index+1
 
 csvFile.close()
+
+# tmp_df = pd.read_csv('Experiments\\Extracted_Earnings' + "\\" + ticker + "_earnings.csv")
+
 
