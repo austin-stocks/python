@@ -48,7 +48,7 @@ master_tracklist_df.set_index('Ticker', inplace=True)
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
-                    filename=dir_path + log_dir + "\\" + 'SC_SpotCheck_Earning_files.txt',
+                    filename=dir_path + log_dir + "\\" + 'SC_SpotCheck_Earning_files_debug.txt',
                     filemode='w')
 # define a Handler which writes INFO messages or higher to the sys.stderr
 console = logging.StreamHandler()

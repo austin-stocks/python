@@ -47,7 +47,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
-                    filename=dir_path + log_dir + "\\" + 'SC_Extract_Earnings.txt',
+                    filename=dir_path + log_dir + "\\" + 'SC_Extract_Earnings_debug.txt',
                     filemode='w')
 # define a Handler which writes INFO messages or higher to the sys.stderr
 console = logging.StreamHandler()
