@@ -67,7 +67,7 @@ logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
 all_chart_files_list=os.listdir(dir_path + charts_dir + "\\")
-logging.debug ("The files in the chart direcotry are" + str(all_chart_files_list))
+logging.debug("The files in the chart direcotry are" + str(all_chart_files_list))
 
 # -----------------------------------------------------------------------------
 # Declare all the dataframes that we are going to need to write into txt file
@@ -111,7 +111,7 @@ for ticker_raw in ticker_list:
   logging.info("Processing : " + str(ticker))
   # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
   if ticker in ["QQQ"]:
-    logging.info ("File for " + str(ticker) + "does not exist in earnings directory. Skipping...")
+    logging.info("File for " + str(ticker) + "does not exist in earnings directory. Skipping...")
     continue
   quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
   if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
@@ -141,14 +141,19 @@ for ticker_raw in ticker_list:
   try:
     eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
   except:
-    logging.error  ("**********************  ERROR ERROR ERROR ERROR ****************************")
-    logging.error (str(ticker) + " is wheat and does not have a earnings date in the Master Tracklist file. Exiting....")
+    logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
+    logging.error(str(ticker) + " is wheat and does not have a earnings date in the Master Tracklist file. Exiting....")
     logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
     sys.exit(1)
   eps_actual_report_date_dt = dt.datetime.strptime(str(eps_actual_report_date), '%Y-%m-%d').date()
+  if (eps_actual_report_date_dt > dt.date.today()):
+    logging.error("  The Last quarterly earnings date for " + str(ticker) + " is " + str(eps_actual_report_date_dt) + " which is in future... :-(")
+    logging.error("  This seems like a typo :-)...Please correct it in Master Tracklist file and rerun")
+    sys.exit(1)
+
   date_year = eps_actual_report_date_dt.year
   if (date_year < 2019):
-    logging.error ("==========     Error : The date for " + str(ticker) + " last earnings is older than 2019     ==========")
+    logging.error("==========     Error : The date for " + str(ticker) + " last earnings is older than 2019     ==========")
     sys.exit()
   earnings_last_reporeted_df.loc[ticker]= [eps_actual_report_date_dt]
   # ---------------------------------------------------------------------------
@@ -161,7 +166,7 @@ for ticker_raw in ticker_list:
 
   if 'Q_EPS_Projections_Date_0' in qtr_eps_df.columns:
     eps_projection_date_0 = qtr_eps_df['Q_EPS_Projections_Date_0'].tolist()[0]
-    logging.debug ("Earnings file : " + str(earnings_file) + ", Projected EPS was last updated on " + str(eps_projection_date_0))
+    logging.debug("Earnings file : " + str(earnings_file) + ", Projected EPS was last updated on " + str(eps_projection_date_0))
     eps_projection_date_0_dt = dt.datetime.strptime(str(eps_projection_date_0), '%m/%d/%Y').date()
   else:
     logging.error("Column Q_EPS_Projections_Date_0 DOES NOT exist in " + str(earnings_file))
@@ -169,8 +174,13 @@ for ticker_raw in ticker_list:
   date_year = eps_projection_date_0_dt.year
 
   if (date_year < 2019):
-    logging.error ("==========     Error : Seems like the projected EPS date is older than 2019. Please correct and rerun the script")
+    logging.error("==========     Error : Seems like the projected EPS date is older than 2019. Please correct and rerun the script")
     sys.exit(1)
+  if (eps_projection_date_0_dt > dt.date.today()):
+    logging.error("  The  Q_EPS_Projections_Date_0 date for " + str(ticker) + " is " + str(eps_projection_date_0_dt) + " which is in future... :-(")
+    logging.error("  This seems like a typo :-)...Please correct it in Earnings csv file and rerun")
+    sys.exit(1)
+
   eps_projections_last_updated_df.loc[ticker]= [eps_projection_date_0_dt]
 
   if (eps_projection_date_0_dt < one_month_ago_date):
@@ -196,20 +206,20 @@ for ticker_raw in ticker_list:
   for ticker_chart_filename in ticker_chart_files_list:
     # Check the length of the filename - it should be number of characters in the ticker and 16
     if len(ticker_chart_filename) > (len(ticker) + 16):
-      logging.error ("Error : The filename " + str(ticker_chart_filename) + " has more characters than allowed")
+      logging.error("Error : The filename " + str(ticker_chart_filename) + " has more characters than allowed")
       continue
 
     # Remove the .jpg at the end and then get the last 10 characters of the filename
     ticker_chart_date_str = (ticker_chart_filename[:-4])[-10:]
     ticker_chart_date_dt = dt.datetime.strptime(ticker_chart_date_str, "%Y_%m_%d")
-    logging.debug ("The date string for " + str(ticker_chart_filename) + "is " + str(ticker_chart_date_str) + "and the datetime is " + str(ticker_chart_date_dt))
+    logging.debug("The date string for " + str(ticker_chart_filename) + "is " + str(ticker_chart_date_str) + "and the datetime is " + str(ticker_chart_date_dt))
     ticker_chart_date_list.append(ticker_chart_date_dt)
 
-  logging.debug ("The datetime list for "+ str(ticker) + " is " + str(ticker_chart_date_list))
+  logging.debug("The datetime list for "+ str(ticker) + " is " + str(ticker_chart_date_list))
   # Sort the list to the get the latest (youngest) datetime
   # and create a string for the ticker filename from the string
   ticker_chart_date_list.sort(reverse=True)
-  logging.debug ("The datetime SORTED list for " + str(ticker) + " is " + str(ticker_chart_date_list))
+  logging.debug("The datetime SORTED list for " + str(ticker) + " is " + str(ticker_chart_date_list))
   charts_last_updated_df.loc[ticker] = [ticker_chart_date_list[0]]
   # ---------------------------------------------------------------------------
 
