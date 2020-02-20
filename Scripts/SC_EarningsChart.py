@@ -1651,7 +1651,7 @@ for ticker_raw in ticker_list:
     # check if the date is in the plot range
   logging.debug ("The last black diamond is at index" + str(eps_date_list_eps_report_date_index) +  "and the date is" + str(eps_date_list_eps_report_date_match) + "and the repored Q EPS is " + str(qtr_eps_list[eps_date_list_eps_report_date_index]))
   # check if the date is in the plot range
-  for i in range(4):
+  for i in range(5):
     if (date_list[plot_period_int] <= qtr_eps_date_list[eps_date_list_eps_report_date_index+i] <= date_list[0]):
       if (qtr_eps_lim_lower <= qtr_eps_list[eps_date_list_eps_report_date_index+i] <= qtr_eps_lim_upper):
         x = float("{0:.2f}".format(qtr_eps_list[eps_date_list_eps_report_date_index+i]))
