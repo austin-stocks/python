@@ -190,6 +190,17 @@ for ticker_raw in ticker_list:
   if (eps_projection_date_0_dt < one_qtr_ago_date):
     logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a quarter ago")
     gt_1_qtr_old_eps_projections_last_updated_df.loc[ticker]= [eps_projection_date_0_dt]
+
+  if (eps_actual_report_date_dt > eps_projection_date_0_dt):
+    logging.error("The Earnings report date : " + str(eps_actual_report_date_dt) + " is newer than the earnings projection date : " + str(eps_projection_date_0_dt))
+    logging.error("I don't understand how you let it happen - The possible reasons could be ")
+    logging.error("1. You forgot to update the Earnings projection on the Earnings report date....Ok. I understand. Plese update the eranings projections now and rerun ")
+    logging.error("2. You mistyped the date (either the earnings report date in master tracklist or more likely in for earnings projections in earning file...I understand. It happens sometimes. Please fix and rerun")
+    logging.error("3. You did not update the Earnings projection on the Earnings report date intentionally....BAD BAD....How can you do that???? ")
+    eps_report_newer_than_eps_projection_df.loc[ticker, 'Actual_EPS_Report'] = eps_actual_report_date_dt
+    eps_report_newer_than_eps_projection_df.loc[ticker, 'EPS_Projections_Last_Updated'] = eps_projection_date_0_dt
+    # sys.exit(1)
+
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -227,26 +238,46 @@ for ticker_raw in ticker_list:
   logging.debug("")
   # ---------------------------------------------------------------------------
 
+
+# -----------------------------------------------------------------------------
+# Print all the df to their respective files
+# -----------------------------------------------------------------------------
+logging.info("")
+logging.info("Now saving sorted data in " + str(dir_path + log_dir) + " directory")
+logging.info("All the files with sorted data will be available there. Please look there when the script completes")
+historical_last_updated_logfile = "historical_last_updated.txt"
+earnings_last_reported_logfile = "earnings_last_reported.txt"
+eps_projections_last_updated_logfile = "eps_projections_last_updated.txt"
+charts_last_updated_logfile = "charts_last_updated.txt"
+eps_report_newer_than_eps_projection_logfile = "eps_report_newer_than_eps_projection.txt"
+
+
+historical_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + historical_last_updated_logfile,sep=' ', index=True, header=False)
+earnings_last_reporeted_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
+eps_projections_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
+charts_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + charts_last_updated_logfile,sep=' ', index=True, header=False)
+eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=False)
+logging.info("Created : " + str(historical_last_updated_logfile) + " <-- Tickers sorted by date - old to new - as to when their historical Prices were updated in their respective historical file")
+logging.info("Created : " + str(earnings_last_reported_logfile) + " <-- Tickers sorted by date - old to new - as to when their Last Earnings were updated in Master_Tracklist file")
+logging.info("Created : " + str(eps_projections_last_updated_logfile) + " <-- Tickers sorted by date - old to new - as to when their Earnings Projections were updated in their respective Earnings file")
+logging.info("Created : " + str(charts_last_updated_logfile) + " <-- Tickers sorted by date - old to new - as to when their Charts were creates in the Charts directory")
+logging.info("Created : " + str(eps_report_newer_than_eps_projection_logfile) + " <-- THIS FILE SHOULD BE EMPTY. It is a BAD thing if this file is not emptly. The file has the tickers for which the earnings projections are newer than the reported earnings date")
+if (len(eps_report_newer_than_eps_projection_df.index) > 0):
+  logging.error(eps_report_newer_than_eps_projection_logfile + " is not empty...You gotta investigate it")
+
+# This is not needed as we get the data from the above files anyway .... However this works and if needed can be
+# resurrected.
+# gt_1_month_old_historical_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_historical_last_updated.txt',sep=' ', index=True, header=False)
+# gt_1_month_old_eps_projections_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_old_eps_projections_last_updated.txt',sep=' ', index=True, header=False)
+# gt_1_qtr_old_eps_projections_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_qtr_old_eps_projections_last_updated.txt',sep=' ', index=True, header=False)
+# gt_1_month_charts_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_charts_last_updated.txt',sep=' ', index=True, header=False)
+
 logging.info("")
 logging.info("********************")
 logging.info("***** All Done *****")
 logging.info("********************")
 
 
-# -----------------------------------------------------------------------------
-# Print all the df to their respective files
-# -----------------------------------------------------------------------------
-historical_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'historical_last_updated.txt',sep=' ', index=True, header=False)
-earnings_last_reporeted_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'earnings_last_reporeted.txt',sep=' ', index=True, header=False)
-eps_projections_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'eps_projections_last_updated.txt',sep=' ', index=True, header=False)
-charts_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'charts_last_updated.txt',sep=' ', index=True, header=False)
-eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + 'eps_report_newer_than_eps_projection.txt',sep=' ', index=True, header=False)
-
-
-gt_1_month_old_historical_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_historical_last_updated.txt',sep=' ', index=True, header=False)
-gt_1_month_old_eps_projections_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_old_eps_projections_last_updated.txt',sep=' ', index=True, header=False)
-gt_1_qtr_old_eps_projections_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_qtr_old_eps_projections_last_updated.txt',sep=' ', index=True, header=False)
-gt_1_month_charts_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_charts_last_updated.txt',sep=' ', index=True, header=False)
 # -----------------------------------------------------------------------------
 
 

@@ -360,12 +360,12 @@ logging.info("********************")
 # -----------------------------------------------------------------------------
 # Print all the df to their respective files
 # -----------------------------------------------------------------------------
-gt_1_month_old_eps_projections_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_old_eps_projections.txt',sep=' ', index=True, header=False)
-gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_qtr_old_eps_projections_df.txt',sep=' ', index=True, header=False)
-likely_earnings_date_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'likely_earnings_date.txt',sep=' ', index=True, header=False)
-eps_report_newer_than_eps_projection_df.sort_values(by='Earnings_Reported').to_csv(dir_path + log_dir + "\\" + 'report_newer_than_earnings.txt',sep=' ', index=True, header=False)
+# gt_1_month_old_eps_projections_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_old_eps_projections.txt',sep=' ', index=True, header=False)
+# gt_1_qtr_old_eps_projections_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_qtr_old_eps_projections_df.txt',sep=' ', index=True, header=False)
+# likely_earnings_date_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'likely_earnings_date.txt',sep=' ', index=True, header=False)
+# eps_report_newer_than_eps_projection_df.sort_values(by='Earnings_Reported').to_csv(dir_path + log_dir + "\\" + 'report_newer_than_earnings.txt',sep=' ', index=True, header=False)
 projected_eps_analysis_df.sort_values(by='Ticker').to_csv(dir_path + log_dir + "\\" + 'projected_eps_analysis.csv', index=True, header=True)
-gt_1_month_old_historical_update_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_historica_update.txt',sep=' ', index=True, header=False)
+# gt_1_month_old_historical_update_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_historica_update.txt',sep=' ', index=True, header=False)
 # -----------------------------------------------------------------------------
 
 
