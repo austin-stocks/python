@@ -252,10 +252,11 @@ charts_last_updated_logfile = "charts_last_updated.txt"
 eps_report_newer_than_eps_projection_logfile = "eps_report_newer_than_eps_projection.txt"
 
 
-historical_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + historical_last_updated_logfile,sep=' ', index=True, header=False)
-earnings_last_reporeted_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
-eps_projections_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
-charts_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + charts_last_updated_logfile,sep=' ', index=True, header=False)
+
+historical_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + historical_last_updated_logfile,sep=' ', index=True, header=False)
+earnings_last_reporeted_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
+eps_projections_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
+charts_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + charts_last_updated_logfile,sep=' ', index=True, header=False)
 eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=False)
 logging.info("Created : " + str(historical_last_updated_logfile) + " <-- Tickers sorted by date - old to new - as to when their historical Prices were updated in their respective historical file")
 logging.info("Created : " + str(earnings_last_reported_logfile) + " <-- Tickers sorted by date - old to new - as to when their Last Earnings were updated in Master_Tracklist file")
