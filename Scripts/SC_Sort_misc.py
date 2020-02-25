@@ -257,14 +257,16 @@ historical_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,Tru
 earnings_last_reporeted_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
 eps_projections_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
 charts_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + charts_last_updated_logfile,sep=' ', index=True, header=False)
-eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=False)
+eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=True)
 logging.info("Created : " + str(historical_last_updated_logfile) + " <-- Tickers sorted by date - old to new - as to when their historical Prices were updated in their respective historical file")
 logging.info("Created : " + str(earnings_last_reported_logfile) + " <-- Tickers sorted by date - old to new - as to when their Last Earnings were updated in Master_Tracklist file")
 logging.info("Created : " + str(eps_projections_last_updated_logfile) + " <-- Tickers sorted by date - old to new - as to when their Earnings Projections were updated in their respective Earnings file")
 logging.info("Created : " + str(charts_last_updated_logfile) + " <-- Tickers sorted by date - old to new - as to when their Charts were creates in the Charts directory")
 logging.info("Created : " + str(eps_report_newer_than_eps_projection_logfile) + " <-- THIS FILE SHOULD BE EMPTY. It is a BAD thing if this file is not emptly. The file has the tickers for which the earnings projections are newer than the reported earnings date")
 if (len(eps_report_newer_than_eps_projection_df.index) > 0):
-  logging.error(eps_report_newer_than_eps_projection_logfile + " is not empty...You gotta investigate it")
+  logging.error("*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+")
+  logging.error("               " + str(eps_report_newer_than_eps_projection_logfile) + " IS NOT EMPTY...YOU GOTTA INVESTIGATE IT")
+  logging.error("*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+")
 
 # This is not needed as we get the data from the above files anyway .... However this works and if needed can be
 # resurrected.
