@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import calendar
+import logging
 
 from matplotlib.offsetbox import AnchoredText
 from SC_logger import my_print as my_print
@@ -131,16 +132,30 @@ def smooth_list(l):
 # Fix the analyst accuracy for the new earnings file format
 # -----------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Define the various filenames and Directory Paths to be used
+# ---------------------------------------------------------------------------
+# Find who is running the script and then read the json file for
+# that individual, if it exists
+who_am_i = os.getlogin()
+my_hostname = socket.gethostname()
+
+dir_path = os.getcwd()
+user_dir = "\\..\\" + "User_Files"
+chart_dir = "..\\" + "Charts"
+historical_dir = "\\..\\" + "Historical"
+earnings_dir = "\\..\\" + "Earnings"
+dividend_dir = "\\..\\" + "Dividend"
+log_dir = "\\..\\" + "Logs"
 
 # ---------------------------------------------------------------------------
 # Set Logging
 # critical, error, warning, info, debug
 # set up logging to file - see previous section for more details
-import logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
-                    filename='Logging_Experiment.txt',
+                    filename=dir_path + log_dir + "\\" + 'SC_EarningsChart_debug.txt',
                     filemode='w')
 # define a Handler which writes INFO messages or higher to the sys.stderr
 console = logging.StreamHandler()
@@ -157,24 +172,6 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # ---------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------
-# Define the various filenames and Directory Paths to be used
-# ---------------------------------------------------------------------------
-logger_setup = logging.getLogger('Setup')
-# Find who is running the script and then read the json file for
-# that individual, if it exists
-who_am_i = os.getlogin()
-my_hostname = socket.gethostname()
-debug_str = "I am " + who_am_i + "and I am running on " + my_hostname
-logger_setup.debug(debug_str)
-
-dir_path = os.getcwd()
-user_dir = "\\..\\" + "User_Files"
-chart_dir = "..\\" + "Charts"
-historical_dir = "\\..\\" + "Historical"
-earnings_dir = "\\..\\" + "Earnings"
-dividend_dir = "\\..\\" + "Dividend"
-log_dir = "\\..\\" + "Logs"
 tracklist_file = "Tracklist.csv"
 schiller_pe_monthly_file = "Schiller_PE_by_Month.csv"
 master_tracklist_file = "Master_Tracklist.xlsx"
@@ -182,28 +179,26 @@ tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
 configuration_json = "Configurations.json"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
+
+logging.debug("I am " + str(who_am_i) + " and I am running on " + str(my_hostname))
 if (re.search('ann', who_am_i, re.IGNORECASE)):
-  debug_str = "Looks like Ann is running the script"
-  logger_setup.debug(debug_str)
+  logging.debug("Looks like Ann is running the script")
   user_name = "ann"
   buy_sell_color = "red"
   personal_json_file = "Ann.json"
 elif re.search('alan', who_am_i, re.IGNORECASE):
-  debug_str = "Looks like Alan is running the script"
-  logger_setup.debug(debug_str)
+  logging.debug("Looks like Alan is running the script")
   buy_sell_color = "teal"
   user_name = "alan"
   personal_json_file = "Alan.json"
 elif (re.search('sundeep', who_am_i, re.IGNORECASE)) or \
       re.search('DesktopNew-Optiplex',my_hostname,re.IGNORECASE) or \
       re.search('LaptopNew-Inspiron-5570', my_hostname, re.IGNORECASE):
-  debug_str = "Looks like Sundeep is running the script"
-  logger_setup.debug(debug_str)
+  logging.debug("Looks like Sundeep is running the script")
   user_name = "sundeep"
   buy_sell_color = "magenta"
   personal_json_file = "Sundeep.json"
-debug_str = "Setting the personal json file to " + personal_json_file
-logger_setup.info(debug_str)
+logging.debug("Setting the personal json file to " + str(personal_json_file))
 
 tracklist_df = pd.read_csv(tracklist_file_full_path)
 config_df = pd.read_csv(dir_path + user_dir + "\\" + configuration_file)
@@ -222,12 +217,9 @@ if (os.path.exists(dir_path + user_dir + "\\" + personal_json_file) is True):
 # print("The configuration df", config_df)
 schiller_pe_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in schiller_pe_df.Date.tolist()]
 schiller_pe_value_list =  schiller_pe_df.Value.tolist()
-debug_str = "The schiller PE df is\n" + schiller_pe_df.to_string()
-logger_setup.debug(debug_str)
-debug_str = "The Schiller PE Date list is\n" + str(schiller_pe_date_list)
-logger_setup.debug(debug_str)
-debug_str = "The Schiller PE Value list is\n" + str(schiller_pe_value_list)
-logger_setup.debug(debug_str)
+logging.debug("The schiller PE df is\n" + schiller_pe_df.to_string())
+logging.debug("The Schiller PE Date list is\n" + str(schiller_pe_date_list))
+logging.debug("The Schiller PE Value list is\n" + str(schiller_pe_value_list))
 # =============================================================================
 
 # =============================================================================
