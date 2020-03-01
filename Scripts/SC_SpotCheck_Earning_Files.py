@@ -6,6 +6,7 @@ import datetime as dt
 import numpy as np
 import logging
 import math
+from dateutil.relativedelta import relativedelta
 
 
 def check_list_elements_with_val(list1, val):
@@ -65,6 +66,15 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
+update_with_aaii_projections = 0
+if (update_with_aaii_projections == 1):
+  aaii_analysts_projection_file = "AAII_Analysts.csv"
+  aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + aaii_analysts_projection_file)
+  logging.debug("The AAII Analysts Porjections df is " + aaii_analysts_projection_df.to_string())
+  aaii_analysts_projection_df.set_index('Ticker', inplace=True)
+
+
+
 
 # -----------------------------------------------------------------------------
 # Declare all the dataframes that we are going to need to write into txt file
@@ -88,7 +98,7 @@ projected_eps_analysis_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 # Loop through all the tickers to check the dates when
 # -----------------------------------------------------------------------------
-# ticker_list = ['AUDC', 'MED']
+ticker_list = ['AUDC', 'MED']
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   logging.debug("================================")
@@ -116,6 +126,41 @@ for ticker_raw in ticker_list:
   earnings_file = ticker + "_earnings.csv"
   qtr_eps_df = pd.read_csv(dir_path + earnings_dir + "\\" + earnings_file)
   # ---------------------------------------------------------------------------
+
+
+  if (update_with_aaii_projections == 1):
+    ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
+    logging.debug("The series for " + str(ticker) + " in the AAII Analysts df is " + str(ticker_aaii_analysts_projection_series))
+    ticker_fiscal_year_end = ticker_aaii_analysts_projection_series['Date--Current fiscal year']
+    ticker_fiscal_year_end_dt = dt.datetime.strptime(str(ticker_fiscal_year_end), '%m/%d/%Y').date()
+    # next_fiscal_year_dt = ticker_fiscal_year_end_dt + dt.timedelta(weeks=52)
+    next_fiscal_year_dt = ticker_fiscal_year_end_dt + relativedelta(years=1)
+    logging.debug("The Fiscal Year for  " + str(ticker) + " ends on " + str(ticker_fiscal_year_end))
+    logging.debug("The Next Fiscal Year for  " + str(ticker) + " ends on " + str(next_fiscal_year_dt))
+
+    latest_qtr_date_in_earnings_file = qtr_eps_df['Q_Date'].tolist()[0]
+    logging.debug("The latest Date in Earnings file is " + str(latest_qtr_date_in_earnings_file))
+    latest_qtr_date_in_earnings_file_dt = dt.datetime.strptime(str(latest_qtr_date_in_earnings_file), '%m/%d/%Y').date()
+    if (next_fiscal_year_dt.year > latest_qtr_date_in_earnings_file_dt.year):
+      logging.debug ("The years for lastest Quarter date in the eranings file and less than the year for next fiscal year end")
+      logging.debug("So we will need to add another year in the earning df before processing")
+      curr_fiscal_year_eps_projections =  ticker_aaii_analysts_projection_series['EPS Est Y0']
+      next_fiscal_year_eps_projections = ticker_aaii_analysts_projection_series['EPS Est Y1']
+      eps_growth_factor = next_fiscal_year_eps_projections/curr_fiscal_year_eps_projections
+      logging.debug("Current fiscal year eps projections are " + str(curr_fiscal_year_eps_projections))
+      logging.debug("Next fiscal year eps projections are " + str(next_fiscal_year_eps_projections))
+      logging.debug("So the eps growth factor is " + str(eps_growth_factor))
+      no_of_rows_qtr_eps_df = len(qtr_eps_df.index)
+      no_of_qtr_to_insert = 4
+      for i_int in range(no_of_qtr_to_insert):
+        qtr_eps_df.loc[-1]= qtr_eps_df.loc[0]
+
+      #   Sundeep is here
+      # Now get the 4 qtrs of earnings data and multiply with the growth facroe
+      # Then prepend it to the qtr_df ...
+
+
+
 
   # ---------------------------------------------------------------------------
   # Read the Historical data file and check the date of the last date where the
