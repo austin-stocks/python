@@ -26,7 +26,10 @@ log_dir = "\\..\\" + "Logs"
 earnings_dir = "\\..\\" + "Earnings"
 historical_dir = "\\..\\" + "Historical"
 master_tracklist_file = "Master_Tracklist.xlsx"
+configuration_file = "Configurations.csv"
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
+config_df = pd.read_csv(dir_path + user_dir + "\\" + configuration_file)
+config_df.set_index('Ticker', inplace=True)
 master_tracklist_df.sort_values('Ticker', inplace=True)
 ticker_list_unclean = master_tracklist_df['Ticker'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
@@ -66,11 +69,11 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
-update_with_aaii_projections = 0
+update_with_aaii_projections = 1
 if (update_with_aaii_projections == 1):
   aaii_analysts_projection_file = "AAII_Analysts.csv"
   aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + aaii_analysts_projection_file)
-  logging.debug("The AAII Analysts Porjections df is " + aaii_analysts_projection_df.to_string())
+  logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
   aaii_analysts_projection_df.set_index('Ticker', inplace=True)
 
 
@@ -81,9 +84,7 @@ if (update_with_aaii_projections == 1):
 # and set their columns
 # -----------------------------------------------------------------------------
 ignore_qtr_eps_date_staleness_list = [
-'SNBR','CCI','GTLS','POOL','ACU','CDNS','PSB','CSGP','RUSHA','LAD','ASGN','BOOM','FAF','LH','SAH','YNDX','WCN',
-'TAYD','MEDP','OKE','LDOS','EME','ZBRA','MANT','MAS','MASI','CLH','FLS','QLYS','WYND','OLED','QDEL','FOXF','GNRC',
-'GPN','EQIX','AMT','ANET','AMOT','ALSN','HMSY','BABA',
+'CBOE','CP','GOOG','RACE'
 ]
 
 today = dt.date.today()
@@ -98,7 +99,7 @@ projected_eps_analysis_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 # Loop through all the tickers to check the dates when
 # -----------------------------------------------------------------------------
-ticker_list = ['AUDC', 'MED']
+ticker_list = ['AUDC','MED']
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   logging.debug("================================")
@@ -110,6 +111,9 @@ for ticker_raw in ticker_list:
   quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
   if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
     logging.debug(str(ticker) + " is not Wheat...skipping")
+    continue
+  if ticker in ignore_qtr_eps_date_staleness_list:
+    logging.info(str(ticker) + " is in ignore list...skipping")
     continue
 
   # Initialize the dataframe
@@ -125,40 +129,166 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   earnings_file = ticker + "_earnings.csv"
   qtr_eps_df = pd.read_csv(dir_path + earnings_dir + "\\" + earnings_file)
+  logging.debug("The earnings datafaram is " + qtr_eps_df.to_string())
   # ---------------------------------------------------------------------------
 
 
+  ticker_config_series = config_df.loc[ticker]
+  if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
+    fiscal_yr_str = str(ticker_config_series['Fiscal_Year'])
+    if not (all(x.isalpha() for x in fiscal_yr_str)):
+      print("**********                                           ERROR                                       **********")
+      print("**********     Entry for ", str(ticker).center(10), " 'Fiscal_Year' in the configurations file  is", fiscal_yr_str,"   **********")
+      print("**********     It is not a 3 character month. Valid values(string) are:     **********")
+      print("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
+      print("**********     Please correct and then run the script again                                      **********")
+  else:
+    fiscal_yr_str = "Dec"
+
+  fiscal_qtr_str  = "BQ-"+fiscal_yr_str
+  fiscal_yr_str = "BA-"+fiscal_yr_str
+  logging.debug("The fiscal Year is " + str(fiscal_yr_str))
+
+
+
   if (update_with_aaii_projections == 1):
+    # -------------------------------------------------------------------------
+    # Find the fiscal years y0, y1 and y2 and their respective projections
+    # -------------------------------------------------------------------------
     ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
     logging.debug("The series for " + str(ticker) + " in the AAII Analysts df is " + str(ticker_aaii_analysts_projection_series))
-    ticker_fiscal_year_end = ticker_aaii_analysts_projection_series['Date--Current fiscal year']
-    ticker_fiscal_year_end_dt = dt.datetime.strptime(str(ticker_fiscal_year_end), '%m/%d/%Y').date()
-    # next_fiscal_year_dt = ticker_fiscal_year_end_dt + dt.timedelta(weeks=52)
-    next_fiscal_year_dt = ticker_fiscal_year_end_dt + relativedelta(years=1)
-    logging.debug("The Fiscal Year for  " + str(ticker) + " ends on " + str(ticker_fiscal_year_end))
-    logging.debug("The Next Fiscal Year for  " + str(ticker) + " ends on " + str(next_fiscal_year_dt))
+    y_plus0_fiscal_year_end = ticker_aaii_analysts_projection_series['Date--Current fiscal year']
+    if (str(y_plus0_fiscal_year_end) != 'nan'):
+      y_plus0_fiscal_year_dt = dt.datetime.strptime(str(y_plus0_fiscal_year_end), '%m/%d/%Y').date()
+    else:
+      logging.debug("The y0 fiscal year end for " + str(ticker) + " is NaN in AAII Analysts df...Skippig")
+      continue
 
+    y_plus1_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=1)
+    y_plus2_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=2)
+    logging.debug("Y0 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus0_fiscal_year_end))
+    logging.debug("Y1 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus1_fiscal_year_dt))
+    logging.debug("Y2 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus2_fiscal_year_dt))
+    y_plus0_fiscal_year_eps_projections = ticker_aaii_analysts_projection_series['EPS Est Y0']
+    y_plus1_fiscal_year_eps_projections = ticker_aaii_analysts_projection_series['EPS Est Y1']
+    y_plus2_fiscal_year_eps_projections = ticker_aaii_analysts_projection_series['EPS Est Y2']
+    logging.debug("Y0 eps projections are " + str(y_plus0_fiscal_year_eps_projections))
+    logging.debug("Y1 eps projections are " + str(y_plus1_fiscal_year_eps_projections))
+    logging.debug("Y2 eps projections are " + str(y_plus2_fiscal_year_eps_projections))
+    # -------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------
+    # Now tht we have dates from AAII fiscal years compare it against the latest
+    # date that is in the earnings file and find the number of year/quarters than
+    # need to be inserted
+    # -------------------------------------------------------------------------
     latest_qtr_date_in_earnings_file = qtr_eps_df['Q_Date'].tolist()[0]
     logging.debug("The latest Date in Earnings file is " + str(latest_qtr_date_in_earnings_file))
     latest_qtr_date_in_earnings_file_dt = dt.datetime.strptime(str(latest_qtr_date_in_earnings_file), '%m/%d/%Y').date()
-    if (next_fiscal_year_dt.year > latest_qtr_date_in_earnings_file_dt.year):
-      logging.debug ("The years for lastest Quarter date in the eranings file and less than the year for next fiscal year end")
-      logging.debug("So we will need to add another year in the earning df before processing")
-      curr_fiscal_year_eps_projections =  ticker_aaii_analysts_projection_series['EPS Est Y0']
-      next_fiscal_year_eps_projections = ticker_aaii_analysts_projection_series['EPS Est Y1']
-      eps_growth_factor = next_fiscal_year_eps_projections/curr_fiscal_year_eps_projections
-      logging.debug("Current fiscal year eps projections are " + str(curr_fiscal_year_eps_projections))
-      logging.debug("Next fiscal year eps projections are " + str(next_fiscal_year_eps_projections))
-      logging.debug("So the eps growth factor is " + str(eps_growth_factor))
-      no_of_rows_qtr_eps_df = len(qtr_eps_df.index)
-      no_of_qtr_to_insert = 4
+    qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
+    no_of_year_to_insert_eps_projections = 0
+    # if (latest_qtr_date_in_earnings_file_dt == y_plus0_fiscal_year_dt):
+    if ((y_plus2_fiscal_year_dt-latest_qtr_date_in_earnings_file_dt).days <=5):
+      logging.debug("The date corresponding to the Latest entry in the Earnings file corresponds to the Y2 fiscal end date...so nothing needs to be inserted")
+      logging.wanring("However this is rare...make sure that this is right")
+    elif ((y_plus1_fiscal_year_dt -latest_qtr_date_in_earnings_file_dt).days <= 5):
+      logging.debug("The date corresponding to the Latest entry in the Earnings file corresponds to the next year fiscal end date")
+      logging.debug("So we can possibly add Y2 fiscal year projections")
+      logging.debug("Checking if Y2 fiscal year eps projections are NOT nan")
+      if ((str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
+        logging.debug("Y2 fiscal year eps projections are NOT nan. So, we will insert one years (Y2)")
+        no_of_year_to_insert_eps_projections = 1
+        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
+      else:
+        logging.debug("Nothing to insert here...This is unusual....Need to check why are earnings projections in AAII nan")
+    elif ((y_plus0_fiscal_year_dt-latest_qtr_date_in_earnings_file_dt).days <= 5):
+      logging.debug("The date corresponding to the Latest entry in the Earnings file is equal to the current fiscal year end date")
+      logging.debug("So we can possibly add Y1 and Y2 fiscal year projections")
+      logging.debug("Checking if both Y1 and Y2 fiscal year eps projections are NOT nan")
+      if ((str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
+        logging.debug ("Both Y1 and Y2 fiscal year eps projections are NOT nan. So, We will insert two years(Y1 and Y2)")
+        no_of_year_to_insert_eps_projections = 2
+        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
+      elif ( (str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan')):
+        logging.debug("We will NOT insert for Y2 (as its eps projection is nan")
+        logging.debug("Only Y1 fiscal year eps projections is NOT nan. So, Only will insert one year (Y1)")
+        no_of_year_to_insert_eps_projections = 1
+        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus1_fiscal_year_dt,freq=fiscal_qtr_str)
+      else:
+        logging.debug ("Nothing to insert here...This is unusual....Need to check why are earnings projections in AAII nan")
+    else:
+      logging.error("The date corresponding to the Latest entry in the Earnings file : " + str(latest_qtr_date_in_earnings_file_dt))
+      logging.error("neither matches the current fiscal year end from AAII file : " + str(y_plus0_fiscal_year_dt))
+      logging.error("nor matches the next fiscal year end from AAII file : " + str(y_plus1_fiscal_year_dt))
+      sys.exit(1)
+
+    fiscal_qtr_dates = []
+    for x in fiscal_qtr_and_yr_dates_raw:
+      fiscal_qtr_dates.append(x.date().strftime('%m/%d/%Y'))
+
+    if (len(fiscal_qtr_dates) != 4) and (len(fiscal_qtr_dates) != 8):
+      del fiscal_qtr_dates[0]
+    logging.debug("The original qtr dates list is\n" + str(fiscal_qtr_and_yr_dates_raw))
+    logging.debug("The modified qtr dates list is\n" + str(fiscal_qtr_dates))
+    # -------------------------------------------------------------------------
+
+
+    # -------------------------------------------------------------------------
+    # Now that we have the number of years to insert, calcuate the projected
+    # eps per quarter for future years - and insert in the dataframe
+    # -------------------------------------------------------------------------
+    if (no_of_year_to_insert_eps_projections > 0):
+      logging.debug("The qtr eps list is " + str(qtr_eps_list))
+      no_of_qtr_to_insert = no_of_year_to_insert_eps_projections*4
+      tmp_eps = []
       for i_int in range(no_of_qtr_to_insert):
-        qtr_eps_df.loc[-1]= qtr_eps_df.loc[0]
+        tmp_eps.append(float('nan'))
+      if (no_of_year_to_insert_eps_projections == 1):
+        if (latest_qtr_date_in_earnings_file_dt == y_plus0_fiscal_year_dt):
+          growth_factor = y_plus1_fiscal_year_eps_projections/y_plus0_fiscal_year_eps_projections
+          logging.debug("Inserting one year of EPS projections with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor))
+        else:
+          growth_factor = y_plus2_fiscal_year_eps_projections/y_plus1_fiscal_year_eps_projections
+          logging.debug("Inserting one year of EPS projections with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor))
+        for i_int in range(no_of_qtr_to_insert):
+          tmp_eps[i_int] = qtr_eps_list[3 - i_int]*growth_factor
+          logging.debug("Inserting in tmp_eps list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps[i_int]))
+      else:
+        growth_factor = y_plus1_fiscal_year_eps_projections / y_plus0_fiscal_year_eps_projections
+        logging.debug("Inserting two years of EPS projections - Inserting first year with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor))
+        for i_int in range(0,4):
+          tmp_eps[i_int] = qtr_eps_list[3 - i_int] * growth_factor
+          logging.debug("Inserting in tmp_eps list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps[i_int]))
+        growth_factor = y_plus2_fiscal_year_eps_projections / y_plus1_fiscal_year_eps_projections
+        logging.debug("Inserting two years of EPS projections - Inserting second year with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor))
+        for i_int in range(4,8):
+          tmp_eps[i_int] = tmp_eps[i_int-4] * growth_factor
+          logging.debug("Inserting in tmp_eps list at index : " + str(i_int) + " Qtr eps : " + str(tmp_eps[i_int-4]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps[i_int]))
 
-      #   Sundeep is here
-      # Now get the 4 qtrs of earnings data and multiply with the growth facroe
-      # Then prepend it to the qtr_df ...
+      logging.debug("The tmp_eps list of projected eps to be inserted " + str(tmp_eps))
+      for i_int in range(no_of_qtr_to_insert):
+        logging.debug ("Inserting in qtr_eps_df at index : " + str(-(i_int+1)) + " Q_Date : " + str( fiscal_qtr_dates[i_int]) + " Q_EPS_Diluted : " + str(tmp_eps[i_int]))
+        qtr_eps_df.loc[-(i_int+1)]= qtr_eps_df.loc[0]
+        # qtr_eps_df.loc[-(i_int+1), 'Q_Date'] =  dt.datetime.strptime(fiscal_qtr_dates[i_int], '%m/%d/%Y').date()
+        qtr_eps_df.loc[-(i_int+1), 'Q_Date'] =  fiscal_qtr_dates[i_int]
+        qtr_eps_df.loc[-(i_int+1), 'Q_EPS_Diluted'] = tmp_eps[i_int]
 
+    # -------------------------------------------------------------------------
+
+
+  # qtr_eps_df_tmp = qtr_epq_df
+  # qtr_eps_df.set_index('Q_Date', inplace=True)
+  # qtr_eps_df['Q_Date'] = pd.to_datetime(qtr_eps_df['Q_Date'], format="%m/%d/%Y")
+  qtr_eps_df['Q_Date'] = qtr_eps_df['Q_Date'].astype('datetime64[D]', format="%m/%d/%Y")
+  qtr_eps_df.sort_values('Q_Date', inplace=True, ascending=False)
+  qtr_eps_df.reset_index(inplace=True, drop=True)
+  qtr_eps_df['Q_Date'] = pd.to_datetime(qtr_eps_df['Q_Date']).dt.strftime('%m/%d/%Y')
+
+  logging.debug("The earnings datafaram after adding earning projection is " + qtr_eps_df.to_string())
+
+
+  # sys.exit(1)
+  # ---------------------------------------------------------------------------
 
 
 
