@@ -99,7 +99,7 @@ projected_eps_analysis_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 # Loop through all the tickers to check the dates when
 # -----------------------------------------------------------------------------
-ticker_list = ['AUDC','MED']
+# ticker_list = ['AUDC','MED']
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   logging.debug("================================")
@@ -189,37 +189,37 @@ for ticker_raw in ticker_list:
     no_of_year_to_insert_eps_projections = 0
     # if (latest_qtr_date_in_earnings_file_dt == y_plus0_fiscal_year_dt):
     if ((y_plus2_fiscal_year_dt-latest_qtr_date_in_earnings_file_dt).days <=5):
-      logging.debug("The date corresponding to the Latest entry in the Earnings file corresponds to the Y2 fiscal end date...so nothing needs to be inserted")
-      logging.wanring("However this is rare...make sure that this is right")
+      logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y2 fiscal end date : " + str(y_plus2_fiscal_year_dt) + " ...so nothing needs to be inserted")
+      logging.wanring(str(ticker) + " : Hmmm...However this should very rare...make sure for " + str(ticker) + "that the latest entry qtr_eps_date and the Y2 fiscal year dates actually match...")
     elif ((y_plus1_fiscal_year_dt -latest_qtr_date_in_earnings_file_dt).days <= 5):
-      logging.debug("The date corresponding to the Latest entry in the Earnings file corresponds to the next year fiscal end date")
-      logging.debug("So we can possibly add Y2 fiscal year projections")
+      logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y1 fiscal end date : " + str(y_plus1_fiscal_year_dt) + " ...so we can possibly add Y2 fiscal year projections")
       logging.debug("Checking if Y2 fiscal year eps projections are NOT nan")
       if ((str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
-        logging.debug("Y2 fiscal year eps projections are NOT nan. So, we will insert one years (Y2)")
+        logging.debug(str(ticker) + " : Y2 fiscal year eps projections are NOT nan. So, will insert one year (Y2)")
         no_of_year_to_insert_eps_projections = 1
         fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
       else:
-        logging.debug("Nothing to insert here...This is unusual....Need to check why are earnings projections in AAII nan")
+        logging.debug(str(ticker) + " : Hmmm...it seems like Y2 eps projections are nan in AAII. Nothing inserted...This is unusual....Please check Y2 earnings projections in AAII nan")
     elif ((y_plus0_fiscal_year_dt-latest_qtr_date_in_earnings_file_dt).days <= 5):
-      logging.debug("The date corresponding to the Latest entry in the Earnings file is equal to the current fiscal year end date")
+      logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y0 fiscal end date : " + str(y_plus0_fiscal_year_dt) + " ...so we can possibly add Y1 and Y2 fiscal year projections")
       logging.debug("So we can possibly add Y1 and Y2 fiscal year projections")
       logging.debug("Checking if both Y1 and Y2 fiscal year eps projections are NOT nan")
       if ((str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
-        logging.debug ("Both Y1 and Y2 fiscal year eps projections are NOT nan. So, We will insert two years(Y1 and Y2)")
+        logging.debug (str(ticker) + " : Both Y1 and Y2 fiscal year eps projections are NOT nan. So, will insert two years (Y1 and Y2)")
         no_of_year_to_insert_eps_projections = 2
         fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
       elif ( (str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan')):
-        logging.debug("We will NOT insert for Y2 (as its eps projection is nan")
-        logging.debug("Only Y1 fiscal year eps projections is NOT nan. So, Only will insert one year (Y1)")
+        logging.debug("We will NOT insert for Y2 (as its eps projection is nan)")
+        logging.debug(str(ticker) + " : Only Y1 fiscal year eps projections is NOT nan. So, will insert one year (Y1)")
         no_of_year_to_insert_eps_projections = 1
         fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus1_fiscal_year_dt,freq=fiscal_qtr_str)
       else:
-        logging.debug ("Nothing to insert here...This is unusual....Need to check why are earnings projections in AAII nan")
+        logging.debug(str(ticker) + " : Hmmm...it seems like both Y1 and Y2 eps projections are nan in AAII. Nothing inserted...This is unusual....Please check Y1 and Y2 earnings projections in AAII nan")
     else:
       logging.error("The date corresponding to the Latest entry in the Earnings file : " + str(latest_qtr_date_in_earnings_file_dt))
-      logging.error("neither matches the current fiscal year end from AAII file : " + str(y_plus0_fiscal_year_dt))
-      logging.error("nor matches the next fiscal year end from AAII file : " + str(y_plus1_fiscal_year_dt))
+      logging.error("neither matches the Y0 fiscal year end from AAII file : " + str(y_plus0_fiscal_year_dt))
+      logging.error("nor matches the Y1 fiscal year end from AAII file : " + str(y_plus1_fiscal_year_dt))
+      logging.error("nor matches the Y2 fiscal year end from AAII file : " + str(y_plus2_fiscal_year_dt))
       sys.exit(1)
 
     fiscal_qtr_dates = []
