@@ -14,6 +14,7 @@ import matplotlib.dates as mdates
 import calendar
 import logging
 
+from dateutil.relativedelta import relativedelta
 from matplotlib.offsetbox import AnchoredText
 from SC_logger import my_print as my_print
 from yahoofinancials import YahooFinancials
@@ -178,6 +179,8 @@ master_tracklist_file = "Master_Tracklist.xlsx"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
 configuration_json = "Configurations.json"
+aaii_analysts_projection_file = "AAII_Analysts.csv"
+calendar_file = "Calendar.csv"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 
 logging.debug("I am " + str(who_am_i) + " and I am running on " + str(my_hostname))
@@ -238,7 +241,26 @@ if (plot_nasdaq):
 # =============================================================================
 
 
-# =============================================================================
+# -----------------------------------------------------------------------------
+update_with_aaii_projections = 1
+# aaii_analysts_projection_df = pd.DataFrame()
+# if (update_with_aaii_projections == 1):
+aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + aaii_analysts_projection_file)
+calendar_df = pd.read_csv(dir_path + user_dir + "\\" + calendar_file)
+# logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
+aaii_analysts_projection_df.set_index('Ticker', inplace=True)
+aaii_missing_tickers_list = [
+'CBOE','CP','GOOG','RACE'
+]
+
+col_list = calendar_df.columns.tolist()
+calendar_date_list_raw = []
+for col in col_list:
+  tmp_list = calendar_df[col].dropna().tolist()
+  calendar_date_list_raw.extend(tmp_list)
+
+calendar_date_list = [dt.datetime.strptime(str(date), '%m/%d/%y').date() for date in calendar_date_list_raw]
+# -----------------------------------------------------------------------------
 
 
 # print ("The Tracklist df is", tracklist_df)
@@ -252,13 +274,20 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # #############################################################################
 # #############################################################################
 # #############################################################################
+# ticker_list = ['AAPL', 'AUDC','MED']
 for ticker_raw in ticker_list:
 
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   logging.info("========================================================")
   logging.info("Preparing chart for " + ticker)
   logging.info("========================================================")
-  # ticker = "NMIH"
+  if ticker in ["QQQ"]:
+    logging.info("File for " + str(ticker) + "does not exist in earnings directory. Skipping...")
+    continue
+  quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
+  if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
+    logging.info(str(ticker) + " is not Wheat...skipping")
+    continue
 
   # ---------------------------------------------------------------------------
   # From the Master Tracklist :
@@ -292,6 +321,92 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # =============================================================================
+  # Check if there is data in the config file corresponding to the ticker that
+  # is being processed
+  # =============================================================================
+  try:
+    ticker_config_series = config_df.loc[ticker]
+    logging.debug("The configurations for " + ticker + " is\n" + str(ticker_config_series))
+  except KeyError:
+    # Todo : Create a default series with all nan so that it can be cleaned up in the next step
+    print ("**********                                  ERROR                              **********")
+    print ("**********     Entry for ", str(ticker).center(10) , " not found in the configurations file     **********")
+    print ("**********     Please create one and then run the script again                 **********")
+    sys.exit()
+
+  # Sundeep : Todo This might be duplicate
+  if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
+    fiscal_yr_str = str(ticker_config_series['Fiscal_Year'])
+    if not (all(x.isalpha() for x in fiscal_yr_str)):
+      print("**********                                           ERROR                                       **********")
+      print("**********     Entry for ", str(ticker).center(10), " 'Fiscal_Year' in the configurations file  is", fiscal_yr_str,"   **********")
+      print("**********     It is not a 3 character month. Valid values(string) are:     **********")
+      print("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
+      print("**********     Please correct and then run the script again                                      **********")
+  else:
+    fiscal_yr_str = "Dec"
+
+  fiscal_qtr_str  = "BQ-"+fiscal_yr_str
+  fiscal_yr_str = "BA-"+fiscal_yr_str
+  logging.debug("The fiscal Year is " + str(fiscal_yr_str))
+
+
+
+
+  # =============================================================================
+
+  # Get the chart type from configuration file
+  chart_type = "Linear"
+  if (str(ticker_config_series['Chart_Type']) != 'nan'):
+    chart_type = str(ticker_config_series['Chart_Type'])
+    if not (all(x.isalpha() for x in chart_type)):
+      logging.error("Error - The chart type has non-alphabet characters in the Configuration File")
+      sys.exit()
+
+
+  # ---------------------------------------------------------
+  # Create the lower and upper Price limit
+  # ---------------------------------------------------------
+  if math.isnan(ticker_config_series[chart_type + '_Price_Scale_Low']):
+    logging.error("Price_Scale_Low - is not set in the configurations file")
+    logging.error("Please correct and rerun")
+    sys.exit(1)
+  else:
+    price_lim_lower = ticker_config_series[chart_type + '_Price_Scale_Low']
+    logging.debug("Price_Scale_Low from Config file is " + str(price_lim_lower))
+  if math.isnan(ticker_config_series[chart_type +'_Price_Scale_High']):
+    # ticker_adj_close_list_nonan = [x for x in ticker_adj_close_list if math.isnan(x) is False]
+    logging.error("Price_Scale_High - is not set in the configurations file")
+    logging.error("Please correct and rerun")
+    sys.exit(1)
+  else:
+    price_lim_upper = ticker_config_series[chart_type+'_Price_Scale_High']
+    logging.debug("Price_Scale_High from Config file is " + str(price_lim_upper))
+  # ---------------------------------------------------------
+
+  # ---------------------------------------------------------
+  # Create the Upper and Lower EPS Limit
+  # ---------------------------------------------------------
+  if math.isnan(ticker_config_series[chart_type + '_Earnings_Scale_High']):
+    logging.error("EPS Scale - High is not set in the configurations file")
+    logging.error("Please correct and rerun")
+    sys.exit(1)
+  else:
+    qtr_eps_lim_upper = ticker_config_series[chart_type + '_Earnings_Scale_High']
+    logging.debug("EPS Scale - High from Config file " + str(qtr_eps_lim_upper))
+
+  if math.isnan(ticker_config_series[chart_type + '_Earnings_Scale_Low']):
+    logging.error("EPS Scale - Low is not set in the configurations file")
+    logging.error("Please correct and rerun")
+    sys.exit(1)
+  else:
+    qtr_eps_lim_lower = ticker_config_series[chart_type + '_Earnings_Scale_Low']
+    logging.debug("EPS Scale - Low from Config file " + str(qtr_eps_lim_lower))
+  # =============================================================================
+
+
+
+  # =============================================================================
   # Read the Historical file for the ticker
   # =============================================================================
   # todo : There are certain cases (MEDP) for e.g. that has recently IPO'ed that
@@ -301,13 +416,7 @@ for ticker_raw in ticker_list:
   # the date list and adj_close list so that all the prior earnings are included.
   # The back date adj_close needs to be initialized to whatever value (nan likely)
   historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
-  logging.debug("The Historical df is \n" + historical_df.to_string())
-  ticker_adj_close_list = historical_df.Adj_Close.tolist()
-  date_str_list = historical_df.Date.tolist()
-  logging.debug("The date list - in raw - from historical df is\n" + str(date_str_list))
-  date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
-  logging.debug("The date list - in datetime - from historical is\n" + str(date_list) + "\nit has" + str(len(date_list)) + " entries")
-  logging.info("Read in the Historical Data...")
+  # logging.debug("The Historical df is \n" + historical_df.to_string())
   # =============================================================================
 
   # =============================================================================
@@ -315,6 +424,197 @@ for ticker_raw in ticker_list:
   # =============================================================================
   qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv",delimiter=",")
   logging.debug("The Earnings df is \n" + qtr_eps_df.to_string())
+
+  latest_qtr_date_in_earnings_file = qtr_eps_df['Q_Date'].tolist()[0]
+  logging.debug("The latest Date in Earnings file is " + str(latest_qtr_date_in_earnings_file))
+  latest_qtr_date_in_earnings_file_dt = dt.datetime.strptime(str(latest_qtr_date_in_earnings_file), '%m/%d/%Y').date()
+  latest_date_in_historical_file = historical_df['Date'].tolist()[0]
+  latest_date_in_historical_file_dt = dt.datetime.strptime(str(latest_date_in_historical_file), '%m/%d/%Y').date()
+  logging.debug("The latest Date in Historical file is " + str(latest_date_in_historical_file))
+  if (latest_qtr_date_in_earnings_file_dt > latest_date_in_historical_file_dt):
+    logging.error("The latest date in the historical df : " + str(latest_date_in_historical_file) + " should be newer than the lastest date in qtr df : " + str(latest_qtr_date_in_earnings_file))
+    logging.error("********** Maybe you forgot to update (add a year or two) to the 'Calendar_Future_Date' in configurations file **********")
+    logging.error("********** when you put in more quarters of earnings in the earnings file **********")
+    logging.error("The will create problems in the script further as the script may not recognize any white diamonds and will fail")
+    logging.error("Please correct and rerun merge script before continuing")
+    sys.exit(1)
+  # -------------------------------------------------------------------------
+  # Find the fiscal years y0, y1 and y2 and their respective projections
+  # -------------------------------------------------------------------------
+  no_of_year_to_insert_eps_projections = 0
+  continue_aaii_eps_projection = 1
+  if (ticker in aaii_missing_tickers_list):
+    logging.debug(str(ticker) + " is NOT in AAII df. Will skip inserting EPS Projections..")
+    continue_aaii_eps_projection = 0
+
+  if (continue_aaii_eps_projection == 1):
+    ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
+    logging.debug("The series for " + str(ticker) + " in the AAII Analysts df is " + str(ticker_aaii_analysts_projection_series))
+    y_plus0_fiscal_year_end = ticker_aaii_analysts_projection_series['Date--Current fiscal year']
+    if (str(y_plus0_fiscal_year_end) != 'nan'):
+      y_plus0_fiscal_year_dt = dt.datetime.strptime(str(y_plus0_fiscal_year_end), '%m/%d/%Y').date()
+    else:
+      logging.debug("The y0 fiscal year end for " + str(ticker) + " is NaN in AAII Analysts df...will skip inserting AAII EPS Projections")
+      continue_aaii_eps_projection = 0
+
+  if (update_with_aaii_projections == 1) and (continue_aaii_eps_projection == 1):
+    y_plus1_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=1)
+    y_plus2_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=2)
+    logging.debug("Y0 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus0_fiscal_year_end))
+    logging.debug("Y1 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus1_fiscal_year_dt))
+    logging.debug("Y2 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus2_fiscal_year_dt))
+    y_plus0_fiscal_year_eps_projections = ticker_aaii_analysts_projection_series['EPS Est Y0']
+    y_plus1_fiscal_year_eps_projections = ticker_aaii_analysts_projection_series['EPS Est Y1']
+    y_plus2_fiscal_year_eps_projections = ticker_aaii_analysts_projection_series['EPS Est Y2']
+    logging.debug("Y0 eps projections are " + str(y_plus0_fiscal_year_eps_projections))
+    logging.debug("Y1 eps projections are " + str(y_plus1_fiscal_year_eps_projections))
+    logging.debug("Y2 eps projections are " + str(y_plus2_fiscal_year_eps_projections))
+    # -------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
+    # Now tht we have dates from AAII fiscal years compare it against the latest
+    # date that is in the earnings file and find the number of year/quarters than
+    # need to be inserted
+    # -------------------------------------------------------------------------
+    qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
+    days_bw_y_plus0_latest_qtr_date = y_plus0_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
+    days_bw_y_plus1_latest_qtr_date = y_plus1_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
+    days_bw_y_plus2_latest_qtr_date = y_plus2_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
+    logging.debug ("The difference b/w Y0 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus0_latest_qtr_date.days)  + " days")
+    logging.debug ("The difference b/w Y1 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus1_latest_qtr_date.days)  + " days")
+    logging.debug ("The difference b/w Y2 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus2_latest_qtr_date.days)  + " days")
+    if (-5 <= days_bw_y_plus2_latest_qtr_date.days <= 5):
+      logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y2 fiscal end date : " + str(y_plus2_fiscal_year_dt) + " ...so nothing needs to be inserted")
+      logging.wanring(str(ticker) + " : Hmmm...However this should very rare...make sure for " + str(ticker) + "that the latest entry qtr_eps_date and the Y2 fiscal year dates actually match...")
+    elif (-5 <= days_bw_y_plus1_latest_qtr_date.days <= 5):
+      logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y1 fiscal end date : " + str(y_plus1_fiscal_year_dt) + " ...so we can possibly add Y2 fiscal year projections if they are not NaN")
+      if ((str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
+        logging.debug(str(ticker) + " : Y2 fiscal year eps projections are NOT nan. So, will insert one year (Y2)")
+        no_of_year_to_insert_eps_projections = 1
+        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
+      else:
+        logging.debug(str(ticker) + " : Hmmm...it seems like Y2 eps projections are nan in AAII. Nothing inserted...This is not unusual...If you want, you can check Y2 earnings projections in AAII nan")
+    elif (-5 <= days_bw_y_plus0_latest_qtr_date.days <= 5):
+      logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y0 fiscal end date : " + str(y_plus0_fiscal_year_dt) + " ...so we can possibly add Y1 and Y2 fiscal year projections if they are not NaN" )
+      if ((str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
+        logging.debug (str(ticker) + " : Both Y1 and Y2 fiscal year eps projections are NOT nan. So, will insert two years (Y1 and Y2)")
+        no_of_year_to_insert_eps_projections = 2
+        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
+      elif ( (str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan')):
+        logging.debug(str(ticker) + " : Only Y1 fiscal year eps projections is NOT nan and Y2 is NaN. So, will insert one year (Y1)")
+        no_of_year_to_insert_eps_projections = 1
+        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus1_fiscal_year_dt,freq=fiscal_qtr_str)
+      else:
+        logging.info(str(ticker) + " : Hmmm...it seems like both Y1 and Y2 eps projections are nan in AAII. Nothing inserted...This is unusual....Please check Y1 and Y2 earnings projections in AAII nan")
+    else:
+      logging.error("The date corresponding to the Latest entry in the Earnings file : " + str(latest_qtr_date_in_earnings_file_dt))
+      logging.error("neither matches the Y0 fiscal year end from AAII file : " + str(y_plus0_fiscal_year_dt))
+      logging.error("nor matches the Y1 fiscal year end from AAII file : " + str(y_plus1_fiscal_year_dt))
+      logging.error("nor matches the Y2 fiscal year end from AAII file : " + str(y_plus2_fiscal_year_dt))
+      sys.exit(1)
+    # -------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------
+    # Now that we have the number of years to insert, calculate the projected
+    # eps per quarter for future years - and insert in the dataframe
+    # -------------------------------------------------------------------------
+    if (no_of_year_to_insert_eps_projections > 0):
+      fiscal_qtr_dates = []
+      for x in fiscal_qtr_and_yr_dates_raw:
+        fiscal_qtr_dates.append(x.date().strftime('%m/%d/%Y'))
+
+      if (len(fiscal_qtr_dates) != 4) and (len(fiscal_qtr_dates) != 8):
+        del fiscal_qtr_dates[0]
+      logging.debug("The original qtr dates list is\n" + str(fiscal_qtr_and_yr_dates_raw))
+      logging.debug("The modified qtr dates list is\n" + str(fiscal_qtr_dates))
+
+      logging.debug("The qtr eps list is " + str(qtr_eps_list))
+      no_of_qtr_to_insert = no_of_year_to_insert_eps_projections*4
+      tmp_eps_list = []
+      for i_int in range(no_of_qtr_to_insert):
+        tmp_eps_list.append(float('nan'))
+      if (no_of_year_to_insert_eps_projections == 1):
+        if (-5 <= days_bw_y_plus0_latest_qtr_date.days <= 5):
+          growth_factor = y_plus1_fiscal_year_eps_projections/y_plus0_fiscal_year_eps_projections
+          logging.debug(str(ticker) + " : Inserting one year of EPS projections with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor))
+        else:
+          growth_factor = y_plus2_fiscal_year_eps_projections/y_plus1_fiscal_year_eps_projections
+          logging.debug(str(ticker) + " : Inserting one year of EPS projections with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor))
+        for i_int in range(no_of_qtr_to_insert):
+          tmp_eps_list[i_int] = qtr_eps_list[3 - i_int]*growth_factor
+          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
+      else:
+        growth_factor = y_plus1_fiscal_year_eps_projections / y_plus0_fiscal_year_eps_projections
+        logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing First part -  with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor))
+        for i_int in range(0,4):
+          tmp_eps_list[i_int] = qtr_eps_list[3 - i_int] * growth_factor
+          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
+        growth_factor = y_plus2_fiscal_year_eps_projections / y_plus1_fiscal_year_eps_projections
+        logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing Second part -  with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor))
+        for i_int in range(4,8):
+          tmp_eps_list[i_int] = tmp_eps_list[i_int-4] * growth_factor
+          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(tmp_eps_list[i_int-4]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
+
+      logging.debug("The tmp_eps_list list of projected eps to be inserted " + str(tmp_eps_list))
+      for i_int in range(no_of_qtr_to_insert):
+        logging.debug ("Inserting in qtr_eps_df at index : " + str(-(i_int+1)) + " Q_Date : " + str( fiscal_qtr_dates[i_int]) + " Q_EPS_Diluted : " + str(tmp_eps_list[i_int]))
+        qtr_eps_df.loc[-(i_int+1)]= qtr_eps_df.loc[0]
+        # qtr_eps_df.loc[-(i_int+1), 'Q_Date'] =  dt.datetime.strptime(fiscal_qtr_dates[i_int], '%m/%d/%Y').date()
+        qtr_eps_df.loc[-(i_int+1), 'Q_Date'] =  fiscal_qtr_dates[i_int]
+        qtr_eps_df.loc[-(i_int+1), 'Q_EPS_Diluted'] = tmp_eps_list[i_int]
+
+      max_qtr_eps_from_insertion = max(tmp_eps_list)
+      if (max_qtr_eps_from_insertion > qtr_eps_lim_upper):
+        pe_ratio_from_config_file = price_lim_upper / qtr_eps_lim_upper
+        logging.debug("The max q eps from inserting projected eps : " + str(max_qtr_eps_from_insertion)  + " is greater than : " + str(qtr_eps_lim_upper) + " specified by configurations file")
+        logging.debug("The PE ratio (upper limit of the price/upper limit of the eps) of the chart specified in the config file is " + str(pe_ratio_from_config_file))
+        qtr_eps_lim_upper = max_qtr_eps_from_insertion+(max_qtr_eps_from_insertion-qtr_eps_lim_upper)*.25
+        price_lim_upper = qtr_eps_lim_upper*pe_ratio_from_config_file
+        logging.debug("Reset the Upper eps limit to : " + str(qtr_eps_lim_upper) + " and Upper price limit to : " + str(price_lim_upper))
+
+      # -------------------------------------------------------------------------
+
+      # Now sort and reindex the q_eps_df
+      # qtr_eps_df_tmp = qtr_epq_df
+      # qtr_eps_df.set_index('Q_Date', inplace=True)
+      # qtr_eps_df['Q_Date'] = pd.to_datetime(qtr_eps_df['Q_Date'], format="%m/%d/%Y")
+      qtr_eps_df['Q_Date'] = qtr_eps_df['Q_Date'].astype('datetime64[D]', format="%m/%d/%Y")
+      qtr_eps_df.sort_values('Q_Date', inplace=True, ascending=False)
+      qtr_eps_df.reset_index(inplace=True, drop=True)
+      qtr_eps_df['Q_Date'] = pd.to_datetime(qtr_eps_df['Q_Date']).dt.strftime('%m/%d/%Y')
+      logging.debug("The earnings dataframe after adding earning projection and sorting is " + qtr_eps_df.to_string())
+      # ---------------------------------------------------------------------------
+      # ---------------------------------------------------------------------------
+      # See if there is anything inserted then expand out the historical df as well
+      # ---------------------------------------------------------------------------
+      cal_match_date_with_historical = min(calendar_date_list, key=lambda d: abs(d - latest_date_in_historical_file_dt))
+      cal_match_date_with_historical_index = calendar_date_list.index(cal_match_date_with_historical)
+      logging.debug(str(ticker) + " : The latest date in historical df " + str(latest_date_in_historical_file_dt) + " matched index " + str(cal_match_date_with_historical_index) + " in the calendar df")
+      cal_match_date_with_insert_eps_projection = min(calendar_date_list, key=lambda d: abs(d - (latest_date_in_historical_file_dt + relativedelta(years=no_of_year_to_insert_eps_projections))))
+      cal_match_date_with_insert_eps_projection_index = calendar_date_list.index(cal_match_date_with_insert_eps_projection)
+      logging.debug(str(ticker) + " : The date for which EPS is inserted " + str(latest_date_in_historical_file_dt + relativedelta(years=no_of_year_to_insert_eps_projections)) + " matched index " + str(cal_match_date_with_insert_eps_projection_index) + " in the calendar df")
+
+      for i_int in range(cal_match_date_with_insert_eps_projection_index,cal_match_date_with_historical_index):
+        # logging.debug ("Inserting in historical df at index : " + str(-(i_int-cal_match_date_with_insert_eps_projection_index+1)) + " Date : " + str(calendar_date_list[i_int]))
+        historical_df.loc[-(i_int-cal_match_date_with_insert_eps_projection_index+1)]= historical_df.loc[0]
+        # qtr_eps_df.loc[-(i_int+1), 'Q_Date'] =  dt.datetime.strptime(fiscal_qtr_dates[i_int], '%m/%d/%Y').date()
+        historical_df.loc[-(i_int-cal_match_date_with_insert_eps_projection_index+1), 'Date'] =  calendar_date_list[i_int]
+
+      historical_df['Date'] = historical_df['Date'].astype('datetime64[D]', format="%m/%d/%Y")
+      historical_df.sort_values('Date', inplace=True, ascending=False)
+      historical_df.reset_index(inplace=True, drop=True)
+      historical_df['Date'] = pd.to_datetime(historical_df['Date']).dt.strftime('%m/%d/%Y')
+      # logging.debug(str(ticker) + " Historical df after inserting eps projection dates is " + historical_df.to_string())
+  logging.info("Done adding data for " + str(no_of_year_to_insert_eps_projections) + " years in qtr_eps_df and historical df for future EPS projections as per AAII EPS df...")
+  # =============================================================================
+
+  ticker_adj_close_list = historical_df.Adj_Close.tolist()
+  date_str_list = historical_df.Date.tolist()
+  logging.debug("The date list - in raw - from historical df is\n" + str(date_str_list))
+  date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
+  logging.debug("The date list - in datetime - from historical is\n" + str(date_list) + "\nit has" + str(len(date_list)) + " entries")
+  logging.info("Read in the Historical Data...")
+
+
   # Remove all rows after the last valid value for row for Column 'Date'
   qtr_eps_df_copy = qtr_eps_df.loc[0:qtr_eps_df.Q_Date.last_valid_index()].copy()
   # This works - but removes the rows after the longest (any)column has last
@@ -487,19 +787,6 @@ for ticker_raw in ticker_list:
     logging.info("Read in the Dividend Data...")
   # =============================================================================
 
-  # =============================================================================
-  # Check if there is data in the config file corresponding to the ticker that
-  # is being processed
-  # =============================================================================
-  try:
-    ticker_config_series = config_df.loc[ticker]
-    logging.debug("The configurations for " + ticker + " is\n" + str(ticker_config_series))
-  except KeyError:
-    # Todo : Create a default series with all nan so that it can be cleaned up in the next step
-    print ("**********                                  ERROR                              **********")
-    print ("**********     Entry for ", str(ticker).center(10) , " not found in the configurations file     **********")
-    print ("**********     Please create one and then run the script again                 **********")
-    sys.exit()
 
   # =============================================================================
   # Handle splits before proceeding as splits can change the qtr_eps
@@ -820,13 +1107,6 @@ for ticker_raw in ticker_list:
   # Create the price channels using the yr eps sdj list
   # This section also take json input if the user wants to modify the price channels
   # =============================================================================
-  chart_type = "Linear"
-  if (str(ticker_config_series['Chart_Type']) != 'nan'):
-    chart_type = str(ticker_config_series['Chart_Type'])
-    if not (all(x.isalpha() for x in chart_type)):
-      logging.error("Error - The chart type has non-alphabet characters in the Configuration File")
-      sys.exit()
-
   # This variable is added to the adjustments that are done to the channels because
   # this is also the nubmer of days by which the channels get shifted left (or these
   #  are the number of nan entries that are inserted in the channel list
@@ -1147,9 +1427,9 @@ for ticker_raw in ticker_list:
   if (math.isnan(ticker_config_series['Linear_Chart_Duration_Years'])):
     # Deal with if the data available in the historical tab is less than
     # user specified in the config file
-    plot_period_int = 252 * 10
+    plot_period_int = 252 * (10+no_of_year_to_insert_eps_projections)
   else:
-    plot_period_int = 252 * int(ticker_config_series[chart_type+'_Chart_Duration_Years'])
+    plot_period_int = 252 * (int(ticker_config_series[chart_type+'_Chart_Duration_Years']) + no_of_year_to_insert_eps_projections)
 
   if (len(date_list) < plot_period_int):
     plot_period_int = len(date_list) -1
@@ -1173,49 +1453,6 @@ for ticker_raw in ticker_list:
     else:
       spy_adjust_factor = spy_adj_close_list[plot_period_int] / ticker_adj_close_list[plot_period_int]
     spy_adj_close_list[:] = [x / spy_adjust_factor for x in spy_adj_close_list]
-
-  # ---------------------------------------------------------
-  # Create the lower and upper Price limit
-  # ---------------------------------------------------------
-  if math.isnan(ticker_config_series[chart_type + '_Price_Scale_Low']):
-    price_lim_lower = 0
-    logging.debug("Price_Scale_Low - by default - is set to 0")
-  else:
-    # price_lim_lower = int(ticker_config_series[chart_type + '_Price_Scale_Low'])
-    price_lim_lower = ticker_config_series[chart_type + '_Price_Scale_Low']
-    logging.debug("Price_Scale_Low from Config file is " + str(price_lim_lower))
-  if math.isnan(ticker_config_series[chart_type +'_Price_Scale_High']):
-    ticker_adj_close_list_nonan = [x for x in ticker_adj_close_list if math.isnan(x) is False]
-    price_lim_upper = 1.25 * max(ticker_adj_close_list_nonan)
-    logging.debug("Price_Scale_High from historical ticker_adj_close_list is " + str(price_lim_upper))
-  else:
-    price_lim_upper = ticker_config_series[chart_type+'_Price_Scale_High']
-    logging.debug("Price_Scale_High from Config file is " + str(price_lim_upper))
-  # ---------------------------------------------------------
-
-  # ---------------------------------------------------------
-  # Create the Upper and Lower EPS Limit
-  # ---------------------------------------------------------
-  if math.isnan(ticker_config_series[chart_type + '_Earnings_Scale_High']):
-    if (max(qtr_eps_list) > 0):
-      qtr_eps_lim_upper = 1.25 * max(qtr_eps_list)
-    else:
-      qtr_eps_lim_upper = max(qtr_eps_list) / 1.25
-    logging.debug("EPS Scale - Low from Earnings List is " + str(qtr_eps_lim_upper))
-  else:
-    qtr_eps_lim_upper = ticker_config_series[chart_type + '_Earnings_Scale_High']
-    logging.debug("EPS Scale - High from Config file " + str(qtr_eps_lim_upper))
-
-  if math.isnan(ticker_config_series[chart_type + '_Earnings_Scale_Low']):
-    if (min(qtr_eps_list) < 0):
-      qtr_eps_lim_lower = 1.25 * min(qtr_eps_list)
-    else:
-      qtr_eps_lim_lower = min(qtr_eps_list) / 1.25
-    logging.debug("EPS Scale - Low from Earnings List is " + str(qtr_eps_lim_lower))
-  else:
-    qtr_eps_lim_lower = ticker_config_series[chart_type + '_Earnings_Scale_Low']
-    logging.debug("EPS Scale - Low from Config file " + str(qtr_eps_lim_lower))
-  # =============================================================================
 
   # ---------------------------------------------------------------------------
   # Create the schiller PE line for the plot
@@ -1455,7 +1692,7 @@ for ticker_raw in ticker_list:
     ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
 
   chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(qtr_eps_projections_date_0) + ", " + str(qtr_eps_projections_date_1)
-  chart_update_date_str += "\nCNBC Earnings match reported Earnings - " + str(cnbc_matches_reported_eps)
+  chart_update_date_str += "\nCNBC Earnings match reported Earnings - " + str(cnbc_matches_reported_eps) + " :: Added AAII EPS Projections for : " + str(no_of_year_to_insert_eps_projections) + " years"
   if not ((is_ticker_foreign == 'nan') or (len(is_ticker_foreign) == 0)):
     chart_update_date_str +=  " :: Country - " + is_ticker_foreign
   logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry) + str(chart_update_date_str))
