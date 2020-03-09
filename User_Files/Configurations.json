@@ -2306,6 +2306,12 @@
     ]
   },
 
+  "HIIQ" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2016", "Stop_Date" :   "End"}
+    ]
+  },
+
   "DFS" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2017", "Stop_Date" :   "06/30/2019"},
