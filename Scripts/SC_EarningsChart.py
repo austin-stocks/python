@@ -428,6 +428,10 @@ for ticker_raw in ticker_list:
   latest_qtr_date_in_earnings_file = qtr_eps_df['Q_Date'].tolist()[0]
   logging.debug("The latest Date in Earnings file is " + str(latest_qtr_date_in_earnings_file))
   latest_qtr_date_in_earnings_file_dt = dt.datetime.strptime(str(latest_qtr_date_in_earnings_file), '%m/%d/%Y').date()
+  if (fiscal_yr_str != str("BA-"+str(latest_qtr_date_in_earnings_file_dt.strftime("%b")))):
+    logging.error("The fiscal year in config file : *** " + str(fiscal_yr_str) + " *** does not match the month of the latest qtr in the earnings file *** " + str(latest_qtr_date_in_earnings_file_dt.strftime("%b")) + " ***")
+    logging.error("Please correct and rerun")
+    sys.exit(1)
   latest_date_in_historical_file = historical_df['Date'].tolist()[0]
   latest_date_in_historical_file_dt = dt.datetime.strptime(str(latest_date_in_historical_file), '%m/%d/%Y').date()
   logging.debug("The latest Date in Historical file is " + str(latest_date_in_historical_file))
