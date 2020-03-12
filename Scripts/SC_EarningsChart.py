@@ -302,9 +302,9 @@ for ticker_raw in ticker_list:
     logging.debug("The Master Tracklist configurations for " + ticker + " is\n" + str(ticker_master_tracklist_series))
   except KeyError:
     # Todo : Create a default series with all nan so that it can be cleaned up in the next step
-    print("**********                                  ERROR                              **********")
-    print("**********     Entry for ", str(ticker).center(10), " not found in the Master Tracklist file     **********")
-    print("**********     Please create one and then run the script again                 **********")
+    logging.error("**********                                  ERROR                              **********")
+    logging.error("**********     Entry for " + str(ticker).center(10) + " not found in the Master Tracklist file     **********")
+    logging.error("**********     Please create one and then run the script again                 **********")
     sys.exit()
 
 
@@ -329,20 +329,20 @@ for ticker_raw in ticker_list:
     logging.debug("The configurations for " + ticker + " is\n" + str(ticker_config_series))
   except KeyError:
     # Todo : Create a default series with all nan so that it can be cleaned up in the next step
-    print ("**********                                  ERROR                              **********")
-    print ("**********     Entry for ", str(ticker).center(10) , " not found in the configurations file     **********")
-    print ("**********     Please create one and then run the script again                 **********")
+    logging.error("**********                                  ERROR                              **********")
+    logging.error("**********     Entry for " + str(ticker).center(10) + " not found in the configurations file     **********")
+    logging.error("**********     Please create one and then run the script again                 **********")
     sys.exit()
 
   # Sundeep : Todo This might be duplicate
   if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
     fiscal_yr_str = str(ticker_config_series['Fiscal_Year'])
     if not (all(x.isalpha() for x in fiscal_yr_str)):
-      print("**********                                           ERROR                                       **********")
-      print("**********     Entry for ", str(ticker).center(10), " 'Fiscal_Year' in the configurations file  is", fiscal_yr_str,"   **********")
-      print("**********     It is not a 3 character month. Valid values(string) are:     **********")
-      print("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
-      print("**********     Please correct and then run the script again                                      **********")
+      logging.error("**********                                           ERROR                                       **********")
+      logging.error("**********     Entry for " + str(ticker).center(10) + " 'Fiscal_Year' in the configurations file  is" + str(fiscal_yr_str) + "   **********")
+      logging.error("**********     It is not a 3 character month. Valid values(string) are:     **********")
+      logging.error("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
+      logging.error("**********     Please correct and then run the script again                                      **********")
   else:
     fiscal_yr_str = "Dec"
 
@@ -437,10 +437,12 @@ for ticker_raw in ticker_list:
   logging.debug("The latest Date in Historical file is " + str(latest_date_in_historical_file))
   if (latest_qtr_date_in_earnings_file_dt > latest_date_in_historical_file_dt):
     logging.error("The latest date in the historical df : " + str(latest_date_in_historical_file) + " should be newer than the lastest date in qtr df : " + str(latest_qtr_date_in_earnings_file))
-    logging.error("********** Maybe you forgot to update (add a year or two) to the 'Calendar_Future_Date' in configurations file **********")
-    logging.error("********** when you put in more quarters of earnings in the earnings file **********")
-    logging.error("The will create problems in the script further as the script may not recognize any white diamonds and will fail")
-    logging.error("Please correct and rerun merge script before continuing")
+    logging.error("Historical df should always has date that is later than the latest qtr eps date")
+    logging.error("Not having that will create problems in the script further as the script may not recognize any white diamonds and will fail")
+    logging.error("********** Maybe you forgot to update (add a year or two) to the 'Calendar_Future_Date' Column                                              **********")
+    logging.error("********** in configurations file, when you added more quarters of earnings in the earnings file                                            **********")
+    logging.error("********** or you added years in the configurations file but forgot to run the merge script to reflect added year(s) in the historical file **********")
+    logging.error("Please correct - by adding a year or two in the configuration file, if your forgot - and then rerun merge script either way before continuing")
     sys.exit(1)
   # -------------------------------------------------------------------------
   # Find the fiscal years y0, y1 and y2 and their respective projections
@@ -635,11 +637,10 @@ for ticker_raw in ticker_list:
   try:
     qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Q_Date.tolist()]
   except (TypeError):
-    print ("**********                                ERROR                               **********")
-    # print ("**********  while processing", date                                         ,"**********")
-    print ("**********  Some of the entries for Column 'Date' in the Earnings file are    **********")
-    print ("**********  either missing (blank) or do not have proper mm/dd/yyyy format.   **********")
-    print ("**********  Please correct the Earnings file 'Date' column and run again      **********")
+    logging.error("**********                                ERROR                               **********")
+    logging.error("**********  Some of the entries for Column 'Date' in the Earnings file are    **********")
+    logging.error("**********  either missing (blank) or do not have proper mm/dd/yyyy format.   **********")
+    logging.error("**********  Please correct the Earnings file 'Date' column and run again      **********")
     sys.exit(1)
 
   qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
@@ -689,9 +690,9 @@ for ticker_raw in ticker_list:
   # This will indicate any empty cells are either the beginning or in the middle of the eps
   # column in the csv
   if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
-    print ("**********                                ERROR                               **********")
-    print ("**********  There seems to be either blank cells for Earnings or their        **********")
-    print ("**********  format is undefined. Please correct the rerun the script          **********")
+    logging.error("**********                                ERROR                               **********")
+    logging.error("**********  There seems to be either blank cells for Earnings or their        **********")
+    logging.error("**********  format is undefined. Please correct the rerun the script          **********")
     sys.exit()
 
   # ---------------------------------------------------------------------------
@@ -721,10 +722,11 @@ for ticker_raw in ticker_list:
   logging.debug("Will keep (" + str(years_of_analyst_eps_to_analyze) + ") years of Analysts Projections to Analyze")
   logging.debug("The Shortened Earnings Projections list for qtr_eps is\n" + str(qtr_eps_projections_list) + "\nand the number of elements are " + str(len(qtr_eps_projections_list)))
   if (sum(math.isnan(x) for x in qtr_eps_projections_list) > 0):
-    print ("**********             $$$$$     BIG WARNING      $$$$$                                 **********")
-    print ("**********  There seems to be either blank cells for Projected Earnings or their        **********")
-    print ("**********  format is undefined. Please correct the rerun the script                    **********")
-    print ("**********  For now will copy the qps to projected qes list                             **********")
+    logging.error("**********             $$$$$     BIG WARNING      $$$$$                                 **********")
+    logging.error("**********  There seems to be either blank cells for Projected Earnings or their        **********")
+    logging.error("**********  format is undefined (In Col : Q_EPS_Projections_1) in earnings file         **********")
+    logging.error("**********  Please correct/update that column, if you have the data and rerun           **********")
+    logging.error("**********  For now will copy the qps to projected eps list                             **********")
     qtr_eps_projections_list = qtr_eps_list.copy()
 
   # We have the right number of entries available from past eps projections (analysts projections)
@@ -954,10 +956,10 @@ for ticker_raw in ticker_list:
           yr_eps_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
           yr_eps_adj_amount_list.append(float(i_adj_amount))
         except (ValueError):
-          print(
+          logging.error(
             "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Upper_Price_Channel_Adj in Configuration json file.\n"
             "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
-            "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
+            "***** Error : Found somewhere in :" + str(i_start_date) + str(i_stop_date) + str(i_adj_amount))
           sys.exit(1)
 
   logging.debug("The yr eps adjust Start Date List " + str(yr_eps_adj_start_date_list))
@@ -1173,10 +1175,10 @@ for ticker_raw in ticker_list:
           upper_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
           upper_price_channel_adj_amount_list.append(float(i_adj_amount))
         except (ValueError):
-          print(
+          logging.error(
             "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Upper_Price_Channel_Adj in Configuration json file.\n"
             "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
-            "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
+            "***** Error : Found somewhere in : " + str(i_start_date) + str(i_stop_date) + str(i_adj_amount))
           sys.exit(1)
       logging.debug("The Upper Channel Start Date List" + str(upper_price_channel_adj_start_date_list))
       logging.debug("The Upper Channel Stop Date List" + str(upper_price_channel_adj_stop_date_list))
@@ -1197,10 +1199,10 @@ for ticker_raw in ticker_list:
           lower_price_channel_adj_stop_date_list.append(dt.datetime.strptime(i_stop_date, "%m/%d/%Y").date())
           lower_price_channel_adj_amount_list.append(float(i_adj_amount))
         except (ValueError):
-          print(
+          logging.error(
             "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Lower_Price_Channel_Adj in Configuration json file.\n"
             "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
-            "***** Error : Found somewhere in :", i_start_date, i_stop_date, i_adj_amount)
+            "***** Error : Found somewhere in : " + str(i_start_date) + str(i_stop_date) + str(i_adj_amount))
           sys.exit(1)
       logging.debug("The Upper Channel Start Date List" + str(lower_price_channel_adj_start_date_list))
       logging.debug("The Upper Channel Stop Date List" + str(lower_price_channel_adj_stop_date_list))
@@ -1516,11 +1518,11 @@ for ticker_raw in ticker_list:
   if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
     fiscal_yr_str = str(ticker_config_series['Fiscal_Year'])
     if not (all(x.isalpha() for x in fiscal_yr_str)):
-      print("**********                                           ERROR                                       **********")
-      print("**********     Entry for ", str(ticker).center(10), " 'Fiscal_Year' in the configurations file  is", fiscal_yr_str,"   **********")
-      print("**********     It is not a 3 character month. Valid values(string) are:     **********")
-      print("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
-      print("**********     Please correct and then run the script again                                      **********")
+      logging.error("**********                                           ERROR                                       **********")
+      logging.error("**********     Entry for " + str(ticker).center(10) +" 'Fiscal_Year' in the configurations file  is" + str(fiscal_yr_str) + "   **********")
+      logging.error("**********     It is not a 3 character month. Valid values(string) are:     **********")
+      logging.error("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
+      logging.error("**********     Please correct and then run the script again                                      **********")
   else:
     fiscal_yr_str = "Dec"
 
