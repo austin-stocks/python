@@ -250,7 +250,7 @@ calendar_df = pd.read_csv(dir_path + user_dir + "\\" + calendar_file)
 # logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
 aaii_analysts_projection_df.set_index('Ticker', inplace=True)
 aaii_missing_tickers_list = [
-'CBOE','CP','GOOG','RACE'
+'CBOE','CP','GOOG','RACE','NTR'
 ]
 
 col_list = calendar_df.columns.tolist()
@@ -570,7 +570,7 @@ for ticker_raw in ticker_list:
       if (max_qtr_eps_from_insertion > qtr_eps_lim_upper):
         pe_ratio_from_config_file = price_lim_upper / qtr_eps_lim_upper
         logging.debug("The max q eps from inserting projected eps : " + str(max_qtr_eps_from_insertion)  + " is greater than : " + str(qtr_eps_lim_upper) + " specified by configurations file")
-        logging.debug("The PE ratio (upper limit of the price/upper limit of the eps) of the chart specified in the config file is " + str(pe_ratio_from_config_file))
+        logging.debug("The PE ratio (upper limit of the price/upper limit of the eps) of the chart specified in the config file is (" + str(price_lim_upper) + "/" + str(qtr_eps_lim_upper) + ") = " + str(pe_ratio_from_config_file))
         qtr_eps_lim_upper = max_qtr_eps_from_insertion+(max_qtr_eps_from_insertion-qtr_eps_lim_upper)*.25
         price_lim_upper = qtr_eps_lim_upper*pe_ratio_from_config_file
         logging.debug("Reset the Upper eps limit to : " + str(qtr_eps_lim_upper) + " and Upper price limit to : " + str(price_lim_upper))
