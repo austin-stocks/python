@@ -242,9 +242,9 @@ if (plot_nasdaq):
 
 
 # -----------------------------------------------------------------------------
-update_with_aaii_projections = 1
+update_with_aaii_projections_global = 1
 # aaii_analysts_projection_df = pd.DataFrame()
-# if (update_with_aaii_projections == 1):
+# if (update_with_aaii_projections_global == 1):
 aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + aaii_analysts_projection_file)
 calendar_df = pd.read_csv(dir_path + user_dir + "\\" + calendar_file)
 # logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
@@ -448,12 +448,27 @@ for ticker_raw in ticker_list:
   # Find the fiscal years y0, y1 and y2 and their respective projections
   # -------------------------------------------------------------------------
   no_of_year_to_insert_eps_projections = 0
-  continue_aaii_eps_projection = 1
+  continue_aaii_eps_projection_for_this_ticker = 1
+  if ((str(ticker_config_series['Use_AAII_Projections']) == 'No') or (str(ticker_config_series['Use_AAII_Projections']) == 'N')):
+    logging.debug("User Specifies that AAII Projections for this ticker should not be used through")
+    logging.debug("the setting in Use_AAII_Projections column in the configurations file for this ticker")
+    logging.debug("..........Will skip inserting AAII Projections..........")
+    logging.debug("This frequently happens if the AAII Projections are so out of whack that we want to temporarily")
+    logging.debug("stop AAII EPS insertion from screwing the chart while we figure out what's up AAII EPS projections")
+    logging.debug("For e.g. for FNF - the projections, generally in the range of .4 - in the AAII file are in the $100s ")
+    logging.debug("thus screwing the chart (scale) completely...So the course could be to :")
+    logging.debug("1. Go and correct the AAII file manually - after finding out what the values should be from CNBC projections (if they are available there)")
+    logging.debug("2. Download AAII file again - and hope that the discrepancy is gone")
+    logging.debug("3. Wait for a few days and download file again - and hope that the discrepancy is gone")
+    logging.debug("4. Temporarily disable the AAII insertion - which is what the user has done here")
+    logging.debug("Once - with #1-#3 the AAII Porjections are corrected, then the user should change the configurations file")
+    logging.debug("so that the AAII EPS Projections can be included in the chart")
+    continue_aaii_eps_projection_for_this_ticker = 0
   if (ticker in aaii_missing_tickers_list):
     logging.debug(str(ticker) + " is NOT in AAII df. Will skip inserting EPS Projections..")
-    continue_aaii_eps_projection = 0
+    continue_aaii_eps_projection_for_this_ticker = 0
 
-  if (continue_aaii_eps_projection == 1):
+  if (continue_aaii_eps_projection_for_this_ticker == 1):
     ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
     logging.debug("The series for " + str(ticker) + " in the AAII Analysts df is " + str(ticker_aaii_analysts_projection_series))
     y_plus0_fiscal_year_end = ticker_aaii_analysts_projection_series['Date--Current fiscal year']
@@ -461,9 +476,9 @@ for ticker_raw in ticker_list:
       y_plus0_fiscal_year_dt = dt.datetime.strptime(str(y_plus0_fiscal_year_end), '%m/%d/%Y').date()
     else:
       logging.debug("The y0 fiscal year end for " + str(ticker) + " is NaN in AAII Analysts df...will skip inserting AAII EPS Projections")
-      continue_aaii_eps_projection = 0
+      continue_aaii_eps_projection_for_this_ticker = 0
 
-  if (update_with_aaii_projections == 1) and (continue_aaii_eps_projection == 1):
+  if (update_with_aaii_projections_global == 1) and (continue_aaii_eps_projection_for_this_ticker == 1):
     y_plus1_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=1)
     y_plus2_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=2)
     logging.debug("Y0 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus0_fiscal_year_end))

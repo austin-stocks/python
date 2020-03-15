@@ -8,13 +8,12 @@ import logging
 import math
 import re
 
-def check_list_elements_with_val(list1, val):
-  # traverse in the list
-  for x in list1:
-    # compare with all the values with val
-    if val >= x:
-      return False
-  return True
+# #############################################
+# User should only change this
+# #############################################
+start_date = "12/31/2019"
+stop_date = "3/13/2020"
+# #############################################
 
 # -----------------------------------------------------------------------------
 # Read the master tracklist file into a dataframe
@@ -22,8 +21,6 @@ def check_list_elements_with_val(list1, val):
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
 log_dir = "\\..\\" + "Logs"
-charts_dir = "\\..\\" + "Charts"
-earnings_dir = "\\..\\" + "Earnings"
 historical_dir = "\\..\\" + "Historical"
 master_tracklist_file = "Master_Tracklist.xlsx"
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
@@ -66,9 +63,6 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
-start_date = "12/31/2019"
-stop_date = "3/13/2020"
-
 start_date_dt = dt.datetime.strptime(start_date, '%m/%d/%Y').date()
 stop_date_dt = dt.datetime.strptime(stop_date, '%m/%d/%Y').date()
 
@@ -82,14 +76,8 @@ if (start_date_dt >= stop_date_dt):
 # Declare all the dataframes that we are going to need to write into txt file
 # and set their columns
 # -----------------------------------------------------------------------------
-today = dt.date.today()
-one_qtr_ago_date = today - dt.timedelta(days=80)
-one_month_ago_date = today - dt.timedelta(days=15)
-logging.info("Today : " + str(today) +  " One month ago : " +str(one_month_ago_date) + " One qtr ago : " +str(one_qtr_ago_date))
-
 historical_last_updated_df = pd.DataFrame(columns=['Ticker','Price_Change', 'Start_Date_Price','Stop_Date_Price','Start_Date', 'Stop_Date'])
 historical_last_updated_df.set_index('Ticker', inplace=True)
-
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -164,6 +152,4 @@ logging.info("")
 logging.info("********************")
 logging.info("***** All Done *****")
 logging.info("********************")
-
-
 # -----------------------------------------------------------------------------

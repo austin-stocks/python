@@ -2380,6 +2380,33 @@
     ]
   },
 
+  "FLIC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2013", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "FWRD" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2013", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "FNF" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2014", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "FLIR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".22"}
+    ]
+  },
+
   "CHD" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2015", "Stop_Date" :   "End"}
