@@ -2392,6 +2392,19 @@
     ]
   },
 
+  "GNTX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2015", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "G" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2014", "Stop_Date" :   "Next"},
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
   "FNF" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2014", "Stop_Date" :   "End"}
@@ -2404,6 +2417,36 @@
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".22"}
+    ]
+  },
+
+  "GL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2014", "Stop_Date" :   "Next"},
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-1.8"}
+    ]
+  },
+
+  "GD" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2014", "Stop_Date" :   "Next"},
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2012", "Stop_Date" :   "10/05/2013", "Adj_Amount" : "1.8"}
+    ]
+  },
+
+  "GRMN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2017", "Stop_Date" :   "01/05/2018", "Adj_Amount" : "-.18"},
+      {"Start_Date" : "09/25/2014", "Stop_Date" :   "07/05/2015", "Adj_Amount" : ".4"}
     ]
   },
 
