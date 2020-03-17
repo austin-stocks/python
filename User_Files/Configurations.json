@@ -2498,6 +2498,39 @@
     ]
   },
 
+  "LKFN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2015", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "LANC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2015", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "JWN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "07/30/2016", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "JBT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "LECO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "09/25/2015", "Stop_Date" :   "07/05/2016", "Adj_Amount" : ".3"}
+    ]
+  },
+
   "GL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2014", "Stop_Date" :   "Next"},
