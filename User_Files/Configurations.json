@@ -2398,6 +2398,13 @@
     ]
   },
 
+  "HEI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "10/30/2018", "Stop_Date" :   "End"},
+       {"Start_Date" : "04/30/2013", "Stop_Date" :   "Next"}
+    ]
+  },
+
   "G" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2014", "Stop_Date" :   "Next"},
@@ -2411,12 +2418,83 @@
     ]
   },
 
+  "HXL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2012", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "IT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2012", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "INT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "IPG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "10/30/2013", "Stop_Date" :   "End"}
+    ]
+  },
+
   "FLIR" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".22"}
+    ]
+  },
+
+  "IPAR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2012", "Stop_Date" :   "01/05/2013", "Adj_Amount" : "-.8"},
+      {"Start_Date" : "03/25/2013", "Stop_Date" :   "10/05/2013", "Adj_Amount" : "-.9"},
+      {"Start_Date" : "12/25/2013", "Stop_Date" :   "01/05/2014", "Adj_Amount" : "-.1"}
+    ]
+  },
+
+  "ICFI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2015", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.15"}
+    ]
+  },
+
+  "ICLR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2012", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2015", "Stop_Date" :   "01/05/2016", "Adj_Amount" : ".2"}
+    ]
+  },
+
+  "ICE" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2012", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2013", "Stop_Date" :   "10/05/2014", "Adj_Amount" : "1"}
+    ]
+  },
+
+  "HSY" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "06/25/2015", "Stop_Date" :   "04/05/2016", "Adj_Amount" : ".3"}
     ]
   },
 
