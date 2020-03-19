@@ -12,7 +12,7 @@ import re
 # User should only change this
 # #############################################
 start_date = "12/31/2019"
-stop_date = "3/13/2020"
+stop_date = "3/17/2020"
 # #############################################
 
 # -----------------------------------------------------------------------------
@@ -22,14 +22,9 @@ dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
 log_dir = "\\..\\" + "Logs"
 historical_dir = "\\..\\" + "Historical"
-master_tracklist_file = "Master_Tracklist.xlsx"
-master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
-master_tracklist_df.sort_values('Ticker', inplace=True)
-ticker_list_unclean = master_tracklist_df['Ticker'].tolist()
-ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
-# The index can only be changed after the Ticker has been put to list
-# In other words index cannot be read as a list
-master_tracklist_df.set_index('Ticker', inplace=True)
+tracklist_file = "Tracklist.csv"
+tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
+tracklist_df = pd.read_csv(tracklist_file_full_path)
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -80,25 +75,20 @@ historical_last_updated_df = pd.DataFrame(columns=['Ticker','Price_Change', 'Sta
 historical_last_updated_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 
-# -----------------------------------------------------------------------------
-# Loop through all the tickers
-# -----------------------------------------------------------------------------
-# ticker_list = ['AUDC', 'MED']
+ticker_list_unclean = tracklist_df['Tickers'].tolist()
+ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+# #############################################################################
+#                   MAIN LOOP FOR TICKERS
+# #############################################################################
+# ticker_list = ['AAPL', 'AUDC','MED']
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   logging.debug("================================")
   logging.info("Processing : " + str(ticker))
-  # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
-  if ticker in ["QQQ"]:
-    logging.info("File for " + str(ticker) + "does not exist in earnings directory. Skipping...")
-    continue
-  quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
-  if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
-    logging.info(str(ticker) + " is not Wheat...skipping")
+
+  if ticker in ['HIIQ' , 'AVP' , 'BAS', 'CRR'  , 'CSS'  , 'ECA'  , 'FII'  , 'HOS'  , 'IDSA'  , 'LGCYQ'  , 'MDCO'  , 'PESX'  , 'PIR'  , 'SRCI'  , 'SSW'  , 'WLH'  , 'WTR'  , 'XON']:
     continue
 
-  if ticker in ['HIIQ']:
-    continue
   # ---------------------------------------------------------------------------
   # Read the Historical data file and get the last date for which prices are available
   # If it is more than a month then put it in gt_1_month old
