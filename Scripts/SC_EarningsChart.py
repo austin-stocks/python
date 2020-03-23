@@ -2300,7 +2300,7 @@ for ticker_raw in ticker_list:
   # main_plt.minorticks_on()
   # main_plt.yaxis.grid(True)
   #
-  major_xgrid_color = "black"
+  major_xgrid_color = "darkgrey"
   if (fiscal_yr_str != "BA-Dec"):
     major_xgrid_color = "peru"
 
@@ -2312,10 +2312,10 @@ for ticker_raw in ticker_list:
     # main_plt.set_xticklabels(fiscal_qtr_dates, rotation=90, fontsize=7,  color='k',  minor=True)
   # main_plt.set_xticklabels(fiscal_yr_dates, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
   main_plt.set_xticklabels(fiscal_yr_dates, rotation=0, fontsize=10, color='blue', minor=False, fontstyle='italic')
-  main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=1.5)
+  main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=.75)
   if (chart_type == "Linear"):
-    main_plt.grid(which='minor', axis='x', linestyle='--', color='blue')
-  main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=1)
+    main_plt.grid(which='minor', axis='x', linestyle='--', color='darkturquoise', linewidth=.5)
+  main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=.5)
 
   # candle_plt.set_xticks([])
   candle_plt.set_xticks(candle_sunday_dates, minor=False)
