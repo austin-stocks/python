@@ -48,9 +48,13 @@ for col in col_list:
   # print("The date in col", col, " are ", tmp_list)
   calendar_date_list_raw.extend(tmp_list)
 
+# for date_str in calendar_date_list_raw:
+#   date_dt = dt.datetime.strptime(date_str, '%m/%d/%Y').date()
+#   print("The string is ", date_str, " and the converted is ", date_dt)
+# sys.exit(1)
 # print("The concatenated Calendar list is ", calendar_date_list_raw)
 # calendar_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in calendar_df.iloc[:, 0]]
-calendar_date_list = [dt.datetime.strptime(str(date), '%m/%d/%y').date() for date in calendar_date_list_raw]
+calendar_date_list = [dt.datetime.strptime(str(date), '%m/%d/%Y').date() for date in calendar_date_list_raw]
 # print("The Calendar Date list is", calendar_date_list, "\nand it has", len(calendar_date_list), " elements")
 # =============================================================================
 
