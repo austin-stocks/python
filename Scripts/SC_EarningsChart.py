@@ -259,7 +259,7 @@ for col in col_list:
   tmp_list = calendar_df[col].dropna().tolist()
   calendar_date_list_raw.extend(tmp_list)
 
-calendar_date_list = [dt.datetime.strptime(str(date), '%m/%d/%y').date() for date in calendar_date_list_raw]
+calendar_date_list = [dt.datetime.strptime(str(date), '%m/%d/%Y').date() for date in calendar_date_list_raw]
 # -----------------------------------------------------------------------------
 
 
