@@ -66,11 +66,8 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
-all_chart_files_list=os.listdir(dir_path + charts_dir + "\\")
-logging.debug("The files in the chart direcotry are" + str(all_chart_files_list))
-
 # -----------------------------------------------------------------------------
-# Declare all the dataframes that we are going to need to write into txt file
+# Declare all the dataframes that we are going to need to write into
 # and set their columns
 # -----------------------------------------------------------------------------
 today = dt.date.today()
@@ -79,10 +76,11 @@ one_month_ago_date = today - dt.timedelta(days=15)
 logging.info("Today : " + str(today) +  " One month ago : " +str(one_month_ago_date) + " One qtr ago : " +str(one_qtr_ago_date))
 
 historical_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
-earnings_last_reporeted_df = pd.DataFrame(columns=['Ticker','Date'])
+earnings_last_reported_df = pd.DataFrame(columns=['Ticker','Date'])
 eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 charts_last_updated_df  = pd.DataFrame(columns=['Ticker','Date'])
 eps_report_newer_than_eps_projection_df = pd.DataFrame(columns=['Ticker','Actual_EPS_Report','EPS_Projections_Last_Updated'])
+skipped_tickers_df = pd.DataFrame(columns=['Ticker','Quality_of_Stock','Reason'])
 
 gt_1_month_old_historical_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 gt_1_month_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
@@ -90,10 +88,11 @@ gt_1_qtr_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','D
 gt_1_month_charts_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 
 historical_last_updated_df.set_index('Ticker', inplace=True)
-earnings_last_reporeted_df.set_index('Ticker', inplace=True)
+earnings_last_reported_df.set_index('Ticker', inplace=True)
 eps_projections_last_updated_df.set_index('Ticker', inplace=True)
 charts_last_updated_df.set_index('Ticker', inplace=True)
 eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
+skipped_tickers_df.set_index('Ticker', inplace=True)
 
 gt_1_month_old_historical_last_updated_df.set_index('Ticker', inplace=True)
 gt_1_month_old_eps_projections_last_updated_df.set_index('Ticker', inplace=True)
@@ -110,17 +109,22 @@ for ticker_raw in ticker_list:
   logging.debug("================================")
   logging.info("Processing : " + str(ticker))
   # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
-  if ticker in ["QQQ"]:
-    logging.info("File for " + str(ticker) + "does not exist in earnings directory. Skipping...")
-    continue
   quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
+  if ticker in ["QQQ"]:
+    logging.info("File for " + str(ticker) + " does not exist in earnings directory. Skipping...")
+    skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
+    skipped_tickers_df.loc[ticker,'Reason'] = "Is_ETF"
+    continue
   if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
     logging.info(str(ticker) + " is not Wheat...skipping")
+    skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
+    skipped_tickers_df.loc[ticker,'Reason'] = "neither_Wheat_nor_Wheat_Chaff_nor_Essential"
     continue
+
 
   # ---------------------------------------------------------------------------
   # Read the Historical data file and get the last date for which prices are available
-  # If it is more than a month then put it in gt_1_month old
+  # Additionally, if it is more than a month then put it in gt_1_month old
   # ---------------------------------------------------------------------------
   historical_df = pd.read_csv(dir_path + historical_dir + "\\" + ticker + "_historical.csv")
   date_str_list = historical_df.Date.tolist()
@@ -155,7 +159,7 @@ for ticker_raw in ticker_list:
   if (date_year < 2019):
     logging.error("==========     Error : The date for " + str(ticker) + " last earnings is older than 2019     ==========")
     sys.exit()
-  earnings_last_reporeted_df.loc[ticker]= [eps_actual_report_date_dt]
+  earnings_last_reported_df.loc[ticker]= [eps_actual_report_date_dt]
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -199,14 +203,14 @@ for ticker_raw in ticker_list:
     logging.error("3. You did not update the Earnings projection on the Earnings report date intentionally....BAD BAD....How can you do that???? ")
     eps_report_newer_than_eps_projection_df.loc[ticker, 'Actual_EPS_Report'] = eps_actual_report_date_dt
     eps_report_newer_than_eps_projection_df.loc[ticker, 'EPS_Projections_Last_Updated'] = eps_projection_date_0_dt
-    # sys.exit(1)
-
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Get all the charts in the charts directory for the ticker and find out the
   # chart file with the latest appended date
   # ---------------------------------------------------------------------------
+  all_chart_files_list = os.listdir(dir_path + charts_dir + "\\")
+  logging.debug("The files in the chart directory are" + str(all_chart_files_list))
   my_regex = re.compile(re.escape(ticker) + re.escape("_")  + ".*jpg")
   ticker_chart_files_list = list(filter(my_regex.match, all_chart_files_list)) # Read Note
   logging.debug("The chart file list : " + str(ticker_chart_files_list))
@@ -218,6 +222,8 @@ for ticker_raw in ticker_list:
     # Check the length of the filename - it should be number of characters in the ticker and 16
     if len(ticker_chart_filename) > (len(ticker) + 16):
       logging.error("Error : The filename " + str(ticker_chart_filename) + " has more characters than allowed")
+      skipped_tickers_df.loc[ticker, 'Quality_of_Stock'] = quality_of_stock
+      skipped_tickers_df.loc[ticker, 'Reason'] = "Chart_filename_too_long"
       continue
 
     # Remove the .jpg at the end and then get the last 10 characters of the filename
@@ -250,26 +256,28 @@ earnings_last_reported_logfile = "earnings_last_reported.txt"
 eps_projections_last_updated_logfile = "eps_projections_last_updated.txt"
 charts_last_updated_logfile = "charts_last_updated.txt"
 eps_report_newer_than_eps_projection_logfile = "eps_report_newer_than_eps_projection.txt"
-
+skipped_tickers_logfile="skipped_tickers_Sort_misc.txt"
 
 
 historical_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + historical_last_updated_logfile,sep=' ', index=True, header=False)
-earnings_last_reporeted_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
+earnings_last_reported_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
 eps_projections_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
 charts_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + charts_last_updated_logfile,sep=' ', index=True, header=False)
 eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=True)
-logging.info("Created : " + str(historical_last_updated_logfile) + " <-- Sorted by Date - based on the last Price date in their respective historical file")
+skipped_tickers_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + skipped_tickers_logfile,sep=' ', index=True, header=True)
+logging.info("Created : " + str(historical_last_updated_logfile) + " <-- Sorted by date - based on the last Price date in their respective historical file")
 logging.info("Created : " + str(earnings_last_reported_logfile) + " <-- Sorted by date - based on when their Last Earnings Date in Master_Tracklist file")
 logging.info("Created : " + str(eps_projections_last_updated_logfile) + " <-- Sorted by date - based on when the Earnings Projections were updated in their respective Earnings file")
 logging.info("Created : " + str(charts_last_updated_logfile) + " <-- Sorted by date - based on when the Chart was creates in the Charts directory")
+logging.info("Created : " + str(skipped_tickers_logfile) + " <-- Sorted by Ticker - Lists all the tickers that were skipped along with a reason")
 logging.info("Created : " + str(eps_report_newer_than_eps_projection_logfile) + " <-- THIS FILE SHOULD BE EMPTY. It is a BAD thing if this file is not emptly. The file has the tickers for which the earnings projections are newer than the reported earnings date")
 if (len(eps_report_newer_than_eps_projection_df.index) > 0):
   logging.error("*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+")
   logging.error("               " + str(eps_report_newer_than_eps_projection_logfile) + " IS NOT EMPTY...YOU GOTTA INVESTIGATE IT")
   logging.error("*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+")
 
-# This is not needed as we get the data from the above files anyway .... However this works and if needed can be
-# resurrected.
+# This is not needed as we get the data from the above files anyway...
+# However this works and if needed can be resurrected.
 # gt_1_month_old_historical_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_historical_last_updated.txt',sep=' ', index=True, header=False)
 # gt_1_month_old_eps_projections_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_month_old_eps_projections_last_updated.txt',sep=' ', index=True, header=False)
 # gt_1_qtr_old_eps_projections_last_updated_df.sort_values(by='Date').to_csv(dir_path + log_dir + "\\" + 'gt_1_qtr_old_eps_projections_last_updated.txt',sep=' ', index=True, header=False)
