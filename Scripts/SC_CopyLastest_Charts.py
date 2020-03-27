@@ -9,11 +9,9 @@ import shutil
 import glob
 import logging
 
-# Todo : Put the logger in
-# Todo : Maybe handle liner short/ linear long/ Log charts
-# # -----------------------------------------------------------------------------
-# # Read the master tracklist file into a dataframe
-# # -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Read the master tracklist file into a dataframe
+# -----------------------------------------------------------------------------
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
 charts_dir = "\\..\\" + "Charts"
@@ -64,12 +62,12 @@ logging.disable(logging.NOTSET)
 # and remove all the files from the Charts Latest directory
 # -----------------------------------------------------------------------------
 all_chart_files_list=os.listdir(dir_path + charts_dir + "\\")
-logging.debug("The files in the chart direcotry are" + str(all_chart_files_list))
+logging.debug("The files in the chart directory are" + str(all_chart_files_list))
 
-# This works - but it removes all the files in the directory - and that we don't want now
-# as it will delete (or try to delete) git stuff from the directory too.
+# This works - but it removes all the files in the directory - and that we don't
+# want now as it will delete (or try to delete) git stuff from the directory too.
 # list( map( os.unlink, (os.path.join(dir_path + charts_latest_dir + "\\" ,f) for f in os.listdir(dir_path + charts_latest_dir + "\\")) ) )
-# So now then get the jpg file in a list and then recurse over the list to
+# So instead get the jpg file in a list and then recurse over the list to
 # remove the files from the chart_latest_dir
 # jpg_file_list = [filename for filename in all_chart_files_list if 'jpg' in filename]
 jpg_file_list = glob.glob(dir_path + charts_latest_dir + "\\*.jpg" )
@@ -80,7 +78,7 @@ for filePath in jpg_file_list:
   except:
     logging.error("================================================================================")
     logging.error("Error while trying to deleting file : " + str(filePath))
-    logging.error("All the exisiting chart files from " + str(charts_latest_dir) + " need to be removed before the script can proceed")
+    logging.error("All the existing chart files from " + str(charts_latest_dir) + " need to be removed before the script can proceed")
     logging.error( "Please resolve this issue before proceeding...Exiting now")
     logging.error("================================================================================")
     sys.exit(1)
@@ -108,16 +106,16 @@ for ticker_raw in ticker_list:
   # any spurious (like AMZN_2019_12_01_thislooksgood.jpg or AMZN_thislooksbac.jpg)
   my_regex = re.compile(re.escape(ticker) + re.escape("_")  + ".*jpg")
   ticker_chart_files_list = list(filter(my_regex.match, all_chart_files_list)) # Read Note
-  logging.debug("ALL the chart files available are " + str(ticker_chart_files_list))
+  logging.debug("ALL the chart files for " + str(ticker) + " are " + str(ticker_chart_files_list))
 
   # For each file split the file name to get the date string.
-  # Then covert the date string to datetime and append it to the list
+  # Then convert the date string to datetime and append it to the list
   ticker_chart_date_list = []
   for ticker_chart_filename in ticker_chart_files_list:
     # Check the length of the filename - it should be number of characters in the ticker and 16
     if len(ticker_chart_filename) > (len(ticker) + 16):
       logging.info("Error : The filename " + str(ticker_chart_filename) + " has more characters than allowed")
-      logging.info("Will skip this filename and go on to next one...You should investigate why this is...the chart directory should have jpg file that adhere to the filename conventionsr")
+      logging.info("Will skip this filename and go on to next one...You should investigate why this is...the chart directory should have jpg file that adhere to the filename convention")
       continue
 
     # Remove the .jpg at the end and then get the last 10 characters of the filename
@@ -126,11 +124,11 @@ for ticker_raw in ticker_list:
     logging.debug("The date string for " + str(ticker_chart_filename) + " is " + str(ticker_chart_date_str) + " and the datetime is " + str(ticker_chart_date_dt))
     ticker_chart_date_list.append(ticker_chart_date_dt)
 
-  logging.debug("The datetime list for " + str(ticker) + " is " + str(ticker_chart_date_list))
+  logging.debug("The datetime list for all jpg files for " + str(ticker) + " is " + str(ticker_chart_date_list))
   # Sort the list to the get the latest (youngest) datetime
   # and create a string for the ticker filename from the string
   ticker_chart_date_list.sort(reverse=True)
-  logging.debug("The datetime SORTED list for " + str(ticker) + " is " + str(ticker_chart_date_list))
+  logging.debug("The datetime SORTED list for all jpg files for " + str(ticker) + " is " + str(ticker_chart_date_list))
   if (len(ticker_chart_date_list) > 0):
     ticker_latest_chart = ticker_chart_date_list[0].strftime('%Y_%m_%d')
     ticker_latest_chart_filename = ticker + "_" + ticker_latest_chart + ".jpg"
