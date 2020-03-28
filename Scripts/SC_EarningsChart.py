@@ -119,6 +119,13 @@ def smooth_list(l):
 g_var_annotate_acutal_qtr_earnings = 1
 g_var_use_aaii_data_to_extend_eps_projections = 1
 
+g_dict_chart_attributes = {
+  # This defined whether the numbers for Annaul EPS and Q EPS and Dividend
+  # should be printed on the chart
+  'print_eps_and_div_numbers' : 'No' # Yes, No, Both - This will create chart two times - one with numbers and one without
+}
+
+
 aaii_missing_tickers_list = [
 'CBOE','CP','GOOG','RACE','NTR'
 ]
@@ -182,6 +189,8 @@ logging.getLogger('').addHandler(console)
 logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # ---------------------------------------------------------------------------
+
+
 
 tracklist_file = "Tracklist.csv"
 schiller_pe_monthly_file = "Schiller_PE_by_Month.csv"
@@ -1838,6 +1847,26 @@ for ticker_raw in ticker_list:
 
   # ---------------------------------------------------------------------------
 
+  chart_chart_print_eps_div_numbers_list = []
+  if (g_dict_chart_attributes['print_eps_and_div_numbers'] == "Both"):
+    logging.debug("User Specified that the script should make two sets of charts")
+    logging.debug("One     Set with EPS and Dividend Numbers Printed on the chart")
+    logging.debug("Another Set with EPS and Dividend Numbers NOT printed on the chart")
+    chart_chart_print_eps_div_numbers_list = [1,0]
+  elif (g_dict_chart_attributes['print_eps_and_div_numbers'] == "Yes"):
+    logging.debug("User Specified that the script should print the EPS and dividend numbers on the chart")
+    logging.debug("So, the script will prepare ONE chart  per ticker WITH the EPS and Dividend numbers on the chart")
+    chart_chart_print_eps_div_numbers_list = [1]
+  elif (g_dict_chart_attributes['print_eps_and_div_numbers'] == "No"):
+    logging.debug("User Specified that the script should NOT print the EPS and dividend numbers on the chart")
+    logging.debug("So, the script will prepare ONE chart  per ticker WITHOUT the EPS and Dividend numbers on the chart")
+    chart_chart_print_eps_div_numbers_list = [0]
+  else:
+    logging.error("Could not figure out whether to prepare charts with or without ")
+    logging.error("printing the EPS and Dividend numbers of the chart")
+    logging.error("Please correctly specify in g_dict_chart_attributes->print_eps_and_div_numbers and rerun")
+    sys.exit(1)
+
 
   # #############################################################################
   # #############################################################################
@@ -1853,666 +1882,682 @@ for ticker_raw in ticker_list:
   # fig, main_plt = plt.subplots()
 
   logging.info("Now starting to Plot everything that was prepared")
-  fig=plt.figure()
-  main_plt = plt.subplot2grid((5,6), (0,0), colspan=5,rowspan=5)
-  candle_plt = plt.subplot2grid((5,6), (0,5), colspan=1,rowspan=4)
-  volume_plt = plt.subplot2grid((5,6), (4,5), colspan=1,rowspan=1)
-  plt.subplots_adjust(hspace=0,wspace=0)
+  if (len(chart_chart_print_eps_div_numbers_list) > 1):
+    logging.info("User wants more than one iteration through chart preparing loop")
 
-  # fig.set_size_inches(16, 10)  # Length x height
-  fig.set_size_inches(14.431, 7.639)  # Length x height
-  # fig.subplots_adjust(right=0.90)
+  for chart_print_eps_div_numbers_val in chart_chart_print_eps_div_numbers_list:
+    if (len(chart_chart_print_eps_div_numbers_list) > 1):
+      logging.info("")
+    logging.info("Iterating through Chart loop with \"Prepare Charts with EPS and Dividend Numbers Printed as\" : " + str(chart_print_eps_div_numbers_val))
+    fig=plt.figure()
+    main_plt = plt.subplot2grid((5,6), (0,0), colspan=5,rowspan=5)
+    candle_plt = plt.subplot2grid((5,6), (0,5), colspan=1,rowspan=4)
+    volume_plt = plt.subplot2grid((5,6), (4,5), colspan=1,rowspan=1)
+    plt.subplots_adjust(hspace=0,wspace=0)
 
-  # fig.autofmt_xdate()
-  # This works - Named colors / color palette in matplotlib
-  # https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib
-  main_plt.set_facecolor("lightgrey")
-  candle_plt.set_facecolor("aliceblue")
-  volume_plt.set_facecolor("honeydew")
+    # fig.set_size_inches(16, 10)  # Length x height
+    fig.set_size_inches(14.431, 7.639)  # Length x height
+    # fig.subplots_adjust(right=0.90)
 
-  plt.text(x=0.03, y=0.915, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
-  plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry , fontsize=11, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-  plt.text(x=0.03, y=0.866, s=chart_update_date_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-  # plt.text(x=0.4, y=0.915, s=adjusted_eps_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-  main_plt.text(x=.45,y=.95,s=adjusted_eps_str, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
-  main_plt.text(x=.615,y=.865,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+    # fig.autofmt_xdate()
+    # This works - Named colors / color palette in matplotlib
+    # https://stackoverflow.com/questions/22408237/named-colors-in-matplotlib
+    main_plt.set_facecolor("lightgrey")
+    candle_plt.set_facecolor("aliceblue")
+    volume_plt.set_facecolor("honeydew")
 
-  # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
-  # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
-  # This works too...may use that is set the subtitle for the plot
-  # main_plt.set_title(ticker_company_name + "("  +ticker +")", fontsize=18,horizontalalignment='right')
+    plt.text(x=0.03, y=0.915, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
+    plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry , fontsize=11, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+    plt.text(x=0.03, y=0.866, s=chart_update_date_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+    # plt.text(x=0.4, y=0.915, s=adjusted_eps_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
+    main_plt.text(x=.45,y=.95,s=adjusted_eps_str, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+    main_plt.text(x=.615,y=.865,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
 
-  # Various plots that share the same x axis(date)
-  price_plt = main_plt.twinx()
-  annual_past_eps_plt = main_plt.twinx()
-  annual_projected_eps_plt = main_plt.twinx()
-  # schiller_pe_times_yr_eps_plt = main_plt.twinx()
-  # # schiller_pe_normalized_plt  = main_plt.twinx()
-  # schiller_ann_requested_red_line_plt = main_plt.twinx()
-  upper_channel_plt = main_plt.twinx()
-  lower_channel_plt = main_plt.twinx()
-  analyst_adjusted_channel_upper_plt = main_plt.twinx()
-  analyst_adjusted_channel_lower_plt = main_plt.twinx()
-  # yr_eps_02_5_plt = main_plt.twinx()
-  # yr_eps_05_0_plt = main_plt.twinx()
-  # yr_eps_10_0_plt = main_plt.twinx()
-  # yr_eps_20_0_plt = main_plt.twinx()
-  # yr_eps_02_5_plt[0] = main_plt.twinx()
-  if (annual_eps_adjust_json):
-    annual_eps_adjusted_slice_plt = main_plt.twinx()
-  if (plot_spy):
-    spy_plt = main_plt.twinx()
-  if (pays_dividend == 1):
-    dividend_plt = main_plt.twinx()
+    # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
+    # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
+    # This works too...may use that is set the subtitle for the plot
+    # main_plt.set_title(ticker_company_name + "("  +ticker +")", fontsize=18,horizontalalignment='right')
 
-  logging.debug("Type of fig " + str(type(fig)) +  \
-        "\nType of main_plt " + str(type(main_plt)) + \
-        "\nType of price_plt: " + str(type(price_plt)) + \
-        "\nType of yr_eps_plt: " + str(type(annual_past_eps_plt)) + \
-        "\nType of upper_channel_plt: " + str(type(upper_channel_plt)))
-  # -----------------------------------------------------------------------------
-  # Main Plot - This is the Q EPS vs Date
-  # -----------------------------------------------------------------------------
-  # This works - I have commented out so that the code does not print out the xlate
-  # and I can get more space below the date ticks
-  # main_plt.set_xlabel('Date')
-  # main_plt.set_ylabel('Earnings')
-  main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  main_plt.tick_params(axis="y",direction="in", pad=-22)
-  main_plt.set_yscale(chart_type)
-  main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
-                                color="deeppink", marker='.',markersize='10')
+    # Various plots that share the same x axis(date)
+    price_plt = main_plt.twinx()
+    annual_past_eps_plt = main_plt.twinx()
+    annual_projected_eps_plt = main_plt.twinx()
+    # schiller_pe_times_yr_eps_plt = main_plt.twinx()
+    # # schiller_pe_normalized_plt  = main_plt.twinx()
+    # schiller_ann_requested_red_line_plt = main_plt.twinx()
+    upper_channel_plt = main_plt.twinx()
+    lower_channel_plt = main_plt.twinx()
+    analyst_adjusted_channel_upper_plt = main_plt.twinx()
+    analyst_adjusted_channel_lower_plt = main_plt.twinx()
+    # yr_eps_02_5_plt = main_plt.twinx()
+    # yr_eps_05_0_plt = main_plt.twinx()
+    # yr_eps_10_0_plt = main_plt.twinx()
+    # yr_eps_20_0_plt = main_plt.twinx()
+    # yr_eps_02_5_plt[0] = main_plt.twinx()
+    if (annual_eps_adjust_json):
+      annual_eps_adjusted_slice_plt = main_plt.twinx()
+    if (plot_spy):
+      spy_plt = main_plt.twinx()
+    if (pays_dividend == 1):
+      dividend_plt = main_plt.twinx()
 
-  # Print out the last reported Q_EPS on the chart
-    # check if the date is in the plot range
-  logging.debug ("The last black diamond is at index" + str(eps_date_list_eps_report_date_index) +  "and the date is" + str(eps_date_list_eps_report_date_match) + "and the repored Q EPS is " + str(qtr_eps_list[eps_date_list_eps_report_date_index]))
-  # check if the date is in the plot range
-  for i in range(5):
-    if (date_list[plot_period_int] <= qtr_eps_date_list[eps_date_list_eps_report_date_index+i] <= date_list[0]):
-      if (qtr_eps_lim_lower <= qtr_eps_list[eps_date_list_eps_report_date_index+i] <= qtr_eps_lim_upper):
-        x = float("{0:.2f}".format(qtr_eps_list[eps_date_list_eps_report_date_index+i]))
-        main_plt.text(qtr_eps_date_list[eps_date_list_eps_report_date_index+i], qtr_eps_list[eps_date_list_eps_report_date_index+i], x, color='Purple',fontsize='small', fontstyle='italic',fontweight=1000,
-                      bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=0.1),horizontalalignment='center',verticalalignment='bottom')
-  logging.info("Printed the QTR EPS number on the chart (For the Last 4 reported quarters)")
-  # -----------------------------------------------------------------------------
+    logging.debug("Type of fig " + str(type(fig)) +  \
+          "\nType of main_plt " + str(type(main_plt)) + \
+          "\nType of price_plt: " + str(type(price_plt)) + \
+          "\nType of yr_eps_plt: " + str(type(annual_past_eps_plt)) + \
+          "\nType of upper_channel_plt: " + str(type(upper_channel_plt)))
+    # -----------------------------------------------------------------------------
+    # Main Plot - This is the Q EPS vs Date
+    # -----------------------------------------------------------------------------
+    # This works - I have commented out so that the code does not print out the xlate
+    # and I can get more space below the date ticks
+    # main_plt.set_xlabel('Date')
+    # main_plt.set_ylabel('Earnings')
+    main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    main_plt.tick_params(axis="y",direction="in", pad=-22)
+    main_plt.set_yscale(chart_type)
+    main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
+                                  color="deeppink", marker='.',markersize='10')
 
-  # -----------------------------------------------------------------------------
-  # Historical Price Plot
-  # -----------------------------------------------------------------------------
-  # Now printing price on the right side of the candle plot
-  # price_plt.set_ylabel('Price', color='k')
-  # This works - this will move the tick labels inside the plot
-  price_plt.tick_params(axis="y",direction="in", pad=-22)
-  price_plt.set_ylim(price_lim_lower, price_lim_upper)
-  price_plt.set_yscale(chart_type)
-  price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
-                                  label='Adj Close', color="brown", linestyle='-')
-  # Get the buy and sells from the personal json file, along with the comments.
-  # The buy and sells are plotted throught markers while the comments are
-  # plotted through the annotate
-  if (ticker not in personal_json.keys()):
-    logging.debug("json data for " + str(ticker) + "does not exist in " + str(personal_json_file) + " file")
-  else:
-    markers_buy_date = []
-    markers_sell_date = []
-    buy_price = ""
-    sell_price = ""
-    for i_idx in range(len(personal_json[ticker]["Buy_Sell"])):
-      if ("Buy_Date" in personal_json[ticker]["Buy_Sell"][i_idx]):
-        buy_date_str = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Date"]
-        buy_date_datetime = dt.datetime.strptime(buy_date_str, '%m/%d/%Y').date()
-        buy_match_date = min(date_list, key=lambda d: abs(d - buy_date_datetime))
-        markers_buy_date.append(date_list.index(buy_match_date))
-        logging.debug("Index " + str(i_idx) + " Buy Match Date " + str(buy_match_date))
-        if ("Buy_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
-          buy_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Price_str"]
-          price_plt.annotate(buy_price_str, xy=(date_list[date_list.index(buy_match_date)], ticker_adj_close_list[date_list.index(buy_match_date)]),
-                             xytext = (-15,-30), textcoords='offset points',ha='left',fontweight='bold',
-                             bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5',alpha=.25))
-      if ("Sell_Date" in personal_json[ticker]["Buy_Sell"][i_idx]):
-        sell_date_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Date"]
-        sell_date_datetime = dt.datetime.strptime(sell_date_str, '%m/%d/%Y').date()
-        sell_match_date = min(date_list, key=lambda d: abs(d - sell_date_datetime))
-        markers_sell_date.append(date_list.index(sell_match_date))
-        logging.debug("Index " + str(i_idx) +  " Sell Match Date " + str(sell_match_date))
-        if ("Sell_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
-          sell_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Price_str"]
-          price_plt.annotate(sell_price_str, xy=(date_list[date_list.index(sell_match_date)], ticker_adj_close_list[date_list.index(sell_match_date)]),
-                             xytext = (-15, -30), textcoords = 'offset points', ha = 'left',fontweight='bold',
-                             bbox = dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5', alpha=.25))
-
-    # This works : This is outside the for loop because it has the list for markevery
-    price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
-                   marker="^",markerfacecolor=buy_sell_color,markeredgewidth=1,markeredgecolor='k',
-                   markersize=13,markevery=markers_buy_date,linestyle='None')
-    price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
-                   marker="s",markerfacecolor=buy_sell_color,markeredgewidth=1,markeredgecolor='k',
-                   markersize=12,markevery=markers_sell_date, linestyle='None')
-    logging.info("Inserted Buy and Sell Points on the Chart, if specified")
-
-  if (g_var_annotate_acutal_qtr_earnings == 1):
-    logging.debug("Will annotate the price plt at actual qtr earnings date")
-    i_idx = 0
-
-    for i_date in (qtr_eps_report_date_list_dt):
-      y_coord = 75
-      annotate_text = ""
-      # (x_coord, y_coord) = config_json[ticker]["Plot_Annotate"][i_idx]["Line_Length"].split(":")
-      match_date = min(date_list, key=lambda d: abs(d - i_date))
-      logging.debug("The matching date is " + str(match_date) + " at index " + str(date_list.index(match_date)) +
-                    " and the price is " + str(ticker_adj_close_list[date_list.index(match_date)]))
-      if (i_idx % 2 == 0):
-        y_coord = -75
-      price_plt.annotate(annotate_text,
-                         xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
-                         xytext=(0, y_coord), textcoords='offset points',
-                         # arrowprops=dict(arrowstyle='->',facecolor='black', headwidth=.2),
-                         arrowprops={'arrowstyle' : '-', 'ls' : 'dashed', 'lw' : '.75', 'color' : 'black'},
-                         bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
-      i_idx += 1
-  # -----------------------------------------------------------------------------
-
-  # -----------------------------------------------------------------------------
-  # Index Price Plot
-  # -----------------------------------------------------------------------------
-  if (plot_spy):
-    spy_plt.set_ylim(price_lim_lower, price_lim_upper)
-    spy_plt.set_yscale(chart_type)
-    spy_plt_inst = spy_plt.plot(date_list[0:plot_period_int], spy_adj_close_list[0:plot_period_int], label='S&P',
-                                color="green", linestyle='-')
-  # -----------------------------------------------------------------------------
-
-  # -----------------------------------------------------------------------------
-  # Average Annual EPS Plot
-  # -----------------------------------------------------------------------------
-  # Find the eps points that fall in the plot range
-  annual_past_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  annual_past_eps_plt.set_yscale(chart_type)
-  annual_past_eps_plt.set_yticks([])
-  annual_past_eps_plt_inst = annual_past_eps_plt.plot(date_list[0:plot_period_int],
-                                                      yr_past_eps_expanded_list[0:plot_period_int], label='4 qtrs/4',
-                                                      color="black", marker='D', markersize='4')
-  annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  annual_projected_eps_plt.set_yscale(chart_type)
-  annual_projected_eps_plt.set_yticks([])
-  annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_period_int],
-                                                                yr_projected_eps_expanded_list[0:plot_period_int],
-                                                                label='4 qtrs/4', color="White", marker='D',
-                                                                markersize='4')
-  # todo : maybe change this to only have the value printed out at the year ends
-  for i in range(len(yr_eps_date_list)):
-    logging.debug("The Date is " + str(yr_eps_date_list[i]) +  " Corresponding EPS " + str(yr_eps_list[i]))
-    # check if the date is in the plot range
-    if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
-      if (qtr_eps_lim_lower <= yr_eps_list[i] <= qtr_eps_lim_upper):
-
-        # This works - This will only print out the yr_eps numbers at fiscal year end - This is desired by Ann
-        # I am just commeting it out for now as I want to see all yr_eps numbers for all the quarters
-        # Only put the numbers for fiscal year
-        # Get the abbreviated month of the eps report date...sometimes the company
-        # will report a few days later after the end of the month - so get the prev
-        # month too and compare it against the Fiscal year end of the company
-        # yr_eps_date_curr_month = yr_eps_date_list[i].month
-        # yr_eps_date_prev_month = yr_eps_date_list[i].month-1 if yr_eps_date_list[i].month > 1 else 12
-        # yr_eps_date_curr_month_abbr = calendar.month_abbr[yr_eps_date_curr_month]
-        # yr_eps_date_prev_month_abbr = calendar.month_abbr[yr_eps_date_prev_month]
-        # # print ("The month for earnings is", yr_eps_date_curr_month_abbr, "and the previous month is ",yr_eps_date_prev_month_abbr)
-        # if ( ("BA-"+yr_eps_date_curr_month_abbr == fiscal_yr_str) or ("BA-"+yr_eps_date_prev_month_abbr == fiscal_yr_str)):
-        #   x = float("{0:.2f}".format(yr_eps_list[i]))
-        #   main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
-        #                 verticalalignment='bottom')
-
-        x = float("{0:.2f}".format(yr_eps_list[i]))
-        main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
-  logging.info("Printed the YR EPS numbers on the chart (For Black and White Diamonds)")
-  if (annual_eps_adjust_json):
-    # If the annual eps was ajusted, then plot those diamonds in <the color Ann likes>
-    annual_eps_adjusted_slice_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-    annual_eps_adjusted_slice_plt.set_yticks([])
-    annual_eps_adjusted_slice_plt_inst = annual_eps_adjusted_slice_plt.plot(date_list[0:plot_period_int],
-                                                        yr_eps_adj_slice_expanded_list[0:plot_period_int], label='4 qtrs/4',
-                                                        color="gold", marker='D', markersize='4')
-    for i in range(len(yr_eps_adj_slice_date_list)):
-      logging.debug("The Date is " + str(yr_eps_adj_slice_date_list[i]) +  " Corresponding EPS " + str(yr_eps_adj_slice_list[i]))
+    # Print out the last reported Q_EPS on the chart
       # check if the date is in the plot range
-      if (date_list[plot_period_int] <= yr_eps_adj_slice_date_list[i] <= date_list[0]):
-        if (qtr_eps_lim_lower <= yr_eps_adj_slice_list[i] <= qtr_eps_lim_upper):
-          x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
-          main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
-                        verticalalignment='bottom')
-    logging.info("Printed the Adjusted YR EPS numbers on the chart (For Golden Diamonds)")
-  # -----------------------------------------------------------------------------
+    logging.debug ("The last black diamond is at index" + str(eps_date_list_eps_report_date_index) +  "and the date is" + str(eps_date_list_eps_report_date_match) + "and the repored Q EPS is " + str(qtr_eps_list[eps_date_list_eps_report_date_index]))
+    # check if the date is in the plot range
+    if (chart_print_eps_div_numbers_val == 1):
+      for i in range(5):
+        if (date_list[plot_period_int] <= qtr_eps_date_list[eps_date_list_eps_report_date_index+i] <= date_list[0]):
+          if (qtr_eps_lim_lower <= qtr_eps_list[eps_date_list_eps_report_date_index+i] <= qtr_eps_lim_upper):
+            x = float("{0:.2f}".format(qtr_eps_list[eps_date_list_eps_report_date_index+i]))
+            main_plt.text(qtr_eps_date_list[eps_date_list_eps_report_date_index+i], qtr_eps_list[eps_date_list_eps_report_date_index+i], x, color='Purple',fontsize='small', fontstyle='italic',fontweight=1000,
+                          bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=0.1),horizontalalignment='center',verticalalignment='bottom')
+    logging.info("Printed the QTR EPS number on the chart (For the Last 4 reported quarters)")
+    # -----------------------------------------------------------------------------
 
-  # Comment out the plotting of Ann Schiller PE stuff temporarily
-  # # -----------------------------------------------------------------------------
-  # # Plot normalzied Schiller PE
-  # # -----------------------------------------------------------------------------
-  # # schiller_pe_normalized_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  # # schiller_pe_normalized_plt.set_yticks([])
-  # # schiller_pe_normalized_plt_inst = schiller_pe_normalized_plt.plot(date_list[0:plot_period_int],
-  # #                                             schiller_pe_normalized_list_smooth[0:plot_period_int],
-  # #                                             label='Normalized Schiller PE', color='green', linestyle='-')
-  #
-  # schiller_ann_requested_red_line_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  # schiller_ann_requested_red_line_plt.set_yticks([])
-  # schiller_ann_requested_red_line_plt_inst = schiller_ann_requested_red_line_plt.plot(date_list[0:plot_period_int],
-  #                                             schiller_ann_requested_red_line_list_3[0:plot_period_int],
-  #                                             label='Normalized Schiller PE', color='red', linestyle='-')
-  #
-  # # -----------------------------------------------------------------------------
-  #
-  #
-  # # -----------------------------------------------------------------------------
-  # # Plot normalized Schiller PE mulitpled by YR EPS
-  # # -----------------------------------------------------------------------------
-  # schiller_pe_times_yr_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  # schiller_pe_times_yr_eps_plt.set_yticks([])
-  # schiller_pe_times_yr_eps_plt_inst = schiller_pe_times_yr_eps_plt.plot(date_list[0:plot_period_int],
-  #                                             schiller_pe_times_yr_eps_list[0:plot_period_int],
-  #                                             label='Schiller PE time EPS', color='darkviolet', linestyle='-')
-  # for i_date_str in fiscal_yr_dates:
-  #   i_date = dt.datetime.strptime(i_date_str, '%m/%d/%Y').date()
-  #   if (i_date < dt.datetime.now().date()):
-  #     match_date = min(date_list, key=lambda d: abs(d - i_date))
-  #     i_idx = date_list.index(match_date)
-  #     if (date_list[plot_period_int] <= match_date <= date_list[0]):
-  #       x = float("{0:.2f}".format(schiller_pe_times_yr_eps_list[i_idx]))
-  #       y = float("{0:.2f}".format(schiller_pe_normalized_list_smooth[i_idx]))
-  #       z = float("{0:.2f}".format(schiller_ann_requested_red_line_list_3[i_idx]))
-  #       main_plt.text(date_list[i_idx], schiller_pe_times_yr_eps_list[i_idx], x, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
-  #       # main_plt.text(date_list[i_idx], schiller_pe_normalized_list_smooth[i_idx], y, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
-  #       main_plt.text(date_list[i_idx], schiller_ann_requested_red_line_list_3[i_idx], z, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
-  # # -----------------------------------------------------------------------------
-
-  # -----------------------------------------------------------------------------
-  # Dividend plot
-  # -----------------------------------------------------------------------------
-  if (pays_dividend == 1):
-    dividend_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-    dividend_plt.set_yscale(chart_type)
-    dividend_plt.set_yticks([])
-    dividend_plt_inst = dividend_plt.plot(date_list[0:plot_period_int], dividend_expanded_list[0:plot_period_int],
-                                          label='Dividend', color="Saddlebrown", marker='x', markersize='8')
-    for i in range(len(dividend_date_list)):
-      if (date_list[plot_period_int] <= dividend_date_list[i] <= date_list[0]):
-        if (qtr_eps_lim_lower <= dividend_list[i] <= qtr_eps_lim_upper):
-          x = float("{0:.2f}".format(dividend_list[i]))
-          main_plt.text(dividend_date_list[i], dividend_list_multiplied[i], x, fontsize=6, horizontalalignment='center',
-                        verticalalignment='bottom')
-    logging.info("Printed the Dividend numbers on the chart")
-  # -----------------------------------------------------------------------------
-
-  # -----------------------------------------------------------------------------
-  # Price channels
-  # -----------------------------------------------------------------------------
-  for i_idx in range(number_of_growth_proj_overlays):
-
-    # Search google for :
-    # TypeError: 'AxesSubplot'  object  does  not support  item  assignment
-    # https: // stackoverflow.com / questions / 19953348 / error - when - looping - to - produce - subplots
-    # https: // stackoverflow.com / questions / 45993370 / matplotlib - indexing - error - on - plotting
-    # Probably something needs to be done with subplots are declared ahove...need to know how many subplots will
-    # be created
-    # yr_eps_02_5_plt[i_idx,0] = main_plt.twinx()
-    # yr_eps_02_5_plt[i_idx,0].set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
-    # yr_eps_02_5_plt[i_idx,0].set_yticks([])
-    # yr_eps_02_5_plt_inst[i_idx,0] = yr_eps_02_5_plt[i_idx,0].plot(date_list[0:plot_period_int],
-    #                                                 yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
-    #                                                 label='Q 2.5%',color="Cyan", linestyle='-', linewidth=1)
-
-    # This is a hack for now
-    if (i_idx == 0):
-      yr_eps_02_5_plt_0 = main_plt.twinx()
-      yr_eps_02_5_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_02_5_plt_0.set_yticks([])
-      yr_eps_02_5_plt_inst_0 = yr_eps_02_5_plt_0.plot(date_list[0:plot_period_int],
-                                                      yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
-      yr_eps_05_0_plt_0 = main_plt.twinx()
-      yr_eps_05_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_05_0_plt_0.set_yticks([])
-      yr_eps_05_0_plt_inst_0 = yr_eps_05_0_plt_0.plot(date_list[0:plot_period_int],
-                                                      yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 5.0%', color="Yellow", linestyle='-', linewidth=1)
-      yr_eps_10_0_plt_0 = main_plt.twinx()
-      yr_eps_10_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_10_0_plt_0.set_yticks([])
-      yr_eps_10_0_plt_inst_0 = yr_eps_10_0_plt_0.plot(date_list[0:plot_period_int],
-                                                      yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 10%', color="Cyan", linestyle='-', linewidth=1)
-      yr_eps_20_0_plt_0 = main_plt.twinx()
-      yr_eps_20_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_20_0_plt_0.set_yticks([])
-      yr_eps_20_0_plt_inst_0 = yr_eps_20_0_plt_0.plot(date_list[0:plot_period_int],
-                                                      yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 20%', color="Yellow", linestyle='-', linewidth=1)
-    elif (i_idx == 1):
-      yr_eps_02_5_plt_1 = main_plt.twinx()
-      yr_eps_02_5_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_02_5_plt_1.set_yticks([])
-      yr_eps_02_5_plt_inst_1 = yr_eps_02_5_plt_1.plot(date_list[0:plot_period_int],
-                                                      yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
-      yr_eps_05_0_plt_1 = main_plt.twinx()
-      yr_eps_05_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_05_0_plt_1.set_yticks([])
-      yr_eps_05_0_plt_inst_1 = yr_eps_05_0_plt_1.plot(date_list[0:plot_period_int],
-                                                      yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 5.0%', color="Yellow", linestyle='-', linewidth=1)
-      yr_eps_10_0_plt_1 = main_plt.twinx()
-      yr_eps_10_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_10_0_plt_1.set_yticks([])
-      yr_eps_10_0_plt_inst_1 = yr_eps_10_0_plt_1.plot(date_list[0:plot_period_int],
-                                                      yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 10%', color="Cyan", linestyle='-', linewidth=1)
-      yr_eps_20_0_plt_1 = main_plt.twinx()
-      yr_eps_20_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_20_0_plt_1.set_yticks([])
-      yr_eps_20_0_plt_inst_1 = yr_eps_20_0_plt_1.plot(date_list[0:plot_period_int],
-                                                      yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 20%', color="Yellow", linestyle='-', linewidth=1)
-    elif (i_idx == 2):
-      yr_eps_02_5_plt_2 = main_plt.twinx()
-      yr_eps_02_5_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_02_5_plt_2.set_yticks([])
-      yr_eps_02_5_plt_inst_2 = yr_eps_02_5_plt_2.plot(date_list[0:plot_period_int],
-                                                      yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
-      yr_eps_05_0_plt_2 = main_plt.twinx()
-      yr_eps_05_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_05_0_plt_2.set_yticks([])
-      yr_eps_05_0_plt_inst_2 = yr_eps_05_0_plt_2.plot(date_list[0:plot_period_int],
-                                                      yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 5.0%', color="Yellow", linestyle='-', linewidth=1)
-      yr_eps_10_0_plt_2 = main_plt.twinx()
-      yr_eps_10_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_10_0_plt_2.set_yticks([])
-      yr_eps_10_0_plt_inst_2 = yr_eps_10_0_plt_2.plot(date_list[0:plot_period_int],
-                                                      yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 10%', color="Cyan", linestyle='-', linewidth=1)
-      yr_eps_20_0_plt_2 = main_plt.twinx()
-      yr_eps_20_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      yr_eps_20_0_plt_2.set_yticks([])
-      yr_eps_20_0_plt_inst_2 = yr_eps_20_0_plt_2.plot(date_list[0:plot_period_int],
-                                                      yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
-                                                      label='Q 20%', color="Yellow", linestyle='-', linewidth=1)
-
-  # yr_eps_02_5_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
-  # yr_eps_02_5_plt.set_yticks([])
-  # yr_eps_02_5_plt_inst = yr_eps_02_5_plt.plot(date_list[0:plot_period_int], yr_eps_02_5_growth_expanded_list[0:plot_period_int], label = 'Q 2.5%',color="Cyan",linestyle = '-', linewidth=1)
-
-  # yr_eps_05_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
-  # yr_eps_05_0_plt.set_yticks([])
-  # yr_eps_05_0_plt_inst = yr_eps_05_0_plt.plot(date_list[0:plot_period_int], yr_eps_05_0_growth_expanded_list[0:plot_period_int], label = 'Q 5%',color="Yellow",linestyle = '-', linewidth=1)
-  #
-  # yr_eps_10_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
-  # yr_eps_10_0_plt.set_yticks([])
-  # yr_eps_10_0_plt_inst = yr_eps_10_0_plt.plot(date_list[0:plot_period_int], yr_eps_10_0_growth_expanded_list[0:plot_period_int], label = 'Q 10%',color="Cyan",linestyle = '-', linewidth=1)
-  #
-  # yr_eps_20_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
-  # yr_eps_20_0_plt.set_yticks([])
-  # yr_eps_20_0_plt_inst = yr_eps_20_0_plt.plot(date_list[0:plot_period_int], yr_eps_20_0_growth_expanded_list[0:plot_period_int], label = 'Q 20%',color="Yellow",linestyle = '-', linewidth=1)
-  # -----------------------------------------------------------------------------
-
-  # -----------------------------------------------------------------------------
-  # Upper Price Channel Plot
-  # -----------------------------------------------------------------------------
-  # upper_channel_plt.set_ylabel('Upper_guide', color = 'b')
-  # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
-  if (chart_type == "Linear"):
-    upper_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-    upper_channel_plt.set_yscale(chart_type)
-    upper_channel_plt.set_yticks([])
-    upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
-                                                    upper_price_channel_list[0:plot_period_int], label='Channel', color="blue",
-                                                    linestyle='-')
-
-    analyst_adjusted_channel_upper_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-    analyst_adjusted_channel_upper_plt.set_yscale(chart_type)
-    analyst_adjusted_channel_upper_plt.set_yticks([])
-    analyst_adjusted_channel_upper_plt_inst = analyst_adjusted_channel_upper_plt.plot(date_list[0:plot_period_int],
-                                                                                      analyst_adjusted_channel_upper[
-                                                                                      0:plot_period_int], label='Channel',
-                                                                                      color="blue",
-                                                                                      linestyle='-.')
-    analyst_adjusted_channel_lower_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-    analyst_adjusted_channel_lower_plt.set_yscale(chart_type)
-    analyst_adjusted_channel_lower_plt.set_yticks([])
-    analyst_adjusted_channel_lower_plt_inst = analyst_adjusted_channel_lower_plt.plot(date_list[0:plot_period_int],
-                                                                                      analyst_adjusted_channel_lower[
-                                                                                      0:plot_period_int], label='Channel',
-                                                                                      color="blue",
-                                                                                      linestyle='-.')
-  # -----------------------------------------------------------------------------
-
-  # -----------------------------------------------------------------------------
-  # Lower Price Channel Plot
-  # -----------------------------------------------------------------------------
-  # upper_channel_plt.set_ylabel('Upper_guide', color = 'b')
-  # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
-  if (chart_type == "Linear"):
-    lower_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-    lower_channel_plt.set_yscale(chart_type)
-    lower_channel_plt.set_yticks([])
-    lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
-                                                    lower_price_channel_list[0:plot_period_int], label='Price Channel', color="blue",
-                                                    linestyle='-')
-  # -----------------------------------------------------------------------------
-
-  # -----------------------------------------------------------------------------
-  # Candlestick and volume Plots
-  # -----------------------------------------------------------------------------
-  # todo
-  # Figure out how to adjust the candlestick price y ranges
-  # Google search - remove weekends from matplotlib plot
-  candle_plt_inst = candlestick_ohlc(candle_plt, quotes[0:candle_chart_duration], width=1, colorup='mediumseagreen', colordown='darksalmon');
-  candle_plt_MA200_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_200_list[0:candle_chart_duration],linewidth=.5, color = 'black', label = 'SMA200')
-  candle_plt_MA50_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_50_list[0:candle_chart_duration], linewidth=.5,color = 'blue', label = 'SMA50')
-  candle_plt_MA20_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_20_list[0:candle_chart_duration],linewidth=.5, color = 'green', label = 'SMA20')
-  candle_plt_MA10_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_10_list[0:candle_chart_duration],linewidth=.5, color = 'deeppink', label = 'SMA10')
-  volume_plt_inst = volume_plt.bar(date_list_candles[0:candle_chart_duration], volume[0:candle_chart_duration], width=1, color=bar_color_list[0:candle_chart_duration])
-  volume_plt_MA = volume_plt.twinx()
-  volume_plt_MA_inst = volume_plt_MA.plot(date_list_candles[0:candle_chart_duration],MA_volume_50_list[0:candle_chart_duration], color = 'blue', label = 'SMA10')
-  # -----------------------------------------------------------------------------
-
-
-  # -----------------------------------------------------------------------------
-  # Set the gridlines for all plots
-  # -----------------------------------------------------------------------------
-  # import matplotlib.pyplot as plt
-  # fig, ax = plt.subplots()
-  # ax.set_yticks([0.2, 0.6, 0.8], minor=False)
-  # ax.set_yticks([0.3, 0.55, 0.7], minor=True)
-  # ax.yaxis.grid(True, which='major')
-  # ax.yaxis.grid(True, which='minor')
-  # plt.show()
-  #  Set the Minor and Major ticks and then show the gird
-  # xstart,xend = price_plt.get_xlim()
-  # ystart,yend = price_plt.get_ylim()
-  # xstart_date = matplotlib.dates.num2date(xstart)
-  # xend_date = matplotlib.dates.num2date(xend)
-  #
-  # print ("The xlimit Start: ", xstart_date, " End: ", xend_date, "Starting year", xstart_date.year )
-  # print ("The ylimit Start: ", ystart, " End: ", yend )
-  #
-  # print ("The years between the start and end dates are : ", range(xstart_date.year, xend_date.year+1))
-  # qtr_dates = pd.date_range(xstart_date.year, xend_date.year, freq='Q')
-  # yr_dates = pd.date_range('2018-01', '2020-05', freq='Y')
-  # print ("Quarterly Dates are ", qtr_dates)
-  #
-  # main_plt.set_xticks(qtr_dates, minor=True)
-  # # main_plt.set_xticks(yr_dates, minor=False)
-  # main_plt.xaxis.grid(which='major', linestyle='-')
-  # main_plt.xaxis.grid(which='minor',linestyle='--')
-  # main_plt.minorticks_on()
-  # main_plt.yaxis.grid(True)
-  #
-  major_xgrid_color = "darkgrey"
-  if (fiscal_yr_str != "BA-Dec"):
-    major_xgrid_color = "peru"
-
-  main_plt.set_xticks(fiscal_yr_dates, minor=False)
-  main_plt.set_xticks(fiscal_qtr_dates, minor=True)
-  main_plt.xaxis.set_tick_params(width=5)
-  # This works - Just turning this off as Ann did not want them...
-  # if (chart_type == "Linear"):
-  # main_plt.set_xticklabels(fiscal_qtr_dates, rotation=90, fontsize=7,  color='k',  minor=True)
-  # main_plt.set_xticklabels(fiscal_yr_dates, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
-  main_plt.set_xticklabels(fiscal_yr_dates, rotation=0, fontsize=10, color='blue', minor=False, fontstyle='italic')
-  main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=.75)
-  if (chart_type == "Linear"):
-    main_plt.grid(which='minor', axis='x', linestyle='--', color='darkturquoise', linewidth=.5)
-  main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=.5)
-
-  # candle_plt.set_xticks([])
-  candle_plt.set_xticks(candle_sunday_dates, minor=False)
-  candle_plt.grid(True)
-  candle_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
-  # This works - To turn individual grid axis off or on
-  # candle_plt.grid(False,axis='y')
-  # candle_plt.set_ylabel('Price', color='k')
-  candle_plt.yaxis.set_label_position("right")
-  candle_plt.yaxis.tick_right()
-
-  volume_plt.set_xticks(candle_sunday_dates, minor=False)
-  volume_plt.grid(True)
-  volume_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
-  # volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=7, color='k', minor=False)
-  volume_plt.set_xticklabels([])
-  volume_plt.set_ylim(0, ticker_volume_upper_limit)
-  volume_plt.yaxis.tick_right()
-  volume_plt.set_yticks(ticker_volume_ytick_list)
-  volume_plt.set_yticklabels(ticker_volume_yticklabels_list, rotation=0, fontsize=8, color='k', minor=False)
-
-  volume_plt_MA.set_ylim(0, ticker_volume_upper_limit)
-  # volume_plt_MA.set_xticks([])
-  volume_plt_MA.set_yticks([])
-  volume_plt_MA.text(date_list_candles[0], MA_volume_50_list[0], human_format(MA_volume_50_list[0]),
-                     fontsize=7,color='blue',fontweight='bold',
-                     bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
-  plt.setp(plt.gca().get_xticklabels(), rotation=90)
-  # -----------------------------------------------------------------------------
-
-  # -----------------------------------------------------------------------------
-  # Collect the labels for the subplots and then create the legends
-  # -----------------------------------------------------------------------------
-  '''
-  # This works perfectly well - but Ann wants no Legends for now
-  lns = price_plt_inst + main_plt_inst + annual_past_eps_plt_inst + lower_channel_plt_inst
-  if (pays_dividend):
-    lns = lns + dividend_plt_inst
-  if (number_of_growth_proj_overlays > 0):
-    lns = lns + yr_eps_02_5_plt_inst_0 + yr_eps_05_0_plt_inst_0 \
-              + yr_eps_10_0_plt_inst_0 + yr_eps_20_0_plt_inst_0
-  if (plot_spy):
-    lns = lns + spy_plt_inst
-  # sys.exit(1)
-  labs = [l.get_label() for l in lns]
-  main_plt.legend(lns, labs, bbox_to_anchor=(-.06, -0.13), loc="lower right", borderaxespad=2, fontsize='x-small')
-  '''
-  # This works perfectly well as well
-  # main_plt.legend(lns, labs,bbox_to_anchor=(-.10,-0.13), loc="lower left", borderaxespad=2,fontsize = 'x-small')
-  # This works if we don't have defined the inst of the plots. In this case we
-  # collect the things manually and then put them in legend
-  # h1,l1 = main_plt.get_legend_handles_labels()
-  # h2,l2 = price_plt.get_legend_handles_labels()
-  # main_plt.legend(h1+h2, l1+l2, loc=2)
-  # -----------------------------------------------------------------------------
-
-  # -----------------------------------------------------------------------------
-  # If there is an Text box that needs to be inserted then
-  # insert it here...There can be multiple of them inserted
-  # The locations for AnchoredText at
-  # https://matplotlib.org/api/offsetbox_api.html
-  # 'upper right'  : 1,
-  # 'upper left'   : 2,
-  # 'lower left'   : 3,
-  # 'lower right'  : 4,
-  # 'right'        : 5, (same as 'center right', for back-compatibility)
-  # 'center left'  : 6,
-  # 'center right' : 7,
-  # 'lower center' : 8,
-  # 'upper center' : 9,
-  # 'center'       : 10,
-  # -----------------------------------------------------------------------------
-  # todo : Can this be done in an array
-  number_of_anchored_texts = 4
-  for i in range(number_of_anchored_texts):
-    if (i == 0):
-      location = 9
-      my_text = "Ann Constant is: " +  str(round(ann_constant,4))
-    elif (i == 1):
-      location = 6
-      my_text = "Test for Box number 2"
-    elif (i == 2):
-      location = 2
-      my_text = "Test Box in upper left"
+    # -----------------------------------------------------------------------------
+    # Historical Price Plot
+    # -----------------------------------------------------------------------------
+    # Now printing price on the right side of the candle plot
+    # price_plt.set_ylabel('Price', color='k')
+    # This works - this will move the tick labels inside the plot
+    price_plt.tick_params(axis="y",direction="in", pad=-22)
+    price_plt.set_ylim(price_lim_lower, price_lim_upper)
+    price_plt.set_yscale(chart_type)
+    price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
+                                    label='Adj Close', color="brown", linestyle='-')
+    # Get the buy and sells from the personal json file, along with the comments.
+    # The buy and sells are plotted throught markers while the comments are
+    # plotted through the annotate
+    if (ticker not in personal_json.keys()):
+      logging.debug("json data for " + str(ticker) + "does not exist in " + str(personal_json_file) + " file")
     else:
-      location = 4
-      my_text = "What do you want me to put here?"
+      markers_buy_date = []
+      markers_sell_date = []
+      buy_price = ""
+      sell_price = ""
+      for i_idx in range(len(personal_json[ticker]["Buy_Sell"])):
+        if ("Buy_Date" in personal_json[ticker]["Buy_Sell"][i_idx]):
+          buy_date_str = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Date"]
+          buy_date_datetime = dt.datetime.strptime(buy_date_str, '%m/%d/%Y').date()
+          buy_match_date = min(date_list, key=lambda d: abs(d - buy_date_datetime))
+          markers_buy_date.append(date_list.index(buy_match_date))
+          logging.debug("Index " + str(i_idx) + " Buy Match Date " + str(buy_match_date))
+          if ("Buy_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
+            buy_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Price_str"]
+            price_plt.annotate(buy_price_str, xy=(date_list[date_list.index(buy_match_date)], ticker_adj_close_list[date_list.index(buy_match_date)]),
+                               xytext = (-15,-30), textcoords='offset points',ha='left',fontweight='bold',
+                               bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5',alpha=.25))
+        if ("Sell_Date" in personal_json[ticker]["Buy_Sell"][i_idx]):
+          sell_date_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Date"]
+          sell_date_datetime = dt.datetime.strptime(sell_date_str, '%m/%d/%Y').date()
+          sell_match_date = min(date_list, key=lambda d: abs(d - sell_date_datetime))
+          markers_sell_date.append(date_list.index(sell_match_date))
+          logging.debug("Index " + str(i_idx) +  " Sell Match Date " + str(sell_match_date))
+          if ("Sell_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
+            sell_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Price_str"]
+            price_plt.annotate(sell_price_str, xy=(date_list[date_list.index(sell_match_date)], ticker_adj_close_list[date_list.index(sell_match_date)]),
+                               xytext = (-15, -30), textcoords = 'offset points', ha = 'left',fontweight='bold',
+                               bbox = dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5', alpha=.25))
 
-    # todo : Maybe add transparency to the box?
-    a_text = AnchoredText(my_text, loc=location)
-    main_plt.add_artist(a_text)
-  # -----------------------------------------------------------------------------
+      # This works : This is outside the for loop because it has the list for markevery
+      price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
+                     marker="^",markerfacecolor=buy_sell_color,markeredgewidth=1,markeredgecolor='k',
+                     markersize=13,markevery=markers_buy_date,linestyle='None')
+      price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
+                     marker="s",markerfacecolor=buy_sell_color,markeredgewidth=1,markeredgecolor='k',
+                     markersize=12,markevery=markers_sell_date, linestyle='None')
+      logging.info("Inserted Buy and Sell Points on the Chart, if specified")
 
-  # -----------------------------------------------------------------------------
-  # Annonate at a particular (x,y) = (Date,Prcie) on the chart.
-  # User can sepcifiy muliple annotates - however right now the code only supports
-  # annotated on (Date, Price) pair - price_plt. The user specifies the date and
-  # the code finds out the corresponding price and annotates that point.
-  # If however - there is a need to annotate (say on annual eps) then that can
-  # be done as well - In order to support that feature the use has the specify
-  # it in the annoate jon and then there will have to be a if statement, that will
-  # choose the appropriate plot
-  # -----------------------------------------------------------------------------
-  if (ticker not in config_json.keys()):
-    logging.debug("json data for " + str(ticker) +  " does not exist in " + str(configuration_json) +  " file")
-  else:
-    if ("Plot_Annotate" in config_json[ticker]):
-      logging.debug("The number of plot annotates requested by the user are " + str(len(config_json[ticker]["Plot_Annotate"])))
-      for i_idx in range(len(config_json[ticker]["Plot_Annotate"])):
-        date_to_annotate = config_json[ticker]["Plot_Annotate"][i_idx]["Date"]
-        date_to_annotate_datetime = dt.datetime.strptime(date_to_annotate, '%m/%d/%Y').date()
-        annotate_text = config_json[ticker]["Plot_Annotate"][i_idx]["Text"]
-        (x_coord,y_coord) =  config_json[ticker]["Plot_Annotate"][i_idx]["Line_Length"].split(":")
+    if (g_var_annotate_acutal_qtr_earnings == 1):
+      logging.debug("Will annotate the price plt at actual qtr earnings date")
+      i_idx = 0
 
-        match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
+      for i_date in (qtr_eps_report_date_list_dt):
+        y_coord = 75
+        annotate_text = ""
+        # (x_coord, y_coord) = config_json[ticker]["Plot_Annotate"][i_idx]["Line_Length"].split(":")
+        match_date = min(date_list, key=lambda d: abs(d - i_date))
         logging.debug("The matching date is " + str(match_date) + " at index " + str(date_list.index(match_date)) +
                       " and the price is " + str(ticker_adj_close_list[date_list.index(match_date)]))
+        if (i_idx % 2 == 0):
+          y_coord = -75
         price_plt.annotate(annotate_text,
                            xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
-                           xytext=(int(x_coord), int(y_coord)), textcoords='offset points', arrowprops=dict(facecolor='black', width=.25),
+                           xytext=(0, y_coord), textcoords='offset points',
+                           # arrowprops=dict(arrowstyle='->',facecolor='black', headwidth=.2),
+                           arrowprops={'arrowstyle' : '-', 'ls' : 'dashed', 'lw' : '.75', 'color' : 'black'},
                            bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
-                           # arrowprops=dict(facecolor='black', width=1))
+        i_idx += 1
+    # -----------------------------------------------------------------------------
 
-  # -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
+    # Index Price Plot
+    # -----------------------------------------------------------------------------
+    if (plot_spy):
+      spy_plt.set_ylim(price_lim_lower, price_lim_upper)
+      spy_plt.set_yscale(chart_type)
+      spy_plt_inst = spy_plt.plot(date_list[0:plot_period_int], spy_adj_close_list[0:plot_period_int], label='S&P',
+                                  color="green", linestyle='-')
+    # -----------------------------------------------------------------------------
 
-  # -----------------------------------------------------------------------------
-  # Save the Chart with the date and time as prefix
-  # -----------------------------------------------------------------------------
-  # This works too instead of two line
-  # date_time =  dt.datetime.now().strftime("%Y_%m_%d_%H_%M")
+    # -----------------------------------------------------------------------------
+    # Average Annual EPS Plot
+    # -----------------------------------------------------------------------------
+    # Find the eps points that fall in the plot range
+    annual_past_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    annual_past_eps_plt.set_yscale(chart_type)
+    annual_past_eps_plt.set_yticks([])
+    annual_past_eps_plt_inst = annual_past_eps_plt.plot(date_list[0:plot_period_int],
+                                                        yr_past_eps_expanded_list[0:plot_period_int], label='4 qtrs/4',
+                                                        color="black", marker='D', markersize='4')
+    annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    annual_projected_eps_plt.set_yscale(chart_type)
+    annual_projected_eps_plt.set_yticks([])
+    annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_period_int],
+                                                                  yr_projected_eps_expanded_list[0:plot_period_int],
+                                                                  label='4 qtrs/4', color="White", marker='D',
+                                                                  markersize='4')
+    # todo : maybe change this to only have the value printed out at the year ends
+    if (chart_print_eps_div_numbers_val == 1):
+      for i in range(len(yr_eps_date_list)):
+        logging.debug("The Date is " + str(yr_eps_date_list[i]) +  " Corresponding EPS " + str(yr_eps_list[i]))
+        # check if the date is in the plot range
+        if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
+          if (qtr_eps_lim_lower <= yr_eps_list[i] <= qtr_eps_lim_upper):
 
-  # This adjusts the dimensions (in relative tems of the plot area
-  # so example the plots take from 5% to 95% of the horizontal space (start the 5% and stop at 95%)
-  fig.subplots_adjust(left=.02, right=.97, bottom=0.05, top=.86)
+            # This works - This will only print out the yr_eps numbers at fiscal year end - This is desired by Ann
+            # I am just commeting it out for now as I want to see all yr_eps numbers for all the quarters
+            # Only put the numbers for fiscal year
+            # Get the abbreviated month of the eps report date...sometimes the company
+            # will report a few days later after the end of the month - so get the prev
+            # month too and compare it against the Fiscal year end of the company
+            # yr_eps_date_curr_month = yr_eps_date_list[i].month
+            # yr_eps_date_prev_month = yr_eps_date_list[i].month-1 if yr_eps_date_list[i].month > 1 else 12
+            # yr_eps_date_curr_month_abbr = calendar.month_abbr[yr_eps_date_curr_month]
+            # yr_eps_date_prev_month_abbr = calendar.month_abbr[yr_eps_date_prev_month]
+            # # print ("The month for earnings is", yr_eps_date_curr_month_abbr, "and the previous month is ",yr_eps_date_prev_month_abbr)
+            # if ( ("BA-"+yr_eps_date_curr_month_abbr == fiscal_yr_str) or ("BA-"+yr_eps_date_prev_month_abbr == fiscal_yr_str)):
+            #   x = float("{0:.2f}".format(yr_eps_list[i]))
+            #   main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center',
+            #                 verticalalignment='bottom')
 
-  now = dt.datetime.now()
-  date_time = now.strftime("%Y_%m_%d_%H_%M")
-  date_time = now.strftime("%Y_%m_%d")
-  # Only show the plot if we are making only one chart
-  if (chart_type == "Log"):
-    fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
-    if (len(ticker_list) == 1):
-      plt.show()
+            x = float("{0:.2f}".format(yr_eps_list[i]))
+            main_plt.text(yr_eps_date_list[i], yr_eps_list[i], x, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+    logging.info("Printed the YR EPS numbers on the chart (For Black and White Diamonds)")
+    if (annual_eps_adjust_json):
+      # If the annual eps was ajusted, then plot those diamonds in <the color Ann likes>
+      annual_eps_adjusted_slice_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+      annual_eps_adjusted_slice_plt.set_yticks([])
+      annual_eps_adjusted_slice_plt_inst = annual_eps_adjusted_slice_plt.plot(date_list[0:plot_period_int],
+                                                          yr_eps_adj_slice_expanded_list[0:plot_period_int], label='4 qtrs/4',
+                                                          color="gold", marker='D', markersize='4')
+      if (chart_print_eps_div_numbers_val == 1):
+        for i in range(len(yr_eps_adj_slice_date_list)):
+          logging.debug("The Date is " + str(yr_eps_adj_slice_date_list[i]) +  " Corresponding EPS " + str(yr_eps_adj_slice_list[i]))
+          # check if the date is in the plot range
+          if (date_list[plot_period_int] <= yr_eps_adj_slice_date_list[i] <= date_list[0]):
+            if (qtr_eps_lim_lower <= yr_eps_adj_slice_list[i] <= qtr_eps_lim_upper):
+              x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
+              main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
+                            verticalalignment='bottom')
+      logging.info("Printed the Adjusted YR EPS numbers on the chart (For Golden Diamonds)")
+    # -----------------------------------------------------------------------------
+
+    # Comment out the plotting of Ann Schiller PE stuff temporarily
+    # # -----------------------------------------------------------------------------
+    # # Plot normalzied Schiller PE
+    # # -----------------------------------------------------------------------------
+    # # schiller_pe_normalized_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    # # schiller_pe_normalized_plt.set_yticks([])
+    # # schiller_pe_normalized_plt_inst = schiller_pe_normalized_plt.plot(date_list[0:plot_period_int],
+    # #                                             schiller_pe_normalized_list_smooth[0:plot_period_int],
+    # #                                             label='Normalized Schiller PE', color='green', linestyle='-')
+    #
+    # schiller_ann_requested_red_line_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    # schiller_ann_requested_red_line_plt.set_yticks([])
+    # schiller_ann_requested_red_line_plt_inst = schiller_ann_requested_red_line_plt.plot(date_list[0:plot_period_int],
+    #                                             schiller_ann_requested_red_line_list_3[0:plot_period_int],
+    #                                             label='Normalized Schiller PE', color='red', linestyle='-')
+    #
+    # # -----------------------------------------------------------------------------
+    #
+    #
+    # # -----------------------------------------------------------------------------
+    # # Plot normalized Schiller PE mulitpled by YR EPS
+    # # -----------------------------------------------------------------------------
+    # schiller_pe_times_yr_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+    # schiller_pe_times_yr_eps_plt.set_yticks([])
+    # schiller_pe_times_yr_eps_plt_inst = schiller_pe_times_yr_eps_plt.plot(date_list[0:plot_period_int],
+    #                                             schiller_pe_times_yr_eps_list[0:plot_period_int],
+    #                                             label='Schiller PE time EPS', color='darkviolet', linestyle='-')
+    # for i_date_str in fiscal_yr_dates:
+    #   i_date = dt.datetime.strptime(i_date_str, '%m/%d/%Y').date()
+    #   if (i_date < dt.datetime.now().date()):
+    #     match_date = min(date_list, key=lambda d: abs(d - i_date))
+    #     i_idx = date_list.index(match_date)
+    #     if (date_list[plot_period_int] <= match_date <= date_list[0]):
+    #       x = float("{0:.2f}".format(schiller_pe_times_yr_eps_list[i_idx]))
+    #       y = float("{0:.2f}".format(schiller_pe_normalized_list_smooth[i_idx]))
+    #       z = float("{0:.2f}".format(schiller_ann_requested_red_line_list_3[i_idx]))
+    #       main_plt.text(date_list[i_idx], schiller_pe_times_yr_eps_list[i_idx], x, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+    #       # main_plt.text(date_list[i_idx], schiller_pe_normalized_list_smooth[i_idx], y, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+    #       main_plt.text(date_list[i_idx], schiller_ann_requested_red_line_list_3[i_idx], z, fontsize=11, horizontalalignment='center', verticalalignment='bottom')
+    # # -----------------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------------
+    # Dividend plot
+    # -----------------------------------------------------------------------------
+    if (pays_dividend == 1):
+      dividend_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+      dividend_plt.set_yscale(chart_type)
+      dividend_plt.set_yticks([])
+      dividend_plt_inst = dividend_plt.plot(date_list[0:plot_period_int], dividend_expanded_list[0:plot_period_int],
+                                            label='Dividend', color="Saddlebrown", marker='x', markersize='8')
+      if (chart_print_eps_div_numbers_val == 1):
+        for i in range(len(dividend_date_list)):
+          if (date_list[plot_period_int] <= dividend_date_list[i] <= date_list[0]):
+            if (qtr_eps_lim_lower <= dividend_list[i] <= qtr_eps_lim_upper):
+              x = float("{0:.2f}".format(dividend_list[i]))
+              main_plt.text(dividend_date_list[i], dividend_list_multiplied[i], x, fontsize=6, horizontalalignment='center',
+                            verticalalignment='bottom')
+      logging.info("Printed the Dividend numbers on the chart")
+    # -----------------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------------
+    # Price channels
+    # -----------------------------------------------------------------------------
+    for i_idx in range(number_of_growth_proj_overlays):
+
+      # Search google for :
+      # TypeError: 'AxesSubplot'  object  does  not support  item  assignment
+      # https: // stackoverflow.com / questions / 19953348 / error - when - looping - to - produce - subplots
+      # https: // stackoverflow.com / questions / 45993370 / matplotlib - indexing - error - on - plotting
+      # Probably something needs to be done with subplots are declared ahove...need to know how many subplots will
+      # be created
+      # yr_eps_02_5_plt[i_idx,0] = main_plt.twinx()
+      # yr_eps_02_5_plt[i_idx,0].set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+      # yr_eps_02_5_plt[i_idx,0].set_yticks([])
+      # yr_eps_02_5_plt_inst[i_idx,0] = yr_eps_02_5_plt[i_idx,0].plot(date_list[0:plot_period_int],
+      #                                                 yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
+      #                                                 label='Q 2.5%',color="Cyan", linestyle='-', linewidth=1)
+
+      # This is a hack for now
+      if (i_idx == 0):
+        yr_eps_02_5_plt_0 = main_plt.twinx()
+        yr_eps_02_5_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_02_5_plt_0.set_yticks([])
+        yr_eps_02_5_plt_inst_0 = yr_eps_02_5_plt_0.plot(date_list[0:plot_period_int],
+                                                        yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+        yr_eps_05_0_plt_0 = main_plt.twinx()
+        yr_eps_05_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_05_0_plt_0.set_yticks([])
+        yr_eps_05_0_plt_inst_0 = yr_eps_05_0_plt_0.plot(date_list[0:plot_period_int],
+                                                        yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 5.0%', color="Yellow", linestyle='-', linewidth=1)
+        yr_eps_10_0_plt_0 = main_plt.twinx()
+        yr_eps_10_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_10_0_plt_0.set_yticks([])
+        yr_eps_10_0_plt_inst_0 = yr_eps_10_0_plt_0.plot(date_list[0:plot_period_int],
+                                                        yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 10%', color="Cyan", linestyle='-', linewidth=1)
+        yr_eps_20_0_plt_0 = main_plt.twinx()
+        yr_eps_20_0_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_20_0_plt_0.set_yticks([])
+        yr_eps_20_0_plt_inst_0 = yr_eps_20_0_plt_0.plot(date_list[0:plot_period_int],
+                                                        yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 20%', color="Yellow", linestyle='-', linewidth=1)
+      elif (i_idx == 1):
+        yr_eps_02_5_plt_1 = main_plt.twinx()
+        yr_eps_02_5_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_02_5_plt_1.set_yticks([])
+        yr_eps_02_5_plt_inst_1 = yr_eps_02_5_plt_1.plot(date_list[0:plot_period_int],
+                                                        yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+        yr_eps_05_0_plt_1 = main_plt.twinx()
+        yr_eps_05_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_05_0_plt_1.set_yticks([])
+        yr_eps_05_0_plt_inst_1 = yr_eps_05_0_plt_1.plot(date_list[0:plot_period_int],
+                                                        yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 5.0%', color="Yellow", linestyle='-', linewidth=1)
+        yr_eps_10_0_plt_1 = main_plt.twinx()
+        yr_eps_10_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_10_0_plt_1.set_yticks([])
+        yr_eps_10_0_plt_inst_1 = yr_eps_10_0_plt_1.plot(date_list[0:plot_period_int],
+                                                        yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 10%', color="Cyan", linestyle='-', linewidth=1)
+        yr_eps_20_0_plt_1 = main_plt.twinx()
+        yr_eps_20_0_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_20_0_plt_1.set_yticks([])
+        yr_eps_20_0_plt_inst_1 = yr_eps_20_0_plt_1.plot(date_list[0:plot_period_int],
+                                                        yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 20%', color="Yellow", linestyle='-', linewidth=1)
+      elif (i_idx == 2):
+        yr_eps_02_5_plt_2 = main_plt.twinx()
+        yr_eps_02_5_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_02_5_plt_2.set_yticks([])
+        yr_eps_02_5_plt_inst_2 = yr_eps_02_5_plt_2.plot(date_list[0:plot_period_int],
+                                                        yr_eps_02_5_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 2.5%', color="Cyan", linestyle='-', linewidth=1)
+        yr_eps_05_0_plt_2 = main_plt.twinx()
+        yr_eps_05_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_05_0_plt_2.set_yticks([])
+        yr_eps_05_0_plt_inst_2 = yr_eps_05_0_plt_2.plot(date_list[0:plot_period_int],
+                                                        yr_eps_05_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 5.0%', color="Yellow", linestyle='-', linewidth=1)
+        yr_eps_10_0_plt_2 = main_plt.twinx()
+        yr_eps_10_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_10_0_plt_2.set_yticks([])
+        yr_eps_10_0_plt_inst_2 = yr_eps_10_0_plt_2.plot(date_list[0:plot_period_int],
+                                                        yr_eps_10_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 10%', color="Cyan", linestyle='-', linewidth=1)
+        yr_eps_20_0_plt_2 = main_plt.twinx()
+        yr_eps_20_0_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+        yr_eps_20_0_plt_2.set_yticks([])
+        yr_eps_20_0_plt_inst_2 = yr_eps_20_0_plt_2.plot(date_list[0:plot_period_int],
+                                                        yr_eps_20_0_growth_expanded_list[i_idx][0:plot_period_int],
+                                                        label='Q 20%', color="Yellow", linestyle='-', linewidth=1)
+
+    # yr_eps_02_5_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+    # yr_eps_02_5_plt.set_yticks([])
+    # yr_eps_02_5_plt_inst = yr_eps_02_5_plt.plot(date_list[0:plot_period_int], yr_eps_02_5_growth_expanded_list[0:plot_period_int], label = 'Q 2.5%',color="Cyan",linestyle = '-', linewidth=1)
+
+    # yr_eps_05_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+    # yr_eps_05_0_plt.set_yticks([])
+    # yr_eps_05_0_plt_inst = yr_eps_05_0_plt.plot(date_list[0:plot_period_int], yr_eps_05_0_growth_expanded_list[0:plot_period_int], label = 'Q 5%',color="Yellow",linestyle = '-', linewidth=1)
+    #
+    # yr_eps_10_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+    # yr_eps_10_0_plt.set_yticks([])
+    # yr_eps_10_0_plt_inst = yr_eps_10_0_plt.plot(date_list[0:plot_period_int], yr_eps_10_0_growth_expanded_list[0:plot_period_int], label = 'Q 10%',color="Cyan",linestyle = '-', linewidth=1)
+    #
+    # yr_eps_20_0_plt.set_ylim(qtr_eps_lim_lower,qtr_eps_lim_upper)
+    # yr_eps_20_0_plt.set_yticks([])
+    # yr_eps_20_0_plt_inst = yr_eps_20_0_plt.plot(date_list[0:plot_period_int], yr_eps_20_0_growth_expanded_list[0:plot_period_int], label = 'Q 20%',color="Yellow",linestyle = '-', linewidth=1)
+    # -----------------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------------
+    # Upper Price Channel Plot
+    # -----------------------------------------------------------------------------
+    # upper_channel_plt.set_ylabel('Upper_guide', color = 'b')
+    # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
+    if (chart_type == "Linear"):
+      upper_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+      upper_channel_plt.set_yscale(chart_type)
+      upper_channel_plt.set_yticks([])
+      upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
+                                                      upper_price_channel_list[0:plot_period_int], label='Channel', color="blue",
+                                                      linestyle='-')
+
+      analyst_adjusted_channel_upper_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+      analyst_adjusted_channel_upper_plt.set_yscale(chart_type)
+      analyst_adjusted_channel_upper_plt.set_yticks([])
+      analyst_adjusted_channel_upper_plt_inst = analyst_adjusted_channel_upper_plt.plot(date_list[0:plot_period_int],
+                                                                                        analyst_adjusted_channel_upper[
+                                                                                        0:plot_period_int], label='Channel',
+                                                                                        color="blue",
+                                                                                        linestyle='-.')
+      analyst_adjusted_channel_lower_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+      analyst_adjusted_channel_lower_plt.set_yscale(chart_type)
+      analyst_adjusted_channel_lower_plt.set_yticks([])
+      analyst_adjusted_channel_lower_plt_inst = analyst_adjusted_channel_lower_plt.plot(date_list[0:plot_period_int],
+                                                                                        analyst_adjusted_channel_lower[
+                                                                                        0:plot_period_int], label='Channel',
+                                                                                        color="blue",
+                                                                                        linestyle='-.')
+    # -----------------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------------
+    # Lower Price Channel Plot
+    # -----------------------------------------------------------------------------
+    # upper_channel_plt.set_ylabel('Upper_guide', color = 'b')
+    # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
+    if (chart_type == "Linear"):
+      lower_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+      lower_channel_plt.set_yscale(chart_type)
+      lower_channel_plt.set_yticks([])
+      lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
+                                                      lower_price_channel_list[0:plot_period_int], label='Price Channel', color="blue",
+                                                      linestyle='-')
+    # -----------------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------------
+    # Candlestick and volume Plots
+    # -----------------------------------------------------------------------------
+    # todo
+    # Figure out how to adjust the candlestick price y ranges
+    # Google search - remove weekends from matplotlib plot
+    candle_plt_inst = candlestick_ohlc(candle_plt, quotes[0:candle_chart_duration], width=1, colorup='mediumseagreen', colordown='darksalmon');
+    candle_plt_MA200_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_200_list[0:candle_chart_duration],linewidth=.5, color = 'black', label = 'SMA200')
+    candle_plt_MA50_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_50_list[0:candle_chart_duration], linewidth=.5,color = 'blue', label = 'SMA50')
+    candle_plt_MA20_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_20_list[0:candle_chart_duration],linewidth=.5, color = 'green', label = 'SMA20')
+    candle_plt_MA10_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_10_list[0:candle_chart_duration],linewidth=.5, color = 'deeppink', label = 'SMA10')
+    volume_plt_inst = volume_plt.bar(date_list_candles[0:candle_chart_duration], volume[0:candle_chart_duration], width=1, color=bar_color_list[0:candle_chart_duration])
+    volume_plt_MA = volume_plt.twinx()
+    volume_plt_MA_inst = volume_plt_MA.plot(date_list_candles[0:candle_chart_duration],MA_volume_50_list[0:candle_chart_duration], color = 'blue', label = 'SMA10')
+    # -----------------------------------------------------------------------------
+
+
+    # -----------------------------------------------------------------------------
+    # Set the gridlines for all plots
+    # -----------------------------------------------------------------------------
+    # import matplotlib.pyplot as plt
+    # fig, ax = plt.subplots()
+    # ax.set_yticks([0.2, 0.6, 0.8], minor=False)
+    # ax.set_yticks([0.3, 0.55, 0.7], minor=True)
+    # ax.yaxis.grid(True, which='major')
+    # ax.yaxis.grid(True, which='minor')
+    # plt.show()
+    #  Set the Minor and Major ticks and then show the gird
+    # xstart,xend = price_plt.get_xlim()
+    # ystart,yend = price_plt.get_ylim()
+    # xstart_date = matplotlib.dates.num2date(xstart)
+    # xend_date = matplotlib.dates.num2date(xend)
+    #
+    # print ("The xlimit Start: ", xstart_date, " End: ", xend_date, "Starting year", xstart_date.year )
+    # print ("The ylimit Start: ", ystart, " End: ", yend )
+    #
+    # print ("The years between the start and end dates are : ", range(xstart_date.year, xend_date.year+1))
+    # qtr_dates = pd.date_range(xstart_date.year, xend_date.year, freq='Q')
+    # yr_dates = pd.date_range('2018-01', '2020-05', freq='Y')
+    # print ("Quarterly Dates are ", qtr_dates)
+    #
+    # main_plt.set_xticks(qtr_dates, minor=True)
+    # # main_plt.set_xticks(yr_dates, minor=False)
+    # main_plt.xaxis.grid(which='major', linestyle='-')
+    # main_plt.xaxis.grid(which='minor',linestyle='--')
+    # main_plt.minorticks_on()
+    # main_plt.yaxis.grid(True)
+    #
+    major_xgrid_color = "darkgrey"
+    if (fiscal_yr_str != "BA-Dec"):
+      major_xgrid_color = "peru"
+
+    main_plt.set_xticks(fiscal_yr_dates, minor=False)
+    main_plt.set_xticks(fiscal_qtr_dates, minor=True)
+    main_plt.xaxis.set_tick_params(width=5)
+    # This works - Just turning this off as Ann did not want them...
+    # if (chart_type == "Linear"):
+    # main_plt.set_xticklabels(fiscal_qtr_dates, rotation=90, fontsize=7,  color='k',  minor=True)
+    # main_plt.set_xticklabels(fiscal_yr_dates, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
+    main_plt.set_xticklabels(fiscal_yr_dates, rotation=0, fontsize=10, color='blue', minor=False, fontstyle='italic')
+    main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=.75)
+    if (chart_type == "Linear"):
+      main_plt.grid(which='minor', axis='x', linestyle='--', color='darkturquoise', linewidth=.5)
+    main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=.5)
+
+    # candle_plt.set_xticks([])
+    candle_plt.set_xticks(candle_sunday_dates, minor=False)
+    candle_plt.grid(True)
+    candle_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
+    # This works - To turn individual grid axis off or on
+    # candle_plt.grid(False,axis='y')
+    # candle_plt.set_ylabel('Price', color='k')
+    candle_plt.yaxis.set_label_position("right")
+    candle_plt.yaxis.tick_right()
+
+    volume_plt.set_xticks(candle_sunday_dates, minor=False)
+    volume_plt.grid(True)
+    volume_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
+    # volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=7, color='k', minor=False)
+    volume_plt.set_xticklabels([])
+    volume_plt.set_ylim(0, ticker_volume_upper_limit)
+    volume_plt.yaxis.tick_right()
+    volume_plt.set_yticks(ticker_volume_ytick_list)
+    volume_plt.set_yticklabels(ticker_volume_yticklabels_list, rotation=0, fontsize=8, color='k', minor=False)
+
+    volume_plt_MA.set_ylim(0, ticker_volume_upper_limit)
+    # volume_plt_MA.set_xticks([])
+    volume_plt_MA.set_yticks([])
+    volume_plt_MA.text(date_list_candles[0], MA_volume_50_list[0], human_format(MA_volume_50_list[0]),
+                       fontsize=7,color='blue',fontweight='bold',
+                       bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+    plt.setp(plt.gca().get_xticklabels(), rotation=90)
+    # -----------------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------------
+    # Collect the labels for the subplots and then create the legends
+    # -----------------------------------------------------------------------------
+    '''
+    # This works perfectly well - but Ann wants no Legends for now
+    lns = price_plt_inst + main_plt_inst + annual_past_eps_plt_inst + lower_channel_plt_inst
+    if (pays_dividend):
+      lns = lns + dividend_plt_inst
+    if (number_of_growth_proj_overlays > 0):
+      lns = lns + yr_eps_02_5_plt_inst_0 + yr_eps_05_0_plt_inst_0 \
+                + yr_eps_10_0_plt_inst_0 + yr_eps_20_0_plt_inst_0
+    if (plot_spy):
+      lns = lns + spy_plt_inst
+    # sys.exit(1)
+    labs = [l.get_label() for l in lns]
+    main_plt.legend(lns, labs, bbox_to_anchor=(-.06, -0.13), loc="lower right", borderaxespad=2, fontsize='x-small')
+    '''
+    # This works perfectly well as well
+    # main_plt.legend(lns, labs,bbox_to_anchor=(-.10,-0.13), loc="lower left", borderaxespad=2,fontsize = 'x-small')
+    # This works if we don't have defined the inst of the plots. In this case we
+    # collect the things manually and then put them in legend
+    # h1,l1 = main_plt.get_legend_handles_labels()
+    # h2,l2 = price_plt.get_legend_handles_labels()
+    # main_plt.legend(h1+h2, l1+l2, loc=2)
+    # -----------------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------------
+    # If there is an Text box that needs to be inserted then
+    # insert it here...There can be multiple of them inserted
+    # The locations for AnchoredText at
+    # https://matplotlib.org/api/offsetbox_api.html
+    # 'upper right'  : 1,
+    # 'upper left'   : 2,
+    # 'lower left'   : 3,
+    # 'lower right'  : 4,
+    # 'right'        : 5, (same as 'center right', for back-compatibility)
+    # 'center left'  : 6,
+    # 'center right' : 7,
+    # 'lower center' : 8,
+    # 'upper center' : 9,
+    # 'center'       : 10,
+    # -----------------------------------------------------------------------------
+    # todo : Can this be done in an array
+    number_of_anchored_texts = 4
+    for i in range(number_of_anchored_texts):
+      if (i == 0):
+        location = 9
+        my_text = "Ann Constant is: " +  str(round(ann_constant,4))
+      elif (i == 1):
+        location = 6
+        my_text = "Test for Box number 2"
+      elif (i == 2):
+        location = 2
+        my_text = "Test Box in upper left"
+      else:
+        location = 4
+        my_text = "What do you want me to put here?"
+
+      # todo : Maybe add transparency to the box?
+      a_text = AnchoredText(my_text, loc=location)
+      main_plt.add_artist(a_text)
+    # -----------------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------------
+    # Annonate at a particular (x,y) = (Date,Prcie) on the chart.
+    # User can sepcifiy muliple annotates - however right now the code only supports
+    # annotated on (Date, Price) pair - price_plt. The user specifies the date and
+    # the code finds out the corresponding price and annotates that point.
+    # If however - there is a need to annotate (say on annual eps) then that can
+    # be done as well - In order to support that feature the use has the specify
+    # it in the annoate jon and then there will have to be a if statement, that will
+    # choose the appropriate plot
+    # -----------------------------------------------------------------------------
+    if (ticker not in config_json.keys()):
+      logging.debug("json data for " + str(ticker) +  " does not exist in " + str(configuration_json) +  " file")
     else:
-      plt.close(fig)
-  else:
-    fig.savefig(chart_dir + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
-    if (len(ticker_list) == 1):
-      plt.show()
+      if ("Plot_Annotate" in config_json[ticker]):
+        logging.debug("The number of plot annotates requested by the user are " + str(len(config_json[ticker]["Plot_Annotate"])))
+        for i_idx in range(len(config_json[ticker]["Plot_Annotate"])):
+          date_to_annotate = config_json[ticker]["Plot_Annotate"][i_idx]["Date"]
+          date_to_annotate_datetime = dt.datetime.strptime(date_to_annotate, '%m/%d/%Y').date()
+          annotate_text = config_json[ticker]["Plot_Annotate"][i_idx]["Text"]
+          (x_coord,y_coord) =  config_json[ticker]["Plot_Annotate"][i_idx]["Line_Length"].split(":")
+
+          match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
+          logging.debug("The matching date is " + str(match_date) + " at index " + str(date_list.index(match_date)) +
+                        " and the price is " + str(ticker_adj_close_list[date_list.index(match_date)]))
+          price_plt.annotate(annotate_text,
+                             xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
+                             xytext=(int(x_coord), int(y_coord)), textcoords='offset points', arrowprops=dict(facecolor='black', width=.25),
+                             bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
+                             # arrowprops=dict(facecolor='black', width=1))
+
+    # -----------------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------------
+    # Save the Chart with the date and time as prefix
+    # -----------------------------------------------------------------------------
+    # This works too instead of two line
+    # date_time =  dt.datetime.now().strftime("%Y_%m_%d_%H_%M")
+
+    # This adjusts the dimensions (in relative tems of the plot area
+    # so example the plots take from 5% to 95% of the horizontal space (start the 5% and stop at 95%)
+    fig.subplots_adjust(left=.02, right=.97, bottom=0.05, top=.86)
+
+    now = dt.datetime.now()
+    date_time = now.strftime("%Y_%m_%d_%H_%M")
+    date_time = now.strftime("%Y_%m_%d")
+    # Only show the plot if we are making only one chart
+    if (chart_type == "Log"):
+      fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+      if (len(ticker_list) == 1):
+        plt.show()
+      else:
+        plt.close(fig)
     else:
-      plt.close(fig)
+      if (chart_print_eps_div_numbers_val == 1):
+        fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+      else:
+        fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+        if (len(ticker_list) == 1) and (len(chart_chart_print_eps_div_numbers_list) == 1):
+          plt.show()
+        else:
+          plt.close(fig)
+
   logging.info("All Done")
-  # -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
+
