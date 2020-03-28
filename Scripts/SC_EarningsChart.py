@@ -1469,10 +1469,7 @@ for ticker_raw in ticker_list:
   # Find out how many years need to be plotted. If the historical data is available
   # for lesser time, then adjust the period to the length of the data_list
   # -----------------------------------------------------------------------------
-  # todo : Maybe support a date there?
   if (math.isnan(ticker_config_series['Linear_Chart_Duration_Years'])):
-    # Deal with if the data available in the historical tab is less than
-    # user specified in the config file
     plot_period_int = 252 * (10+no_of_years_to_insert_aaii_eps_projections)
   else:
     plot_period_int = 252 * (int(ticker_config_series[chart_type+'_Chart_Duration_Years']) + no_of_years_to_insert_aaii_eps_projections)
@@ -1589,6 +1586,10 @@ for ticker_raw in ticker_list:
   for x in fiscal_yr_dates_raw:
     logging.debug("The original Yearly Date is : " + str(x))
     fiscal_yr_dates.append(x.date().strftime('%m/%d/%Y'))
+    # if the chart type is long linear then only print the year or
+    # can choose to print the month and the year but then make the
+    # fonts smaller on the xticklables.
+    # fiscal_yr_dates.append(x.date().strftime('%Y'))
 
   logging.debug("The original yr dates list is\n" + str(fiscal_yr_dates_raw))
   logging.debug("The original qtr dates list is\n" + str(fiscal_qtr_and_yr_dates_raw))
@@ -2355,7 +2356,7 @@ for ticker_raw in ticker_list:
   main_plt.xaxis.set_tick_params(width=5)
   # This works - Just turning this off as Ann did not want them...
   # if (chart_type == "Linear"):
-    # main_plt.set_xticklabels(fiscal_qtr_dates, rotation=90, fontsize=7,  color='k',  minor=True)
+  # main_plt.set_xticklabels(fiscal_qtr_dates, rotation=90, fontsize=7,  color='k',  minor=True)
   # main_plt.set_xticklabels(fiscal_yr_dates, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
   main_plt.set_xticklabels(fiscal_yr_dates, rotation=0, fontsize=10, color='blue', minor=False, fontstyle='italic')
   main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=.75)
