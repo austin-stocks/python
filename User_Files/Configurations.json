@@ -603,7 +603,8 @@
 
   "NFLX" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "03/30/2016", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "03/30/2016", "Stop_Date" :   "06/30/2019"},
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
     ]
   },
 
@@ -1099,7 +1100,8 @@
 
   "MSFT" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"},
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".4"},
@@ -2180,6 +2182,13 @@
   "ROST" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "10/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "OSIS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2013", "Stop_Date" :   "Next"},
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
     ]
   },
 
