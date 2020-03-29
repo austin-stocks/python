@@ -122,7 +122,7 @@ g_var_use_aaii_data_to_extend_eps_projections = 1
 g_dict_chart_attributes = {
   # This defined whether the numbers for Annaul EPS and Q EPS and Dividend
   # should be printed on the chart
-  'print_eps_and_div_numbers' : 'No' # Yes, No, Both - This will create chart two times - one with numbers and one without
+  'print_eps_and_div_numbers' : 'Both' # Yes, No, Both - This will create chart two times - one with numbers and one without
 }
 
 
@@ -2553,10 +2553,10 @@ for ticker_raw in ticker_list:
         fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
       else:
         fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
-        if (len(ticker_list) == 1) and (len(chart_chart_print_eps_div_numbers_list) == 1):
-          plt.show()
-        else:
-          plt.close(fig)
+      if (len(ticker_list) == 1) and (len(chart_chart_print_eps_div_numbers_list) == 1):
+        plt.show()
+      else:
+        plt.close(fig)
 
   logging.info("All Done")
     # -----------------------------------------------------------------------------
