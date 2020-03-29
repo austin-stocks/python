@@ -23,6 +23,7 @@ dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
 log_dir = "\\..\\" + "Logs"
 charts_dir = "\\..\\" + "Charts"
+my_linear_charts_dir = charts_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers"
 earnings_dir = "\\..\\" + "Earnings"
 historical_dir = "\\..\\" + "Historical"
 master_tracklist_file = "Master_Tracklist.xlsx"
@@ -209,7 +210,7 @@ for ticker_raw in ticker_list:
   # Get all the charts in the charts directory for the ticker and find out the
   # chart file with the latest appended date
   # ---------------------------------------------------------------------------
-  all_chart_files_list = os.listdir(dir_path + charts_dir + "\\")
+  all_chart_files_list = os.listdir(dir_path + my_linear_charts_dir + "\\")
   logging.debug("The files in the chart directory are" + str(all_chart_files_list))
   my_regex = re.compile(re.escape(ticker) + re.escape("_")  + ".*jpg")
   ticker_chart_files_list = list(filter(my_regex.match, all_chart_files_list)) # Read Note
