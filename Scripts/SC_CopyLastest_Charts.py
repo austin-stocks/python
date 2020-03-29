@@ -14,7 +14,7 @@ import logging
 # -----------------------------------------------------------------------------
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-charts_dir = "\\..\\" + "Charts"
+chart_dir = "\\..\\" + "Charts"
 charts_latest_dir = "\\..\\" + "Latest_Charts"
 log_dir = "\\..\\" + "Logs"
 
@@ -71,7 +71,7 @@ for chart_styles_idx in chart_styles_list:
     # Get the files from the chart directory in a list
     # and remove all the files from the Charts Latest directory
     # -----------------------------------------------------------------------------
-    source_dir = dir_path + charts_dir + "\\" + chart_styles_idx + "\\" + chart_annotations_idx + "\\"
+    source_dir = dir_path + chart_dir + "\\" + chart_styles_idx + "\\" + chart_annotations_idx + "\\"
     dest_dir = dir_path + charts_latest_dir + "\\" + chart_styles_idx + "\\" + chart_annotations_idx + "\\"
     all_chart_files_list=os.listdir(source_dir)
     logging.debug("The files in the Source Chart Directory " + str(source_dir) + " are : " + str(all_chart_files_list))
