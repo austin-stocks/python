@@ -1847,20 +1847,20 @@ for ticker_raw in ticker_list:
 
   # ---------------------------------------------------------------------------
 
-  chart_chart_print_eps_div_numbers_list = []
+  chart_print_eps_div_numbers_list = []
   if (g_dict_chart_attributes['print_eps_and_div_numbers'] == "Both"):
     logging.debug("User Specified that the script should make two sets of charts")
     logging.debug("One     Set with EPS and Dividend Numbers Printed on the chart")
     logging.debug("Another Set with EPS and Dividend Numbers NOT printed on the chart")
-    chart_chart_print_eps_div_numbers_list = [1,0]
+    chart_print_eps_div_numbers_list = [1,0]
   elif (g_dict_chart_attributes['print_eps_and_div_numbers'] == "Yes"):
     logging.debug("User Specified that the script should print the EPS and dividend numbers on the chart")
     logging.debug("So, the script will prepare ONE chart  per ticker WITH the EPS and Dividend numbers on the chart")
-    chart_chart_print_eps_div_numbers_list = [1]
+    chart_print_eps_div_numbers_list = [1]
   elif (g_dict_chart_attributes['print_eps_and_div_numbers'] == "No"):
     logging.debug("User Specified that the script should NOT print the EPS and dividend numbers on the chart")
     logging.debug("So, the script will prepare ONE chart  per ticker WITHOUT the EPS and Dividend numbers on the chart")
-    chart_chart_print_eps_div_numbers_list = [0]
+    chart_print_eps_div_numbers_list = [0]
   else:
     logging.error("Could not figure out whether to prepare charts with or without ")
     logging.error("printing the EPS and Dividend numbers of the chart")
@@ -1882,11 +1882,11 @@ for ticker_raw in ticker_list:
   # fig, main_plt = plt.subplots()
 
   logging.info("Now starting to Plot everything that was prepared")
-  if (len(chart_chart_print_eps_div_numbers_list) > 1):
+  if (len(chart_print_eps_div_numbers_list) > 1):
     logging.info("User wants more than one iteration through chart preparing loop")
 
-  for chart_print_eps_div_numbers_val in chart_chart_print_eps_div_numbers_list:
-    if (len(chart_chart_print_eps_div_numbers_list) > 1):
+  for chart_print_eps_div_numbers_val in chart_print_eps_div_numbers_list:
+    if (len(chart_print_eps_div_numbers_list) > 1):
       logging.info("")
     logging.info("Iterating through Chart loop with \"Prepare Charts with EPS and Dividend Numbers Printed as\" : " + str(chart_print_eps_div_numbers_val))
     fig=plt.figure()
@@ -2539,7 +2539,7 @@ for ticker_raw in ticker_list:
     fig.subplots_adjust(left=.02, right=.97, bottom=0.05, top=.86)
 
     now = dt.datetime.now()
-    date_time = now.strftime("%Y_%m_%d_%H_%M")
+    # date_time = now.strftime("%Y_%m_%d_%H_%M")
     date_time = now.strftime("%Y_%m_%d")
     # Only show the plot if we are making only one chart
     if (chart_type == "Log"):
@@ -2553,10 +2553,11 @@ for ticker_raw in ticker_list:
         fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
       else:
         fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
-      if (len(ticker_list) == 1) and (len(chart_chart_print_eps_div_numbers_list) == 1):
-        plt.show()
-      else:
-        plt.close(fig)
+
+    if (len(ticker_list) == 1) and (len(chart_print_eps_div_numbers_list) == 1):
+      plt.show()
+    else:
+      plt.close(fig)
 
   logging.info("All Done")
     # -----------------------------------------------------------------------------
