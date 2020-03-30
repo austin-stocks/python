@@ -116,15 +116,16 @@ def smooth_list(l):
 # =============================================================================
 # Global variables
 # =============================================================================
-g_var_annotate_acutal_qtr_earnings = 1
+g_var_annotate_actual_qtr_earnings = 1
 g_var_use_aaii_data_to_extend_eps_projections = 1
 
-g_dict_chart_attributes = {
+g_dict_chart_options = {
   # This defined whether the numbers for Annaul EPS and Q EPS and Dividend
   # should be printed on the chart
-  'print_eps_and_div_numbers' : 'Both' # Yes, No, Both - This will create chart two times - one with numbers and one without
+  'print_eps_and_div_numbers' : 'Both', # Yes, No, Both - This will create chart two times - one with numbers and one without
+  'chart_type_and_duration' : { 'Linear' : '10', 'Long_Linear' : '25','Log' : '25'  },
+  'prepare_charts' : 'Linear'
 }
-
 
 aaii_missing_tickers_list = [
 'CBOE','CP','GOOG','RACE','NTR'
@@ -1848,23 +1849,23 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   chart_print_eps_div_numbers_list = []
-  if (g_dict_chart_attributes['print_eps_and_div_numbers'] == "Both"):
+  if (g_dict_chart_options['print_eps_and_div_numbers'] == "Both"):
     logging.debug("User Specified that the script should make two sets of charts")
     logging.debug("One     Set with EPS and Dividend Numbers Printed on the chart")
     logging.debug("Another Set with EPS and Dividend Numbers NOT printed on the chart")
     chart_print_eps_div_numbers_list = [1,0]
-  elif (g_dict_chart_attributes['print_eps_and_div_numbers'] == "Yes"):
+  elif (g_dict_chart_options['print_eps_and_div_numbers'] == "Yes"):
     logging.debug("User Specified that the script should print the EPS and dividend numbers on the chart")
     logging.debug("So, the script will prepare ONE chart  per ticker WITH the EPS and Dividend numbers on the chart")
     chart_print_eps_div_numbers_list = [1]
-  elif (g_dict_chart_attributes['print_eps_and_div_numbers'] == "No"):
+  elif (g_dict_chart_options['print_eps_and_div_numbers'] == "No"):
     logging.debug("User Specified that the script should NOT print the EPS and dividend numbers on the chart")
     logging.debug("So, the script will prepare ONE chart  per ticker WITHOUT the EPS and Dividend numbers on the chart")
     chart_print_eps_div_numbers_list = [0]
   else:
     logging.error("Could not figure out whether to prepare charts with or without ")
     logging.error("printing the EPS and Dividend numbers of the chart")
-    logging.error("Please correctly specify in g_dict_chart_attributes->print_eps_and_div_numbers and rerun")
+    logging.error("Please correctly specify in g_dict_chart_options->print_eps_and_div_numbers and rerun")
     sys.exit(1)
 
 
@@ -2027,7 +2028,7 @@ for ticker_raw in ticker_list:
                      markersize=12,markevery=markers_sell_date, linestyle='None')
       logging.info("Inserted Buy and Sell Points on the Chart, if specified")
 
-    if (g_var_annotate_acutal_qtr_earnings == 1):
+    if (g_var_annotate_actual_qtr_earnings == 1):
       logging.debug("Will annotate the price plt at actual qtr earnings date")
       i_idx = 0
 
