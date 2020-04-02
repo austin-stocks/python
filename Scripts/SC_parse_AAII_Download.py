@@ -13,6 +13,17 @@ import time
 import logging
 import xlsxwriter
 
+
+#
+# Define the directories and the paths
+dir_path = os.getcwd()
+user_dir = "\\..\\" + "User_Files"
+chart_dir = "..\\" + "Charts"
+historical_dir = "\\..\\" + "Historical"
+earnings_dir = "\\..\\" + "Earnings"
+dividend_dir = "\\..\\" + "Dividend"
+log_dir = "\\..\\" + "Logs"
+
 # ---------------------------------------------------------------------------
 # Set Logging
 # critical, error, warning, info, debug
@@ -20,7 +31,7 @@ import xlsxwriter
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
-                    filename='Logging_AAII_Parser.txt',
+                    filename=dir_path + log_dir + "\\" + 'SC_Parese_AAII_Download_debug.txt',
                     filemode='w')
 # define a Handler which writes INFO messages or higher to the sys.stderr
 console = logging.StreamHandler()
@@ -37,8 +48,95 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # ---------------------------------------------------------------------------
 
-# your code here
-dir_path = os.getcwd()
+
+
+
+tracklist_file = "Tracklist.csv"
+tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
+configuration_file = "Configurations.csv"
+configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
+tracklist_df = pd.read_csv(tracklist_file_full_path)
+
+
+
+
+
+# -----------------------------------------------------------------------------
+# Reae the AAII file
+# -----------------------------------------------------------------------------
+# This takes around 21 sec
+start = time.process_time()
+xls = pd.ExcelFile('2020_04_01_AAII_Analysis.xlsx')
+print(time.process_time() - start)
+
+aaii_dateandperiod_df = pd.read_excel(xls, 'Dates')
+aaii_bs_yr_df = pd.read_excel(xls, 'Balance_YR')
+aaii_bs_qtr_df = pd.read_excel(xls, 'Balance_QTR')
+
+
+# Set the Ticker col and index
+aaii_dateandperiod_df.set_index('Ticker', inplace=True)
+aaii_bs_yr_df.set_index('Ticker', inplace=True)
+aaii_bs_qtr_df.set_index('Ticker', inplace=True)
+# -----------------------------------------------------------------------------
+
+
+ticker_list_unclean = tracklist_df['Tickers'].tolist()
+ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+
+# #############################################################################
+# #############################################################################
+# #############################################################################
+#                   MAIN LOOP FOR TICKERS
+# #############################################################################
+# #############################################################################
+# #############################################################################
+# ticker_list = ['AAPL', 'AUDC','MED']
+for ticker_raw in ticker_list:
+
+  ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
+  logging.info("========================================================")
+  logging.info("Processing for " + ticker)
+  logging.info("========================================================")
+
+  ticker_dateandperioed_series = aaii_dateandperiod_df.loc[ticker]
+  ticker_bs_yr_series = aaii_bs_yr_df.loc[ticker]
+  ticker_bs_qtr_series = aaii_bs_qtr_df.loc[ticker]
+
+  logging.debug("The date and period series is : " + str(ticker_dateandperioed_series))
+  logging.debug("The Balance Sheet YR series is : " + str(ticker_bs_yr_series))
+  logging.debug("The Balance Sheet QTR series is : " + str(ticker_bs_qtr_series))
+
+
+
+  # Get the data from the various dfs
+  ticker_yr_dates_list = []
+  ticker_yr_inventory_list = []
+
+  ticker_qtr_dates_list = []
+  ticker_qtr_inventory_list = []
+
+  for i_idx in range(1,9):
+    logging.debug ("Getting the YR and QTR Date for Period : " + str(i_idx))
+    ticker_qtr_date_dt = dt.datetime.strptime(str(ticker_dateandperioed_series['Ending date Q' + str(i_idx)]),'%Y-%m-%d %H:%M:%S').date()
+    ticker_qtr_inventory = ticker_bs_qtr_series['Inventory Q'+str(i_idx)]
+    ticker_qtr_dates_list.append(ticker_qtr_date_dt)
+    ticker_qtr_inventory_list.append(ticker_qtr_inventory)
+
+    if (i_idx < 8):
+      ticker_yr_date_dt = dt.datetime.strptime(str(ticker_dateandperioed_series['Ending date Y'+str(i_idx)]), '%Y-%m-%d %H:%M:%S').date()
+      ticker_yr_inventory = ticker_bs_yr_series['Inventory Y'+str(i_idx)]
+      ticker_yr_dates_list.append(ticker_yr_date_dt)
+      ticker_yr_inventory_list.append(ticker_yr_inventory)
+
+
+  logging.debug("The YR Date List : " + str(ticker_yr_dates_list))
+  logging.debug("The QTR Date List : " + str(ticker_qtr_dates_list))
+  logging.debug("The YR Inventory List : " + str(ticker_yr_inventory_list))
+  logging.debug("The QTR Inventory List : " + str(ticker_qtr_inventory_list))
+
+
+sys.exit(1)
 
 # -----------------------------------------------------------------------------
 # The program write a combination of dataframe and random data
@@ -67,6 +165,8 @@ df4 = pd.DataFrame({'Data': [41, 42, 43, 44]})
 # 11. Pension Plans - Not sure
 # 12. Growth Rate of Earnings - In the chart (the growth curves)
 # 13. The Bottom Line - Not sure
+
+
 df5_row = "Lynch_Analysis"
 df5_cols = [df5_row,'W','X','Y','Z']
 df5 = pd.DataFrame(columns=df5_cols)
