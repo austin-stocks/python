@@ -23,7 +23,7 @@ historical_dir = "\\..\\" + "Historical"
 earnings_dir = "\\..\\" + "Earnings"
 dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
-
+analysis_dir = "\\..\\" + "Analysis"
 # ---------------------------------------------------------------------------
 # Set Logging
 # critical, error, warning, info, debug
@@ -66,18 +66,24 @@ tracklist_df = pd.read_csv(tracklist_file_full_path)
 # -----------------------------------------------------------------------------
 # This takes around 21 sec
 start = time.process_time()
-xls = pd.ExcelFile('2020_04_01_AAII_Analysis.xlsx')
+aaii_xls = pd.ExcelFile('2020_04_01_AAII_Analysis.xlsx')
 print(time.process_time() - start)
 
-aaii_dateandperiod_df = pd.read_excel(xls, 'Dates')
-aaii_bs_yr_df = pd.read_excel(xls, 'Balance_YR')
-aaii_bs_qtr_df = pd.read_excel(xls, 'Balance_QTR')
+qtr_str_list =['Q1', 'Q2','Q3','Q4','Q5','Q6','Q7','Q8']
+yr_str_list =['Y1', 'Y2','Y3','Y4','Y5','Y6','Y7']
 
+aaii_dateandperiod_df = pd.read_excel(aaii_xls, 'Dates')
+aaii_bs_qtr_df = pd.read_excel(aaii_xls, 'Balance_QTR')
+aaii_pnl_qtr_df  = pd.read_excel(aaii_xls, 'Income_QTR')
+aaii_bs_yr_df = pd.read_excel(aaii_xls, 'Balance_YR')
+aaii_pnl_yr_df  = pd.read_excel(aaii_xls, 'Income_YR')
 
 # Set the Ticker col and index
 aaii_dateandperiod_df.set_index('Ticker', inplace=True)
-aaii_bs_yr_df.set_index('Ticker', inplace=True)
 aaii_bs_qtr_df.set_index('Ticker', inplace=True)
+aaii_pnl_qtr_df.set_index('Ticker', inplace=True)
+aaii_bs_yr_df.set_index('Ticker', inplace=True)
+aaii_pnl_yr_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 
 
@@ -99,41 +105,137 @@ for ticker_raw in ticker_list:
   logging.info("Processing for " + ticker)
   logging.info("========================================================")
 
+  # Get the various ticker information from the various dfs
   ticker_dateandperioed_series = aaii_dateandperiod_df.loc[ticker]
-  ticker_bs_yr_series = aaii_bs_yr_df.loc[ticker]
   ticker_bs_qtr_series = aaii_bs_qtr_df.loc[ticker]
+  ticker_pnl_qtr_series = aaii_pnl_qtr_df.loc[ticker]
+  ticker_bs_yr_series = aaii_bs_yr_df.loc[ticker]
+  ticker_pnl_yr_series = aaii_pnl_yr_df.loc[ticker]
 
   logging.debug("The date and period series is : " + str(ticker_dateandperioed_series))
   logging.debug("The Balance Sheet YR series is : " + str(ticker_bs_yr_series))
   logging.debug("The Balance Sheet QTR series is : " + str(ticker_bs_qtr_series))
 
+  ticker_xls_exists = 0
+  if (os.path.exists(dir_path + analysis_dir + "\\" + ticker + "_yr_Analysis.xlsx") is True):
+    logging.debug("The Analysis file exists")
+    ticker_xls = pd.ExcelFile(dir_path + analysis_dir + "\\" + ticker + "_yr_Analysis.xlsx")
+    ticker_yr_analysis_df = pd.read_excel(ticker_xls, 'Yearly', index_col=0)
+    ticker_xls_exists = 1
 
-
-  # Get the data from the various dfs
-  ticker_yr_dates_list = []
-  ticker_yr_inventory_list = []
+  # ---------------------------------------------------------------------------
+  # Get the various fields that we need for Analysis
+  # ---------------------------------------------------------------------------
+  ticker_qtr_dates_dict = {}
 
   ticker_qtr_dates_list = []
+  ticker_qtr_revenue_dict = {}
+  ticker_qtr_lt_debt_dict = {}
+
   ticker_qtr_inventory_list = []
+  ticker_qtr_equity_list = []
+  ticker_qtr_bps_list = []
 
-  for i_idx in range(1,9):
-    logging.debug ("Getting the YR and QTR Date for Period : " + str(i_idx))
-    ticker_qtr_date_dt = dt.datetime.strptime(str(ticker_dateandperioed_series['Ending date Q' + str(i_idx)]),'%Y-%m-%d %H:%M:%S').date()
-    ticker_qtr_inventory = ticker_bs_qtr_series['Inventory Q'+str(i_idx)]
-    ticker_qtr_dates_list.append(ticker_qtr_date_dt)
-    ticker_qtr_inventory_list.append(ticker_qtr_inventory)
+  ticker_yr_dates_dict = {}
+  ticker_yr_revenue_dict = {}
+  ticker_yr_lt_debt_dict = {}
 
-    if (i_idx < 8):
-      ticker_yr_date_dt = dt.datetime.strptime(str(ticker_dateandperioed_series['Ending date Y'+str(i_idx)]), '%Y-%m-%d %H:%M:%S').date()
-      ticker_yr_inventory = ticker_bs_yr_series['Inventory Y'+str(i_idx)]
-      ticker_yr_dates_list.append(ticker_yr_date_dt)
-      ticker_yr_inventory_list.append(ticker_yr_inventory)
+  ticker_yr_dates_list = []
+  ticker_yr_inventory_list = []
+  ticker_yr_equity_list = []
+  ticker_yr_bps_list = []
+
+  for qtr_idx in qtr_str_list:
+    logging.debug("Getting the data for " + str(qtr_idx))
+    ticker_qtr_dates_dict[qtr_idx] =  dt.datetime.strptime(str(ticker_dateandperioed_series['Ending date ' + str(qtr_idx)]),'%Y-%m-%d %H:%M:%S').date()
+    ticker_qtr_revenue_dict[qtr_idx] = ticker_pnl_qtr_series['Sales '+str(qtr_idx)]
+    ticker_qtr_lt_debt_dict[qtr_idx] = ticker_bs_qtr_series['Long-term debt '+str(qtr_idx)]
+
+  for yr_idx in yr_str_list:
+    logging.debug("Getting the data for " + str(yr_idx))
+    ticker_yr_dates_dict[yr_idx] = dt.datetime.strptime(str(ticker_dateandperioed_series['Ending date ' + str(yr_idx)]),'%Y-%m-%d %H:%M:%S').date()
+    ticker_yr_revenue_dict[yr_idx] = ticker_pnl_yr_series['Sales '+str(yr_idx)]
+    ticker_yr_lt_debt_dict[yr_idx] = ticker_bs_yr_series['Long-term debt '+str(yr_idx)]
 
 
-  logging.debug("The YR Date List : " + str(ticker_yr_dates_list))
-  logging.debug("The QTR Date List : " + str(ticker_qtr_dates_list))
-  logging.debug("The YR Inventory List : " + str(ticker_yr_inventory_list))
-  logging.debug("The QTR Inventory List : " + str(ticker_qtr_inventory_list))
+
+  # logging.debug("The QTR Date List : " + str(ticker_qtr_dates_list))
+  logging.debug("The QTR Date Dict : " + str(ticker_qtr_dates_dict))
+  # logging.debug("The QTR Inventory List : " + str(ticker_qtr_inventory_list))
+  logging.debug("The QTR LT Debt Dict : " + str(ticker_qtr_lt_debt_dict))
+  # logging.debug("The QTR BPS List : " + str(ticker_qtr_bps_list))
+  # logging.debug("The QTR Equity List : " + str(ticker_qtr_equity_list))
+  logging.debug("The QTR Revenue Dict : " + str(ticker_qtr_revenue_dict))
+  logging.debug("")
+  # logging.debug("The YR Date List : " + str(ticker_yr_dates_list))
+  logging.debug("The YR Date Dict : " + str(ticker_yr_dates_dict))
+  # logging.debug("The YR Inventory List : " + str(ticker_yr_inventory_list))
+  logging.debug("The YR LT Debt Dict : " + str(ticker_yr_lt_debt_dict))
+  # logging.debug("The YR BPS List : " + str(ticker_yr_bps_list))
+  # logging.debug("The YR Equity List : " + str(ticker_yr_equity_list))
+  logging.debug("The YR Revenue Dict : " + str(ticker_yr_revenue_dict))
+
+
+  lynch_yr_df_index = "YR_Lynch_Analysis"
+  lynch_yr_df = pd.DataFrame(columns=[lynch_yr_df_index])
+  lynch_yr_df.set_index(lynch_yr_df_index, inplace=True)
+
+  for yr_idx in yr_str_list:
+    tmp_val = ticker_yr_dates_dict[yr_idx]
+    print("The value of tmp val " , tmp_val, " and type of tmp val ", type(tmp_val))
+    lynch_yr_df.assign(tmp_val = "")
+    # lynch_yr_df.loc['Revenue', ticker_yr_dates_dict[yr_idx].strftime('%m/%d/%Y')] = ticker_yr_revenue_dict[yr_idx]
+    lynch_yr_df.loc['Revenue', ticker_yr_dates_dict[yr_idx]] = ticker_yr_revenue_dict[yr_idx]
+    lynch_yr_df.loc['LT_Debt', ticker_yr_dates_dict[yr_idx]] = ticker_yr_lt_debt_dict[yr_idx]
+
+  logging.debug("The YR_Lynch_df is \n" + lynch_yr_df.to_string())
+  lynch_yr_df_col_list = lynch_yr_df.columns.tolist()
+
+
+
+
+  # Resort the df based on column names - by default it is sorted in ascending order
+  lynch_yr_df = lynch_yr_df.reindex(sorted(lynch_yr_df.columns), axis=1)
+  logging.debug("The YR_Lynch_df is \n" + lynch_yr_df.to_string())
+
+  if (ticker_xls_exists == 1):
+    # ticker_yr_analysis_df.set_index([0])
+    logging.debug("The Ticker Yearly Analysis df is \n" + ticker_yr_analysis_df.to_string())
+    tmp_list = ticker_yr_analysis_df.columns.tolist()
+    ticker_yr_analysis_col_list = [dt.datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S').date() for date in tmp_list]
+    logging.debug("The type of tmp_list is " + str(type(tmp_list)))
+    logging.debug("The type of xxx list is " + str(type(ticker_yr_analysis_col_list)))
+    print("The type of tmp_list is ",  type(tmp_list))
+    print("The type of xxx list is ", type(ticker_yr_analysis_col_list[0]))
+
+    for date_idx in lynch_yr_df_col_list:
+      logging.debug("Checking for date " + str(date_idx) + " in the ticker column list " + str(ticker_yr_analysis_col_list))
+      if date_idx in ticker_yr_analysis_col_list:
+        logging.debug("Found it")
+      else:
+        logging.debug("Adding a column for " + str(date_idx))
+        print("The value of date_idx ", date_idx , " and the type ", type(date_idx))
+        # ticker_yr_analysis_df.assign(date_idx="")
+        ticker_yr_analysis_df.insert(0,str(date_idx),"Haha")
+        ticker_yr_analysis_df[str(date_idx)] = lynch_yr_df[date_idx]
+
+    lynch_yr_df = lynch_yr_df.reindex(sorted(lynch_yr_df.columns), axis=1)
+    logging.debug("The ticker df now is \n" + ticker_yr_analysis_df.to_string())
+
+  # for i_idx in range(1,9):
+  #   qtr_str = "Q"+str(i_idx)
+  #   tmp_val = ticker_qtr_dates_dict[qtr_str]
+  #   lynch_qtr_df.assign(tmp_val= "")
+  #
+  # lynch_qtr_df.set_index(lynch_qtr_df_index, inplace=True)
+  # logging.debug("The QTR_Lynch_df is \n" + lynch_qtr_df.to_string())
+  #
+  # for i_idx in range(1,9):
+  #   qtr_str = "Q"+str(i_idx)
+  #   logging.debug("The qtr_str is " + str(qtr_str) + " and the date value is  " + str(ticker_qtr_dates_dict[qtr_str]) + " and the revenue is " + str(ticker_qtr_revenue_list[i_idx-1]))
+  #   lynch_qtr_df.loc['Revenue', ticker_qtr_dates_dict[qtr_str].strftime('%m/%d/%Y')] = ticker_qtr_revenue_list[i_idx-1]
+  #
+  # logging.debug("The QTR_Lynch_df is \n" + lynch_qtr_df.to_string())
 
 
 sys.exit(1)
