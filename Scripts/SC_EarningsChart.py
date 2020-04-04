@@ -1438,191 +1438,6 @@ for ticker_raw in ticker_list:
 
 
 
-
-  # ---------------------------------------------------------
-  # Create the lower and upper Price limit
-  # ---------------------------------------------------------
-  if math.isnan(ticker_config_series[chart_type_idx + '_Price_Scale_Low']):
-    logging.error("Price_Scale_Low - is not set in the configurations file")
-    logging.error("Please correct and rerun")
-    sys.exit(1)
-  else:
-    price_lim_lower = ticker_config_series[chart_type_idx + '_Price_Scale_Low']
-    logging.debug("Price_Scale_Low from Config file is " + str(price_lim_lower))
-  if math.isnan(ticker_config_series[chart_type_idx +'_Price_Scale_High']):
-    # ticker_adj_close_list_nonan = [x for x in ticker_adj_close_list if math.isnan(x) is False]
-    logging.error("Price_Scale_High - is not set in the configurations file")
-    logging.error("Please correct and rerun")
-    sys.exit(1)
-  else:
-    price_lim_upper = ticker_config_series[chart_type_idx+'_Price_Scale_High']
-    logging.debug("Price_Scale_High from Config file is " + str(price_lim_upper))
-  # ---------------------------------------------------------
-
-  # ---------------------------------------------------------
-  # Create the Upper and Lower EPS Limit
-  # ---------------------------------------------------------
-  if math.isnan(ticker_config_series[chart_type_idx + '_Earnings_Scale_High']):
-    logging.error("EPS Scale - High is not set in the configurations file")
-    logging.error("Please correct and rerun")
-    sys.exit(1)
-  else:
-    qtr_eps_lim_upper = ticker_config_series[chart_type_idx + '_Earnings_Scale_High']
-    logging.debug("EPS Scale - High from Config file " + str(qtr_eps_lim_upper))
-
-  if math.isnan(ticker_config_series[chart_type_idx + '_Earnings_Scale_Low']):
-    logging.error("EPS Scale - Low is not set in the configurations file")
-    logging.error("Please correct and rerun")
-    sys.exit(1)
-  else:
-    qtr_eps_lim_lower = ticker_config_series[chart_type_idx + '_Earnings_Scale_Low']
-    logging.debug("EPS Scale - Low from Config file " + str(qtr_eps_lim_lower))
-  # =============================================================================
-
-
-  # If AAII EPS Projections were inserted and the projected EPS was greater than the qtr_eps_lim_upper
-  # then increase that limit
-  if (no_of_years_to_insert_aaii_eps_projections > 0) and (max_qtr_eps_from_insertion > qtr_eps_lim_upper):
-    pe_ratio_from_config_file = price_lim_upper / qtr_eps_lim_upper
-    logging.debug("The max q eps from inserting projected eps : " + str(max_qtr_eps_from_insertion) + " is greater than : " + str(qtr_eps_lim_upper) + " specified by configurations file")
-    logging.debug("The PE ratio (upper limit of the price/upper limit of the eps) of the chart specified in the config file is (" + str(price_lim_upper) + "/" + str(qtr_eps_lim_upper) + ") = " + str(pe_ratio_from_config_file))
-    qtr_eps_lim_upper = max_qtr_eps_from_insertion + (max_qtr_eps_from_insertion - qtr_eps_lim_upper) * .25
-    price_lim_upper = qtr_eps_lim_upper * pe_ratio_from_config_file
-    logging.debug("Reset the Upper eps limit to : " + str(qtr_eps_lim_upper) + " and Upper price limit to : " + str(price_lim_upper))
-
-  # -----------------------------------------------------------------------------
-  # Find out how many years need to be plotted. If the historical data is available
-  # for lesser time, then adjust the period to the length of the data_list
-  # -----------------------------------------------------------------------------
-  if (math.isnan(ticker_config_series['Linear_Chart_Duration_Years'])):
-    plot_period_int = 252 * (10+no_of_years_to_insert_aaii_eps_projections)
-  else:
-    plot_period_int = 252 * (int(ticker_config_series[chart_type_idx+'_Chart_Duration_Years']) + no_of_years_to_insert_aaii_eps_projections)
-
-  if (len(date_list) < plot_period_int):
-    plot_period_int = len(date_list) -1
-    logging.debug("Since the Historical Data (Length of the date list) is not available for all\
-    the years that user is asking to plot for, so adjusting the plot for " +
-    str(float(plot_period_int/252)) + " years (or " + str(plot_period_int) +  " days)")
-  else:
-    logging.debug ("Will plot for " + str(int(plot_period_int/252)) + " years")
-  # ---------------------------------------------------------
-
-  # Get the index factor to pin/anchor/align the index and the price of the stock
-  # to the same point at the start of the plot
-
-  if (plot_spy):
-    # Get the spy for the plot_period_int and then normalize it to stock price from
-    # that date onwards
-    spy_adj_close_list = spy_df.Adj_Close.tolist()
-    # find the length of adj_close_list
-    if (len(ticker_adj_close_list) < plot_period_int):
-      spy_adjust_factor = spy_adj_close_list[len(ticker_adj_close_list)] / ticker_adj_close_list[len(ticker_adj_close_list)]
-    else:
-      spy_adjust_factor = spy_adj_close_list[plot_period_int] / ticker_adj_close_list[plot_period_int]
-    spy_adj_close_list[:] = [x / spy_adjust_factor for x in spy_adj_close_list]
-
-  # ---------------------------------------------------------------------------
-  # Create the schiller PE line for the plot
-  # ---------------------------------------------------------------------------
-  avearge_schiller_pe = 15
-  # Divide the schiller PE values by average_schiller_pe to normalize it
-  schiller_pe_normalized_list = [float(schiller_pe/avearge_schiller_pe) for schiller_pe in schiller_pe_value_list]
-
-  schiller_pe_value_expanded_list = []
-  schiller_pe_normalized_expanded_list = []
-  oldest_date_in_date_list = date_list[len(date_list)-1]
-  logging.debug("Oldest Date in Historical Date List is" + str(oldest_date_in_date_list))
-  for i in range(len(date_list)):
-    schiller_pe_value_expanded_list.append(float('nan'))
-    schiller_pe_normalized_expanded_list.append(float('nan'))
-
-  for schiller_pe_date in schiller_pe_date_list:
-    if (schiller_pe_date > oldest_date_in_date_list):
-      curr_index = schiller_pe_date_list.index(schiller_pe_date)
-      # print("Looking for ", qtr_eps_date)
-      match_date = min(date_list, key=lambda d: abs(d - schiller_pe_date))
-      logging.debug("The matching date for Schiller PE Date : " + str(schiller_pe_date) + " in historical datelist is " +
-                    str(match_date) + " at index " + str(date_list.index(match_date)) + " and the Schiller PE is " + str(schiller_pe_normalized_list[curr_index]))
-      schiller_pe_value_expanded_list[date_list.index(match_date)] = schiller_pe_value_list[curr_index]
-      schiller_pe_normalized_expanded_list[date_list.index(match_date)] = schiller_pe_normalized_list[curr_index]
-  # print("The expanded Schiller PE list is ", schiller_pe_normalized_expanded_list, "\nand the number of elements are",len(schiller_pe_normalized_expanded_list))
-
-  # make sure that the lenght of the two expanded lists are the same
-  if (len(schiller_pe_normalized_expanded_list) != len(yr_eps_adj_expanded_list)):
-    logging.debug("Error ")
-    sys.exit()
-  schiller_pe_value_list_smooth = smooth_list(schiller_pe_value_expanded_list)
-  schiller_pe_normalized_list_smooth = smooth_list(schiller_pe_normalized_expanded_list)
-  yr_eps_adj_expanded_list_smooth = smooth_list(yr_eps_adj_expanded_list)
-
-  ann_constant = (4 * qtr_eps_lim_upper)/price_lim_upper
-  logging.debug ("Earning Limit upper" + str(qtr_eps_lim_upper))
-  logging.debug ("Price Limit upper" + str(price_lim_upper))
-  logging.debug ("Ann Constant" + str(ann_constant))
-  # time.sleep(3)
-  schiller_ann_requested_red_line_list_0 = [a*b for a,b in zip(schiller_pe_value_list_smooth,yr_eps_adj_expanded_list_smooth)]
-  schiller_ann_requested_red_line_list_3 = [i * ann_constant for i in schiller_ann_requested_red_line_list_0]
-  # schiller_ann_requested_red_line_list_1 = [i * 4 for i in schiller_ann_requested_red_line_list_0]
-  # schiller_ann_requested_red_line_list_2 = [i * qtr_eps_lim_upper for i in schiller_ann_requested_red_line_list_1]
-  # schiller_ann_requested_red_line_list_3 = [i / price_lim_upper for i in schiller_ann_requested_red_line_list_2]
-  # Now multiply the schiller expanded list with the yr eps expanded list
-  schiller_pe_times_yr_eps_list = [a*b for a,b in zip(schiller_pe_normalized_list_smooth,yr_eps_adj_expanded_list_smooth)]
-  logging.debug ("The smooth Schiller Normalized PE list mulitplied by YR EPS list is " + str(schiller_pe_times_yr_eps_list))
-  # ---------------------------------------------------------------------------
-
-  # ---------------------------------------------------------------------------
-  # Do the calcuations needed to xtick and xtick lables for main plt
-  # ---------------------------------------------------------------------------
-  # This works - Good resource
-  # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
-  # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
-  if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
-    fiscal_yr_str = str(ticker_config_series['Fiscal_Year'])
-    if not (all(x.isalpha() for x in fiscal_yr_str)):
-      logging.error("**********                                           ERROR                                       **********")
-      logging.error("**********     Entry for " + str(ticker).center(10) +" 'Fiscal_Year' in the configurations file  is" + str(fiscal_yr_str) + "   **********")
-      logging.error("**********     It is not a 3 character month. Valid values(string) are:     **********")
-      logging.error("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
-      logging.error("**********     Please correct and then run the script again                                      **********")
-  else:
-    fiscal_yr_str = "Dec"
-
-  fiscal_qtr_str  = "BQ-"+fiscal_yr_str
-  fiscal_yr_str = "BA-"+fiscal_yr_str
-  logging.debug("The fiscal Year is " + str(fiscal_yr_str))
-
-  fiscal_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_yr_str)
-  fiscal_qtr_and_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_qtr_str)
-  # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
-  # qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
-  logging.debug("Yearly Dates are " + str(fiscal_yr_dates_raw))
-  logging.debug("Quarterly Dates are " + str(type(fiscal_qtr_and_yr_dates_raw)))
-
-  fiscal_qtr_dates = []
-  fiscal_yr_dates = []
-  for x in fiscal_qtr_and_yr_dates_raw:
-    logging.debug("The original Quarterly Date is : " + str(x))
-    if (x in fiscal_yr_dates_raw):
-      logging.debug("This quarter is also year end date. Removing " + str(type(x)))
-    else:
-      fiscal_qtr_dates.append(x.date().strftime('%m/%d/%Y'))
-
-  for x in fiscal_yr_dates_raw:
-    logging.debug("The original Yearly Date is : " + str(x))
-    fiscal_yr_dates.append(x.date().strftime('%m/%d/%Y'))
-    # if the chart type is long linear then only print the year or
-    # can choose to print the month and the year but then make the
-    # fonts smaller on the xticklables.
-    # fiscal_yr_dates.append(x.date().strftime('%Y'))
-
-  logging.debug("The original yr dates list is\n" + str(fiscal_yr_dates_raw))
-  logging.debug("The original qtr dates list is\n" + str(fiscal_qtr_and_yr_dates_raw))
-  logging.debug("The modified qtr dates list is\n" + str(fiscal_qtr_dates))
-  logging.debug("The modified yr dates list is\n" + str(fiscal_yr_dates))
-  logging.info("Prepared the Fiscal year and Quarter ticks")
-  # ---------------------------------------------------------------------------
-
   # ---------------------------------------------------------------------------
   # Find out the growth for 1yr, 3yr and 5yr for eps and price
   # ---------------------------------------------------------------------------
@@ -1786,6 +1601,189 @@ for ticker_raw in ticker_list:
   adjusted_eps_str = "Analysts Accuracy : " + str(format(analyst_eps_projections_accuracy_list[0]*100,'^8.3f')) + "%"
   # ---------------------------------------------------------------------------
 
+
+  # ---------------------------------------------------------------------------
+  # Read in the various _lim_upper and _lim_lower from config file
+  # ---------------------------------------------------------------------------
+  if math.isnan(ticker_config_series[chart_type_idx + '_Price_Scale_Low']):
+    logging.error("Price_Scale_Low - is not set in the configurations file")
+    logging.error("Please correct and rerun")
+    sys.exit(1)
+  else:
+    price_lim_lower = ticker_config_series[chart_type_idx + '_Price_Scale_Low']
+    logging.debug("Price_Scale_Low from Config file is " + str(price_lim_lower))
+
+  if math.isnan(ticker_config_series[chart_type_idx +'_Price_Scale_High']):
+    # ticker_adj_close_list_nonan = [x for x in ticker_adj_close_list if math.isnan(x) is False]
+    logging.error("Price_Scale_High - is not set in the configurations file")
+    logging.error("Please correct and rerun")
+    sys.exit(1)
+  else:
+    price_lim_upper = ticker_config_series[chart_type_idx+'_Price_Scale_High']
+    logging.debug("Price_Scale_High from Config file is " + str(price_lim_upper))
+
+  if math.isnan(ticker_config_series[chart_type_idx + '_Earnings_Scale_High']):
+    logging.error("EPS Scale - High is not set in the configurations file")
+    logging.error("Please correct and rerun")
+    sys.exit(1)
+  else:
+    qtr_eps_lim_upper = ticker_config_series[chart_type_idx + '_Earnings_Scale_High']
+    logging.debug("EPS Scale - High from Config file " + str(qtr_eps_lim_upper))
+
+  if math.isnan(ticker_config_series[chart_type_idx + '_Earnings_Scale_Low']):
+    logging.error("EPS Scale - Low is not set in the configurations file")
+    logging.error("Please correct and rerun")
+    sys.exit(1)
+  else:
+    qtr_eps_lim_lower = ticker_config_series[chart_type_idx + '_Earnings_Scale_Low']
+    logging.debug("EPS Scale - Low from Config file " + str(qtr_eps_lim_lower))
+
+  # If AAII EPS Projections were inserted and the projected EPS was greater than the qtr_eps_lim_upper
+  # then increase the upper eps and uuper price limits
+  if (no_of_years_to_insert_aaii_eps_projections > 0) and (max_qtr_eps_from_insertion > qtr_eps_lim_upper):
+    pe_ratio_from_config_file = price_lim_upper / qtr_eps_lim_upper
+    logging.debug("The max q eps from inserting projected eps : " + str(max_qtr_eps_from_insertion) + " is greater than : " + str(qtr_eps_lim_upper) + " specified by configurations file")
+    logging.debug("The PE ratio (upper limit of the price/upper limit of the eps) of the chart specified in the config file is (" + str(price_lim_upper) + "/" + str(qtr_eps_lim_upper) + ") = " + str(pe_ratio_from_config_file))
+    qtr_eps_lim_upper = max_qtr_eps_from_insertion + (max_qtr_eps_from_insertion - qtr_eps_lim_upper) * .25
+    price_lim_upper = qtr_eps_lim_upper * pe_ratio_from_config_file
+    logging.debug("Reset the Upper eps limit to : " + str(qtr_eps_lim_upper) + " and Upper price limit to : " + str(price_lim_upper))
+  # ---------------------------------------------------------------------------
+
+  # -----------------------------------------------------------------------------
+  # Find out how many years need to be plotted. If the historical data is available
+  # for lesser time, then adjust the period to the length of the data_list
+  # -----------------------------------------------------------------------------
+  if (math.isnan(ticker_config_series['Linear_Chart_Duration_Years'])):
+    plot_period_int = 252 * (10+no_of_years_to_insert_aaii_eps_projections)
+  else:
+    plot_period_int = 252 * (int(ticker_config_series[chart_type_idx+'_Chart_Duration_Years']) + no_of_years_to_insert_aaii_eps_projections)
+
+  if (len(date_list) < plot_period_int):
+    plot_period_int = len(date_list) -1
+    logging.debug("Since the Historical Data (Length of the date list) is not available for all\
+    the years that user is asking to plot for, so adjusting the plot for " +
+    str(float(plot_period_int/252)) + " years (or " + str(plot_period_int) +  " days)")
+  else:
+    logging.debug ("Will plot for " + str(int(plot_period_int/252)) + " years")
+  # ---------------------------------------------------------
+
+  # Get the index factor to pin/anchor/align the index and the price of the stock
+  # to the same point at the start of the plot
+
+  if (plot_spy):
+    # Get the spy for the plot_period_int and then normalize it to stock price from
+    # that date onwards
+    spy_adj_close_list = spy_df.Adj_Close.tolist()
+    # find the length of adj_close_list
+    if (len(ticker_adj_close_list) < plot_period_int):
+      spy_adjust_factor = spy_adj_close_list[len(ticker_adj_close_list)] / ticker_adj_close_list[len(ticker_adj_close_list)]
+    else:
+      spy_adjust_factor = spy_adj_close_list[plot_period_int] / ticker_adj_close_list[plot_period_int]
+    spy_adj_close_list[:] = [x / spy_adjust_factor for x in spy_adj_close_list]
+
+  # ---------------------------------------------------------------------------
+  # Create the schiller PE line for the plot
+  # ---------------------------------------------------------------------------
+  avearge_schiller_pe = 15
+  # Divide the schiller PE values by average_schiller_pe to normalize it
+  schiller_pe_normalized_list = [float(schiller_pe/avearge_schiller_pe) for schiller_pe in schiller_pe_value_list]
+
+  schiller_pe_value_expanded_list = []
+  schiller_pe_normalized_expanded_list = []
+  oldest_date_in_date_list = date_list[len(date_list)-1]
+  logging.debug("Oldest Date in Historical Date List is" + str(oldest_date_in_date_list))
+  for i in range(len(date_list)):
+    schiller_pe_value_expanded_list.append(float('nan'))
+    schiller_pe_normalized_expanded_list.append(float('nan'))
+
+  for schiller_pe_date in schiller_pe_date_list:
+    if (schiller_pe_date > oldest_date_in_date_list):
+      curr_index = schiller_pe_date_list.index(schiller_pe_date)
+      # print("Looking for ", qtr_eps_date)
+      match_date = min(date_list, key=lambda d: abs(d - schiller_pe_date))
+      logging.debug("The matching date for Schiller PE Date : " + str(schiller_pe_date) + " in historical datelist is " +
+                    str(match_date) + " at index " + str(date_list.index(match_date)) + " and the Schiller PE is " + str(schiller_pe_normalized_list[curr_index]))
+      schiller_pe_value_expanded_list[date_list.index(match_date)] = schiller_pe_value_list[curr_index]
+      schiller_pe_normalized_expanded_list[date_list.index(match_date)] = schiller_pe_normalized_list[curr_index]
+  # print("The expanded Schiller PE list is ", schiller_pe_normalized_expanded_list, "\nand the number of elements are",len(schiller_pe_normalized_expanded_list))
+
+  # make sure that the lenght of the two expanded lists are the same
+  if (len(schiller_pe_normalized_expanded_list) != len(yr_eps_adj_expanded_list)):
+    logging.debug("Error ")
+    sys.exit()
+  schiller_pe_value_list_smooth = smooth_list(schiller_pe_value_expanded_list)
+  schiller_pe_normalized_list_smooth = smooth_list(schiller_pe_normalized_expanded_list)
+  yr_eps_adj_expanded_list_smooth = smooth_list(yr_eps_adj_expanded_list)
+
+  ann_constant = (4 * qtr_eps_lim_upper)/price_lim_upper
+  logging.debug ("Earning Limit upper" + str(qtr_eps_lim_upper))
+  logging.debug ("Price Limit upper" + str(price_lim_upper))
+  logging.debug ("Ann Constant" + str(ann_constant))
+  # time.sleep(3)
+  schiller_ann_requested_red_line_list_0 = [a*b for a,b in zip(schiller_pe_value_list_smooth,yr_eps_adj_expanded_list_smooth)]
+  schiller_ann_requested_red_line_list_3 = [i * ann_constant for i in schiller_ann_requested_red_line_list_0]
+  # schiller_ann_requested_red_line_list_1 = [i * 4 for i in schiller_ann_requested_red_line_list_0]
+  # schiller_ann_requested_red_line_list_2 = [i * qtr_eps_lim_upper for i in schiller_ann_requested_red_line_list_1]
+  # schiller_ann_requested_red_line_list_3 = [i / price_lim_upper for i in schiller_ann_requested_red_line_list_2]
+  # Now multiply the schiller expanded list with the yr eps expanded list
+  schiller_pe_times_yr_eps_list = [a*b for a,b in zip(schiller_pe_normalized_list_smooth,yr_eps_adj_expanded_list_smooth)]
+  logging.debug ("The smooth Schiller Normalized PE list mulitplied by YR EPS list is " + str(schiller_pe_times_yr_eps_list))
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # Do the calcuations needed to xtick and xtick lables for main plt
+  # ---------------------------------------------------------------------------
+  # This works - Good resource
+  # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
+  # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
+  if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
+    fiscal_yr_str = str(ticker_config_series['Fiscal_Year'])
+    if not (all(x.isalpha() for x in fiscal_yr_str)):
+      logging.error("**********                                           ERROR                                       **********")
+      logging.error("**********     Entry for " + str(ticker).center(10) +" 'Fiscal_Year' in the configurations file  is" + str(fiscal_yr_str) + "   **********")
+      logging.error("**********     It is not a 3 character month. Valid values(string) are:     **********")
+      logging.error("**********     Valid values [Jan, Feb, Mar,...,Nov, Dec]                                         **********")
+      logging.error("**********     Please correct and then run the script again                                      **********")
+  else:
+    fiscal_yr_str = "Dec"
+
+  fiscal_qtr_str  = "BQ-"+fiscal_yr_str
+  fiscal_yr_str = "BA-"+fiscal_yr_str
+  logging.debug("The fiscal Year is " + str(fiscal_yr_str))
+
+  # It is possible the plot_period_int might have changed becuase of
+  # Long_Linear so this needs to be regenerated
+  fiscal_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_yr_str)
+  fiscal_qtr_and_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_qtr_str)
+  # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
+  # qtr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Q')
+  logging.debug("Yearly Dates are " + str(fiscal_yr_dates_raw))
+  logging.debug("Quarterly Dates are " + str(type(fiscal_qtr_and_yr_dates_raw)))
+
+  fiscal_qtr_dates = []
+  fiscal_yr_dates = []
+  for x in fiscal_qtr_and_yr_dates_raw:
+    logging.debug("The original Quarterly Date is : " + str(x))
+    if (x in fiscal_yr_dates_raw):
+      logging.debug("This quarter is also year end date. Removing " + str(type(x)))
+    else:
+      fiscal_qtr_dates.append(x.date().strftime('%m/%d/%Y'))
+
+  for x in fiscal_yr_dates_raw:
+    logging.debug("The original Yearly Date is : " + str(x))
+    fiscal_yr_dates.append(x.date().strftime('%m/%d/%Y'))
+    # if the chart type is long linear then only print the year or
+    # can choose to print the month and the year but then make the
+    # fonts smaller on the xticklables.
+    # fiscal_yr_dates.append(x.date().strftime('%Y'))
+
+  logging.debug("The original yr dates list is\n" + str(fiscal_yr_dates_raw))
+  logging.debug("The original qtr dates list is\n" + str(fiscal_qtr_and_yr_dates_raw))
+  logging.debug("The modified qtr dates list is\n" + str(fiscal_qtr_dates))
+  logging.debug("The modified yr dates list is\n" + str(fiscal_yr_dates))
+  logging.info("Prepared the Fiscal year and Quarter ticks")
+  # ---------------------------------------------------------------------------
+
   # ---------------------------------------------------------------------------
   # Extract and generate information needed for candlesticks and volume chart
   # ---------------------------------------------------------------------------
@@ -1870,7 +1868,6 @@ for ticker_raw in ticker_list:
 
   logging.debug ("The modified Sunday dates are\n" + str(candle_sunday_dates_str))
   logging.info("Prepared the Data for Volume Bars")
-
   # ---------------------------------------------------------------------------
 
   chart_print_eps_div_numbers_list = []
@@ -2569,11 +2566,10 @@ for ticker_raw in ticker_list:
     date_time = now.strftime("%Y_%m_%d")
     # Only show the plot if we are making only one chart
     if (chart_type_idx == "Log"):
-      fig.savefig(chart_dir + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
-      if (len(ticker_list) == 1):
-        plt.show()
+      if (chart_print_eps_div_numbers_val == 1):
+        fig.savefig(chart_dir + "\\" + chart_type_idx + "\\"  + "Charts_With_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
       else:
-        plt.close(fig)
+        fig.savefig(chart_dir + "\\" + chart_type_idx + "\\"  + "Charts_Without_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
     else:
       if (chart_print_eps_div_numbers_val == 1):
         fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
