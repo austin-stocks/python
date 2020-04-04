@@ -125,20 +125,9 @@ g_dict_chart_options = {
   'print_eps_and_div_numbers' : 'Yes', # Yes, No, Both - This will create chart two times - one with numbers and one without
   'Chart_type_options' : ['Log','Linear'],
   # 'Linear_chart_types' : ['Linear','Long_Linear']
-  # 'Linear_chart_types': ['Linear', 'Long_Linear']
-  'Linear_chart_types': ['Long_Linear']
+  # 'Linear_chart_types': ['Long_Linear']
+  'Linear_chart_types': ['Linear']
 }
-
-print("The list is ", g_dict_chart_options['Chart_type_options'])
-for chart_type_idx in g_dict_chart_options['Chart_type_options']:
-  print("Preparing Chart type " ,chart_type_idx)
-
-  if (chart_type_idx == 'Linear'):
-    for linear_chart_type_idx in g_dict_chart_options['Linear_chart_types']:
-      print("Preparing Linear Chart of type ", linear_chart_type_idx)
-
-# chart_type_idx = "Linear"
-
 
 aaii_missing_tickers_list = [
 'CBOE','CP','GOOG','RACE','NTR'
