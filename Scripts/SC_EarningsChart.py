@@ -123,9 +123,17 @@ g_dict_chart_options = {
   # This defined whether the numbers for Annaul EPS and Q EPS and Dividend
   # should be printed on the chart
   'print_eps_and_div_numbers' : 'Both', # Yes, No, Both - This will create chart two times - one with numbers and one without
-  'chart_type_and_duration' : { 'Linear' : '10', 'Long_Linear' : '25','Log' : '25'  },
-  'prepare_charts' : 'Linear'
+  'Chart_type_options' : ['Log','Linear'],
+  'Linear_chart_types' : ['Linear','Long_Linear']
 }
+
+print("The list is ", g_dict_chart_options['Chart_type_options'])
+for chart_type_idx in g_dict_chart_options['Chart_type_options']:
+  print("Preparing Chart type " ,chart_type_idx)
+
+  if (chart_type_idx == 'Linear'):
+    for linear_chart_type_idx in g_dict_chart_options['Linear_chart_types']:
+      print("Preparing Linear Chart of type ", linear_chart_type_idx)
 
 aaii_missing_tickers_list = [
 'CBOE','CP','GOOG','RACE','NTR'
