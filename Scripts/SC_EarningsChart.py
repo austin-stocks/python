@@ -120,9 +120,9 @@ g_var_annotate_actual_qtr_earnings = 1
 g_var_use_aaii_data_to_extend_eps_projections = 1
 
 g_dict_chart_options = {
-  # This defined whether the numbers for Annaul EPS and Q EPS and Dividend
+  # This defined whether the numbers for Annual EPS and Q EPS and Dividend
   # should be printed on the chart
-  'print_eps_and_div_numbers' : 'Both', # Yes, No, Both - This will create chart two times - one with numbers and one without
+  'print_eps_and_div_numbers' : 'Yes', # Yes, No, Both - This will create chart two times - one with numbers and one without
   'Chart_type_options' : ['Log','Linear'],
   'Linear_chart_types' : ['Linear','Long_Linear']
 }
@@ -329,10 +329,10 @@ for ticker_raw in ticker_list:
     sys.exit()
   # ---------------------------------------------------------------------------
 
-  # =============================================================================
+  # ---------------------------------------------------------------------------
   # Check if there is data in the config file corresponding to the ticker that
   # is being processed
-  # =============================================================================
+  # ---------------------------------------------------------------------------
   try:
     ticker_config_series = config_df.loc[ticker]
     logging.debug("The configurations for " + ticker + " is\n" + str(ticker_config_series))
@@ -358,11 +358,7 @@ for ticker_raw in ticker_list:
   fiscal_qtr_str  = "BQ-"+fiscal_yr_str
   fiscal_yr_str = "BA-"+fiscal_yr_str
   logging.debug("The fiscal Year is " + str(fiscal_yr_str))
-
-
-
-
-  # =============================================================================
+  # ---------------------------------------------------------------------------
 
   # Get the chart type from configuration file
   chart_type = "Linear"
@@ -455,19 +451,6 @@ for ticker_raw in ticker_list:
   logging.debug("The Quarterly Report Date List is " + str(qtr_eps_report_date_list_dt))
   logging.debug("The Last Earning report date is " + str(eps_report_date))
 
-
-  is_ticker_foreign = ""
-  is_ticker_foreign = str(ticker_master_tracklist_series['Is_Foreign'])
-  is_ticker_foreign = is_ticker_foreign.strip()
-  cnbc_matches_reported_eps = 'NA'
-  cnbc_matches_reported_eps = str(ticker_master_tracklist_series['CNBC_Matches_Reported_EPS'])
-  logging.debug("The Last Earnings were reported on  : " + str(eps_report_date))
-  logging.debug("CNBC report match reported EPS = " + str(cnbc_matches_reported_eps) + \
-                "If it matches then it means that the future earnings projections should actual numbers and not adjusted numbers...though the company can adjust the earnings anytime :-))" + \
-                "If it does not match, then that means that the future projected earnings are likely to be adjusted by the company...It is your job to find out why the current earnings were adjusted")
-
-
-
   latest_qtr_date_in_earnings_file = qtr_eps_df['Q_Date'].tolist()[0]
   logging.debug("The latest Date in Earnings file is " + str(latest_qtr_date_in_earnings_file))
   latest_qtr_date_in_earnings_file_dt = dt.datetime.strptime(str(latest_qtr_date_in_earnings_file), '%m/%d/%Y').date()
@@ -487,9 +470,11 @@ for ticker_raw in ticker_list:
     logging.error("********** or you added years in the configurations file but forgot to run the merge script to reflect added year(s) in the historical file **********")
     logging.error("Please correct - by adding a year or two in the configuration file, if your forgot - and then rerun merge script either way before continuing")
     sys.exit(1)
+
+  # -------------------------------------------------------------------------
+  #       *****     Start of AAII insertion of Projected EPS Insertion    *****
   # -------------------------------------------------------------------------
   # Find the fiscal years y0, y1 and y2 and their respective projections
-  # -------------------------------------------------------------------------
   no_of_years_to_insert_aaii_eps_projections = 0
   continue_aaii_eps_projections_for_this_ticker = 1
   if ((str(ticker_config_series['Use_AAII_Projections']) == 'No') or (str(ticker_config_series['Use_AAII_Projections']) == 'N')):
@@ -507,6 +492,9 @@ for ticker_raw in ticker_list:
     logging.debug("Once - with #1-#3 the AAII Porjections are corrected, then the user should change the configurations file")
     logging.debug("so that the AAII EPS Projections can be included in the chart")
     continue_aaii_eps_projections_for_this_ticker = 0
+
+  # todo : Make this more robust...Check if the ticher information exists in aaii_df live (at run time)
+  # and then skip, rather than having a static ignore list
   if (ticker in aaii_missing_tickers_list):
     logging.debug(str(ticker) + " is NOT in AAII df. Will skip inserting EPS Projections..")
     continue_aaii_eps_projections_for_this_ticker = 0
@@ -521,6 +509,9 @@ for ticker_raw in ticker_list:
       logging.debug("The y0 fiscal year end for " + str(ticker) + " is NaN in AAII Analysts df...will skip inserting AAII EPS Projections")
       continue_aaii_eps_projections_for_this_ticker = 0
 
+  # Till this point we have only decided whether we want (based on user/config file variables) to or
+  # we can insert AAII Projections (based on whether the ticker exists in the aaii df)
+  # This piece of code decides how many years of projected EPS can be inserted
   if (g_var_use_aaii_data_to_extend_eps_projections == 1) and (continue_aaii_eps_projections_for_this_ticker == 1):
     y_plus1_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=1)
     y_plus2_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=2)
@@ -534,6 +525,7 @@ for ticker_raw in ticker_list:
     logging.debug("Y1 eps projections are " + str(y_plus1_fiscal_year_eps_projections))
     logging.debug("Y2 eps projections are " + str(y_plus2_fiscal_year_eps_projections))
     # -------------------------------------------------------------------------
+
     # -------------------------------------------------------------------------
     # Now tht we have dates from AAII fiscal years compare it against the latest
     # date that is in the earnings file and find the number of year/quarters than
@@ -551,7 +543,7 @@ for ticker_raw in ticker_list:
       logging.wanring(str(ticker) + " : Hmmm...However this should very rare...make sure for " + str(ticker) + "that the latest entry qtr_eps_date and the Y2 fiscal year dates actually match...")
     elif (-5 <= days_bw_y_plus1_latest_qtr_date.days <= 5):
       logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y1 fiscal end date : " + str(y_plus1_fiscal_year_dt) + " ...so we can possibly add Y2 fiscal year projections if they are not NaN")
-      if ((str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
+      if (str(y_plus2_fiscal_year_eps_projections) != 'nan'):
         logging.debug(str(ticker) + " : Y2 fiscal year eps projections are NOT nan. So, will insert one year (Y2)")
         no_of_years_to_insert_aaii_eps_projections = 1
         fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
@@ -559,11 +551,11 @@ for ticker_raw in ticker_list:
         logging.debug(str(ticker) + " : Hmmm...it seems like Y2 eps projections are nan in AAII. Nothing inserted...This is not unusual...If you want, you can check Y2 earnings projections in AAII nan")
     elif (-5 <= days_bw_y_plus0_latest_qtr_date.days <= 5):
       logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y0 fiscal end date : " + str(y_plus0_fiscal_year_dt) + " ...so we can possibly add Y1 and Y2 fiscal year projections if they are not NaN" )
-      if ((str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
+      if ((str(y_plus1_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
         logging.debug (str(ticker) + " : Both Y1 and Y2 fiscal year eps projections are NOT nan. So, will insert two years (Y1 and Y2)")
         no_of_years_to_insert_aaii_eps_projections = 2
         fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
-      elif ( (str(y_plus0_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan')):
+      elif (str(y_plus1_fiscal_year_eps_projections) != 'nan'):
         logging.debug(str(ticker) + " : Only Y1 fiscal year eps projections is NOT nan and Y2 is NaN. So, will insert one year (Y1)")
         no_of_years_to_insert_aaii_eps_projections = 1
         fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus1_fiscal_year_dt,freq=fiscal_qtr_str)
@@ -578,14 +570,22 @@ for ticker_raw in ticker_list:
     # -------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------
-    # Now that we have the number of years to insert, calculate the projected
-    # eps per quarter for future years - and insert in the dataframe
+    # Now that we the number of years of EPS projections to insert,
+    # calculate the projected eps per quarter for future years - and insert in the dataframe
+    # At the end we will end up
+    # 1. Updating the qtr_eps_df - which will be pre-pended with the dates and
+    #   the qtr_eps values that we are inserting for projected EPS from AAII
+    # 2. Updating the historica_df - which will be pre-pended with the calendar
+    #   dates for the numbers of years for which projected qtr_eps was inserted
     # -------------------------------------------------------------------------
     if (no_of_years_to_insert_aaii_eps_projections > 0):
       fiscal_qtr_dates = []
       for x in fiscal_qtr_and_yr_dates_raw:
         fiscal_qtr_dates.append(x.date().strftime('%m/%d/%Y'))
 
+      # This can happen if the qtr date in the earnings file also prouduces
+      # the match (and so produces a spurious date) in the fiscal_qtr_and_yr_dates_raw above
+      # Maybe cleanup the above calculation to ensure that the
       if (len(fiscal_qtr_dates) != 4) and (len(fiscal_qtr_dates) != 8):
         del fiscal_qtr_dates[0]
       logging.debug("The original qtr dates list is\n" + str(fiscal_qtr_and_yr_dates_raw))
@@ -627,14 +627,6 @@ for ticker_raw in ticker_list:
         qtr_eps_df.loc[-(i_int+1), 'Q_EPS_Diluted'] = tmp_eps_list[i_int]
 
       max_qtr_eps_from_insertion = max(tmp_eps_list)
-      if (max_qtr_eps_from_insertion > qtr_eps_lim_upper):
-        pe_ratio_from_config_file = price_lim_upper / qtr_eps_lim_upper
-        logging.debug("The max q eps from inserting projected eps : " + str(max_qtr_eps_from_insertion)  + " is greater than : " + str(qtr_eps_lim_upper) + " specified by configurations file")
-        logging.debug("The PE ratio (upper limit of the price/upper limit of the eps) of the chart specified in the config file is (" + str(price_lim_upper) + "/" + str(qtr_eps_lim_upper) + ") = " + str(pe_ratio_from_config_file))
-        qtr_eps_lim_upper = max_qtr_eps_from_insertion+(max_qtr_eps_from_insertion-qtr_eps_lim_upper)*.25
-        price_lim_upper = qtr_eps_lim_upper*pe_ratio_from_config_file
-        logging.debug("Reset the Upper eps limit to : " + str(qtr_eps_lim_upper) + " and Upper price limit to : " + str(price_lim_upper))
-
       # -------------------------------------------------------------------------
 
       # Now sort and reindex the q_eps_df
@@ -669,7 +661,20 @@ for ticker_raw in ticker_list:
       historical_df['Date'] = pd.to_datetime(historical_df['Date']).dt.strftime('%m/%d/%Y')
       # logging.debug(str(ticker) + " Historical df after inserting eps projection dates is " + historical_df.to_string())
   logging.info("Done adding data for " + str(no_of_years_to_insert_aaii_eps_projections) + " years in qtr_eps_df and historical df for future EPS projections as per AAII EPS df...")
-  # =============================================================================
+  # -------------------------------------------------------------------------
+  #       *****     End of AAII insertion of Projected EPS Insertion    *****
+  # -------------------------------------------------------------------------
+
+  # If AAII EPS Projections were inserted and the projected EPS was greater than the qtr_eps_lim_upper
+  # then increase that limit
+  if (no_of_years_to_insert_aaii_eps_projections > 0) and (max_qtr_eps_from_insertion > qtr_eps_lim_upper):
+    pe_ratio_from_config_file = price_lim_upper / qtr_eps_lim_upper
+    logging.debug("The max q eps from inserting projected eps : " + str(max_qtr_eps_from_insertion) + " is greater than : " + str(qtr_eps_lim_upper) + " specified by configurations file")
+    logging.debug("The PE ratio (upper limit of the price/upper limit of the eps) of the chart specified in the config file is (" + str(price_lim_upper) + "/" + str(qtr_eps_lim_upper) + ") = " + str(pe_ratio_from_config_file))
+    qtr_eps_lim_upper = max_qtr_eps_from_insertion + (max_qtr_eps_from_insertion - qtr_eps_lim_upper) * .25
+    price_lim_upper = qtr_eps_lim_upper * pe_ratio_from_config_file
+    logging.debug("Reset the Upper eps limit to : " + str(qtr_eps_lim_upper) + " and Upper price limit to : " + str(price_lim_upper))
+
 
   ticker_adj_close_list = historical_df.Adj_Close.tolist()
   date_str_list = historical_df.Date.tolist()
@@ -1755,6 +1760,16 @@ for ticker_raw in ticker_list:
     ticker_company_name = yahoo_comany_info_df.loc[ticker, 'Company_Name']
     ticker_sector = yahoo_comany_info_df.loc[ticker, 'Sector']
     ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
+
+  is_ticker_foreign = ""
+  is_ticker_foreign = str(ticker_master_tracklist_series['Is_Foreign'])
+  is_ticker_foreign = is_ticker_foreign.strip()
+  cnbc_matches_reported_eps = 'NA'
+  cnbc_matches_reported_eps = str(ticker_master_tracklist_series['CNBC_Matches_Reported_EPS'])
+  logging.debug("The Last Earnings were reported on  : " + str(eps_report_date))
+  logging.debug("CNBC report match reported EPS = " + str(cnbc_matches_reported_eps) + \
+                "If it matches then it means that the future earnings projections should actual numbers and not adjusted numbers...though the company can adjust the earnings anytime :-))" + \
+                "If it does not match, then that means that the future projected earnings are likely to be adjusted by the company...It is your job to find out why the current earnings were adjusted")
 
   chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(qtr_eps_projections_date_0) + ", " + str(qtr_eps_projections_date_1)
   chart_update_date_str += "\nCNBC Earnings match reported Earnings - " + str(cnbc_matches_reported_eps) + " :: Added AAII EPS Projections for : " + str(no_of_years_to_insert_aaii_eps_projections) + " years"
