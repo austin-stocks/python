@@ -57,7 +57,8 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
-chart_styles_list = ['Linear', 'Long_Linear', 'Log']
+# chart_styles_list = ['Linear', 'Long_Linear', 'Log']
+chart_styles_list = ['Long_Linear']
 chart_annotations_list = ['Charts_Without_Numbers', 'Charts_With_Numbers']
 
 for chart_styles_idx in chart_styles_list:
@@ -65,8 +66,8 @@ for chart_styles_idx in chart_styles_list:
   for chart_annotations_idx in chart_annotations_list:
     logging.debug("Chart Annotation Type to be copied : " + str(chart_annotations_idx))
 
-    if (chart_styles_idx != 'Linear'):
-      continue
+    # if (chart_styles_idx != 'Linear'):
+    #   continue
     # -----------------------------------------------------------------------------
     # Get the files from the chart directory in a list
     # and remove all the files from the Charts Latest directory
@@ -74,7 +75,8 @@ for chart_styles_idx in chart_styles_list:
     source_dir = dir_path + chart_dir + "\\" + chart_styles_idx + "\\" + chart_annotations_idx + "\\"
     dest_dir = dir_path + charts_latest_dir + "\\" + chart_styles_idx + "\\" + chart_annotations_idx + "\\"
     all_chart_files_list=os.listdir(source_dir)
-    logging.debug("The files in the Source Chart Directory " + str(source_dir) + " are : " + str(all_chart_files_list))
+    logging.debug("The files in the Source Chart Directory " + str(source_dir) + " are : \n" + str(all_chart_files_list))
+
 
     # This works - but it removes all the files in the directory - and that we don't
     # want now as it will delete (or try to delete) git stuff from the directory too.
@@ -126,10 +128,16 @@ for chart_styles_idx in chart_styles_list:
       ticker_chart_date_list = []
       for ticker_chart_filename in ticker_chart_files_list:
         # Check the length of the filename - it should be number of characters in the ticker and 16
-        if len(ticker_chart_filename) > (len(ticker) + 16):
-          logging.info("Error : The filename " + str(ticker_chart_filename) + " has more characters than allowed")
-          logging.info("Will skip this filename and go on to next one...You should investigate why this is...the chart directory should have jpg file that adhere to the filename convention")
-          continue
+        if (chart_styles_idx == 'Linear'):
+          if len(ticker_chart_filename) > (len(ticker) + 16):
+            logging.info("Error : The filename " + str(ticker_chart_filename) + " has more characters than allowed")
+            logging.info("Will skip this filename and go on to next one...You should investigate why this is...the chart directory should have jpg file that adhere to the filename convention")
+            continue
+        elif (chart_styles_idx == 'Long_Linear'):
+          if len(ticker_chart_filename) > (len(ticker) + 28):
+            logging.info("Error : The filename " + str(ticker_chart_filename) + " has more characters than allowed")
+            logging.info("Will skip this filename and go on to next one...You should investigate why this is...the chart directory should have jpg file that adhere to the filename convention")
+            continue
 
         # Remove the .jpg at the end and then get the last 10 characters of the filename
         ticker_chart_date_str = (ticker_chart_filename[:-4])[-10:]
@@ -144,13 +152,20 @@ for chart_styles_idx in chart_styles_list:
       logging.debug("The datetime SORTED list for all jpg files for " + str(ticker) + " is " + str(ticker_chart_date_list))
       if (len(ticker_chart_date_list) > 0):
         ticker_latest_chart = ticker_chart_date_list[0].strftime('%Y_%m_%d')
-        ticker_latest_chart_filename = ticker + "_" + ticker_latest_chart + ".jpg"
+        if (chart_styles_idx == 'Linear'):
+          ticker_latest_chart_filename = ticker + "_" + ticker_latest_chart + ".jpg"
+        elif (chart_styles_idx == 'Long_Linear'):
+          ticker_latest_chart_filename = ticker + "_Long_Linear_" + ticker_latest_chart + ".jpg"
+
         logging.info("The lastest file for " + str(ticker) + " is : " + str(ticker_latest_chart_filename))
         logging.info("Copying : " + str(source_dir + ticker_latest_chart_filename))
         logging.info(" to :  " + str(dest_dir + ticker + "_Latest.jpg"))
       # Copy the chart file - that was the youngest - to the desitnation directory as ticker_Latest.jpg
-      shutil.copy2(source_dir + ticker_latest_chart_filename,
-                   dest_dir + ticker + "_Latest.jpg")
+
+      if (chart_styles_idx == 'Linear'):
+        shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Latest.jpg")
+      elif (chart_styles_idx == 'Long_Linear'):
+        shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Long_Linear_Latest.jpg")
 
     logging.info("")
     logging.info(".....ALL DONE.....")
