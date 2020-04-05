@@ -365,7 +365,6 @@ for ticker_raw in ticker_list:
     sys.exit()
 
 
-
   # =============================================================================
   # Read the Historical file for the ticker
   # =============================================================================
@@ -653,6 +652,99 @@ for ticker_raw in ticker_list:
 
   qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
   logging.debug("The name of the columns in the earnings file are" + str(list(qtr_eps_df.columns.values)))
+  # Set the length of qtr_eps_list same as qtr_eps_date_list.
+  # This gets rid of any earnings that are beyond the last date.
+  # This is not a common case but could occur because of copy and paste and then
+  # ignorance on the part of the user to not remove the "extra" earnings
+  # This also makes sure that the eps date list and eps value list have the same
+  # number of entries.
+  if (len(qtr_eps_date_list) < len(qtr_eps_list)):
+    del qtr_eps_list[len(qtr_eps_date_list):]
+  logging.debug("The Earnings list for qtr_eps is\n" + str(qtr_eps_list) + "\nand the number of elements are " + str(len(qtr_eps_list)))
+
+  # Check if now the qtr_eps_list still has any undefined elements...flag an error and exit
+  # This will indicate any empty cells are either the beginning or in the middle of the eps
+  # column in the csv
+  if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
+    logging.error("**********                                ERROR                               **********")
+    logging.error("**********  There seems to be either blank cells for Earnings or their        **********")
+    logging.error("**********  format is undefined. Please correct the rerun the script          **********")
+    sys.exit()
+
+  # So - if we are successful till this point - we have made sure that
+  # 1. There are no nan in the date list
+  # 2. There are no nan in the eps list
+  # 3. Number of elements in the qtr_eps_date_list are equal to the number of
+  #    element in the qtr_eps_list
+  logging.info("Read in the Earnings Data...")
+  # ---------------------------------------------------------------------------
+
+  # =============================================================================
+  # Handle splits before proceeding as splits can change the qtr_eps
+  # =============================================================================
+  # todo : Test out various cases of splits so that the code is robust
+  split_dates = list()
+  split_multiplier = list()
+  # print("Tickers in json data: ", config_json.keys())
+  if (ticker not in config_json.keys()):
+    logging.debug("json data for " + ticker + "does not exist in" + configuration_json + "file")
+  else:
+    if ("Splits" in config_json[ticker]):
+      # if the length of the keys is > 0
+      if (len(config_json[ticker]["Splits"].keys()) > 0):
+        split_keys = config_json[ticker]["Splits"].keys()
+        logging.debug("Split Date list is: " + str(split_keys))
+        for i_key in split_keys:
+          logging.debug("Split Date : " + str(i_key) + ", Split Factor : " + str(config_json[ticker]["Splits"][i_key]))
+          try:
+            split_dates.append(dt.datetime.strptime(str(i_key), "%m/%d/%Y").date())
+          except (ValueError):
+            logging.error("\n***** Error : The split Date: " + str(i_key) +
+                          "does not seem to be right. Should be in the format %m/%d/%Y...please check *****")
+            sys.exit(1)
+          try:
+            (numerator, denominator) = config_json[ticker]["Splits"][i_key].split(":")
+            split_multiplier.append(float(denominator) / float(numerator))
+          except (ValueError):
+            logging.error("\n***** Error : The split factor: " + str(config_json[ticker]["Splits"][i_key]) + "for split date :" + str(i_key) +
+                  "does not seem to have right format [x:y]...please check *****")
+            sys.exit(1)
+        for i in range(len(split_dates)):
+          qtr_eps_list_mod = qtr_eps_list.copy()
+          logging.debug("Split Date :" + str(split_dates[i]) + " Multiplier : " + str(split_multiplier[i]))
+          for j in range(len(qtr_eps_date_list)):
+            if (split_dates[i] > qtr_eps_date_list[j]):
+              qtr_eps_list_mod[j] = round(qtr_eps_list[j] * split_multiplier[i], 4)
+              logging.debug("Earnings date " + str(qtr_eps_date_list[j]) +  " is older than split date. " +
+                            "Changed " + str(qtr_eps_list[j]) + " to "  + str(qtr_eps_list_mod[j]))
+          qtr_eps_list = qtr_eps_list_mod.copy()
+        logging.info("Read in and processed Splits")
+      else:
+        logging.debug("\"Splits\" exits but seems empty for " + ticker)
+    else:
+      logging.debug("\"Splits\" does not exist for " + ticker)
+  # =============================================================================
+
+  # =============================================================================
+  # Check if the dividend file exists
+  # =============================================================================
+  pays_dividend = 0
+  dividend_file = dir_path + "\\" + dividend_dir + "\\" + ticker + "_dividend.csv"
+  if (os.path.exists(dividend_file) is True):
+    pays_dividend = 1
+    dividend_df = pd.read_csv(dir_path + "\\" + dividend_dir + "\\" + ticker + "_dividend.csv")
+    # print (dividend_df)
+    dividend_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in dividend_df.Date.dropna().tolist()]
+    dividend_list = dividend_df.Amount.tolist()
+    logging.debug("The date list for Dividends is\n" + str(dividend_date_list) + "\nand the number of elements are" + str(len(dividend_date_list)))
+    logging.debug("The Amounts for dividends is " + str(dividend_list))
+    logging.info("Read in the Dividend Data...")
+  # =============================================================================
+
+  # ---------------------------------------------------------------------------
+  # Calculate analyst accuracy
+  # First find out the date from the last reported earnings
+  # ---------------------------------------------------------------------------
   if 'Q_EPS_Projections_Date_0' in qtr_eps_df.columns:
     # Get the value from row0 of that column
     qtr_eps_projections_date_0 = dt.datetime.strptime(qtr_eps_df.iloc[0]['Q_EPS_Projections_Date_0'], '%m/%d/%Y').date()
@@ -681,32 +773,7 @@ for ticker_raw in ticker_list:
   logging.debug("The Earnings list for qtr_eps is\n" + str(qtr_eps_list) + "\nand the number of elements are " + str(len(qtr_eps_list)))
   logging.debug("The Earnings Projections list for qtr_eps is\n" + str(qtr_eps_projections_list) + "\nand the number of elements are " + str(len(qtr_eps_projections_list)))
   logging.info("The EPS Projections were last updated on : " + str(qtr_eps_projections_date_0) + " and before that on " + str(qtr_eps_projections_date_1))
-  logging.debug("The EPS Projections were last updated on : " + str(qtr_eps_projections_date_0) + " and before that on " + str(qtr_eps_projections_date_1))
 
-  # Set the length of qtr_eps_list same as qtr_eps_date_list.
-  # This gets rid of any earnings that are beyond the last date.
-  # This is not a common case but could occur because of copy and paste and then
-  # ignorance on the part of the user to not remove the "extra" earnings
-  # This also makes sure that the eps date list and eps value list have the same
-  # number of entries.
-  if (len(qtr_eps_date_list) < len(qtr_eps_list)):
-    del qtr_eps_list[len(qtr_eps_date_list):]
-    del qtr_eps_projections_list[len(qtr_eps_date_list):]
-  logging.debug("The Earnings list for qtr_eps is\n" + str(qtr_eps_list) + "\nand the number of elements are " + str(len(qtr_eps_list)))
-
-  # Check if now the qtr_eps_list still has any undefined elements...flag an error and exit
-  # This will indicate any empty cells are either the beginning or in the middle of the eps
-  # column in the csv
-  if (sum(math.isnan(x) for x in qtr_eps_list) > 0):
-    logging.error("**********                                ERROR                               **********")
-    logging.error("**********  There seems to be either blank cells for Earnings or their        **********")
-    logging.error("**********  format is undefined. Please correct the rerun the script          **********")
-    sys.exit()
-
-  # ---------------------------------------------------------------------------
-  # Calculate analyst accuracy
-  # First find out the date from the last reported earnings
-  # ---------------------------------------------------------------------------
   # Check if the eps projections list has atleat "x" years of data
   eps_date_list_eps_report_date_match = min(qtr_eps_date_list, key=lambda d: abs(d - eps_report_date))
   eps_date_list_eps_report_date_index = qtr_eps_date_list.index(eps_date_list_eps_report_date_match)
@@ -771,89 +838,16 @@ for ticker_raw in ticker_list:
       analyst_eps_projections_accuracy_list[eps_date_list_eps_report_date_index + i_int*4 + j_int] = smoothed_analyst_accuracy
 
   logging.debug("The Analyst EPS Projections accuracy List is " + str(analyst_eps_projections_accuracy_list))
+
+  logging.info("Created Analyst Accuracy data")
   # ---------------------------------------------------------------------------
-
-  # Sundeep is here - Now this list needs to be mulitiplied with the qtr eps numbers to crate an adjusted list
-  # and then create the yr_eps_analyst_normalized_list and then create the channels or the yr eps normalized.
-
-
-  # So - if we are successful till this point - we have made sure that
-  # 1. There are no nan in the date list
-  # 2. There are no nan in the eps list
-  # 3. Number of elements in the qtr_eps_date_list are equal to the number of
-  #    element in the qtr_eps_list
-  logging.info("Read in the Earnings Data...")
-  # =============================================================================
-
-  # =============================================================================
-  # Check if the dividend file exists
-  # =============================================================================
-  pays_dividend = 0
-  dividend_file = dir_path + "\\" + dividend_dir + "\\" + ticker + "_dividend.csv"
-  if (os.path.exists(dividend_file) is True):
-    pays_dividend = 1
-    dividend_df = pd.read_csv(dir_path + "\\" + dividend_dir + "\\" + ticker + "_dividend.csv")
-    # print (dividend_df)
-    dividend_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in dividend_df.Date.dropna().tolist()]
-    dividend_list = dividend_df.Amount.tolist()
-    logging.debug("The date list for Dividends is\n" + str(dividend_date_list) + "\nand the number of elements are" + str(len(dividend_date_list)))
-    logging.debug("The Amounts for dividends is " + str(dividend_list))
-    logging.info("Read in the Dividend Data...")
-  # =============================================================================
-
-
-  # =============================================================================
-  # Handle splits before proceeding as splits can change the qtr_eps
-  # =============================================================================
-  # todo : Test out various cases of splits so that the code is robust
-  split_dates = list()
-  split_multiplier = list()
-  # print("Tickers in json data: ", config_json.keys())
-  if (ticker not in config_json.keys()):
-    logging.debug("json data for " + ticker + "does not exist in" + configuration_json + "file")
-  else:
-    if ("Splits" in config_json[ticker]):
-      # if the length of the keys is > 0
-      if (len(config_json[ticker]["Splits"].keys()) > 0):
-        split_keys = config_json[ticker]["Splits"].keys()
-        logging.debug("Split Date list is: " + str(split_keys))
-        for i_key in split_keys:
-          logging.debug("Split Date : " + str(i_key) + ", Split Factor : " + str(config_json[ticker]["Splits"][i_key]))
-          try:
-            split_dates.append(dt.datetime.strptime(str(i_key), "%m/%d/%Y").date())
-          except (ValueError):
-            logging.error("\n***** Error : The split Date: " + str(i_key) +
-                          "does not seem to be right. Should be in the format %m/%d/%Y...please check *****")
-            sys.exit(1)
-          try:
-            (numerator, denominator) = config_json[ticker]["Splits"][i_key].split(":")
-            split_multiplier.append(float(denominator) / float(numerator))
-          except (ValueError):
-            logging.error("\n***** Error : The split factor: " + str(config_json[ticker]["Splits"][i_key]) + "for split date :" + str(i_key) +
-                  "does not seem to have right format [x:y]...please check *****")
-            sys.exit(1)
-        for i in range(len(split_dates)):
-          qtr_eps_list_mod = qtr_eps_list.copy()
-          logging.debug("Split Date :" + str(split_dates[i]) + " Multiplier : " + str(split_multiplier[i]))
-          for j in range(len(qtr_eps_date_list)):
-            if (split_dates[i] > qtr_eps_date_list[j]):
-              qtr_eps_list_mod[j] = round(qtr_eps_list[j] * split_multiplier[i], 4)
-              logging.debug("Earnings date " + str(qtr_eps_date_list[j]) +  " is older than split date. " +
-                            "Changed " + str(qtr_eps_list[j]) + " to "  + str(qtr_eps_list_mod[j]))
-          qtr_eps_list = qtr_eps_list_mod.copy()
-        logging.info("Read in and processed Splits")
-      else:
-        logging.debug("\"Splits\" exits but seems empty for " + ticker)
-    else:
-      logging.debug("\"Splits\" does not exist for " + ticker)
-  # =============================================================================
 
   # =============================================================================
   # Create a qtr_eps_expanded and dividend_expanded list
   # We are here trying to create the list that has the same number of elements
   # as the historical date_list and only the elements that have the Quarter EPS
-  # have valid values, other values in the expanded list are nan...and hence the
-  # expanded lists are initially initialized to nan
+  # / Dividend have valid values, other values in the expanded list are nan...and
+  # hence the expanded lists are initially initialized to nan
   # =============================================================================
   qtr_eps_expanded_list = []
   dividend_expanded_list = []
@@ -862,9 +856,6 @@ for ticker_raw in ticker_list:
     if (pays_dividend == 1):
       dividend_expanded_list.append(float('nan'))
 
-  # Now look for the date in eps datelist, match it with the closest index in the
-  # date list from historical and then assign the qtr eps to that index in the qtr
-  # eps expanded list. Do the same for divident expanded list
   for qtr_eps_date in qtr_eps_date_list:
     curr_index = qtr_eps_date_list.index(qtr_eps_date)
     # print("Looking for ", qtr_eps_date)
@@ -896,7 +887,6 @@ for ticker_raw in ticker_list:
     logging.debug("The expanded Dividend list is " + str(dividend_expanded_list) + \
                   "\nand the number of elements are " + str(len(dividend_expanded_list)))
     logging.info("Prepared the Expanded Dividend List")
-
   # =============================================================================
 
   # =============================================================================
@@ -1433,8 +1423,6 @@ for ticker_raw in ticker_list:
     logging.info("Prepared the Earnings Growth Overlays")
   # =============================================================================
 
-
-
   # ---------------------------------------------------------------------------
   # Find out the growth for 1yr, 3yr and 5yr for eps and price
   # ---------------------------------------------------------------------------
@@ -1556,7 +1544,6 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
 
-
   # ---------------------------------------------------------------------------
   # Get the company info for company name, sector and industry
   # Also Get the Last date when the Earnings Projections were updated and
@@ -1646,8 +1633,11 @@ for ticker_raw in ticker_list:
     logging.debug("Reset the Upper eps limit to : " + str(qtr_eps_lim_upper) + " and Upper price limit to : " + str(price_lim_upper))
   # ---------------------------------------------------------------------------
 
-
-  # Figure out if we have to loop once - for log charts or twice - for Linear charts (Linear and Long_Linear)
+  # ===========================================================================
+  # Loop for Linear, Long_Linear charts
+  # ===========================================================================
+  # Figure out if we have to loop once - for log charts or
+  # twice - for Linear charts (Linear and Long_Linear)
   if (chart_type_idx == 'Linear'):
     linear_chart_type_list = g_dict_chart_options['Linear_chart_types']
   else:
@@ -1659,9 +1649,6 @@ for ticker_raw in ticker_list:
     logging.info("User wants more than one iteration for Linear charts - through 'g_dict_chart_options['Linear_chart_types'] options")
     logging.info("Will iterate for two types of Linear Charts" + str(linear_chart_type_list))
 
-  # ===========================================================================
-  # Loop for Linear, Long_Linear charts
-  # ===========================================================================
   # This is the loop that will execute for Log or Linear charts.
   #   It will execute only one for Log charts (as we don't have Long_Log option.
   #   There is only one option for Log chart
