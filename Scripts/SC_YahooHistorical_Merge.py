@@ -113,6 +113,7 @@ else:
   ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
 # main Loop for Tickers
+i_idx = 1
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
   logging.debug("Merging Historical Data with Calendar for : " +str(ticker))
@@ -142,27 +143,38 @@ for ticker_raw in ticker_list:
   # Drop ONLY the rows now that do not have Date
   historical_df_tmp = historical_df[pd.notnull(historical_df['Date'])]
   historical_df = historical_df_tmp
-  # Since we are guaranteed to have dates now for all the rows, now
-  # interpolate the values on the columns that have missing data (price, volume)
-  historical_df.interpolate(inplace=True)
-  # print("Historical Dataframe ", historical_df)
   # ===========================================================================
 
-  # This needs to be sorted out
-  # if ticker in tickers_historical_data_to_merge_dict:
-  #   ticker_with_older_historical_data = tickers_historical_data_to_merge_dict[ticker]
-  #   logging.info(" Found " + str(ticker) + " . This needs to be merged with " + str(ticker_with_older_historical_data))
-  #   # Read the older historical data
-  #   older_historical_df =  pd.read_csv(yahoo_hist_out_dir + "\\" + ticker_with_older_historical_data + "_historical.csv")
-  #   logging.debug("The historical df for (new) ticker \n" + historical_df.to_string())
-  #   logging.debug("The historical df for the already existing (older) ticker " + str(ticker_with_older_historical_data) + " is \n" + older_historical_df.to_string())
-  #   # Now merge the two historical df together and then remove the duplicates in date, if they exist
-  #   # historical_df.merge(older_historical_df)
-  #   # bigdata = historical_df.append(older_historical_df, ignore_index=True)
-  #   pd.concat([historical_df,older_historical_df],ignore_index=False)
-  #   logging.debug("The historical df after merging two df together is \n" + historical_df.to_string())
+  if ticker in tickers_historical_data_to_merge_dict:
+    ticker_with_older_historical_data = tickers_historical_data_to_merge_dict[ticker]
+    # Read the older historical data
+    older_historical_df =  pd.read_csv(yahoo_hist_out_dir + "\\" + ticker_with_older_historical_data + "_historical.csv")
+    # logging.debug("The historical df for (new) ticker \n" + historical_df.to_string())
+    # logging.debug("The historical df for the already existing (older) ticker " + str(ticker_with_older_historical_data) + " is \n" + older_historical_df.head().to_string())
+
+    historical_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in historical_df.Date.tolist()]
+    older_historical_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in older_historical_df.Date.tolist()]
+    # Steps followed:
+    # 1. Find the last date for which the historical data is available for old ticker
+    # 2. match it with the date_list from the current ticker historical data and convert it to an index
+    # 3. Then delete all the data from that index down in the current ticker historical data
+    #   (as the downloaded data just has all the dates columns but nothing the the prices/volume columns)
+    # 4. Finally append the new and old dataframe together
+    last_older_historical_date_dt = older_historical_date_list_dt[0]
+    match_date = min(historical_date_list_dt, key=lambda d: abs(d - last_older_historical_date_dt))
+    match_date_index = historical_date_list_dt.index(match_date)
+    logging.info("Iteration no : " + str(i_idx) + ", " + str(ticker) + " needs to be merged with " + str(ticker_with_older_historical_data))
+    logging.info("Iteration no : " + str(i_idx) + ", " + "Will use " + str(ticker) + " data(new) till " + str(match_date) + " and then " + str(ticker_with_older_historical_data) +  " data(older) onwards to create the historical data")
+    logging.info("Iteration no : " + str(i_idx) + ", " + "Please check the historical file or final chart to make sure that merging happened correctly")
+    logging.debug("Matched date " + str(match_date) + " at index " + str(match_date_index))
+    historical_df_tmp = historical_df.iloc[:match_date_index]
+    logging.debug("The historical df after cleaninn up is \n" + historical_df_tmp.to_string())
+    # Now append the two historical df together and then remove the duplicates in date, if they exist
+    historical_df = historical_df_tmp.append(older_historical_df, ignore_index=True)
+    logging.debug("The historical df after merging two df together is \n" + historical_df.to_string())
   # sys.exit(1)
-  # # ===========================================================================
+
+  # ===========================================================================
   # Insert Moving averages
   # ===========================================================================
   # For some reason Empty_col_H cannot just have a "," which would have truly
@@ -171,6 +183,12 @@ for ticker_raw in ticker_list:
   # historical_df.loc[:, 'Empty_col_H'] = ',' Does not work
   # historical_df.loc[:, 'Empty_col_H'] = ' ' Inserting space does not work either to get
   #   an empty column
+
+  # Since we are guaranteed to have dates now for all the rows, now
+  # interpolate the values on the columns that have missing data (price, volume)
+  historical_df.interpolate(inplace=True)
+  # print("Historical Dataframe ", historical_df)
+
 
   # So - now - Inserting a non-threatening character
   historical_df.loc[:, 'Empty_col_H'] =  '-'
@@ -228,7 +246,7 @@ for ticker_raw in ticker_list:
     sys.exit(1)
   # print ("Will use the Calendar date list from index : ", calendar_future_date_index, " to index : ",cal_match_date_with_historical_index)
   calendar_date_list_mod = calendar_date_list[calendar_future_date_index:cal_match_date_with_historical_index]
-  print(ticker, ": Fiscal Year ends in ",fiscal_year_ends,  ": Merging Historical Data with Calendar until the future date :",calendar_date_list[calendar_future_date_index])
+  logging.info("Iteration no : " + str(i_idx) + ", Ticker : " + str(ticker) + " : Fiscal Year ends in " + str(fiscal_year_ends) + " : Merging Historical Data with Calendar until the future date : " + str(calendar_date_list[calendar_future_date_index]))
   # print("The modified Calendar list is ", calendar_date_list_mod, "and it has \n", len(calendar_date_list_mod), "elements")
 
   # ===========================================================================
@@ -251,4 +269,6 @@ for ticker_raw in ticker_list:
     fout.write(x + '\n')
 
   fout.close()
+  i_idx += 1
+
   # =============================================================================
