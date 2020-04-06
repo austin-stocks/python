@@ -3,6 +3,7 @@ import datetime as dt
 import numpy as np
 import os
 import sys
+import logging
 # This program reads the
 # 1. Calendar file
 # 2. Yahoo Historical Downloaded file
@@ -21,7 +22,42 @@ calendar_file_full_path = dir_path + user_dir + "\\" + calendar_file
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 yahoo_hist_in_dir = dir_path + "\\..\\Download\YahooHistorical"
 yahoo_hist_out_dir = dir_path + "\\..\\Historical"
+log_dir = "\\..\\" + "Logs"
 # =============================================================================
+
+# ---------------------------------------------------------------------------
+# Set Logging
+# critical, error, warning, info, debug
+# set up logging to file - see previous section for more details
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename=dir_path + log_dir + "\\" + 'SC_YahooHistorical_merge_debug.txt',
+                    filemode='w')
+# define a Handler which writes INFO messages or higher to the sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+# set a format which is simpler for console use
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+# tell the handler to use this format
+console.setFormatter(formatter)
+# add the handler to the root logger
+logging.getLogger('').addHandler(console)
+
+# Disnable and enable global level logging
+logging.disable(sys.maxsize)
+logging.disable(logging.NOTSET)
+# ---------------------------------------------------------------------------
+
+
+# There are a few  stocks that change names (RECN -> RGP) and Yahoo stops historical
+# data fro RECN and start for RGP. However RGP only has historical data from the
+# date the name change became effective. So, in essence, we are left with two
+# pieces of data for RECN(Now RGP). One till the date RECN was RECN and one after
+# RECN became RGP. This scipt needs to stitch those two pieces together.
+tickers_historical_data_to_merge_dict = {
+  'RGP' : 'RECN'
+}
 
 
 # =============================================================================
@@ -32,7 +68,7 @@ yahoo_hist_out_dir = dir_path + "\\..\\Historical"
 calendar_df = pd.read_csv(calendar_file_full_path)
 config_df = pd.read_csv(configurations_file_full_path)
 config_df.set_index('Ticker', inplace=True)
-# print ("The configuration df", config_df)
+# logging.debug("The configuration df \n" + config_df.to_string())
 # =============================================================================
 
 # =============================================================================
@@ -41,11 +77,11 @@ config_df.set_index('Ticker', inplace=True)
 # =============================================================================
 # print("The Calendar is", calendar_df)
 col_list = calendar_df.columns.tolist()
-# print("The years are ", col_list)
+logging.debug("The years in the Calendar file are : " + str(col_list))
 calendar_date_list_raw = []
 for col in col_list:
   tmp_list = calendar_df[col].dropna().tolist()
-  # print("The date in col", col, " are ", tmp_list)
+  logging.debug("The date in col" + str(col) + " are " + str(tmp_list))
   calendar_date_list_raw.extend(tmp_list)
 
 # for date_str in calendar_date_list_raw:
@@ -79,7 +115,7 @@ else:
 # main Loop for Tickers
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
-  # print("Merging Historical Data with Calendar for ", ticker)
+  logging.debug("Merging Historical Data with Calendar for : " +str(ticker))
 
   if (ticker == "BRK.B"):
     ticker = "BRK-B"
@@ -88,11 +124,11 @@ for ticker_raw in ticker_list:
 
   if ticker in config_df.index:
     ticker_config_series = config_df.loc[ticker]
-    # print("Then configurations for ", ticker, " is\n", ticker_config_series)
+    logging.debug("The configurations fields for " +str(ticker) + " \n" +str(ticker_config_series))
   else:
-    print ("**********                                  ERROR                              **********")
-    print ("**********     Entry for ", str(ticker).center(10) , " not found in the configurations file     **********")
-    print ("**********     Please create one and then run the script again                 **********")
+    logging.error("**********                                  ERROR                              **********")
+    logging.error("**********     Entry for " + str(ticker).center(10) + " not found in the configurations file     **********")
+    logging.error("**********     Please create one and then run the script again                 **********")
     sys.exit(1)
 
 
@@ -112,7 +148,21 @@ for ticker_raw in ticker_list:
   # print("Historical Dataframe ", historical_df)
   # ===========================================================================
 
-  # ===========================================================================
+  # This needs to be sorted out
+  # if ticker in tickers_historical_data_to_merge_dict:
+  #   ticker_with_older_historical_data = tickers_historical_data_to_merge_dict[ticker]
+  #   logging.info(" Found " + str(ticker) + " . This needs to be merged with " + str(ticker_with_older_historical_data))
+  #   # Read the older historical data
+  #   older_historical_df =  pd.read_csv(yahoo_hist_out_dir + "\\" + ticker_with_older_historical_data + "_historical.csv")
+  #   logging.debug("The historical df for (new) ticker \n" + historical_df.to_string())
+  #   logging.debug("The historical df for the already existing (older) ticker " + str(ticker_with_older_historical_data) + " is \n" + older_historical_df.to_string())
+  #   # Now merge the two historical df together and then remove the duplicates in date, if they exist
+  #   # historical_df.merge(older_historical_df)
+  #   # bigdata = historical_df.append(older_historical_df, ignore_index=True)
+  #   pd.concat([historical_df,older_historical_df],ignore_index=False)
+  #   logging.debug("The historical df after merging two df together is \n" + historical_df.to_string())
+  # sys.exit(1)
+  # # ===========================================================================
   # Insert Moving averages
   # ===========================================================================
   # For some reason Empty_col_H cannot just have a "," which would have truly
