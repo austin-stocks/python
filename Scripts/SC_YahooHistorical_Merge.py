@@ -208,7 +208,7 @@ for ticker_raw in ticker_list:
   # This will become the ending index for extracting the dates from calendar_date_list
   cal_match_date_with_historical = min(calendar_date_list, key=lambda d: abs(d - historical_date_list[0]))
   cal_match_date_with_historical_index = calendar_date_list.index(cal_match_date_with_historical)
-  # print("The latest historical date is : ", historical_date_list[0], ". Closest Matching date in Calendar is :", cal_match_date_with_historical, " at index : ", cal_match_date_with_historical_index)
+  logging.debug("The latest historical date is : "  + str(historical_date_list[0]) +  ". Closest Matching date in Calendar is : " + str(cal_match_date_with_historical) + " at index : " + str(cal_match_date_with_historical_index))
 
   # ===========================================================================
   # User specifies what date he/she wants the historical data to start from. The user specifies it as:
@@ -218,12 +218,12 @@ for ticker_raw in ticker_list:
   # This will become lead to calculating the starting index for extracting the dates from calendar_date_list
   # ===========================================================================
   calendar_future_date_str = ticker_config_series['Calendar_Future_Date']
-  # print ("User Specified Calendar Future Date is : ", calendar_future_date_str)
+  logging.debug("User Specified Calendar Future Date from the config file : "  + str(calendar_future_date_str))
   if (str(calendar_future_date_str) != 'nan'):
     calendar_future_date = dt.datetime.strptime(calendar_future_date_str, '%m/%d/%Y').date()
     calendar_future_match_date = min(calendar_date_list, key=lambda d: abs(d - calendar_future_date))
     calendar_future_date_index = calendar_date_list.index(calendar_future_match_date)
-    # print ("The nearest matching date (for user specified date : ", calendar_future_date, ") in calendar date list is : ", calendar_future_match_date, ", at calendar index : ", calendar_future_date_index)
+    logging.debug("The nearest matching date (for user specified date : " + str(calendar_future_date) +  ") in calendar date list is : " + str(calendar_future_match_date) + ", at calendar index : " + str(calendar_future_date_index))
   else:
     # print("Found nan for Calendar Future End date. Will now look for Future Calendar Quarters")
     future_cal_quarter = ticker_config_series['Future_Calendar_Quarters']
@@ -244,10 +244,10 @@ for ticker_raw in ticker_list:
     print ("**********     Fiscal Year ==>(", fiscal_year_ends, ")<== for ", str(ticker).center(10) , " is not a valid month    **********")
     print ("**********     Please correct the fiscal Year and then run the script again       **********")
     sys.exit(1)
-  # print ("Will use the Calendar date list from index : ", calendar_future_date_index, " to index : ",cal_match_date_with_historical_index)
+  logging.debug("Will use the Calendar date list from index : " + str(calendar_future_date_index) + " to index : " + str(cal_match_date_with_historical_index))
   calendar_date_list_mod = calendar_date_list[calendar_future_date_index:cal_match_date_with_historical_index]
   logging.info("Iteration no : " + str(i_idx) + ", Ticker : " + str(ticker) + " : Fiscal Year ends in " + str(fiscal_year_ends) + " : Merging Historical Data with Calendar until the future date : " + str(calendar_date_list[calendar_future_date_index]))
-  # print("The modified Calendar list is ", calendar_date_list_mod, "and it has \n", len(calendar_date_list_mod), "elements")
+  logging.debug("The modified Calendar list is " + str(calendar_date_list_mod) + " and it has \n" + str(len(calendar_date_list_mod)) +  " elements")
 
   # ===========================================================================
   # Now write the Data in csv

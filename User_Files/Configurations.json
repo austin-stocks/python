@@ -1675,6 +1675,22 @@
     ]
   },
 
+  "SNX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "5/30/2016", "Stop_Date" :   "Next"},
+       {"Start_Date" : "8/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "02/25/2018", "Stop_Date" :   "12/05/2018", "Adj_Amount" : ".2"}
+    ]
+  },
+
+  "BAX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
   "SNA" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
