@@ -139,29 +139,6 @@ for ticker_raw in ticker_list:
     gt_1_month_old_historical_last_updated_df.loc[ticker]= [ticker_curr_date]
   # ---------------------------------------------------------------------------
 
-  # ---------------------------------------------------------------------------
-  # Get the last earnings report date from Master Tracklist
-  # ---------------------------------------------------------------------------
-  eps_actual_report_date = ""
-  try:
-    eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
-  except:
-    logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
-    logging.error(str(ticker) + " is wheat and does not have a earnings date in the Master Tracklist file. Exiting....")
-    logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
-    sys.exit(1)
-  eps_actual_report_date_dt = dt.datetime.strptime(str(eps_actual_report_date), '%Y-%m-%d').date()
-  if (eps_actual_report_date_dt > dt.date.today()):
-    logging.error("  The Last quarterly earnings date for " + str(ticker) + " is " + str(eps_actual_report_date_dt) + " which is in future... :-(")
-    logging.error("  This seems like a typo :-)...Please correct it in Master Tracklist file and rerun")
-    sys.exit(1)
-
-  date_year = eps_actual_report_date_dt.year
-  if (date_year < 2019):
-    logging.error("==========     Error : The date for " + str(ticker) + " last earnings is older than 2019     ==========")
-    sys.exit()
-  earnings_last_reported_df.loc[ticker]= [eps_actual_report_date_dt]
-  # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Read the Earnings file to get when the earnings projections were last updated
@@ -196,6 +173,38 @@ for ticker_raw in ticker_list:
     logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a quarter ago")
     gt_1_qtr_old_eps_projections_last_updated_df.loc[ticker]= [eps_projection_date_0_dt]
 
+  # ---------------------------------------------------------------------------
+  # Get the last earnings report date from earnings file first
+  # ---------------------------------------------------------------------------
+  eps_actual_report_date = ""
+  if ('Q_Report_Date' in qtr_eps_df.columns):
+    qtr_eps_report_date_list = qtr_eps_df.Q_Report_Date.dropna().tolist()
+    logging.debug("The Quarterly Report Date List from the earnings file after dropna is " + str(qtr_eps_report_date_list))
+  if (len(qtr_eps_report_date_list) > 0):
+    qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
+    eps_actual_report_date = qtr_eps_report_date_list_dt[0]
+  else:
+    eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+  #
+  # try:
+  #   eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+  # except:
+  #   logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
+  #   logging.error(str(ticker) + " is wheat and does not have a earnings date in the Master Tracklist file. Exiting....")
+  #   logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
+  #   sys.exit(1)
+
+  eps_actual_report_date_dt = dt.datetime.strptime(str(eps_actual_report_date), '%Y-%m-%d').date()
+  if (eps_actual_report_date_dt > dt.date.today()):
+    logging.error("  The Last quarterly earnings date for " + str(ticker) + " is " + str(eps_actual_report_date_dt) + " which is in future... :-(")
+    logging.error("  This seems like a typo :-)...Please correct it in Master Tracklist file and rerun")
+    sys.exit(1)
+  date_year = eps_actual_report_date_dt.year
+  if (date_year < 2019):
+    logging.error("==========     Error : The date for " + str(ticker) + " last earnings is older than 2019     ==========")
+    sys.exit()
+  earnings_last_reported_df.loc[ticker]= [eps_actual_report_date_dt]
+
   if (eps_actual_report_date_dt > eps_projection_date_0_dt):
     logging.error("The Earnings report date : " + str(eps_actual_report_date_dt) + " is newer than the earnings projection date : " + str(eps_projection_date_0_dt))
     logging.error("I don't understand how you let it happen - The possible reasons could be ")
@@ -204,6 +213,9 @@ for ticker_raw in ticker_list:
     logging.error("3. You did not update the Earnings projection on the Earnings report date intentionally....BAD BAD....How can you do that???? ")
     eps_report_newer_than_eps_projection_df.loc[ticker, 'Actual_EPS_Report'] = eps_actual_report_date_dt
     eps_report_newer_than_eps_projection_df.loc[ticker, 'EPS_Projections_Last_Updated'] = eps_projection_date_0_dt
+
+  # ---------------------------------------------------------------------------
+
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------

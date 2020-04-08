@@ -1815,20 +1815,21 @@ for ticker_raw in ticker_list:
     MA_Price_10_list = candlestick_df.MA_Price_10_day.tolist()
     MA_volume_50_list = candlestick_df.MA_Volume_50_day.tolist()
 
-    # Canclesticks likes to put everything in tuple before plotting
+    # Candlesticks likes to put everything in tuple before plotting
     quotes = [tuple(x) for x in candlestick_df[['MDate', 'Open', 'High', 'Low', 'Close']].values]
     date_list_candles = candlestick_df.MDate.tolist()
     volume = candlestick_df.Volume.tolist()
     logging.debug ("The type of quotes is " + str(quotes))
     logging.debug ("The type of volume is " + str(volume))
 
-    # Set the bar color for volume by comparing the open and close prices
-    price_open_list = candlestick_df.Open.tolist()
+    # Set the bar color for volume bars by comparing the current close with the previous close
     price_close_list = candlestick_df.Close.tolist()
     bar_color_list = ['darksalmon'] * len(price_close_list)
-    for i_idx in range(len(price_close_list)):
+    for i_idx in range(len(price_close_list)-1):
       bar_color_list[i_idx] = 'darksalmon'
-      if (price_close_list[i_idx] > price_open_list[i_idx]):
+      # logging.debug("Comparing " + str(price_close_list[i_idx]) + " with " + str(price_close_list[i_idx+1]) + " to detemine the color of the candle")
+      if (price_close_list[i_idx] > price_close_list[i_idx+1]):
+        # logging.debug("Changing the color of the candle for  " + str(date_list_candles[i_idx]))
         bar_color_list[i_idx] = 'mediumseagreen'
 
     logging.debug ("The bar color list is " + str(bar_color_list))
@@ -2373,10 +2374,17 @@ for ticker_raw in ticker_list:
       # -----------------------------------------------------------------------------
       # Candlestick and volume Plots
       # -----------------------------------------------------------------------------
-      # todo
-      # Figure out how to adjust the candlestick price y ranges
       # Google search - remove weekends from matplotlib plot
-      candle_plt_inst = candlestick_ohlc(candle_plt, quotes[0:candle_chart_duration], width=1, colorup='mediumseagreen', colordown='darksalmon');
+      # Note the candlestick chart - while deciding the color of candle - compare the current day open with current day close
+      # If the current day close is higher than the current day open - then the color of the candle is choosen as colorup
+      # If the current day close is lower  than the current day open - then the color of the candle is choosen as colordown
+      # It does not compare the current day close with previous day close -- This can be investigated but it is not too
+      # bad for our use - First off we can look at the relative position of the candles to see whether it is up or down from
+      # the previous day candle (many a times it is clear just by looking at it). And then I have put in the code that
+      # compare the previous close with the current close to decide upon the color of the volume bars...so the volume bars
+      # can be helpful in that situation. Note that this creates difference in the color of the volume bars and candles but
+      # if the user knows what is going on then it is not that bad
+      candle_plt_inst = candlestick_ohlc(candle_plt, quotes[0:candle_chart_duration], width=1, colorup='mediumseagreen', colordown='darksalmon')
       candle_plt_MA200_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_200_list[0:candle_chart_duration],linewidth=.5, color = 'black', label = 'SMA200')
       candle_plt_MA50_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_50_list[0:candle_chart_duration], linewidth=.5,color = 'blue', label = 'SMA50')
       candle_plt_MA20_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_20_list[0:candle_chart_duration],linewidth=.5, color = 'green', label = 'SMA20')
@@ -2430,9 +2438,9 @@ for ticker_raw in ticker_list:
       # main_plt.set_xticklabels(fiscal_qtr_dates, rotation=90, fontsize=7,  color='k',  minor=True)
       # main_plt.set_xticklabels(fiscal_yr_dates, rotation=90, fontsize=8, color='blue', minor=False, fontstyle='italic')
       main_plt.set_xticklabels(fiscal_yr_dates, rotation=0, fontsize=10, color='blue', minor=False, fontstyle='italic')
-      main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=.75)
+      main_plt.grid(which='major', axis='x', linestyle='-', color=major_xgrid_color, linewidth=1.25)
       if (chart_type_idx == "Linear"):
-        main_plt.grid(which='minor', axis='x', linestyle='--', color='darkturquoise', linewidth=.5)
+        main_plt.grid(which='minor', axis='x', linestyle='--', color='darkturquoise', linewidth=.4)
       main_plt.grid(which='major', axis='y', linestyle='--', color='green', linewidth=.5)
 
       # candle_plt.set_xticks([])
