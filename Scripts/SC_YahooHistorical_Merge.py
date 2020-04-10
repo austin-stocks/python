@@ -56,7 +56,9 @@ logging.disable(logging.NOTSET)
 # pieces of data for RECN(Now RGP). One till the date RECN was RECN and one after
 # RECN became RGP. This scipt needs to stitch those two pieces together.
 tickers_historical_data_to_merge_dict = {
-  'RGP' : 'RECN'
+  # New :  Old
+  'RGP': {'Old_Name' : 'RECN', 'Date_Changed' : '04/02/2020'},
+  'BFYT': {'Old_Name' : 'HIIQ', 'Date_Changed' : '03/05/2020'}
 }
 
 
@@ -146,7 +148,7 @@ for ticker_raw in ticker_list:
   # ===========================================================================
 
   if ticker in tickers_historical_data_to_merge_dict:
-    ticker_with_older_historical_data = tickers_historical_data_to_merge_dict[ticker]
+    ticker_with_older_historical_data = tickers_historical_data_to_merge_dict[ticker]['Old_Name']
     # Read the older historical data
     older_historical_df =  pd.read_csv(yahoo_hist_out_dir + "\\" + ticker_with_older_historical_data + "_historical.csv")
     # logging.debug("The historical df for (new) ticker \n" + historical_df.to_string())
@@ -160,19 +162,35 @@ for ticker_raw in ticker_list:
     # 3. Then delete all the data from that index down in the current ticker historical data
     #   (as the downloaded data just has all the dates columns but nothing the the prices/volume columns)
     # 4. Finally append the new and old dataframe together
-    last_older_historical_date_dt = older_historical_date_list_dt[0]
-    match_date = min(historical_date_list_dt, key=lambda d: abs(d - last_older_historical_date_dt))
+    date_name_change_str = tickers_historical_data_to_merge_dict[ticker]['Date_Changed']
+    date_name_change_dt =  dt.datetime.strptime(date_name_change_str, '%m/%d/%Y').date()
+    logging.debug("The date when the ticker name was changed : " + str(date_name_change_dt))
+    match_date = min(historical_date_list_dt, key=lambda d: abs(d - date_name_change_dt))
     match_date_index = historical_date_list_dt.index(match_date)
     logging.info("Iteration no : " + str(i_idx) + ", " + str(ticker) + " needs to be merged with " + str(ticker_with_older_historical_data))
     logging.info("Iteration no : " + str(i_idx) + ", " + "Will use " + str(ticker) + " data(new) till " + str(match_date) + " and then " + str(ticker_with_older_historical_data) +  " data(older) onwards to create the historical data")
     logging.info("Iteration no : " + str(i_idx) + ", " + "Please check the historical file or final chart to make sure that merging happened correctly")
     logging.debug("Matched date " + str(match_date) + " at index " + str(match_date_index))
-    historical_df_tmp = historical_df.iloc[:match_date_index]
-    logging.debug("The historical df after cleaninn up is \n" + historical_df_tmp.to_string())
+    historical_df_tmp = historical_df.iloc[:match_date_index+1]
+    logging.debug("The historical df after cleanup is \n" + historical_df_tmp.to_string())
     # Now append the two historical df together and then remove the duplicates in date, if they exist
     historical_df = historical_df_tmp.append(older_historical_df, ignore_index=True)
     logging.debug("The historical df after merging two df together is \n" + historical_df.to_string())
-  # sys.exit(1)
+
+  #
+  #   last_older_historical_date_dt = older_historical_date_list_dt[0]
+  #   match_date = min(historical_date_list_dt, key=lambda d: abs(d - last_older_historical_date_dt))
+  #   match_date_index = historical_date_list_dt.index(match_date)
+  #   logging.info("Iteration no : " + str(i_idx) + ", " + str(ticker) + " needs to be merged with " + str(ticker_with_older_historical_data))
+  #   logging.info("Iteration no : " + str(i_idx) + ", " + "Will use " + str(ticker) + " data(new) till " + str(match_date) + " and then " + str(ticker_with_older_historical_data) +  " data(older) onwards to create the historical data")
+  #   logging.info("Iteration no : " + str(i_idx) + ", " + "Please check the historical file or final chart to make sure that merging happened correctly")
+  #   logging.debug("Matched date " + str(match_date) + " at index " + str(match_date_index))
+  #   historical_df_tmp = historical_df.iloc[:match_date_index]
+  #   logging.debug("The historical df after cleaninn up is \n" + historical_df_tmp.to_string())
+  #   # Now append the two historical df together and then remove the duplicates in date, if they exist
+  #   historical_df = historical_df_tmp.append(older_historical_df, ignore_index=True)
+  #   logging.debug("The historical df after merging two df together is \n" + historical_df.to_string())
+  # # sys.exit(1)
 
   # ===========================================================================
   # Insert Moving averages
