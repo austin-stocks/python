@@ -56,7 +56,7 @@ git fetch origin
 git diff HEAD..origin or 
 git diff --name-only HEAD..origin
 
-git merge orgin
+git merge origin
 
 
 
@@ -67,5 +67,19 @@ b58aae8 HEAD@{1}: fetch origin/branch
 8f3a362 HEAD@{2}: activity before the fetch
 ...
 $ git reset --hard HEAD{2}
+
+--==============================================================================
+-- How to find out what files were changed in a commit 
+-- Prefered - This shows cleaner output
+git diff-tree --no-commit-id --name-only -r <sha>
+-- Shows more information -- the actual diff - which can be cluttery  
+git show <sha>
+git show --pretty="" --name-only <sha>    
+--==============================================================================
+
+--==============================================================================
+-- How to find git hash corresponding to a commit message
+git log --grep "Your_message_here"
+--==============================================================================
 
 
