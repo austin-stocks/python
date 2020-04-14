@@ -257,6 +257,18 @@
     ]
   },
 
+  "AKAM" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2018", "Stop_Date" :   "End"},
+       {"Start_Date" : "06/30/2012", "Stop_Date" :   "Next"}
+    ]
+  },
+  "ZTO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
   "MDT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "01/30/2016", "Stop_Date" :   "07/30/2019"}
