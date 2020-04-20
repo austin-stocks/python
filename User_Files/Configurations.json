@@ -1036,6 +1036,12 @@
        {"Start_Date" : "03/30/2019", "Stop_Date" :   "End"}
     ]
   },
+  "DOV" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2019", "Stop_Date" :   "End"},
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "Next"}
+    ]
+  },
 
   "HTH" : {
     "Earnings_growth_projection_overlay" : [
@@ -1455,6 +1461,13 @@
     ]
   },
 
+  "AMT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2018", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2011", "Stop_Date" :   "Next"}
+    ]
+  },
+
   "AME" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
@@ -1470,6 +1483,12 @@
   "ALGN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2015", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "ALGT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2012", "Stop_Date" :   "End"}
     ]
   },
 
@@ -1551,6 +1570,13 @@
        {"Start_Date" : "06/30/2018", "Stop_Date" :   "End"}
     ]
   },
+
+  "CMPR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
   "CMI" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
@@ -1662,6 +1688,13 @@
   "JAZZ" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2012", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "AZPN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2012", "Stop_Date" :   "Next"}
     ]
   },
 
@@ -2007,7 +2040,8 @@
 
   "CCI" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "06/30/2015", "Stop_Date" :   "End"}
+       {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"},
+       {"Start_Date" : "06/30/2014", "Stop_Date" :   "Next"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "06/25/2015", "Stop_Date" :   "04/05/2016", "Adj_Amount" : "-.8"}
@@ -3363,6 +3397,13 @@
     ]
   },
 
+  "CB" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2012", "Stop_Date" :   "End"}
+    ]
+  },
+
+
   "CBRE" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2013", "Stop_Date" :   "06/30/2019"}
@@ -3378,6 +3419,12 @@
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-1"}
+    ]
+  },
+
+  "CCS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
     ]
   },
 
