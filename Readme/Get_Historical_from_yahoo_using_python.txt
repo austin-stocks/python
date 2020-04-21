@@ -1,0 +1,76 @@
+I found this code of github that will download the yahoo historical and dividend data in a csv
+
+
+
+https://github.com/martelosaurus/investment_project/blob/master/investment_project.py
+
+I have not tested out whether the code works for not. However I have tested out the string that the code creates 
+down below to download yahoo data both historical and dividend
+
+The long and short of it is that it finally creates this string to download historical data
+https://query1.finance.yahoo.com/v7/finance/download/AUDC?period1=1555808987&period2=1587431387&interval=1mo&events=history
+https://query1.finance.yahoo.com/v7/finance/download/IBM?period1=1555808987&period2=1587431387&interval=1mo&events=div
+
+These work - as they download the data into a csv
+
+
+
+
+Here is the code
+from alpha_vantage.timeseries import TimeSeries
+import matplotlib.pyplot as plt
+import os, re
+import urllib.request as url
+import pandas as pd
+
+
+# Your key here
+key = input('API key: ')
+# Chose your output format, or default to JSON (python dict)
+ts = TimeSeries(key, output_format='pandas')
+
+# aapl_data is a pandas dataframe, aapl_meta_data is a dict
+aapl_data, aapl_meta_data = ts.get_monthly_adjusted(symbol='AAPL')
+
+if False:
+    class Fund:
+
+        def __init__(self,fundnum,ticker,prc,div):
+
+            self.fundnum = fundnum
+            self.tickers = tickers
+            self.prc = prc
+            self.div = div
+
+#-----------------------------------------------------------------------------#
+    # parameters 
+    yahoo1 = 'https://query1.finance.yahoo.com/v7/finance/download/'
+    yahoo2 = '?period1=1555808987&period2=1587431387&interval=1mo&events='
+    sub_path = 'home/jordan/Projects/student_submissions/'
+    file_regexp = re.compile(r"roup\[*\s*\_*([0-9]+)")
+    tick_regexp = re.compile(r"([A-Z]+)\s")
+
+#-----------------------------------------------------------------------------#
+    # pass 1: find all tickers
+    funds = []
+    for filename in os.listdir(sub_path):
+        print(filename)
+        if filename.endswith('.csv'):
+            fundnum = file_regexp.findall(filename)
+            try:
+                f = open(sub_path + filename,'r')
+                tickers = tick_regexp.findall(f.read())
+                tickers.append('^GSPC')
+                f.close()
+                data = []
+                for ticker in tickers:
+                    try:
+                        data_dict = {'ticker' : ticker}
+                        for data_name in ['history','div']:
+                            url = yahoo1 + ticker + yahoo2 + data_name
+                            data_dict[data_name] = pd.read_csv(url)
+                    except:
+                        print('error: couldn''t download ' + ticker)
+                    funds.append(Fund(fundnum,tickers,data['history'],data['div']))
+            except:
+                print('error: ' + filename + ' isn''t formatted correctly')
