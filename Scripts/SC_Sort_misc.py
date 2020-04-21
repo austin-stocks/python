@@ -164,8 +164,12 @@ for ticker_raw in ticker_list:
     sys.exit(1)
 
   eps_projections_last_updated_df.loc[ticker,'Date']= eps_projection_date_0_dt
-  if (ticker == 'PSB'):
-    eps_projections_last_updated_df.loc[ticker, 'Reason'] = "No CNBC Projections available. You should periodically check CNBC"
+  if (ticker in  ['PSB','TAYD']):
+    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> No_CNBC_Projections_available._You_should_periodically_check_CNBC'
+  if (ticker in  ['BFYT']):
+    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> Stock_changed_name_from_HIIQ._CNBC_does_not_have_projections_yet.Maybe_should_ask_Ann_how_to_tell_CNBC'
+  if (ticker in  ['RTN']):
+    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> Stock_changed_name_to_RTX_along_with_2.3348_split.Need_to_handle'
 
   if (eps_projection_date_0_dt < one_month_ago_date):
     logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a month ago")
