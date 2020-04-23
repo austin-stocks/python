@@ -1369,6 +1369,9 @@
   },
 
   "ODFL" : {
+    "Splits" : {
+      "03/14/2020" : "3:2"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2013", "Stop_Date" :   "End"}
     ],
