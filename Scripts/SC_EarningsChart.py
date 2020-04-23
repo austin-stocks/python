@@ -718,7 +718,7 @@ for ticker_raw in ticker_list:
               logging.debug("Earnings date " + str(qtr_eps_date_list[j]) +  " is older than split date. " +
                             "Changed " + str(qtr_eps_list[j]) + " to "  + str(qtr_eps_list_mod[j]))
           qtr_eps_list = qtr_eps_list_mod.copy()
-        logging.info("Read in and processed Splits")
+        logging.info("Processed Splits for date(s) : " + str(split_dates) + ",  Mulitplier ratio(s) : "  + str(split_multiplier) )
       else:
         logging.debug("\"Splits\" exits but seems empty for " + ticker)
     else:
