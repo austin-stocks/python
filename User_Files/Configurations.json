@@ -1507,6 +1507,9 @@
   },
 
   "ALGN" : {
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2020", "Stop_Date" :   "01/05/2021", "Adj_Amount" : "-4.5"}
+    ],
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2015", "Stop_Date" :   "06/30/2019"}
     ]
