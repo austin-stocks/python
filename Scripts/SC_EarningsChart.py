@@ -130,7 +130,7 @@ g_dict_chart_options = {
 }
 
 aaii_missing_tickers_list = [
-'CBOE','CP','GOOG','RACE','NTR'
+'CBOE','CP','GOOG','RACE','NTR','RTN'
 ]
 # =============================================================================
 
@@ -505,6 +505,10 @@ for ticker_raw in ticker_list:
         logging.debug(str(ticker) + " : Hmmm...it seems like Y2 eps projections are nan in AAII. Nothing inserted...This is not unusual...If you want, you can check Y2 earnings projections in AAII nan")
     elif (-5 <= days_bw_y_plus0_latest_qtr_date.days <= 5):
       logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y0 fiscal end date : " + str(y_plus0_fiscal_year_dt) + " ...so we can possibly add Y1 and Y2 fiscal year projections if they are not NaN" )
+      # Sundeep - This is a shortcut way of ONLY inserting 1 year of EPS Projections when 2 years of projections were available
+      # Force y_plus2_fiscal_year_eps_projections = 'nan' here so that only one year fiscal projection can be inserted
+      # To revert back to adding upto 2 years of aaii eps projections - just comment the next line
+      y_plus2_fiscal_year_eps_projections = 'nan'
       if ((str(y_plus1_fiscal_year_eps_projections) != 'nan') and (str(y_plus2_fiscal_year_eps_projections) != 'nan')):
         logging.debug (str(ticker) + " : Both Y1 and Y2 fiscal year eps projections are NOT nan. So, will insert two years (Y1 and Y2)")
         no_of_years_to_insert_aaii_eps_projections = 2
@@ -1624,13 +1628,18 @@ for ticker_raw in ticker_list:
 
   # If AAII EPS Projections were inserted and the projected EPS was greater than the qtr_eps_lim_upper
   # then increase the upper eps and uuper price limits
-  if (no_of_years_to_insert_aaii_eps_projections > 0) and (max_qtr_eps_from_insertion > qtr_eps_lim_upper):
-    pe_ratio_from_config_file = price_lim_upper / qtr_eps_lim_upper
-    logging.debug("The max q eps from inserting projected eps : " + str(max_qtr_eps_from_insertion) + " is greater than : " + str(qtr_eps_lim_upper) + " specified by configurations file")
-    logging.debug("The PE ratio (upper limit of the price/upper limit of the eps) of the chart specified in the config file is (" + str(price_lim_upper) + "/" + str(qtr_eps_lim_upper) + ") = " + str(pe_ratio_from_config_file))
-    qtr_eps_lim_upper = max_qtr_eps_from_insertion + (max_qtr_eps_from_insertion - qtr_eps_lim_upper) * .25
-    price_lim_upper = qtr_eps_lim_upper * pe_ratio_from_config_file
-    logging.debug("Reset the Upper eps limit to : " + str(qtr_eps_lim_upper) + " and Upper price limit to : " + str(price_lim_upper))
+  if (no_of_years_to_insert_aaii_eps_projections > 0):
+    logging.debug("The white diamond EPS list is " + str(yr_projected_eps_expanded_list))
+    tmp_list = [x for x in yr_projected_eps_expanded_list if str(x) != 'nan']
+    yr_projected_eps_list_max = max(tmp_list)
+    logging.debug("The maximum value White Diamond EPS list is " + str(yr_projected_eps_list_max))
+    if (yr_projected_eps_list_max > qtr_eps_lim_upper):
+      pe_ratio_from_config_file = price_lim_upper / qtr_eps_lim_upper
+      logging.debug("The max yr eps from inserting projected eps : " + str(yr_projected_eps_list_max) + " is greater than : " + str(qtr_eps_lim_upper) + " specified by configurations file")
+      logging.debug("The PE ratio (upper limit of the price/upper limit of the eps) of the chart specified in the config file is (" + str(price_lim_upper) + "/" + str(qtr_eps_lim_upper) + ") = " + str(pe_ratio_from_config_file))
+      qtr_eps_lim_upper = yr_projected_eps_list_max + (yr_projected_eps_list_max - qtr_eps_lim_upper) * .25
+      price_lim_upper = qtr_eps_lim_upper * pe_ratio_from_config_file
+      logging.debug("Reset the Upper eps limit to : " + str(qtr_eps_lim_upper) + " and Upper price limit to : " + str(price_lim_upper))
   # ---------------------------------------------------------------------------
 
   # ===========================================================================
