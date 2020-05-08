@@ -405,6 +405,30 @@ for ticker_raw in ticker_list:
   logging.debug("The Quarterly Report Date List is " + str(qtr_eps_report_date_list_dt))
   logging.debug("The Last Earning report date is " + str(eps_report_date))
 
+  # ---------------------------------------------------------------------------
+  # Sanity check the date_list here for any duplicate dates. This is just to
+  # prevent any obscure errors that give out cryptic messages later on b/c
+  # AAII projections may get tacked and can lead to weird stuff
+  # ---------------------------------------------------------------------------
+  qtr_eps_date_list = qtr_eps_df['Q_Date'].tolist()
+  logging.debug("The Q_Date list " + str(qtr_eps_date_list))
+  if len(set(qtr_eps_date_list)) != len(qtr_eps_date_list):
+    logging.error("Possible duplicate items found in the Q_Date list for qtr_eps. Please correct and rerun...")
+    unique_vals_arr = []
+    duplicate_vals_arr = []
+    for i in qtr_eps_date_list:
+      if (i not in unique_vals_arr):
+        logging.debug("Adding " + str(i) + " to unique")
+        unique_vals_arr.append(i)
+      else:
+        logging.debug("Adding " + str(i) + " to duplicate")
+        duplicate_vals_arr.append(i)
+      logging.debug("Unique Dates are " + str(unique_vals_arr))
+      logging.debug("Duplicate Dates are " + str(duplicate_vals_arr) + "\n")
+    logging.error("Duplicate Dates are " + str(duplicate_vals_arr))
+    sys.exit(1)
+  # ---------------------------------------------------------------------------
+
   latest_qtr_date_in_earnings_file = qtr_eps_df['Q_Date'].tolist()[0]
   logging.debug("The latest Date in Earnings file is " + str(latest_qtr_date_in_earnings_file))
   latest_qtr_date_in_earnings_file_dt = dt.datetime.strptime(str(latest_qtr_date_in_earnings_file), '%m/%d/%Y').date()
