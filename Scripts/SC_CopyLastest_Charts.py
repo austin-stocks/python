@@ -58,7 +58,7 @@ logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
 # chart_styles_list = ['Linear', 'Long_Linear', 'Log']
-chart_styles_list = ['Long_Linear']
+chart_styles_list = ['Linear']
 chart_annotations_list = ['Charts_Without_Numbers', 'Charts_With_Numbers']
 
 for chart_styles_idx in chart_styles_list:
@@ -66,7 +66,7 @@ for chart_styles_idx in chart_styles_list:
   for chart_annotations_idx in chart_annotations_list:
     logging.debug("Chart Annotation Type to be copied : " + str(chart_annotations_idx))
 
-    # if (chart_styles_idx != 'Linear'):
+    # if (chart_styles_idx != 'Linear'):cd
     #   continue
     # -----------------------------------------------------------------------------
     # Get the files from the chart directory in a list
@@ -75,7 +75,7 @@ for chart_styles_idx in chart_styles_list:
     source_dir = dir_path + chart_dir + "\\" + chart_styles_idx + "\\" + chart_annotations_idx + "\\"
     dest_dir = dir_path + charts_latest_dir + "\\" + chart_styles_idx + "\\" + chart_annotations_idx + "\\"
     all_chart_files_list=os.listdir(source_dir)
-    logging.debug("The files in the Source Chart Directory " + str(source_dir) + " are : \n" + str(all_chart_files_list))
+    logging.debug("The files in the Source Chart Directory \n" + str(source_dir) + " are : \n" + str(all_chart_files_list))
 
 
     # This works - but it removes all the files in the directory - and that we don't
@@ -85,7 +85,7 @@ for chart_styles_idx in chart_styles_list:
     # remove the files from the chart_latest_dir
     # jpg_file_list = [filename for filename in all_chart_files_list if 'jpg' in filename]
     jpg_file_list = glob.glob(dest_dir + "*.jpg" )
-    logging.info("The Chart file in the Destination (Latest Chart) directory " + str(dest_dir) + " are :\n" + str(jpg_file_list))
+    logging.info("The Chart file in the Destination (Latest Chart) directory \n" + str(dest_dir) + " are :\n" + str(jpg_file_list))
 
     for filePath in jpg_file_list:
       try:

@@ -122,7 +122,7 @@ g_var_use_aaii_data_to_extend_eps_projections = 1
 g_dict_chart_options = {
   # This defined whether the numbers for Annual EPS and Q EPS and Dividend
   # should be printed on the chart
-  'print_eps_and_div_numbers' : 'No', # Yes, No, Both - This will create chart two times - one with numbers and one without
+  'print_eps_and_div_numbers' : 'Yes', # Yes, No, Both - This will create chart two times - one with numbers and one without
   'Chart_type_options' : ['Log','Linear'],
   # 'Linear_chart_types' : ['Linear','Long_Linear']
   # 'Linear_chart_types': ['Long_Linear']
