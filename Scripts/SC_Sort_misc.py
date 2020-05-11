@@ -62,14 +62,13 @@ console.setFormatter(formatter)
 # add the handler to the root logger
 logging.getLogger('').addHandler(console)
 
-# Disnable and enable global level logging
+# disable and enable global level logging
 logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# Declare all the dataframes that we are going to need to write into
-# and set their columns
+# Declare all the dataframes that we are going to need to write into and set their columns
 # -----------------------------------------------------------------------------
 today = dt.date.today()
 one_qtr_ago_date = today - dt.timedelta(days=80)
@@ -77,16 +76,11 @@ one_month_ago_date = today - dt.timedelta(days=15)
 logging.info("Today : " + str(today) +  " One month ago : " +str(one_month_ago_date) + " One qtr ago : " +str(one_qtr_ago_date))
 
 historical_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
-earnings_last_reported_df = pd.DataFrame(columns=['Ticker','Date'])
+earnings_last_reported_df = pd.DataFrame(columns=['Ticker','Date','Where_found','Reason'])
 eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date','Reason'])
 charts_last_updated_df  = pd.DataFrame(columns=['Ticker','Date'])
 eps_report_newer_than_eps_projection_df = pd.DataFrame(columns=['Ticker','Actual_EPS_Report','EPS_Projections_Last_Updated'])
 skipped_tickers_df = pd.DataFrame(columns=['Ticker','Quality_of_Stock','Reason'])
-
-gt_1_month_old_historical_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
-gt_1_month_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
-gt_1_qtr_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
-gt_1_month_charts_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 
 historical_last_updated_df.set_index('Ticker', inplace=True)
 earnings_last_reported_df.set_index('Ticker', inplace=True)
@@ -95,10 +89,14 @@ charts_last_updated_df.set_index('Ticker', inplace=True)
 eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
 skipped_tickers_df.set_index('Ticker', inplace=True)
 
-gt_1_month_old_historical_last_updated_df.set_index('Ticker', inplace=True)
-gt_1_month_old_eps_projections_last_updated_df.set_index('Ticker', inplace=True)
-gt_1_qtr_old_eps_projections_last_updated_df.set_index('Ticker', inplace=True)
-gt_1_month_charts_last_updated_df.set_index('Ticker', inplace=True)
+# gt_1_month_old_historical_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
+# gt_1_month_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
+# gt_1_qtr_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
+# gt_1_month_charts_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
+# gt_1_month_old_historical_last_updated_df.set_index('Ticker', inplace=True)
+# gt_1_month_old_eps_projections_last_updated_df.set_index('Ticker', inplace=True)
+# gt_1_qtr_old_eps_projections_last_updated_df.set_index('Ticker', inplace=True)
+# gt_1_month_charts_last_updated_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -125,7 +123,6 @@ for ticker_raw in ticker_list:
 
   # ---------------------------------------------------------------------------
   # Read the Historical data file and get the last date for which prices are available
-  # Additionally, if it is more than a month then put it in gt_1_month old
   # ---------------------------------------------------------------------------
   historical_df = pd.read_csv(dir_path + historical_dir + "\\" + ticker + "_historical.csv")
   date_str_list = historical_df.Date.tolist()
@@ -134,9 +131,10 @@ for ticker_raw in ticker_list:
   ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
   ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
   historical_last_updated_df.loc[ticker]= [ticker_curr_date]
-  if (ticker_curr_date < one_month_ago_date):
-    logging.debug("Historical Data was last updated on : " + str(ticker_curr_date) + ", more than a month ago")
-    gt_1_month_old_historical_last_updated_df.loc[ticker]= [ticker_curr_date]
+  # if the historical data was update more than a month then put it in gt_1_month old
+  # if (ticker_curr_date < one_month_ago_date):
+  #   logging.debug("Historical Data was last updated on : " + str(ticker_curr_date) + ", more than a month ago")
+  #   gt_1_month_old_historical_last_updated_df.loc[ticker]= [ticker_curr_date]
   # ---------------------------------------------------------------------------
 
 
@@ -153,31 +151,25 @@ for ticker_raw in ticker_list:
   else:
     logging.error("Column Q_EPS_Projections_Date_0 DOES NOT exist in " + str(earnings_file))
     sys.exit(1)
-  date_year = eps_projection_date_0_dt.year
 
-  if (date_year < 2019):
-    logging.error("==========     Error : Seems like the projected EPS date is older than 2019. Please correct and rerun the script")
-    sys.exit(1)
+  # date_year = eps_projection_date_0_dt.year
+  # if (date_year < 2019):
+  #   logging.error("==========     Error : Seems like the projected EPS date is older than 2019. Please correct and rerun the script")
+  #   sys.exit(1)
   if (eps_projection_date_0_dt > dt.date.today()):
     logging.error("  The  Q_EPS_Projections_Date_0 date for " + str(ticker) + " is " + str(eps_projection_date_0_dt) + " which is in future... :-(")
     logging.error("  This seems like a typo :-)...Please correct it in Earnings csv file and rerun")
     sys.exit(1)
-
   eps_projections_last_updated_df.loc[ticker,'Date']= eps_projection_date_0_dt
-  if (ticker in  ['PSB','TAYD','CRVL']):
-    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> No_CNBC_Projections_available._You_should_periodically_check_CNBC'
-  if (ticker in  ['BFYT']):
-    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> Stock_changed_name_from_HIIQ._CNBC_does_not_have_projections_yet.Maybe_should_ask_Ann_how_to_tell_CNBC'
-  if (ticker in  ['RTN']):
-    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> Stock_changed_name_to_RTX_along_with_2.3348_split.Need_to_handle'
 
-  if (eps_projection_date_0_dt < one_month_ago_date):
-    logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a month ago")
-    gt_1_month_old_eps_projections_last_updated_df.loc[ticker]= eps_projection_date_0_dt
-
-  if (eps_projection_date_0_dt < one_qtr_ago_date):
-    logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a quarter ago")
-    gt_1_qtr_old_eps_projections_last_updated_df.loc[ticker]= eps_projection_date_0_dt
+  # if (eps_projection_date_0_dt < one_month_ago_date):
+  #   logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a month ago")
+  #   gt_1_month_old_eps_projections_last_updated_df.loc[ticker]= eps_projection_date_0_dt
+  #
+  # if (eps_projection_date_0_dt < one_qtr_ago_date):
+  #   logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a quarter ago")
+  #   gt_1_qtr_old_eps_projections_last_updated_df.loc[ticker]= eps_projection_date_0_dt
+  # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Get the last earnings report date from earnings file first
@@ -190,6 +182,7 @@ for ticker_raw in ticker_list:
     qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
     eps_actual_report_date = qtr_eps_report_date_list_dt[0]
   else:
+    earnings_last_reported_df.loc[ticker, 'Where_found'] = 'Master_Tracklist'
     eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
   #
   # try:
@@ -205,11 +198,11 @@ for ticker_raw in ticker_list:
     logging.error("  The Last quarterly earnings date for " + str(ticker) + " is " + str(eps_actual_report_date_dt) + " which is in future... :-(")
     logging.error("  This seems like a typo :-)...Please correct it in Master Tracklist file and rerun")
     sys.exit(1)
-  date_year = eps_actual_report_date_dt.year
-  if (date_year < 2019):
-    logging.error("==========     Error : The date for " + str(ticker) + " last earnings is older than 2019     ==========")
-    sys.exit()
-  earnings_last_reported_df.loc[ticker]= [eps_actual_report_date_dt]
+  # date_year = eps_actual_report_date_dt.year
+  # if (date_year < 2019):
+  #   logging.error("==========     Error : The date for " + str(ticker) + " last earnings is older than 2019     ==========")
+  #   sys.exit()
+  earnings_last_reported_df.loc[ticker,'Date']= eps_actual_report_date_dt
 
   if (eps_actual_report_date_dt > eps_projection_date_0_dt):
     logging.error("The Earnings report date : " + str(eps_actual_report_date_dt) + " is newer than the earnings projection date : " + str(eps_projection_date_0_dt))
@@ -219,7 +212,6 @@ for ticker_raw in ticker_list:
     logging.error("3. You did not update the Earnings projection on the Earnings report date intentionally....BAD BAD....How can you do that???? ")
     eps_report_newer_than_eps_projection_df.loc[ticker, 'Actual_EPS_Report'] = eps_actual_report_date_dt
     eps_report_newer_than_eps_projection_df.loc[ticker, 'EPS_Projections_Last_Updated'] = eps_projection_date_0_dt
-
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -263,6 +255,15 @@ for ticker_raw in ticker_list:
   logging.debug("")
   # ---------------------------------------------------------------------------
 
+  # -----------------------------------------------------------------------------
+  # Update Reasons for some tickers
+  # -----------------------------------------------------------------------------
+  if (ticker in ['TAYD', 'CRVL', 'WILC', 'WINA', 'GCBC']):
+    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> No_CNBC_Projections_available._You_should_periodically_check_CNBC'
+    earnings_last_reported_df.loc[ticker, 'Reason'] = '     =====> No_CNBC_Projections_available._You_should_periodically_check_CNBC'
+  if (ticker in ['RTN']):
+    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> Stock_changed_name_to_RTX_along_with_2.3348_split.Need_to_handle'
+    earnings_last_reported_df.loc[ticker, 'Reason'] = '     =====> Stock_changed_name_to_RTX_along_with_2.3348_split.Need_to_handle'
 
 # -----------------------------------------------------------------------------
 # Print all the df to their respective files
@@ -278,8 +279,8 @@ eps_report_newer_than_eps_projection_logfile = "eps_report_newer_than_eps_projec
 skipped_tickers_logfile="skipped_tickers_Sort_misc.txt"
 
 historical_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + historical_last_updated_logfile,sep=' ', index=True, header=False)
-earnings_last_reported_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
-eps_projections_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
+earnings_last_reported_df.sort_values(by=['Where_found','Reason','Date','Ticker'], ascending=[True,True,True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
+eps_projections_last_updated_df.sort_values(by=['Reason','Date','Ticker'], ascending=[True,True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
 charts_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + charts_last_updated_logfile,sep=' ', index=True, header=False)
 eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=True)
 skipped_tickers_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + skipped_tickers_logfile,sep=' ', index=True, header=True)
@@ -305,11 +306,6 @@ logging.info("")
 logging.info("********************")
 logging.info("***** All Done *****")
 logging.info("********************")
-
-eps_projections_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
-skipped_tickers_df             .sort_values(by=['Ticker']       , ascending=[True])     .to_csv(dir_path + log_dir + "\\" + skipped_tickers_logfile,sep=' ', index=True, header=True)
-
-
 # -----------------------------------------------------------------------------
 
 
