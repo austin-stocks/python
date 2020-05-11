@@ -518,7 +518,7 @@ for ticker_raw in ticker_list:
     logging.debug ("The difference b/w Y2 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus2_and_latest_qtr_date_in_earnings_file.days)  + " days")
     if (-5 <= days_bw_y_plus2_and_latest_qtr_date_in_earnings_file.days <= 5):
       logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y2 fiscal end date : " + str(y_plus2_fiscal_year_dt) + " ...so nothing needs to be inserted")
-      logging.wanring(str(ticker) + " : Hmmm...However this should very rare...make sure for " + str(ticker) + "that the latest entry qtr_eps_date and the Y2 fiscal year dates actually match...")
+      logging.warning(str(ticker) + " : Hmmm...However this should very rare...make sure for " + str(ticker) + "that the latest entry qtr_eps_date and the Y2 fiscal year dates actually match...")
     elif (-5 <= days_bw_y_plus1_and_latest_qtr_date_in_earnings_file.days <= 5):
       logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y1 fiscal end date : " + str(y_plus1_fiscal_year_dt) + " ...so we can possibly add Y2 fiscal year projections if they are not NaN")
       if ((str(y_plus2_fiscal_year_eps_projections) != 'nan') and (y_plus1_fiscal_year_eps_projections > 0)):
