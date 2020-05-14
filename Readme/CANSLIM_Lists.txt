@@ -1,0 +1,136 @@
+-- It seems I can get
+	-- IBD 50 (Updated Everyday)
+	-- IBD Big Cap 20 (Updated Everyday)
+	-- IBD Sector Leaders (Updated Everyday)
+	-- Stock Spotlight (Updated Everyday)
+	-- IPO Leaders (Updated Everyday)
+	-- New Highs 
+from the IBD Stock Screener every day - and if I want I can apply my screener to 
+it to get the list to some manageable numbers 
+
+1. IBD 50 (Also under Stock List Tab)
+	-- Updated Everyday
+	-- IBD's flagship screen of leading growth stocks gives you 50 companies 
+	-- showing strong relative price strength and top-notch fundamentals. 
+	-- Before you decide what stocks to buy, always check out these new and 
+	-- innovative stocks that historically far outperform the S&P 500. 
+	
+2. IBD Big Cap 20 (Also under Stock List Tab)
+	-- Updated Everyday
+	-- This daily screen uncovers top-rated, large-cap growth stocks for 
+	-- your consideration. Big Cap 20 companies can deliver outsize gains 
+	-- without the volatility of smaller growth stocks. 
+
+3. Sector Leaders (Also under Stock List Tab)
+	-- Updated Everyday 
+	-- IBD’s most stringent and powerful screen, Sector Leaders highlight 
+	-- the best stocks in IBD’s 33 sectors. All Sector Leaders show outstanding 
+	-- earnings and sales growth in recent quarters and are strong across many 
+	-- other fundamental and price-performance metrics. 
+	
+4. Stock Spotlight (Also under Stock List Tab)
+	-- Updated everyday
+	-- Stock Spotlight highlights companies with strong earnings and sales 
+	-- growth along with high Composite Ratings and/or stocks with solid 
+	-- fundamentals that are near new highs and above their 50-day moving averages
+
+5. IPO Leaders (Also under Stock List Tab)
+	-- Updated everyday
+	-- The stock market's newest companies are where you find some of the 
+	-- biggest winning stocks of all time. Initial public offerings, or IPOs, 
+	-- are typically in their early stages of growth, and its big earnings 
+	-- growth that generally fuels a stock’s price performance. 
+	-- IPO Leaders has special screening criteria to find up-and-coming stocks 
+	-- with strong fundamental and technical traits. 
+
+6. New Highs (Also under Stock List Tab)
+	-- Which leading stocks are making 52-weeks highs on any given day? 
+	-- You'll find that information here. List sorted with highest Composite 
+	-- Ratings first.
+-- ****************************************************************************
+
+
+
+-- ****************************************************************************
+Additionally, these are available under the Stock Lists Tab:
+
+Long-Term Leaders (Under Stock Lists Tab)
+	-- Seems like updated Friday 
+	
+Relative Strength at New High (Under Stock Lists Tab)
+	-- Seems like a live screen - Everyday
+	-- A stock’s Relative Strength line compares its price performance to the 
+	-- S&P 500. This screen unearths top-rated, growth stocks whose RS lines are 
+	-- hitting new highs. It is especially bullish when an RS line hits a new 
+	-- high before the stock scores a new price high
+
+Stocks On The Move (Under Stock Lists Tab)
+	-- Seems like a live screen - Everyday 
+	-- Shows stocks up in price (heavily bought by institutional investors)
+	-- Shows stocks down in price (heavily sold by institutional investors)
+	
+Stocks Near A Buy Zone (Under Stock Lists Tab)
+	-- Updated every Monday or Tuesday. More like a article about the stocks and 
+	-- then a list of them for that day/week
+	-- Be sure to follow Scott Lehtonen on Twitter at @IBD_SLehtonen for more 
+	-- on growth stocks and the Dow Jones Industrial Average.
+
+Rising Profit Estimates (Under Stock Lists Tab)
+	-- Seems like a live screen - Everyday 
+	-- This screen reveals top-rated growth stocks whose earnings estimates are 
+	-- on the rise. A solid track record of growth is one thing, but future 
+	-- growth also matters. This screen gives you plenty of fast-growing stocks 
+	-- to invest in
+
+Stocks that Funds are Buying (Under Stock Lists Tab)
+	-- This is a screen. Probably generated on the fly?
+	-- Look at every super stock and you'll find big mutual funds buying 
+	-- increasingly large stakes in these top-rated companies. 
+	-- This screen highlights stocks to watch that are showing increasing 
+	-- fund ownership in recent quarters.
+
+Tech Leaders (Under Stock Lists Tab)
+	-- Article every 1,2 or 3 weeks 
+
+CAN SLIM Select (Under Stock Lists Tab)
+	-- A list of market-leading stocks generally showing strong earnings growth, 
+	-- positive institutional sponsorship and industry group relative strength 
+	-- as well as solid sales growth, profit margin and return on equity. 
+	-- The list takes overall market health into consideration and adds stocks 
+	-- in healthy market environments.
+	-- NorthCoast Asset Management generates this list.
+	
+Your Weekly Review
+	-- A weekly screen of industry group leaders with Earnings Per Share and 
+	-- Relative Price Strength Ratings of 85 or higher. Stocks are priced $10 or 
+	-- higher and are within 15% of a 52-week high. Stocks with average daily 
+	-- volumes below 10,000 shares are excluded.
+
+
+
+IBD Data Tables  (Under Stock Lists Tab)
+	-- Contains lists of that match various criterion (mabye these are published
+	-- in the print version of IBD)
+
+IBD ETF Indexes
+	-- Talks about IBD ETF Breakout index - Need to read more 
+
+Stock Lists Update
+	-- Probably tells about which lists are getting updated - Articles
+	-- Need to read more
+-- ****************************************************************************
+
+
+
+-------------------------------------------------------------------------------
+Here are some of the other lists/tables that IBD Publishes
+-------------------------------------------------------------------------------
+7. IBD Stock of the day (Under Research Tab - Writeup on the stock of the day)
+	-- You can view past articles 
+	-- Every day, you'll get a quick overview and analysis of a leading 
+	-- stock that may be setting up for a potential breakout or is already 
+	-- in a new buy zone. You'll also get tips on what traits to look 
+	-- for in a winning stock.
+
+
+
