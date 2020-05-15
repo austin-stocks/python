@@ -20,7 +20,20 @@ Accumulation / Distribution (Acc/Dis) rating:
 	Our proprietary price and volume formula shows if a stock is under accumulation (buying) 
 	or distribution (selling) in the last 3 months. A=buying, E=selling.	
 
+5/14/2020 - IBD Beginners Webinar - 
+Take a couple of minutes to read the Big Picture everyday
+This looks like a V-Shaped recovery - they have a history of running into trouble. 
+Not every follow through day works 
 
+They will talk about Stock Lists 
+IBD Stock Lists
+	Long Term Leaders
+	IBD 50
+	Sector Leaders
+	Big Cap 20
+	
+Stoks on the move and what funds are buying 
+	
 
 
 Track the indcies over - atleat - a running 20 day period - That is what Charlotte does. 
