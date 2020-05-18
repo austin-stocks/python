@@ -20,7 +20,10 @@ Accumulation / Distribution (Acc/Dis) rating:
 	Our proprietary price and volume formula shows if a stock is under accumulation (buying) 
 	or distribution (selling) in the last 3 months. A=buying, E=selling.	
 
+Page B7 of IBD Newspaper has the information about the index A/D Rating 
+-------------------------------------------------------------------------------
 5/14/2020 - IBD Beginners Webinar - 
+-------------------------------------------------------------------------------
 Take a couple of minutes to read the Big Picture everyday
 This looks like a V-Shaped recovery - they have a history of running into trouble. 
 Not every follow through day works 
@@ -32,8 +35,42 @@ IBD Stock Lists
 	Sector Leaders
 	Big Cap 20
 	
-Stoks on the move and what funds are buying 
-	
+Stoks on the move (throught out the day) and what funds are buying over the 
+last 3 months - the report lags a month 
+investors.com/fundreport 	
+
+The buying checklist can be downloaded from:
+investors.com/buyingchecklist 
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+4/30/2020 - IBD Beginners Webinar - 
+-------------------------------------------------------------------------------
+Amy says that she is looking for in her pesonal investing - and is impressed 
+	by - is triple digit earnings growth. 
+Minimum EPS growth per quarter that you should look for is 25%
+Long Term leaders list  - consists of stocks that have very low earning stability 
+	numbers - which means that they have consistent earnings growtn. 
+	They recommened	the earnings stability should be less than 10 
+
+Weekend stock market update - Article by Mike Webster - comes out on Fridays 
+Market Trent -> Weekend Stock Market Update
+
+Amy say - everyday, do this 
+Look at big picutre
+Look at stocks on the move - moving up in heavy volume 
+Look at the stock of the day 
+Articles on the front page - can do this quickly
+Go to IBD Screener - what is moving up in IBD 50, Sector Leader 
+
+investors.com/SurvivalGuide
+Try to keep you buy to within 5% of the buy point 
+
+
+-------------------------------------------------------------------------------
+
+
+
 
 
 Track the indcies over - atleat - a running 20 day period - That is what Charlotte does. 

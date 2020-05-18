@@ -826,6 +826,12 @@
       {"Start_Date" : "01/25/2018", "Stop_Date" :   "11/05/2018", "Adj_Amount" : ".67"}
     ]
   },
+  "JKHY" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2014", "Stop_Date" :   "Next"},
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
 
   "NVR" : {
     "Earnings_growth_projection_overlay" : [
