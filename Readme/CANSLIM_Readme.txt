@@ -1,3 +1,16 @@
+Things to talk about 
+	Where is IBD Meetup Investor Education
+	What stocks List get update when 
+	
+
+-------------------------------------------------------------------------------	
+Charlotte calculates like this for distribution days:
+		3 out of 6  distribution days (3 x 2)
+		4 out of 12 distribution days (4 x 3)
+		5 out of 20 distribution days (5 x 4)
+-------------------------------------------------------------------------------	
+	
+
 IBD Composite Rating: 
 	Combines the EPS Rating, Relative Strength Rating, Industry Group Strength, 
 	SMR Rating and Acc/Dis Rating. Ranks 1 to 99, with 99 the best

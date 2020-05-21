@@ -817,6 +817,26 @@
       {"Start_Date" : "10/25/2012", "Stop_Date" :   "02/05/2013", "Adj_Amount" : ".1"}
     ]
   },
+  "BLD" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2017", "Stop_Date" :   "Next"},
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.5"},
+      {"Start_Date" : "12/25/2015", "Stop_Date" :   "10/05/2016", "Adj_Amount" : "-.33"}
+    ]
+  },
+
+  "ENTG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".15"},
+      {"Start_Date" : "06/25/2014", "Stop_Date" :   "04/05/2015", "Adj_Amount" : ".05"}
+    ]
+  },
 
   "NTAP" : {
     "Earnings_growth_projection_overlay" : [
