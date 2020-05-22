@@ -1998,6 +1998,17 @@
     ]
   },
 
+  "TTWO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"},
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2015", "Stop_Date" :   "01/05/2016", "Adj_Amount" : ".84"},
+      {"Start_Date" : "12/25/2013", "Stop_Date" :   "10/05/2014", "Adj_Amount" : "-.84"}
+    ]
+  },
+
   "WAFD" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2017", "Stop_Date" :   "End"},

@@ -110,14 +110,30 @@ for ticker_raw in ticker_list:
   # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
   quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
   if ticker in ["QQQ"]:
-    logging.info("File for " + str(ticker) + " does not exist in earnings directory. Skipping...")
     skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
     skipped_tickers_df.loc[ticker,'Reason'] = "Is_ETF"
     continue
-  if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
+  # if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
+  if ((quality_of_stock != 'Wheat')):
     logging.info(str(ticker) + " is not Wheat...skipping")
     skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
     skipped_tickers_df.loc[ticker,'Reason'] = "neither_Wheat_nor_Wheat_Chaff_nor_Essential"
+    continue
+  if ticker in ["BRK.B"]:
+    skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
+    skipped_tickers_df.loc[ticker,'Reason'] = "Berkshire"
+    continue
+  if ticker in ["JEF"]:
+    skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
+    skipped_tickers_df.loc[ticker,'Reason'] = '     =====> Need_to_sort_out_mismatch_between_fiscal_year_and_earnings_report_date'
+    continue
+  if ticker in ["NTES"]:
+    skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
+    skipped_tickers_df.loc[ticker,'Reason'] = '     =====> Need_to_sort_out_mismatch_report_currency_between_CNBC_and_Ann'
+    continue
+  if (ticker in ['FOX','TAYD', 'CRVL', 'WILC', 'WINA', 'GCBC']):
+    skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
+    skipped_tickers_df.loc[ticker,'Reason'] = '     =====> No_CNBC_Projections_available._You_should_periodically_check_CNBC'
     continue
 
 
@@ -258,12 +274,6 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
   # Update Reasons for some tickers
   # -----------------------------------------------------------------------------
-  if (ticker in ['TAYD', 'CRVL', 'WILC', 'WINA', 'GCBC']):
-    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> No_CNBC_Projections_available._You_should_periodically_check_CNBC'
-    earnings_last_reported_df.loc[ticker, 'Reason'] = '     =====> No_CNBC_Projections_available._You_should_periodically_check_CNBC'
-  if (ticker in ['RTN']):
-    eps_projections_last_updated_df.loc[ticker, 'Reason'] = '     =====> Stock_changed_name_to_RTX_along_with_2.3348_split.Need_to_handle'
-    earnings_last_reported_df.loc[ticker, 'Reason'] = '     =====> Stock_changed_name_to_RTX_along_with_2.3348_split.Need_to_handle'
 
 # -----------------------------------------------------------------------------
 # Print all the df to their respective files
