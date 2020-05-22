@@ -488,6 +488,13 @@
     ]
   },
 
+  "NVDA" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "11/30/2019", "Stop_Date" :   "End"},
+       {"Start_Date" : "08/30/2015", "Stop_Date" :   "Next"}
+    ]
+  },
+
   "ILMN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "06/30/2019"}
@@ -817,6 +824,7 @@
       {"Start_Date" : "10/25/2012", "Stop_Date" :   "02/05/2013", "Adj_Amount" : ".1"}
     ]
   },
+
   "BLD" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2017", "Stop_Date" :   "Next"},
@@ -838,6 +846,50 @@
     ]
   },
 
+  "AAON" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "CMC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "02/27/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+
+  "CNC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2014", "Stop_Date" :   "Next"}
+    ]
+  },
+
+  "ADSK" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "01/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "BAH" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "EDU" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "05/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "GDOT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
+    ]
+  },
+
   "NTAP" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "04/30/2017", "Stop_Date" :   "End"}
@@ -846,6 +898,26 @@
       {"Start_Date" : "01/25/2018", "Stop_Date" :   "11/05/2018", "Adj_Amount" : ".67"}
     ]
   },
+
+  "COO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "01/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "01/25/2018", "Stop_Date" :   "11/05/2018", "Adj_Amount" : "1"}
+    ]
+  },
+
+  "AZZ" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "02/27/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "11/25/2018", "Stop_Date" :   "12/05/2018", "Adj_Amount" : "-.14"},
+      {"Start_Date" : "11/25/2017", "Stop_Date" :   "12/05/2017", "Adj_Amount" : ".14"}
+    ]
+  },
+
   "JKHY" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2014", "Stop_Date" :   "Next"},
@@ -1231,6 +1303,26 @@
   "NBHC" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "SEDG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2017", "Stop_Date" :   "Next"},
+       {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+
+  "TREX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "RGP" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "11/30/2017", "Stop_Date" :   "End"}
     ]
   },
 
@@ -3758,6 +3850,12 @@
   "EL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "LNN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "08/30/2019", "Stop_Date" :   "End"}
     ]
   },
 
