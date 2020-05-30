@@ -1,3 +1,21 @@
+-------------------------------------------------------------------------------	
+-- Distribution Days -- From IBD Article 
+
+A distribution day is a significant decline in a major stock index in higher 
+trading volume than was seen in the previous session. IBD defines a 
+"significant decline" as a drop of more than 0.2%, with no rounding up to 
+get to 0.2% allowed
+
+IBD's research has determined that investors shouldn't count distribution days after 25 
+trading days have passed. At that point, those days of liquidation have become irrelevant.
+
+A distribution day also falls out of an index's count after the index climbs 5% above 
+that distribution day's close. IBD has developed this rule on the premise that when an 
+index rallies and extends itself from a distribution day, it's showing the strength to 
+overcome high-volume selling.
+-------------------------------------------------------------------------------	
+
+
 Things to talk about 
 	Where is IBD Meetup Investor Education
 	What stocks List get update when 
