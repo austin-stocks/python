@@ -1,0 +1,13 @@
+Tables for ACI 
+
+1. Daily Market Action
+2. Armchair Investor Trent-Following Returns - All trades in 2020
+3. Progress in Accumulation/Distribution Ratings
+4. Market Factors, Counts and Ratings
+5. Maket Action (Nadsaq) Over the last 20 days
+6. Armchair Investor Trend-Following Returns For the current Trend - Uptrend began on 
+7. Market Action 2020 - YTD
+8. How Close are the indices to All time high
+9. Last week's market action
+10. Last week in Review
+
