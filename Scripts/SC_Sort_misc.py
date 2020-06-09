@@ -103,10 +103,12 @@ skipped_tickers_df.set_index('Ticker', inplace=True)
 # Loop through all the tickers
 # -----------------------------------------------------------------------------
 # ticker_list = ['AUDC', 'MED']
+i_int = 1
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   logging.debug("================================")
-  logging.info("Processing : " + str(ticker))
+  logging.info("Iteration # " + str(i_int).ljust(3) + ", Processing : " + str(ticker))
+  i_int += 1
   # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
   quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
   if ticker in ["QQQ"]:
