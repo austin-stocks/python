@@ -788,13 +788,12 @@ for ticker_raw in ticker_list:
     except:
       qtr_eps_projections_date_1 = 'NA'
 
-  # Check -  _date_0 should be newer than the _date_1. This will catch if
-  # I forget to update the date
+  # Check -  _date_0 should be newer than the _date_1. This will catch if I forget to update the date
   if (qtr_eps_projections_date_1 != 'NA'):
     if (qtr_eps_projections_date_0 <= qtr_eps_projections_date_1):
-      logging.error("The Last Earnings update date " + str(qtr_eps_projections_date_0) + \
-                    " in the earnings csv file should be later than the update date from before that  " + str(qtr_eps_projections_date_1) + \
-                    "\n*****     Did you forget to update the _date_0 while updating earnings csv?     *****")
+      logging.error("The Earnings Projections update date (in col : Q_EPS_Projections_Date_0) ==> " + str(qtr_eps_projections_date_0) + " in the earnings csv file ")
+      logging.error("should be later than the Earnings Projection update date from before that (in col :  Q_EPS_Projections_Date_1) ==> " + str(qtr_eps_projections_date_1))
+      logging.error("*****     Did you forget to update the date in Column : Q_EPS_Projections_Date_0, while updating earnings csv?     *****")
       sys.exit(1)
 
   qtr_eps_projections_list = qtr_eps_df['Q_EPS_Projections_1'].tolist()
