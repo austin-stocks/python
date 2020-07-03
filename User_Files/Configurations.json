@@ -1050,6 +1050,13 @@
     ]
   },
 
+  "SSD" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2013", "Stop_Date" :   "Next"},
+       {"Start_Date" : "09/30/2015", "Stop_Date" :   "End"}
+    ]
+  },
+
   "ET" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2017", "Stop_Date" :   "06/30/2019"}
