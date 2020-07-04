@@ -1594,7 +1594,11 @@ for ticker_raw in ticker_list:
   is_ticker_foreign = str(ticker_master_tracklist_series['Is_Foreign'])
   is_ticker_foreign = is_ticker_foreign.strip()
   cnbc_matches_reported_eps = 'NA'
-  cnbc_matches_reported_eps = str(ticker_master_tracklist_series['CNBC_Matches_Reported_EPS'])
+  # Sundeep is here
+  if ('CNBC_Matches_Reported_EPS' in qtr_eps_df.columns):
+    cnbc_matches_reported_eps = qtr_eps_df.CNBC_Matches_Reported_EPS.tolist()[0]
+  else:
+    cnbc_matches_reported_eps = str(ticker_master_tracklist_series['CNBC_Matches_Reported_EPS'])
   logging.debug("The Last Earnings were reported on  : " + str(eps_report_date))
   logging.debug("CNBC report match reported EPS = " + str(cnbc_matches_reported_eps) + \
                 "If it matches then it means that the future earnings projections should actual numbers and not adjusted numbers...though the company can adjust the earnings anytime :-))" + \
