@@ -1050,7 +1050,62 @@
     ]
   },
 
+
+  "KMB" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2018", "Stop_Date" :   "01/05/2019", "Adj_Amount" : ".25"},
+      {"Start_Date" : "12/25/2014", "Stop_Date" :   "04/05/2015", "Adj_Amount" : ".4"},
+      {"Start_Date" : "06/25/2015", "Stop_Date" :   "10/05/2015", "Adj_Amount" : ".92"},
+      {"Start_Date" : "12/25/2015", "Stop_Date" :   "04/05/2016", "Adj_Amount" : ".52"}
+    ]
+  },
+
+
+  "SSNC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"},
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2018", "Stop_Date" :   "04/05/2019", "Adj_Amount" : ".11"},
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "04/05/2018", "Adj_Amount" : "-.11"},
+      {"Start_Date" : "09/25/2015", "Stop_Date" :   "10/05/2015", "Adj_Amount" : ".04"},
+      {"Start_Date" : "12/25/2015", "Stop_Date" :   "07/05/2016", "Adj_Amount" : ".13"},
+      {"Start_Date" : "09/25/2016", "Stop_Date" :   "10/05/2016", "Adj_Amount" : ".09"}
+    ]
+  },
+
+  "PRAA" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "SHW" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2019", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-1.6"}
+    ]
+  },
+
+  "REGI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2014", "Stop_Date" :   "End"}
+    ]
+  },
+
   "ADM" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "LKQ" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
     ]
