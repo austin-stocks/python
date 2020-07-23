@@ -384,6 +384,13 @@
     ]
   },
 
+  "INFO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "08/30/2019", "Stop_Date" :   "End"},
+       {"Start_Date" : "02/27/2017", "Stop_Date" :   "Next"}
+    ]
+  },
+
 
   "LHCG" : {
     "Earnings_growth_projection_overlay" : [
