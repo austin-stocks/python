@@ -60,6 +60,7 @@ logging.disable(logging.NOTSET)
 # chart_styles_list = ['Linear', 'Long_Linear', 'Log']
 chart_styles_list = ['Linear']
 chart_annotations_list = ['Charts_Without_Numbers', 'Charts_With_Numbers']
+# chart_annotations_list = ['Charts_With_Numbers']
 
 for chart_styles_idx in chart_styles_list:
   logging.debug("Style of Charts to be copied : " + str(chart_styles_idx))

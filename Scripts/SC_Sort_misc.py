@@ -115,8 +115,8 @@ for ticker_raw in ticker_list:
     skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
     skipped_tickers_df.loc[ticker,'Reason'] = "Is_ETF"
     continue
-  # if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
-  if ((quality_of_stock != 'Wheat')):
+  if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
+  # if ((quality_of_stock != 'Wheat')):
     logging.info(str(ticker) + " is not Wheat...skipping")
     skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
     skipped_tickers_df.loc[ticker,'Reason'] = "neither_Wheat_nor_Wheat_Chaff_nor_Essential"
