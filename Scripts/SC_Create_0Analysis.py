@@ -191,7 +191,8 @@ for ticker_raw in ticker_list:
       if float(cell_val) < 0:
         cell.get_text().set_color('Red')
         cell.get_text().set_fontstyle('italic')
-        cell.set_color('lightgrey')
+        table2_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
+        # cell.set_color('lightgrey')
 
   # table_props = table2_plt_inst.properties()
   # logging.debug("The dictionary of table properties is \n" + str(table_props))
