@@ -119,10 +119,10 @@ for ticker_raw in ticker_list:
   fig = plt.figure()
   fig.set_size_inches(14.431, 7.639)  # Length x height
 
-  main_plt = plt.subplot2grid((5, 6), (0, 0), colspan=5, rowspan=4)
-  table1_plt = plt.subplot2grid((5, 6), (0, 5), colspan=1, rowspan=4)
-  table2_plt = plt.subplot2grid((5, 6), (4, 0), colspan=6, rowspan=2)
-  plt.subplots_adjust(hspace=0, wspace=0)
+  main_plt = plt.subplot2grid((5, 6), (0, 0), rowspan=3,colspan=5)
+  table1_plt = plt.subplot2grid((5, 6), (0, 5), rowspan=3, colspan=1)
+  table2_plt = plt.subplot2grid((5, 6), (4, 0), rowspan=1, colspan=6)
+  plt.subplots_adjust(hspace=0, wspace=.35)
   fig.suptitle("Analysis for " + ticker)
   main_plt.title.set_text("Maybe some Chart")
   table1_plt.title.set_text("Key Numbers")
@@ -141,7 +141,7 @@ for ticker_raw in ticker_list:
   table2_plt.set_yticks([])
   table2_plt.set_xticks([])
 
-  table1_plt_inst = table1_plt.table(cellText=[[1,1,1], [2,2,2]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'])
+  table1_plt_inst = table1_plt.table(cellText=[[1,1,1], [2,2,2]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'],loc="upper center")
   # table2_plt.table(cellText=[[3, 3], [4, 4]], loc='upper center',rowLabels=['row1', 'row2'], colLabels=['col1', 'col2'])
   table1_plt_inst[(1,0)].set_facecolor("#56b5fd")
 
@@ -153,7 +153,7 @@ for ticker_raw in ticker_list:
   tmp_df = ticker_yr_lynch_df.iloc[:, ::-1]
   ticker_yr_lynch_df = tmp_df.copy()
   logging.debug("The dataframe now is \n" + ticker_yr_lynch_df.to_string())
-  table2_plt_inst = table2_plt.table(cellText=ticker_yr_lynch_df.values, rowLabels=ticker_yr_lynch_df.index,colWidths=[0.1] * len(ticker_yr_lynch_df.columns),colLabels=ticker_yr_lynch_df.columns)
+  table2_plt_inst = table2_plt.table(cellText=ticker_yr_lynch_df.values, rowLabels=ticker_yr_lynch_df.index,colWidths=[0.1] * len(ticker_yr_lynch_df.columns),colLabels=ticker_yr_lynch_df.columns,loc="upper center")
 
   # for tmp_val in ticker_yr_lynch_df.values:
   #   logging.debug("The value is " + str(tmp_val))
@@ -191,7 +191,7 @@ for ticker_raw in ticker_list:
       if float(cell_val) < 0:
         cell.get_text().set_color('Red')
         cell.get_text().set_fontstyle('italic')
-        # cell.set_color('lightgrey')
+        cell.set_color('lightgrey')
 
   # table_props = table2_plt_inst.properties()
   # logging.debug("The dictionary of table properties is \n" + str(table_props))
@@ -217,7 +217,6 @@ for ticker_raw in ticker_list:
   table2_plt.axis('off')
   # table2_plt_inst.auto_set_font_size(False)
   # table2_plt_inst.set_fontsize(12)
-
   plt.show()
 
   # https://pandas.pydata.org/pandas-docs/stable/user_guide/visualization.html
