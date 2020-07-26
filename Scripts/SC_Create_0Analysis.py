@@ -126,10 +126,12 @@ for ticker_raw in ticker_list:
   fig.suptitle("Analysis for " + ticker)
   main_plt.title.set_text("Maybe some Chart")
   table1_plt.title.set_text("Key Numbers")
-  table2_plt.title.set_text("Yearly Table")
+  # table2_plt.title.set_text("Yearly Table")
+  table2_plt.set_title("Yearly Table",color='Blue')
+
   main_plt.set_facecolor("lightgrey")
   table1_plt.set_facecolor("lightgrey")
-  table2_plt.set_facecolor("lightgrey")
+  table2_plt.set_facecolor("black")
 
   main_plt.plot([1, 2, 3])
 
@@ -144,7 +146,6 @@ for ticker_raw in ticker_list:
   table1_plt_inst = table1_plt.table(cellText=[[1,1,1], [2,2,2]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'],loc="upper center")
   # table2_plt.table(cellText=[[3, 3], [4, 4]], loc='upper center',rowLabels=['row1', 'row2'], colLabels=['col1', 'col2'])
   table1_plt_inst[(1,0)].set_facecolor("#56b5fd")
-
   table1_plt.axis('off')
 
 
@@ -177,6 +178,12 @@ for ticker_raw in ticker_list:
     col_idx = key[1]
     cell_val = cell.get_text().get_text()
     logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
+
+    if (row_idx % 2 == 0):
+      table2_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
+    else:
+      table2_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
+
     if ((row_idx == 0) or (col_idx < 0)):
       continue
     elif (cell_val == 'nan'):
