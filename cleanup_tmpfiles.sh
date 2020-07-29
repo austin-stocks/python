@@ -1,6 +1,8 @@
 echo "Cleaning up the backup files that are appreantly created by MyCloud backup"
 
 rm -f *-2020-07-*.csv
+rm -f AAII_Financials/Quarterly/*-2020-07-*.xlsx
+rm -f Download/YahooHistorical/*-2020-07-*.csv
 rm -f historical/*-2020-07-*.csv
 rm -f Dividend/*-2020-07-*.csv
 rm -f Earnings/*-2020-07-*.csv
