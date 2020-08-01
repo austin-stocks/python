@@ -1018,10 +1018,21 @@
     ]
   },
 
-
   "DCO" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "DLA" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "BIO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2014", "Stop_Date" :   "End"}
     ]
   },
 
