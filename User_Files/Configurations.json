@@ -24,6 +24,25 @@
     }
   },
 
+  "BERY" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2016", "Stop_Date" :   "End"},
+       {"Start_Date" : "12/30/2014", "Stop_Date" :   "Next"}
+    ]
+  },
+
+  "HAE" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "HOLX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2015", "Stop_Date" :   "End"}
+    ]
+  },
+
   "UFPI" : {
     "Splits" : {
       "11/14/2017" : "3:1"
