@@ -131,6 +131,13 @@
     ]
   },
 
+  "IBP" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2015", "Stop_Date" :   "Next"}
+    ]
+  },
+
   "DRI" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "08/30/2015", "Stop_Date" :   "05/30/2019"}
