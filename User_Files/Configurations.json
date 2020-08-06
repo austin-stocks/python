@@ -113,6 +113,18 @@
     ]
   },
 
+  "HII" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2012", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "SYNH" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
   "DXPE" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2017", "Stop_Date" :   "06/30/2019"}
