@@ -93,7 +93,7 @@ logging.disable(logging.NOTSET)
 # Create a quarterly xls and dataframe
 #   Earnings
 #   Revenue
-#   # of Employees
+#   # of Employees (only available in 10-K?). So do it annually??
 #   Share Count Diluted
 #   Inventory
 #   Institutional Ownership
@@ -103,6 +103,8 @@ logging.disable(logging.NOTSET)
 #   Shareholders Equity
 #   Current Ratio (Should I calculate or should it be directly downloaded from AAII - This is also a philosophical question in general)
 #
+# todo : Maybe add a one row table at the top - with has
+# Price, PB, PS, ROE, PEG, Current Ratio, Expected Growth, it can also list some past trends in one word - etc...think about more
 
 # Save the jpg in the loop - just like the earnings chart
 # See for how many years do we want to prepare the dataframe and chart - This feature will be needed later.
@@ -126,7 +128,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # #############################################################################
 #                   MAIN LOOP FOR TICKERS
 # #############################################################################
-ticker_list = ['MED']
+ticker_list = ['NATI']
 for ticker_raw in ticker_list:
 
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
@@ -137,22 +139,84 @@ for ticker_raw in ticker_list:
     logging.debug(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections..")
     continue
 
-  # Read the ticker AAII data yr and qtr file to start
+  # ===========================================================================
+  # Read the ticker AAII data qtr file to start
+  # ===========================================================================
+  # After reading make a copy of the dataframe - it is really not needed but for now it is what it is
+  # Maybe at a later stage don't make a copy and work on the dataframe that is read in directly
+  # Once that dateframe is copied - then the new rows (that are used to store the growth) are added.
+
+  ticker_datain_qtr_file = ticker +  "_qtr_data.csv"
+  ticker_datain_qtr_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Quarterly" + "\\" + ticker_datain_qtr_file)
+  ticker_datain_qtr_df.set_index("AAII_QTR_DATA",inplace=True)
+  logging.debug("The QTR datain df \n" + ticker_datain_qtr_df.to_string())
+  logging.info("Starting to process QTR data")
+
+  # Start working with the dataframe to generate various numbers
+  ticker_qtr_numbers_df = ticker_datain_qtr_df.copy()
+  #   Earnings
+  #   Revenue
+  #   # of Employees (only available in 10-K?). So do it annually??
+  #   Share Count Diluted
+  #   Inventory
+  #   Institutional Ownership
+  #   Insider buy/sell
+  #   Projected Revenue and EPS for next 2 quarters (where to put it? -- Maybe add two rows for the current quarter)
+  #   Debt
+  #   Shareholders Equity
+  #   Current Ratio (Should I calculate or should it be directly downloaded from AAII - This is also a philosophical question in general)
+
+  # Add the rows for Revenue growth, EPS growth
+  col_list = ticker_qtr_numbers_df.columns.tolist()
+  qtr_eps_growth_list = []
+  qtr_revenue_growth_list = []
+  for col_idx in range(len(col_list)):
+    qtr_eps_growth_list.append(float('nan'))
+    qtr_revenue_growth_list.append(float('nan'))
+  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(qtr_eps_growth_list, index=ticker_qtr_numbers_df.columns, name='EPS_Growth'))
+  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(qtr_revenue_growth_list, index=ticker_qtr_numbers_df.columns, name='Revenue_Growth'))
+  logging.debug("The QTR  df after adding rows \n" + ticker_qtr_numbers_df.to_string())
+
+  # Now calculate the EPS and sales grwoth and put them in just added rows
+  col_list = ticker_qtr_numbers_df.columns.tolist()
+  no_of_qts_to_calculate_growth_rate_for = 4
+  for col_idx in range(0, no_of_qts_to_calculate_growth_rate_for):
+    # Only calculate the qtrs for which the back data is available...this will get better are more date becomes available.
+    if (col_idx+4 <= len(col_list)-1):
+      col_val = col_list[col_idx]
+      col_val_this_qtr_last_year = col_list[col_idx+4]
+      logging.debug("The col_idx is " + str(col_idx) + " and the value is " + col_val)
+      eps_this_qtr = ticker_qtr_numbers_df.loc['Diluted_EPS', col_val]
+      eps_this_qtr_last_year = ticker_qtr_numbers_df.loc['Diluted_EPS', col_val_this_qtr_last_year]
+      # if eps last year was negative then don't do anything as that grwoth rate cannot be calculated
+      if (eps_this_qtr_last_year > 0):
+        ticker_qtr_numbers_df.loc['EPS_Growth', col_val] = 100*((eps_this_qtr/eps_this_qtr_last_year)-1)
+
+      ticker_qtr_numbers_df.loc['Revenue_Growth', col_val] = 100*((ticker_qtr_numbers_df.loc['Revenue', col_val]/ticker_qtr_numbers_df.loc['Revenue', col_val_this_qtr_last_year])-1)
+  logging.debug("The QTR  df after calculation grwoth rates for Revenue and EPS  \n" + ticker_qtr_numbers_df.to_string())
+  # Now that dataframe is ready - It will be modified in the chart section -- Read there to find out more
+
+  # ===========================================================================
+
+  # ===========================================================================
+  # Read the ticker AAII data yr file
+  # ===========================================================================
   ticker_datain_yr_file = ticker +  "_yr_data.csv"
   ticker_datain_yr_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Yearly" + "\\" + ticker_datain_yr_file)
   ticker_datain_yr_df.set_index("AAII_YR_DATA",inplace=True)
   logging.debug("The YR datain df \n" + ticker_datain_yr_df.to_string())
+  logging.info("Starting to process YR data")
 
   # Remove the rows that are not needed, if that is ever needed
   # ticker_datain_yr_df.drop(index= ['XYZ'], inplace=True)
   logging.debug("The YR datain df are removing the unwanted rows \n" + ticker_datain_yr_df.to_string())
 
-  # ===========================================================================
+  # ---------------------------------------------------------------------------
   # Now we have a dataframe that we need to make calculation for our 0_Analysis
   # Various dateframes can be generated off the dataframes that we have read in.
   # Those generated dataframes can be reprensed as tables and or used to create
   # graphs later on
-  # ===========================================================================
+  # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Yearly numbers dataframe
@@ -199,7 +263,7 @@ for ticker_raw in ticker_list:
   tmp_df = ticker_yr_growth_df.iloc[:, ::-1]
   ticker_yr_growth_df = tmp_df.copy()
 
-  col_list = ticker_yr_numbers_df.columns.tolist()
+  col_list = ticker_yr_growth_df.columns.tolist()
   desired_growth_rate = .1
   base_growth_numbers_list = []
   for col_idx in range(len(col_list)):
@@ -238,7 +302,7 @@ for ticker_raw in ticker_list:
 
   ticker_yr_growth_df = ticker_yr_growth_df.loc[['Base_Growth', 'Revenue_Growth', 'Diluted_EPS_Growth', 'BV_Per_Share_Growth'], :]
   logging.debug("The YR Growth dataframe now is \n" + ticker_yr_growth_df.to_string())
-  # ---------------------------------------------------------------------------
+  # ===========================================================================
 
 
 
@@ -256,69 +320,208 @@ for ticker_raw in ticker_list:
   # #############################################################################
   # #############################################################################
   # #############################################################################
+  logging.debug("=========================================================")
+  logging.info("Starting to plot the data now...")
+  logging.debug("=========================================================")
   fig = plt.figure()
   fig.set_size_inches(14.431, 7.639)  # Length x height
 
-  main_plt = plt.subplot2grid((5, 6), (0, 0), rowspan=3,colspan=5)
-  table1_plt = plt.subplot2grid((5, 6), (0, 5), rowspan=3, colspan=1)
-  table2_plt = plt.subplot2grid((5, 6), (4, 0), rowspan=1, colspan=6)
-  plt.subplots_adjust(hspace=0, wspace=.35)
+  qtr_table_plt = plt.subplot2grid((6, 6), (0, 0), rowspan=2,colspan=3)
+  growth_numbers_plt = plt.subplot2grid((6, 6), (0, 3), rowspan=4,colspan=3)
+  key_numbers_plt = plt.subplot2grid((6, 6), (2, 0), rowspan=2, colspan=3)
+  yr_table_plt = plt.subplot2grid((6, 6), (4, 0), rowspan=2, colspan=6)
+  plt.subplots_adjust(hspace=.1, wspace=.15)
   fig.suptitle("Analysis for " + ticker)
-  main_plt.title.set_text("Maybe some Chart")
-  table1_plt.title.set_text("Key Numbers")
-  table2_plt.set_title("Yearly Table",color='Blue')
+  qtr_table_plt.title.set_text("Quarterly Numbers")
+  key_numbers_plt.title.set_text("Key Numbers")
+  yr_table_plt.set_title("Yearly Table",color='Blue')
 
-  main_plt.set_facecolor("lightgrey")
-  table1_plt.set_facecolor("lightgrey")
-  table2_plt.set_facecolor("black")
+  growth_numbers_plt.set_facecolor("lightgrey")
+  key_numbers_plt.set_facecolor("lightgrey")
+  yr_table_plt.set_facecolor("black")
+
 
   # ---------------------------------------------------------------------------
-  # Main plt with grwoth rates
+  # Plot the Growth Chart
   # ---------------------------------------------------------------------------
-  # Some plotting numbers for main plot - can be replaced by actual data later
-  # main_plt.plot([1, 2, 3])
-  # main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  # main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-  # main_plt.tick_params(axis="y", direction="in", pad=-22)
-  # main_plt.set_yscale(chart_type_idx)
-  # main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS', color="deeppink", marker='.', markersize='10')
-
-  main_plt_lim_lower = 0
-  main_plt_lim_upper = 3
-  main_plt.set_ylim(main_plt_lim_lower, main_plt_lim_upper)
-  main_plt.tick_params(axis="y", direction="in", pad=-22)
-  # main_plt.set_yscale(Linear)
+  # todo : Get the x axis labels shorter and invward -- if that is asethetically pleasing
+  # todo : Get the ticklines
+  # todo : Print the values on Blue line, if you want
+  # todo : Print the legend for various lines - inside the ax
+  growth_numbers_plt.title.set_text("Yearly Growth Chart")
+  growth_numbers_plt_lim_lower = 0
+  growth_numbers_plt_lim_upper = 3
+  growth_numbers_plt.set_ylim(growth_numbers_plt_lim_lower, growth_numbers_plt_lim_upper)
+  growth_numbers_plt.tick_params(axis="y", direction="in", pad=-22)
   col_list = ticker_yr_growth_df.columns.tolist()
 
   # Extract the various growth numbers here
   yr_revenue_growth_rate = ticker_yr_growth_df.loc["Revenue_Growth"]
-  main_plt_inst = main_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_numbers_list, label='Q EPS', color="deeppink", marker='.', markersize='24')
-  main_plt_inst = main_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Revenue_Growth"], label='Q EPS', color="green", marker='.', markersize='10')
-  main_plt_inst = main_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Diluted_EPS_Growth"], label='Q EPS', color="blue", marker='.', markersize='10')
-  main_plt_inst = main_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["BV_Per_Share_Growth"], label='Q EPS', color="brown", marker='.', markersize='10')
+  growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_numbers_list, label='Q EPS', color="blue", marker='*', markersize='12')
+  growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Revenue_Growth"], label='Q EPS', color="green", marker='.', markersize='10')
+  growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Diluted_EPS_Growth"], label='Q EPS', color="deeppink", marker='.', markersize='10')
+  growth_numbers_plt_inst = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["BV_Per_Share_Growth"], label='Q EPS', color="brown", marker='.', markersize='10')
   # ---------------------------------------------------------------------------
 
+  # ---------------------------------------------------------------------------
+  # Plot the Quarterly Table
+  # ---------------------------------------------------------------------------
+  qtr_table_plt.set_yticks([])
+  qtr_table_plt.set_xticks([])
+
+  # Extract desired rows out of the dataframe in tmp_df
+  tmp_df  = pd.DataFrame()
+  desired_indices = ['Revenue','Revenue_Growth','Diluted_EPS','EPS_Growth']
+  tmp_df = ticker_qtr_numbers_df.loc[desired_indices]
+  logging.debug("The QTR df with only desired indices extracted out : \n" + tmp_df.to_string())
+
+  # Now keep only the first 4 columns of the dataframe as these are the date that we want to display - this can get
+  # exteneded if user desires later on..
+  tmp_df_1 = tmp_df.iloc[:, : 4]
+  logging.debug("The QTR df with only first 4 quarters of data  \n" + tmp_df_1.to_string())
+
+  # Now reverse the dataframe - so that the older dates are first in the column
+  tmp_df_2 = tmp_df_1.iloc[:, ::-1]
+  logging.debug("The QTR df with only first 4 quarters of data now reversed  \n" + tmp_df_2.to_string())
+  # Finally transpose  the  dataframe so that it can be displayed vertically
+  tmp_df = tmp_df_2.transpose().copy()
+  logging.debug("The QTR df with only first 4 quarters of data reversed and now transposed \n" + tmp_df.to_string())
+
+  # Now plot the dataframe
+  # qtr_table_plt_inst = qtr_table_plt.table(cellText=tmp_df.values, rowLabels=tmp_df.index,colWidths=[0.1] * len(tmp_df.columns),colLabels=tmp_df.columns,loc="upper center")
+  qtr_table_plt_inst = qtr_table_plt.table(cellText=tmp_df.values, rowLabels=tmp_df.index,colLabels=tmp_df.columns,loc="upper center")
+
+  # iterate through the table and set the fonts etc to desired values
+  logging.debug("Iterating through the QTR table to reformat for the text etc...")
+  eps_col_idx = tmp_df.columns.get_loc("Diluted_EPS")
+  eps_growth_col_idx = tmp_df.columns.get_loc("EPS_Growth")
+  revenue_col_idx = tmp_df.columns.get_loc("Revenue")
+  revenue_growth_col_idx = tmp_df.columns.get_loc("Revenue_Growth")
+  logging.debug("The column index for EPS_Growth is " + str(eps_growth_col_idx))
+  logging.debug("The column index for Revenue_Growth is " + str(revenue_growth_col_idx))
+  # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
+  for key, cell in qtr_table_plt_inst.get_celld().items():
+    row_idx = key[0]
+    col_idx = key[1]
+    cell_val = cell.get_text().get_text()
+    logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
+
+    # -----------------------------------------------------
+    # Set the row headers and columns to bold
+    # -----------------------------------------------------
+    if ((row_idx == 0) or (col_idx < 0)):
+      cell.get_text().set_fontweight('bold')
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # Set the colors every alternating rows
+    # -----------------------------------------------------
+    if (row_idx % 2 == 0):
+      qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
+    else:
+      qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # Change the Date format to be shorter
+    # -----------------------------------------------------
+    if (col_idx == -1):
+      x_date = dt.datetime.strptime(cell_val,'%m/%d/%Y').date()
+      x = dt.datetime.strftime(x_date, '%m/%y')
+      logging.debug("The date is " + str(x))
+      cell.get_text().set_text(x)
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # Change the heading of the various row according to the liking of the user
+    # -----------------------------------------------------
+    if (row_idx == 0):
+      if (col_idx == revenue_col_idx):
+        x = "Rev #"
+      if (col_idx == revenue_growth_col_idx):
+        x = "Rev. %"
+      if (col_idx == eps_col_idx):
+        x = "EPS #"
+        cell.get_text().set_text(x)
+      if (col_idx == eps_growth_col_idx):
+        x = "EPS %"
+      cell.get_text().set_text(x)
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # Change
+    # -----------------------------------------------------
+    if (((col_idx == eps_growth_col_idx) or (col_idx == revenue_growth_col_idx)) and (row_idx > 0)):
+      if (cell_val == 'nan'):
+        x = "-"
+        cell.get_text().set_text(x)
+      else:
+        x =  f'{float(cell.get_text().get_text()):.1f}'
+        x = x + "%"
+        cell.get_text().set_text(x)
+      # if (row_idx == current_assets_row_idx):
+      #   x = f'{int(float(cell_val)):,}'
+        # This works - for now comment out as I try to think whether to have % here or not
+        # if (row_idx == revenue_row_idx):
+          # x = x + "%"
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # -----------------------------------------------------
+    # -----------------------------------------------------
+    if ((col_idx == revenue_col_idx) and (row_idx > 0 ) and (col_idx > -1)):
+      if (cell_val == 'nan'):
+        x = "-"
+        cell.get_text().set_text(x)
+      else:
+        x_int = int(float(cell_val))
+        x = human_format(x_int)
+        cell.get_text().set_text(x)
+    if ((col_idx == eps_col_idx) and (row_idx > 0 ) and (col_idx > -1)):
+      if (cell_val == 'nan'):
+        x = "-"
+        cell.get_text().set_text(x)
+      else:
+        x =  f'{float(cell.get_text().get_text()):.2f}'
+        cell.get_text().set_text(x)
+        cell.get_text().set_text(x)
+      # -----------------------------------------------------
+      # else:
+      #   x =  f'{float(cell.get_text().get_text()):.2f}'
+
+
+    # if float(cell_val) < 0:
+    #   cell.get_text().set_color('Red')
+    #   cell.get_text().set_fontstyle('italic')
+    #   qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
+
+  qtr_table_plt.axis('off')
+  logging.info("Done with plotting QTR table...")
+  # ---------------------------------------------------------------------------
 
 
   # ---------------------------------------------------------------------------
   # Plot the first table
   # ---------------------------------------------------------------------------
-  table1_plt.set_yticks([])
-  table1_plt.set_xticks([])
-  table1_plt_inst = table1_plt.table(cellText=[[1,5,9], [2,4,8]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'],loc="upper center")
-  # table2_plt.table(cellText=[[3, 3], [4, 4]], loc='upper center',rowLabels=['row1', 'row2'], colLabels=['col1', 'col2'])
-  table1_plt_inst[(1,0)].set_facecolor("#56b5fd")
-  table1_plt.axis('off')
+  key_numbers_plt.set_yticks([])
+  key_numbers_plt.set_xticks([])
+  key_numbers_plt_inst = key_numbers_plt.table(cellText=[[1,5,9], [2,4,8]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'],loc="upper center")
+  # yr_table_plt.table(cellText=[[3, 3], [4, 4]], loc='upper center',rowLabels=['row1', 'row2'], colLabels=['col1', 'col2'])
+  key_numbers_plt_inst[(1,0)].set_facecolor("#56b5fd")
+  key_numbers_plt.axis('off')
   # ---------------------------------------------------------------------------
 
 
   # ---------------------------------------------------------------------------
-  # Plot the 2nd table
+  # Plot the Yearly table
   # ---------------------------------------------------------------------------
-  table2_plt.set_yticks([])
-  table2_plt.set_xticks([])
+  yr_table_plt.set_yticks([])
+  yr_table_plt.set_xticks([])
 
-  table2_plt_inst = table2_plt.table(cellText=ticker_yr_numbers_df.values, rowLabels=ticker_yr_numbers_df.index,colWidths=[0.1] * len(ticker_yr_numbers_df.columns),colLabels=ticker_yr_numbers_df.columns,loc="upper center")
+  # fixme : todo : Maybe remove the rows here and only keep the rows that we
+  #  want to display rather than creating two different dataframes
+  # or crate the separate dataframe here as a subset of the yr_df
+  yr_table_plt_inst = yr_table_plt.table(cellText=ticker_yr_numbers_df.values, rowLabels=ticker_yr_numbers_df.index,colWidths=[0.1] * len(ticker_yr_numbers_df.columns),colLabels=ticker_yr_numbers_df.columns,loc="upper center")
 
   logging.debug("")
   logging.debug("Will now set the appropriate cell colors in the dataframe")
@@ -330,16 +533,16 @@ for ticker_raw in ticker_list:
   revenue_row_idx =  ticker_yr_numbers_df.index.get_loc('Revenue') + 1
   # logging.debug("The row_idx corresponding to index Current_Assets is " + str(current_assets_row_idx))
   # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
-  for key, cell in table2_plt_inst.get_celld().items():
+  for key, cell in yr_table_plt_inst.get_celld().items():
     row_idx = key[0]
     col_idx = key[1]
     cell_val = cell.get_text().get_text()
     logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
 
     if (row_idx % 2 == 0):
-      table2_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
+      yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
     else:
-      table2_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
+      yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
 
     if ((row_idx == 0) or (col_idx < 0)):
       cell.get_text().set_fontweight('bold')
@@ -363,9 +566,10 @@ for ticker_raw in ticker_list:
       if float(cell_val) < 0:
         cell.get_text().set_color('Red')
         cell.get_text().set_fontstyle('italic')
-        table2_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
+        yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
 
-  table2_plt.axis('off')
+  yr_table_plt.axis('off')
+  logging.info("Done with plotting YR table...")
   # ---------------------------------------------------------------------------
 
 
@@ -391,7 +595,7 @@ for ticker_raw in ticker_list:
 
 
 
-  # table_props = table2_plt_inst.properties()
+  # table_props = yr_table_plt_inst.properties()
   # logging.debug("The dictionary of table properties is \n" + str(table_props))
   # table_cells = table_props['child_artists']
   # for cell in table_cells:
@@ -410,7 +614,7 @@ for ticker_raw in ticker_list:
   #   for col_idx in range(len(row_val_list)):
   #     logging.debug("The col idx is " + str(col_idx) + " and the value is " + str(row_val_list[col_idx]))
   #     if (row_val_list[col_idx] < 0):
-  #       table2_plt_inst[(row_idx+1, col_idx)].set_facecolor('grey')
+  #       yr_table_plt_inst[(row_idx+1, col_idx)].set_facecolor('grey')
 
 
   # https://pandas.pydata.org/pandas-docs/stable/user_guide/visualization.html
