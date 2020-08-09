@@ -326,6 +326,9 @@ for ticker_raw in ticker_list:
   logging.debug("=========================================================")
   fig = plt.figure()
   fig.set_size_inches(14.431, 7.639)  # Length x height
+  # This sets the background color of the whole figure
+  fig.patch.set_facecolor('#E0E0E0')
+  fig.patch.set_alpha(0.7)
 
   qtr_table_plt = plt.subplot2grid((6, 6), (0, 0), rowspan=2,colspan=3)
   growth_numbers_plt = plt.subplot2grid((6, 6), (0, 3), rowspan=4,colspan=3)
@@ -349,6 +352,8 @@ for ticker_raw in ticker_list:
   # todo : Get the ticklines (both x axis and y axis)
   # todo : Print the values on Blue line, if you want
   # todo : Print the legend for various lines - inside the ax
+  # todo : find the upper and lower limit based on the values of various list that are getting plotted
+
   growth_numbers_plt.title.set_text("Yearly Growth Chart")
   growth_numbers_plt_lim_lower = 0
   growth_numbers_plt_lim_upper = 3
@@ -358,10 +363,16 @@ for ticker_raw in ticker_list:
 
   # Extract the various growth numbers here
   yr_revenue_growth_rate = ticker_yr_growth_df.loc["Revenue_Growth"]
-  growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_numbers_list, label='Q EPS', color="blue", marker='*', markersize='12')
-  growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Revenue_Growth"], label='Q EPS', color="green", marker='.', markersize='10')
-  growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Diluted_EPS_Growth"], label='Q EPS', color="deeppink", marker='.', markersize='10')
-  growth_numbers_plt_inst = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["BV_Per_Share_Growth"], label='Q EPS', color="brown", marker='.', markersize='10')
+  growth_numbers_plt_inst_00 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_numbers_list, label='Base Growth', linestyle='--',color='blue',marker="*",markersize='12')
+  growth_numbers_plt_inst_01 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
+  growth_numbers_plt_inst_02 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
+  growth_numbers_plt_inst_03 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
+
+  # Maybe need to adjust if the plot gets moved???
+  lns = growth_numbers_plt_inst_01+growth_numbers_plt_inst_02+growth_numbers_plt_inst_03
+  labs = [l.get_label() for l in lns]
+  logging.debug("The Labels are" + str(labs))
+  growth_numbers_plt.legend(lns, labs, bbox_to_anchor=(.2, 1.02), loc="upper right", borderaxespad=2, fontsize='x-small')
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
