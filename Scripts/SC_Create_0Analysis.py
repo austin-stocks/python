@@ -98,7 +98,7 @@ logging.disable(logging.NOTSET)
 #   Inventory
 #   Institutional Ownership
 #   Insider buy/sell
-#   Projected Revenue and EPS for next 2 quarters
+#   Projected Revenue and EPS for next 2 quarters (where to put it? -- Maybe add two rows for the current quarter)
 #   Debt
 #   Shareholders Equity
 #   Current Ratio (Should I calculate or should it be directly downloaded from AAII - This is also a philosophical question in general)
