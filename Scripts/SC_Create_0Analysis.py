@@ -64,24 +64,49 @@ logging.disable(logging.NOTSET)
 # ---------------------------------------------------------------------------
 
 # Sundeep thoughts on what to do for 0_Analysis
-# Maybe start with 5 quarters and see if that makes sense...we can inrease it to 8 quaters too.
+# Maybe start with 5 quarters and see if that makes sense...we can increase it to 8 quarters too.
 # Zebras like Market Smith -- for EPS and Revenue for 5 quarters
 # Share count Diluted  - 5 quarters -- Maybe add in the yr_dataframe too
 # Number of Employees - 5 quarters
 # Inventory Change - 5 Quarters
 # Institutional Shares Sold vs Institutional Shares Purchased - 5 quarters
 # Insiders buying / selling?  (Net Insiders buy Insiders-net shares purchased or Net Insider Buys % Shares Out or Net Insider Buys % Shares Out.) - 5 quarters
+# Get the projected Revenue and Diluted EPS growth rates
 
-# Key Statistic
-# Equity to Debt
+# Key Statistics
+# Debt the Equity - Just this quarter
 # Current Ratio - Just this quarter
 # Debt to equity - Just this quarter
 # price to sales - Just this quarter
+# PEG Ratio - how to find that out (May need to read the earnings and find TTM earning
+#   and also to find out projected earnings (deal with the case if there are only 3 quarters
+#   worth of future projected earnings data available -- maybe say not available). Find the PE from
+#   TTM earnings and growth rate from projected earnings...(even though the projected earnings are not
+#   always diluted earnings...but that is the best thing available right now
+
 
 # Phil Town Stuff -- Are these growth numbers?
 # Free Cash flow per share Growth  - 10 years
 # ROIC Growth  - 10 years
 
+# todo
+# Create a quarterly xls and dataframe
+#   Earnings
+#   Revenue
+#   # of Employees
+#   Share Count Diluted
+#   Inventory
+#   Institutional Ownership
+#   Insider buy/sell
+#   Projected Revenue and EPS for next 2 quarters
+#   Debt
+#   Shareholders Equity
+#   Current Ratio (Should I calculate or should it be directly downloaded from AAII - This is also a philosophical question in general)
+#
+
+# Save the jpg in the loop - just like the earnings chart
+# See for how many years do we want to prepare the dataframe and chart - This feature will be needed later.
+# Print the date of latest price and what is the price (read the historical)
 
 # -----------------------------------------------------------------------------
 # Set the various dirs and read the AAII file
