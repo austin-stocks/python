@@ -63,6 +63,25 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # ---------------------------------------------------------------------------
 
+# Sundeep thoughts on what to do for 0_Analysis
+# Maybe start with 5 quarters and see if that makes sense...we can inrease it to 8 quaters too.
+# Zebras like Market Smith -- for EPS and Revenue for 5 quarters
+# Share count Diluted  - 5 quarters -- Maybe add in the yr_dataframe too
+# Number of Employees - 5 quarters
+# Inventory Change - 5 Quarters
+# Institutional Shares Sold vs Institutional Shares Purchased - 5 quarters
+# Insiders buying / selling?  (Net Insiders buy Insiders-net shares purchased or Net Insider Buys % Shares Out or Net Insider Buys % Shares Out.) - 5 quarters
+
+# Key Statistic
+# Equity to Debt
+# Current Ratio - Just this quarter
+# Debt to equity - Just this quarter
+# price to sales - Just this quarter
+
+# Phil Town Stuff -- Are these growth numbers?
+# Free Cash flow per share Growth  - 10 years
+# ROIC Growth  - 10 years
+
 
 # -----------------------------------------------------------------------------
 # Set the various dirs and read the AAII file
