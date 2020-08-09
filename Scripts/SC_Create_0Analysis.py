@@ -105,6 +105,7 @@ logging.disable(logging.NOTSET)
 #
 # todo : Maybe add a one row table at the top - with has
 # Price, PB, PS, ROE, PEG, Current Ratio, Expected Growth, it can also list some past trends in one word - etc...think about more
+# todo : Save the fis in a loop - just like for Earnings chart
 
 # Save the jpg in the loop - just like the earnings chart
 # See for how many years do we want to prepare the dataframe and chart - This feature will be needed later.
@@ -344,8 +345,8 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # Plot the Growth Chart
   # ---------------------------------------------------------------------------
-  # todo : Get the x axis labels shorter and invward -- if that is asethetically pleasing
-  # todo : Get the ticklines
+  # todo : Get the x axis labels shorter (like Dec-19)and invward -- if that is asethetically pleasing
+  # todo : Get the ticklines (both x axis and y axis)
   # todo : Print the values on Blue line, if you want
   # todo : Print the legend for various lines - inside the ax
   growth_numbers_plt.title.set_text("Yearly Growth Chart")
@@ -501,7 +502,7 @@ for ticker_raw in ticker_list:
 
 
   # ---------------------------------------------------------------------------
-  # Plot the first table
+  # Plot the Key Numbers table
   # ---------------------------------------------------------------------------
   key_numbers_plt.set_yticks([])
   key_numbers_plt.set_xticks([])
@@ -513,7 +514,7 @@ for ticker_raw in ticker_list:
 
 
   # ---------------------------------------------------------------------------
-  # Plot the Yearly table
+  # Plot the Yearly Numbers table
   # ---------------------------------------------------------------------------
   yr_table_plt.set_yticks([])
   yr_table_plt.set_xticks([])
