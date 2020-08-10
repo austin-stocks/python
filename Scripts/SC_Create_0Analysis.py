@@ -354,23 +354,27 @@ for ticker_raw in ticker_list:
   # todo : Print the legend for various lines - inside the ax
   growth_numbers_plt.title.set_text("Yearly Growth Chart")
   growth_numbers_plt.set_facecolor("lightgrey")
+
   growth_numbers_plt_lim_lower = 0
   growth_numbers_plt_lim_upper = 3.5
-
-  # Extract the various growth numbers and set the upper limit, if greater than 3.5
+  # Extract the various growth numbers and set the upper limit, if greater than 3.5 (set by default up)
   tmp_max = max(ticker_yr_growth_df.loc["Diluted_EPS_Growth"])
   logging.debug("The max value in Diluted EPS Growth List is "  + str(tmp_max))
   if (tmp_max > growth_numbers_plt_lim_upper):
     growth_numbers_plt_lim_upper = int(round(tmp_max))+.5
+
   tmp_max = max(ticker_yr_growth_df.loc["Revenue_Growth"])
   logging.debug("The max value in Diluted Revenue Growth List is " + str(tmp_max))
   if (tmp_max > growth_numbers_plt_lim_upper):
     growth_numbers_plt_lim_upper = int(round(tmp_max))+.5
+
   tmp_max = max(ticker_yr_growth_df.loc["BV_Per_Share_Growth"])
   logging.debug("The max value in Diluted BVPS Growth List is " + str(tmp_max))
   if (tmp_max > growth_numbers_plt_lim_upper):
     growth_numbers_plt_lim_upper = int(round(tmp_max))+.5
+
   logging.debug("The upper limit for the Growth Plot is set to " + str(growth_numbers_plt_lim_upper))
+
   growth_numbers_plt.set_ylim(growth_numbers_plt_lim_lower, growth_numbers_plt_lim_upper)
   growth_numbers_plt.tick_params(axis="y", direction="in", pad=-22)
 
