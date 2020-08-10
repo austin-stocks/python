@@ -265,22 +265,29 @@ for ticker_raw in ticker_list:
   ticker_yr_growth_df = tmp_df.copy()
 
   col_list = ticker_yr_growth_df.columns.tolist()
-  desired_growth_rate = .1
-  base_growth_numbers_list = []
+  base_growth_rate_percent_10 = .1
+  base_growth_rate_percent_20 = .2
+  base_growth_10_percent_list = []
+  base_growth_20_percent_list = []
   for col_idx in range(len(col_list)):
-    base_growth_numbers_list.append(float('nan'))
+    base_growth_10_percent_list.append(float('nan'))
+    base_growth_20_percent_list.append(float('nan'))
     if (col_idx == 0):
-      base_growth_numbers_list[col_idx] = 1
+      base_growth_10_percent_list[col_idx] = 1
+      base_growth_20_percent_list[col_idx] = 1
     else:
-      base_growth_numbers_list[col_idx] = base_growth_numbers_list[col_idx-1]*(1+desired_growth_rate)
+      base_growth_10_percent_list[col_idx] = base_growth_10_percent_list[col_idx-1]*(1+base_growth_rate_percent_10)
+      base_growth_20_percent_list[col_idx] = base_growth_20_percent_list[col_idx-1]*(1+base_growth_rate_percent_20)
   # Reverse the list
-  # base_growth_numbers_list = base_growth_numbers_list[::-1]
-  logging.debug("The base growth numbers list is " + str(base_growth_numbers_list))
-  ticker_yr_growth_df = ticker_yr_growth_df.append(pd.Series(base_growth_numbers_list, index=ticker_yr_growth_df.columns, name='Base_Growth'))
+  # base_growth_10_percent_list = base_growth_10_percent_list[::-1]
+  logging.debug("The base growth 10% list is " + str(base_growth_10_percent_list))
+  logging.debug("The base growth 20% list is " + str(base_growth_20_percent_list))
+  ticker_yr_growth_df = ticker_yr_growth_df.append(pd.Series(base_growth_10_percent_list, index=ticker_yr_growth_df.columns, name='Base_Growth_10'))
+  ticker_yr_growth_df = ticker_yr_growth_df.append(pd.Series(base_growth_20_percent_list, index=ticker_yr_growth_df.columns, name='Base_Growth_20'))
   # Add token growth rate rows -- these will be populated properly below
-  ticker_yr_growth_df = ticker_yr_growth_df.append(pd.Series(base_growth_numbers_list, index=ticker_yr_growth_df.columns, name='Revenue_Growth'))
-  ticker_yr_growth_df = ticker_yr_growth_df.append(pd.Series(base_growth_numbers_list, index=ticker_yr_growth_df.columns, name='Diluted_EPS_Growth'))
-  ticker_yr_growth_df = ticker_yr_growth_df.append(pd.Series(base_growth_numbers_list, index=ticker_yr_growth_df.columns, name='BV_Per_Share_Growth'))
+  ticker_yr_growth_df = ticker_yr_growth_df.append(pd.Series(base_growth_10_percent_list, index=ticker_yr_growth_df.columns, name='Revenue_Growth'))
+  ticker_yr_growth_df = ticker_yr_growth_df.append(pd.Series(base_growth_10_percent_list, index=ticker_yr_growth_df.columns, name='Diluted_EPS_Growth'))
+  ticker_yr_growth_df = ticker_yr_growth_df.append(pd.Series(base_growth_10_percent_list, index=ticker_yr_growth_df.columns, name='BV_Per_Share_Growth'))
 
   logging.debug("The YR Growth dataframe now is \n" + ticker_yr_growth_df.to_string())
 
@@ -301,7 +308,7 @@ for ticker_raw in ticker_list:
 
   logging.debug("The YR Growth dataframe now is \n" + ticker_yr_growth_df.to_string())
 
-  ticker_yr_growth_df = ticker_yr_growth_df.loc[['Base_Growth', 'Revenue_Growth', 'Diluted_EPS_Growth', 'BV_Per_Share_Growth'], :]
+  ticker_yr_growth_df = ticker_yr_growth_df.loc[['Base_Growth_10', 'Base_Growth_10','Revenue_Growth', 'Diluted_EPS_Growth', 'BV_Per_Share_Growth'], :]
   logging.debug("The YR Growth dataframe now is \n" + ticker_yr_growth_df.to_string())
   # ===========================================================================
 
@@ -336,13 +343,6 @@ for ticker_raw in ticker_list:
   yr_table_plt = plt.subplot2grid((6, 6), (4, 0), rowspan=2, colspan=6)
   plt.subplots_adjust(hspace=.1, wspace=.15)
   fig.suptitle("Analysis for " + ticker)
-  qtr_table_plt.title.set_text("Quarterly Numbers")
-  key_numbers_plt.title.set_text("Key Numbers")
-  yr_table_plt.set_title("Yearly Table",color='Blue')
-
-  growth_numbers_plt.set_facecolor("lightgrey")
-  key_numbers_plt.set_facecolor("lightgrey")
-  yr_table_plt.set_facecolor("black")
 
 
   # ---------------------------------------------------------------------------
@@ -352,24 +352,36 @@ for ticker_raw in ticker_list:
   # todo : Get the ticklines (both x axis and y axis)
   # todo : Print the values on Blue line, if you want
   # todo : Print the legend for various lines - inside the ax
-  # todo : find the upper and lower limit based on the values of various list that are getting plotted
-
   growth_numbers_plt.title.set_text("Yearly Growth Chart")
+  growth_numbers_plt.set_facecolor("lightgrey")
   growth_numbers_plt_lim_lower = 0
-  growth_numbers_plt_lim_upper = 3
+  growth_numbers_plt_lim_upper = 3.5
+
+  # Extract the various growth numbers and set the upper limit, if greater than 3.5
+  tmp_max = max(ticker_yr_growth_df.loc["Diluted_EPS_Growth"])
+  logging.debug("The max value in Diluted EPS Growth List is "  + str(tmp_max))
+  if (tmp_max > growth_numbers_plt_lim_upper):
+    growth_numbers_plt_lim_upper = int(round(tmp_max))+.5
+  tmp_max = max(ticker_yr_growth_df.loc["Revenue_Growth"])
+  logging.debug("The max value in Diluted Revenue Growth List is " + str(tmp_max))
+  if (tmp_max > growth_numbers_plt_lim_upper):
+    growth_numbers_plt_lim_upper = int(round(tmp_max))+.5
+  tmp_max = max(ticker_yr_growth_df.loc["BV_Per_Share_Growth"])
+  logging.debug("The max value in Diluted BVPS Growth List is " + str(tmp_max))
+  if (tmp_max > growth_numbers_plt_lim_upper):
+    growth_numbers_plt_lim_upper = int(round(tmp_max))+.5
+  logging.debug("The upper limit for the Growth Plot is set to " + str(growth_numbers_plt_lim_upper))
   growth_numbers_plt.set_ylim(growth_numbers_plt_lim_lower, growth_numbers_plt_lim_upper)
   growth_numbers_plt.tick_params(axis="y", direction="in", pad=-22)
-  col_list = ticker_yr_growth_df.columns.tolist()
 
-  # Extract the various growth numbers here
-  yr_revenue_growth_rate = ticker_yr_growth_df.loc["Revenue_Growth"]
-  growth_numbers_plt_inst_00 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_numbers_list, label='Base Growth', linestyle='--',color='blue',marker="*",markersize='12')
-  growth_numbers_plt_inst_01 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
-  growth_numbers_plt_inst_02 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
-  growth_numbers_plt_inst_03 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
+  growth_numbers_plt_inst_00 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_10_percent_list, label='Base_Growth_10', linestyle='--',color='blue',marker="*",markersize='12')
+  growth_numbers_plt_inst_01 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_20_percent_list, label='Base_Growth_20', linestyle='--',color='blue',marker="*",markersize='12')
+  growth_numbers_plt_inst_02 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
+  growth_numbers_plt_inst_03 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
+  growth_numbers_plt_inst_04 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
 
   # Maybe need to adjust if the plot gets moved???
-  lns = growth_numbers_plt_inst_01+growth_numbers_plt_inst_02+growth_numbers_plt_inst_03
+  lns = growth_numbers_plt_inst_02+growth_numbers_plt_inst_03+growth_numbers_plt_inst_04
   labs = [l.get_label() for l in lns]
   logging.debug("The Labels are" + str(labs))
   growth_numbers_plt.legend(lns, labs, bbox_to_anchor=(.2, 1.02), loc="upper right", borderaxespad=2, fontsize='x-small')
@@ -378,6 +390,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # Plot the Quarterly Table
   # ---------------------------------------------------------------------------
+  qtr_table_plt.title.set_text("Quarterly Numbers")
   qtr_table_plt.set_yticks([])
   qtr_table_plt.set_xticks([])
 
@@ -515,6 +528,8 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # Plot the Key Numbers table
   # ---------------------------------------------------------------------------
+  key_numbers_plt.title.set_text("Key Numbers")
+  key_numbers_plt.set_facecolor("lightgrey")
   key_numbers_plt.set_yticks([])
   key_numbers_plt.set_xticks([])
   key_numbers_plt_inst = key_numbers_plt.table(cellText=[[1,5,9], [2,4,8]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'],loc="upper center")
@@ -527,6 +542,8 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # Plot the Yearly Numbers table
   # ---------------------------------------------------------------------------
+  yr_table_plt.set_title("Yearly Table",color='Blue')
+  yr_table_plt.set_facecolor("black")
   yr_table_plt.set_yticks([])
   yr_table_plt.set_xticks([])
 
