@@ -1,5 +1,17 @@
 {
 
+  "QLYS" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "08/12/2020","Buy_Price_str" :  "$103.69"}
+    ]
+  },
+
+  "HOLX" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "08/04/2020","Buy_Price_str" :  "$71.87"}
+    ]
+  },
+
   "MU" : {
     "Buy_Sell" : [
        {"Buy_Date" : "12/19/2019","Buy_Price_str" :  "$54.5"}
@@ -9,7 +21,8 @@
 
   "CYBR" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "08/09/2019","Buy_Price_str" :  "$122.01"}
+       {"Buy_Date" : "08/09/2019","Buy_Price_str" :  "$122.01"},
+       {"Sell_Date" : "08/04/2020","Sell_Price_str" :  "$112.01"}
     ]
   },
 
