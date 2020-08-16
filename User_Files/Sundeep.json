@@ -12,12 +12,23 @@
     ]
   },
 
+  "CTXS" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "04/27/2020","Buy_Price_str" :  "$141.01"}
+    ]
+  },
+
   "MU" : {
     "Buy_Sell" : [
        {"Buy_Date" : "12/19/2019","Buy_Price_str" :  "$54.5"}
     ]
   },
 
+  "IIPR" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/28/2020","Buy_Price_str" :  "$87"}
+    ]
+  },
 
   "CYBR" : {
     "Buy_Sell" : [
@@ -33,7 +44,6 @@
     ]
   },
 
-
   "COHR" : {
     "Buy_Sell" : [
        {"Buy_Date" : "03/23/2018","Buy_Price_str" :  "$191.69"}
@@ -43,7 +53,8 @@
   "AUDC" : {
     "Buy_Sell" : [
        {"Buy_Date" : "08/20/2019","Buy_Price_str" :  "$17.50"},
-       {"Buy_Date" : "01/28/2020","Buy_Price_str" :  "$24.75\nCompany paid one time payment to get rid\nroyalty payments. It was a GAP only loss\nShares dropped 30%(intraday) in 3 days"}
+       {"Buy_Date" : "01/28/2020","Buy_Price_str" :  "$24.75\nCompany paid one time payment to get rid\nroyalty payments. It was a GAP only loss\nShares dropped 30%(intraday) in 3 days"},
+       {"Sell_Date" : "06/10/2020","Sell_Price_str" :  "$33.08"}
     ]
   },
 
@@ -58,7 +69,6 @@
        {"Buy_Date" : "12/07/2017","Buy_Price_str" :  "$174.81"}
     ]
   },
-
 
   "XOYO" : {
     "Buy_Sell" : [

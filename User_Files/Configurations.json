@@ -1829,7 +1829,8 @@
 
   "MED" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "Next"},
+       {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"}
     ],
     "Plot_Annotate" : [
       {"Date" :  "03/16/2011", "Text" : "2011/03/16: Notification of\ninability to timely file Form 10-K", "Line_Length" : "20:-120"},
@@ -3699,7 +3700,8 @@
 
   "QLYS" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"},
+       {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2014", "Stop_Date" :   "10/05/2015", "Adj_Amount" : "-.1"},
