@@ -300,7 +300,7 @@ for ticker_raw in ticker_list:
     logging.info("File for " + str(ticker) + "does not exist in earnings directory. Skipping...")
     continue
   quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
-  if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential')):
+  if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential') and (quality_of_stock != 'Sundeep_List')):
     logging.info(str(ticker) + " is not Wheat...skipping")
     continue
 

@@ -62,6 +62,11 @@ qtr_str_list =['Q1', 'Q2','Q3','Q4','Q5','Q6','Q7','Q8']
 yr_str_list =['Y1', 'Y2','Y3','Y4','Y5','Y6','Y7']
 
 
+# ---------------------------------------------------------
+# Read the AAII file
+# Declare the dataframes that will be used
+# Set the columns and index
+# ---------------------------------------------------------
 # This takes around 21 sec
 start = time.process_time()
 aaii_xls_file = '2020_04_13_AAII_Analysis.xlsx'
@@ -74,12 +79,13 @@ aaii_pnl_qtr_df  = pd.read_excel(aaii_xls, 'Income_QTR')
 aaii_bs_yr_df = pd.read_excel(aaii_xls, 'Balance_YR')
 aaii_pnl_yr_df  = pd.read_excel(aaii_xls, 'Income_YR')
 
-# Set the Ticker col and index
 aaii_dateandperiod_df.set_index('Ticker', inplace=True)
 aaii_bs_qtr_df.set_index('Ticker', inplace=True)
 aaii_pnl_qtr_df.set_index('Ticker', inplace=True)
 aaii_bs_yr_df.set_index('Ticker', inplace=True)
 aaii_pnl_yr_df.set_index('Ticker', inplace=True)
+# ---------------------------------------------------------
+
 # -----------------------------------------------------------------------------
 
 # RGP is RECN old --- need to handle
@@ -141,8 +147,9 @@ for ticker_raw in ticker_list:
     if not ((str(aaii_yr_date_str) == 'NaT') or (len(str(aaii_yr_date_str)) == 0)):
       aaii_yr_dates_dict_dt[yr_idx] = dt.datetime.strptime(str(aaii_yr_date_str),'%Y-%m-%d %H:%M:%S').date()
       aaii_yr_dates_dict_str[yr_idx] =  aaii_yr_dates_dict_dt[yr_idx].strftime('%m/%d/%Y')
-      # Prepare the columns of the aaii_yr_df with the yr dates str
+      # Initialize and populate the columns of the aaii_yr_df with the yr date str as column header
       tmp_val = aaii_yr_dates_dict_str[yr_idx]
+      # This add a new column corresponding to the yr date str
       aaii_yr_df.assign(tmp_val = "")
       aaii_yr_df.loc['Revenue', tmp_val] = aaii_pnl_yr_series['Sales '+str(yr_idx)]
       aaii_yr_df.loc['Dividend', tmp_val] = aaii_pnl_yr_series['Dividend '+str(yr_idx)]

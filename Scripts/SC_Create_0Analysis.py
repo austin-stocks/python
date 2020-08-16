@@ -185,15 +185,15 @@ for ticker_raw in ticker_list:
     # Only calculate the qtrs for which the back data is available...this will get better are more date becomes available.
     if (col_idx+4 <= len(col_list)-1):
       col_val = col_list[col_idx]
-      col_val_this_qtr_last_year = col_list[col_idx+4]
+      col_val_same_qtr_last_year = col_list[col_idx+4]
       logging.debug("The col_idx is " + str(col_idx) + " and the value is " + col_val)
       eps_this_qtr = ticker_qtr_numbers_df.loc['Diluted_EPS', col_val]
-      eps_this_qtr_last_year = ticker_qtr_numbers_df.loc['Diluted_EPS', col_val_this_qtr_last_year]
+      eps_same_qtr_last_year = ticker_qtr_numbers_df.loc['Diluted_EPS', col_val_same_qtr_last_year]
       # if eps last year was negative then don't do anything as that grwoth rate cannot be calculated
-      if (eps_this_qtr_last_year > 0):
-        ticker_qtr_numbers_df.loc['EPS_Growth', col_val] = 100*((eps_this_qtr/eps_this_qtr_last_year)-1)
+      if (eps_same_qtr_last_year > 0):
+        ticker_qtr_numbers_df.loc['EPS_Growth', col_val] = 100*((eps_this_qtr/eps_same_qtr_last_year)-1)
 
-      ticker_qtr_numbers_df.loc['Revenue_Growth', col_val] = 100*((ticker_qtr_numbers_df.loc['Revenue', col_val]/ticker_qtr_numbers_df.loc['Revenue', col_val_this_qtr_last_year])-1)
+      ticker_qtr_numbers_df.loc['Revenue_Growth', col_val] = 100*((ticker_qtr_numbers_df.loc['Revenue', col_val]/ticker_qtr_numbers_df.loc['Revenue', col_val_same_qtr_last_year])-1)
   logging.debug("The QTR  df after calculation grwoth rates for Revenue and EPS  \n" + ticker_qtr_numbers_df.to_string())
   # Now that dataframe is ready - It will be modified in the chart section -- Read there to find out more
 
@@ -206,11 +206,7 @@ for ticker_raw in ticker_list:
   ticker_datain_yr_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Yearly" + "\\" + ticker_datain_yr_file)
   ticker_datain_yr_df.set_index("AAII_YR_DATA",inplace=True)
   logging.debug("The YR datain df \n" + ticker_datain_yr_df.to_string())
-  logging.info("Starting to process YR data")
 
-  # Remove the rows that are not needed, if that is ever needed
-  # ticker_datain_yr_df.drop(index= ['XYZ'], inplace=True)
-  logging.debug("The YR datain df are removing the unwanted rows \n" + ticker_datain_yr_df.to_string())
 
   # ---------------------------------------------------------------------------
   # Now we have a dataframe that we need to make calculation for our 0_Analysis
@@ -222,17 +218,19 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # Yearly numbers dataframe
   # ---------------------------------------------------------------------------
+  logging.info("Starting to process YR data")
   ticker_yr_numbers_df = ticker_datain_yr_df.copy()
-  logging.debug("The YR Peter Lynch df \n" + ticker_yr_numbers_df.to_string())
+  logging.debug("The YR df \n" + ticker_yr_numbers_df.to_string())
   col_list = ticker_yr_numbers_df.columns.tolist()
 
-  # These rows are not needed for now
+  # These rows are not needed / Remove the unwanted rows 
   ticker_yr_numbers_df.drop(index= ['Current_Assets'], inplace=True)
   ticker_yr_numbers_df.drop(index= ['Dividend'], inplace=True)
   ticker_yr_numbers_df.drop(index= ['Short_Term_Debt'], inplace=True)
   # The rearragne to row to your liking
   ticker_yr_numbers_df = ticker_yr_numbers_df.loc[['Revenue', 'Diluted_EPS', 'BV_Per_Share', 'LT_Debt'], :]
-  # First convert the numbers raw numbers (like the revenue is in millions etc)
+  logging.debug("The YR datain df are removing the unwanted rows \n" + ticker_yr_numbers_df.to_string())
+  # First convert the numbers to raw numbers (like the revenue is in millions etc)
   for col_idx in range(len(col_list)):
     col_val = col_list[col_idx]
     ticker_yr_numbers_df.loc['Revenue', col_val] = 1000000 * (ticker_datain_yr_df.loc['Revenue', col_val])
@@ -338,7 +336,7 @@ for ticker_raw in ticker_list:
   fig.patch.set_alpha(0.7)
 
   qtr_table_plt = plt.subplot2grid((6, 6), (0, 0), rowspan=2,colspan=3)
-  growth_numbers_plt = plt.subplot2grid((6, 6), (0, 3), rowspan=4,colspan=3)
+  yr_growth_plt = plt.subplot2grid((6, 6), (0, 3), rowspan=4,colspan=3)
   key_numbers_plt = plt.subplot2grid((6, 6), (2, 0), rowspan=2, colspan=3)
   yr_table_plt = plt.subplot2grid((6, 6), (4, 0), rowspan=2, colspan=6)
   plt.subplots_adjust(hspace=.1, wspace=.15)
@@ -352,43 +350,43 @@ for ticker_raw in ticker_list:
   # todo : Get the ticklines (both x axis and y axis)
   # todo : Print the values on Blue line, if you want
   # todo : Print the legend for various lines - inside the ax
-  growth_numbers_plt.title.set_text("Yearly Growth Chart")
-  growth_numbers_plt.set_facecolor("lightgrey")
+  yr_growth_plt.title.set_text("Yearly Growth Chart")
+  yr_growth_plt.set_facecolor("lightgrey")
 
-  growth_numbers_plt_lim_lower = 0
-  growth_numbers_plt_lim_upper = 3.5
+  yr_growth_plt_lim_lower = 0
+  yr_growth_plt_lim_upper = 3.5
   # Extract the various growth numbers and set the upper limit, if greater than 3.5 (set by default up)
   tmp_max = max(ticker_yr_growth_df.loc["Diluted_EPS_Growth"])
   logging.debug("The max value in Diluted EPS Growth List is "  + str(tmp_max))
-  if (tmp_max > growth_numbers_plt_lim_upper):
-    growth_numbers_plt_lim_upper = int(round(tmp_max))+.5
+  if (tmp_max > yr_growth_plt_lim_upper):
+    yr_growth_plt_lim_upper = int(round(tmp_max))+.5
 
   tmp_max = max(ticker_yr_growth_df.loc["Revenue_Growth"])
   logging.debug("The max value in Diluted Revenue Growth List is " + str(tmp_max))
-  if (tmp_max > growth_numbers_plt_lim_upper):
-    growth_numbers_plt_lim_upper = int(round(tmp_max))+.5
+  if (tmp_max > yr_growth_plt_lim_upper):
+    yr_growth_plt_lim_upper = int(round(tmp_max))+.5
 
   tmp_max = max(ticker_yr_growth_df.loc["BV_Per_Share_Growth"])
   logging.debug("The max value in Diluted BVPS Growth List is " + str(tmp_max))
-  if (tmp_max > growth_numbers_plt_lim_upper):
-    growth_numbers_plt_lim_upper = int(round(tmp_max))+.5
+  if (tmp_max > yr_growth_plt_lim_upper):
+    yr_growth_plt_lim_upper = int(round(tmp_max))+.5
 
-  logging.debug("The upper limit for the Growth Plot is set to " + str(growth_numbers_plt_lim_upper))
+  logging.debug("The upper limit for the Growth Plot is set to " + str(yr_growth_plt_lim_upper))
 
-  growth_numbers_plt.set_ylim(growth_numbers_plt_lim_lower, growth_numbers_plt_lim_upper)
-  growth_numbers_plt.tick_params(axis="y", direction="in", pad=-22)
+  yr_growth_plt.set_ylim(yr_growth_plt_lim_lower, yr_growth_plt_lim_upper)
+  yr_growth_plt.tick_params(axis="y", direction="in", pad=-22)
 
-  growth_numbers_plt_inst_00 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_10_percent_list, label='Base_Growth_10', linestyle='--',color='blue',marker="*",markersize='12')
-  growth_numbers_plt_inst_01 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_20_percent_list, label='Base_Growth_20', linestyle='--',color='blue',marker="*",markersize='12')
-  growth_numbers_plt_inst_02 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
-  growth_numbers_plt_inst_03 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
-  growth_numbers_plt_inst_04 = growth_numbers_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
+  yr_growth_plt_inst_00 = yr_growth_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_10_percent_list, label='Base_Growth_10', linestyle='--',color='blue',marker="*",markersize='12')
+  yr_growth_plt_inst_01 = yr_growth_plt.plot(ticker_yr_growth_df.columns.tolist(), base_growth_20_percent_list, label='Base_Growth_20', linestyle='--',color='blue',marker="*",markersize='12')
+  yr_growth_plt_inst_02 = yr_growth_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
+  yr_growth_plt_inst_03 = yr_growth_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
+  yr_growth_plt_inst_04 = yr_growth_plt.plot(ticker_yr_growth_df.columns.tolist(), ticker_yr_growth_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
 
   # Maybe need to adjust if the plot gets moved???
-  lns = growth_numbers_plt_inst_02+growth_numbers_plt_inst_03+growth_numbers_plt_inst_04
+  lns = yr_growth_plt_inst_02+yr_growth_plt_inst_03+yr_growth_plt_inst_04
   labs = [l.get_label() for l in lns]
   logging.debug("The Labels are" + str(labs))
-  growth_numbers_plt.legend(lns, labs, bbox_to_anchor=(.2, 1.02), loc="upper right", borderaxespad=2, fontsize='x-small')
+  yr_growth_plt.legend(lns, labs, bbox_to_anchor=(.2, 1.02), loc="upper right", borderaxespad=2, fontsize='x-small')
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
@@ -398,7 +396,7 @@ for ticker_raw in ticker_list:
   qtr_table_plt.set_yticks([])
   qtr_table_plt.set_xticks([])
 
-  # Extract desired rows out of the dataframe in tmp_df
+  # Extract the desired rows out of the dataframe in tmp_df
   tmp_df  = pd.DataFrame()
   desired_indices = ['Revenue','Revenue_Growth','Diluted_EPS','EPS_Growth']
   tmp_df = ticker_qtr_numbers_df.loc[desired_indices]
@@ -468,7 +466,7 @@ for ticker_raw in ticker_list:
       if (col_idx == revenue_col_idx):
         x = "Rev #"
       if (col_idx == revenue_growth_col_idx):
-        x = "Rev. %"
+        x = "Rev %"
       if (col_idx == eps_col_idx):
         x = "EPS #"
         cell.get_text().set_text(x)

@@ -73,7 +73,7 @@ for ticker_raw in ticker_list:
   print("\nIteration : " + str(i_int) + " Processing : " + str(ticker))
 
   ticker_is_wheat = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
-  if (ticker_is_wheat != 'Wheat') and (ticker_is_wheat != 'Essential') and (ticker_is_wheat != 'Wheat_Chaff'):
+  if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential') and (quality_of_stock != 'Sundeep_List')):
     # logging.info (str(ticker) +  " is not Wheat or Essential...skipping")
     print (str(ticker) +  " is not Wheat or Essential...skipping")
     continue
