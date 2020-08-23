@@ -1,13 +1,13 @@
 Tickers,,,Tickers,,Team memebers stocks,CNBC_Matches_Reported_EPS,,Ann_Chaff,,,,,,,,,,
-ASML,,,A,,AKAM,N,,,,,WILC,AR,N,IB,Sell,,LAD,BABA
-AZPN,,,ABCB,,AUDC,,,,,,IR,CCJ,N,IB,Sell,,MKTX,BZUN
-DOV,,,AEP,,AVGO,,,,,,,CDE,N,F,,,NVDA,IR
-EL,,,AFL,,CCS,,,,,,,CTL,N,IB/F,Sell,,NVR,
-HELE,,,ALG,,COST,,,,,,,MT,N,F,Sell,,OSIS,
-KEYS,,,ALL,,CTXS,,,,,,,OVV,N,IB,Sell,,PGR,
-,,,AMOT,,CYBR,,,,,,,OXY,N,IB,,,TDY,
-,,,AMSF,,FTNT,,,,,,,RIG,N,IB,,,TMO,
-,,,AMWD,,HD,,,,,,,SLB,N,IB,,,VEEV,
+LAD,,,A,,AKAM,N,,,,,WILC,AR,N,IB,Sell,,LAD,BABA
+MKTX,,,ABCB,,AUDC,,,,,,IR,CCJ,N,IB,Sell,,MKTX,BZUN
+NVDA,,,AEP,,AVGO,,,,,,,CDE,N,F,,,NVDA,IR
+NVR,,,AFL,,CCS,,,,,,,CTL,N,IB/F,Sell,,NVR,
+OSIS,,,ALG,,COST,,,,,,,MT,N,F,Sell,,OSIS,
+PGR,,,ALL,,CTXS,,,,,,,OVV,N,IB,Sell,,PGR,
+TDY,,,AMOT,,CYBR,,,,,,,OXY,N,IB,,,TDY,
+TMO,,,AMSF,,FTNT,,,,,,,RIG,N,IB,,,TMO,
+VEEV,,,AMWD,,HD,,,,,,,SLB,N,IB,,,VEEV,
 ,,,AON,,IIPR,,,,,,,SMCI,N,F,Sell,,,
 ,,,ARCH,,LPLA,,,,,,,AMZN,,,,,,
 ,,,AWK,,LUV,,,,,,,BABA,,,,,,
