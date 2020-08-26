@@ -582,21 +582,21 @@ for ticker_raw in ticker_list:
       if (no_of_years_to_insert_aaii_eps_projections == 1):
         if (-5 <= days_bw_y_plus0_and_latest_qtr_date_in_earnings_file.days <= 5):
           growth_factor = y_plus1_fiscal_year_eps_projections/y_plus0_fiscal_year_eps_projections
-          logging.debug(str(ticker) + " : Inserting one year of EPS projections with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor))
+          logging.debug(str(ticker) + " : Inserting one year of EPS projections with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor) + " (" + str(y_plus1_fiscal_year_eps_projections) + "/" + str(y_plus0_fiscal_year_eps_projections) + ")")
         else:
           growth_factor = y_plus2_fiscal_year_eps_projections/y_plus1_fiscal_year_eps_projections
-          logging.debug(str(ticker) + " : Inserting one year of EPS projections with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor))
+          logging.debug(str(ticker) + " : Inserting one year of EPS projections with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor) + " (" + str(y_plus2_fiscal_year_eps_projections) + "/" + str(y_plus1_fiscal_year_eps_projections) + ")")
         for i_int in range(no_of_qtr_to_insert):
           tmp_eps_list[i_int] = qtr_eps_list[3 - i_int]*growth_factor
           logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
       else:
         growth_factor = y_plus1_fiscal_year_eps_projections / y_plus0_fiscal_year_eps_projections
-        logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing First part -  with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor))
+        logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing First part -  with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor) + " (" + str(y_plus1_fiscal_year_eps_projections) + "/" + str(y_plus0_fiscal_year_eps_projections) + ")")
         for i_int in range(0,4):
           tmp_eps_list[i_int] = qtr_eps_list[3 - i_int] * growth_factor
           logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
         growth_factor = y_plus2_fiscal_year_eps_projections / y_plus1_fiscal_year_eps_projections
-        logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing Second part -  with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor))
+        logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing Second part -  with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor) + " (" + str(y_plus2_fiscal_year_eps_projections) + "/" + str(y_plus1_fiscal_year_eps_projections) + ")")
         for i_int in range(4,8):
           tmp_eps_list[i_int] = tmp_eps_list[i_int-4] * growth_factor
           logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(tmp_eps_list[i_int-4]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
@@ -2551,25 +2551,36 @@ for ticker_raw in ticker_list:
       # 'upper center' : 9,
       # 'center'       : 10,
       # -----------------------------------------------------------------------------
-      # todo : Can this be done in an array
-      number_of_anchored_texts = 4
-      for i in range(number_of_anchored_texts):
-        if (i == 0):
-          location = 9
-          my_text = "Ann Constant is: " +  str(round(ann_constant,4))
-        elif (i == 1):
-          location = 6
-          my_text = "Test for Box number 2"
-        elif (i == 2):
-          location = 2
-          my_text = "Test Box in upper left"
-        else:
-          location = 4
-          my_text = "What do you want me to put here?"
+      if ("Anchored_Text" in config_json[ticker]):
+        logging.debug("Found Anchored Text " + str(config_json[ticker]["Anchored_Text"]))
+        if (len(config_json[ticker]["Anchored_Text"].keys()) > 0):
+          split_keys = config_json[ticker]["Anchored_Text"].keys()
+          logging.debug("Location is : " + str(split_keys))
+          for i_key in split_keys:
+            logging.debug("Location : " + str(i_key) + ", Text : " + str(config_json[ticker]["Anchored_Text"][i_key]))
+            location = i_key
+            my_text = config_json[ticker]["Anchored_Text"][i_key]
+            a_text = AnchoredText(my_text, loc=location)
+            main_plt.add_artist(a_text)
+      else :
+        number_of_anchored_texts = 4
+        for i in range(number_of_anchored_texts):
+          if (i == 0):
+            location = 9
+            my_text = "Ann Constant is: " +  str(round(ann_constant,4))
+          elif (i == 1):
+            location = 6
+            my_text = "Test for Box number 2"
+          elif (i == 2):
+            location = 2
+            my_text = "Test Box in upper left"
+          else:
+            location = 4
+            my_text = "What do you want me to put here?"
 
-        # todo : Maybe add transparency to the box?
-        a_text = AnchoredText(my_text, loc=location)
-        main_plt.add_artist(a_text)
+          # todo : Maybe add transparency to the box?
+          a_text = AnchoredText(my_text, loc=location)
+          main_plt.add_artist(a_text)
       # -----------------------------------------------------------------------------
 
       # -----------------------------------------------------------------------------
