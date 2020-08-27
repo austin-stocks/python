@@ -2555,14 +2555,14 @@ for ticker_raw in ticker_list:
         logging.debug("Found Anchored Text " + str(config_json[ticker]["Anchored_Text"]))
         if (len(config_json[ticker]["Anchored_Text"].keys()) > 0):
           split_keys = config_json[ticker]["Anchored_Text"].keys()
-          logging.debug("Location is : " + str(split_keys))
+          logging.debug("Location(s) are : " + str(split_keys))
           for i_key in split_keys:
-            logging.debug("Location : " + str(i_key) + ", Text : " + str(config_json[ticker]["Anchored_Text"][i_key]))
             location = i_key
             my_text = config_json[ticker]["Anchored_Text"][i_key]
+            logging.debug("Location : " + str(location) + ", Text : " + str(my_text))
             a_text = AnchoredText(my_text, loc=location)
             main_plt.add_artist(a_text)
-      else :
+      else:
         number_of_anchored_texts = 4
         for i in range(number_of_anchored_texts):
           if (i == 0):
@@ -2577,7 +2577,6 @@ for ticker_raw in ticker_list:
           else:
             location = 4
             my_text = "What do you want me to put here?"
-
           # todo : Maybe add transparency to the box?
           a_text = AnchoredText(my_text, loc=location)
           main_plt.add_artist(a_text)
