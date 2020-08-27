@@ -2551,7 +2551,7 @@ for ticker_raw in ticker_list:
       # 'upper center' : 9,
       # 'center'       : 10,
       # -----------------------------------------------------------------------------
-      if ("Anchored_Text" in config_json[ticker]):
+      if ((ticker in config_json.keys()) and ("Anchored_Text" in config_json[ticker])):
         logging.debug("Found Anchored Text " + str(config_json[ticker]["Anchored_Text"]))
         if (len(config_json[ticker]["Anchored_Text"].keys()) > 0):
           split_keys = config_json[ticker]["Anchored_Text"].keys()
