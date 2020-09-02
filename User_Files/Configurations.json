@@ -35,11 +35,34 @@
     ]
   },
 
+  "PRI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2012", "Stop_Date" :   "Next"},
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.5"}
+    ]
+  },
+
   "HAE" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"}
     ]
   },
+
+  "STRL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+  "CHKP" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2011", "Stop_Date" :   "Next"},
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
 
 
   "RBA" : {
