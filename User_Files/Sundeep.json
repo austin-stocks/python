@@ -20,7 +20,8 @@
 
   "HOLX" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "08/04/2020","Buy_Price_str" :  "$71.87"}
+       {"Buy_Date" : "08/04/2020","Buy_Price_str" :  "$71.87"},
+       {"Sell_Date" : "09/04/2020","Sell_Price_str" :  "$57.43"}
     ]
   },
 

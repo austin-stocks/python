@@ -1,15 +1,15 @@
 Tickers,,,Tickers,,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,,,,,,
-CHKP,,,A,,AKAM,N,AMZN,,,,,AR,N,IB,Sell,AAN,ALXN
-PRI,,,ABCB,,AUDC,No - Non-GAAP diluted ,BABA,,,,,CCJ,N,IB,Sell,ADM,AMT
-STRL,,,AEP,,AVGO,,BRKB,,,,,CDE,N,F,,ADP,CI
-,,,AFL,,CCS,,COHR,,,,,CTL,N,IB/F,Sell,ANTM,CRS
-,,,ALG,,COST,,CTXS,,,,,MT,N,F,Sell,ASGN,DLA
-,,,ALL,,CTXS,,HOLX,,,,,OVV,N,IB,Sell,AXP,GPI
-,,,AMOT,,CYBR,,IIPR,,,,,OXY,N,IB,,BA,KEX
-,,,AMSF,,FTNT,,MED,,,,,RIG,N,IB,,BSX,LKQ
-,,,AMWD,,HD,,MU,,,,,SLB,N,IB,,CCI,MA
-,,,AON,,IIPR,,NMIH,,,,,SMCI,N,F,Sell,CMPR,MAS
-,,,ARCH,,LPLA,,QLYS,,,,,,,,,EQIX,MCO
+AMZN,,,A,,AKAM,N,AMZN,,,,,AR,N,IB,Sell,AAN,ALXN
+BABA,,,ABCB,,AUDC,No - Non-GAAP diluted ,BABA,,,,,CCJ,N,IB,Sell,ADM,AMT
+COHR,,,AEP,,AVGO,,COHR,,,,,CDE,N,F,,ADP,CI
+CTXS,,,AFL,,CCS,,CTXS,,,,,CTL,N,IB/F,Sell,ANTM,CRS
+HOLX,,,ALG,,COST,,HOLX,,,,,MT,N,F,Sell,ASGN,DLA
+IIPR,,,ALL,,CTXS,,IIPR,,,,,OVV,N,IB,Sell,AXP,GPI
+MED,,,AMOT,,CYBR,,MED,,,,,OXY,N,IB,,BA,KEX
+MU,,,AMSF,,FTNT,,MU,,,,,RIG,N,IB,,BSX,LKQ
+NMIH,,,AMWD,,HD,,NMIH,,,,,SLB,N,IB,,CCI,MA
+QLYS,,,AON,,IIPR,,QLYS,,,,,SMCI,N,F,Sell,CMPR,MAS
+,,,ARCH,,LPLA,,,,,,,,,,,EQIX,MCO
 ,,,AWK,,LUV,,,,,,,,,,,EW,PYPL
 ,,,AX,,MA,,,,,,,,,,,GD,RJF
 ,,,AXGT,,MED,,,,,,,,,,,GE,SAH
