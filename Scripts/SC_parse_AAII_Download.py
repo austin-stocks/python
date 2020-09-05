@@ -95,7 +95,8 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # #############################################################################
 #                   MAIN LOOP FOR TICKERS
 # #############################################################################
-ticker_list = ['IBM','AAPL', 'AUDC','MED']
+ticker_list = ['IBM']
+# ticker_list = ['IBM','AAPL', 'AUDC','MED']
 for ticker_raw in ticker_list:
 
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
@@ -139,10 +140,31 @@ for ticker_raw in ticker_list:
   aaii_yr_dates_dict_dt = {}
   aaii_yr_dates_dict_str = {}
 
+  aaii_qtr_df = pd.DataFrame(columns=['AAII_QTR_DATA'])
+  aaii_qtr_df.set_index(['AAII_QTR_DATA'], inplace=True)
   for qtr_idx in qtr_str_list:
-    logging.debug("Getting the Quarterly data from AAII for " + str(qtr_idx))
-    aaii_qtr_dates_dict_dt[qtr_idx] =  dt.datetime.strptime(str(aaii_date_and_misc_series['Ending date ' + str(qtr_idx)]),'%Y-%m-%d %H:%M:%S').date()
-    aaii_qtr_dates_dict_str[qtr_idx] =  aaii_qtr_dates_dict_dt[qtr_idx].strftime('%m/%d/%Y')
+    logging.debug("Getting the Yearly data from AAII for " + str(qtr_idx))
+    # Handle the case when the date is NA in the AAII file
+    aaii_qtr_date_str = aaii_date_and_misc_series['Ending date ' + str(qtr_idx)]
+    logging.debug("The date string from the AAII file is " + str(aaii_qtr_date_str))
+    if not ((str(aaii_qtr_date_str) == 'NaT') or (len(str(aaii_qtr_date_str)) == 0)):
+      aaii_qtr_dates_dict_dt[qtr_idx] = dt.datetime.strptime(str(aaii_qtr_date_str),'%Y-%m-%d %H:%M:%S').date()
+      aaii_qtr_dates_dict_str[qtr_idx] =  aaii_qtr_dates_dict_dt[qtr_idx].strftime('%m/%d/%Y')
+      # Initialize and populate the columns of the aaii_qtr_df with the yr date str as column header
+      tmp_val = aaii_qtr_dates_dict_str[qtr_idx]
+      # This add a new column corresponding to the yr date str
+      aaii_qtr_df.assign(tmp_val = "")
+      aaii_qtr_df.loc['Revenue', tmp_val] = aaii_financials_qtr_series['Sales '+str(qtr_idx)]
+      aaii_qtr_df.loc['Inventory', tmp_val] = aaii_financials_qtr_series['Inventory '+str(qtr_idx)]
+      aaii_qtr_df.loc['Diluted_EPS', tmp_val] = aaii_financials_qtr_series['EPS-Diluted '+str(qtr_idx)]
+      aaii_qtr_df.loc['Shares_Diluted', tmp_val] = aaii_financials_qtr_series['Shares Diluted '+str(qtr_idx)]
+      aaii_qtr_df.loc['Current_Assets', tmp_val] = aaii_financials_qtr_series['Current assets '+str(qtr_idx)]
+      aaii_qtr_df.loc['Current_Liabilities', tmp_val] = aaii_financials_qtr_series['Current liabilities '+str(qtr_idx)]
+    else:
+      logging.debug("The date string from the AAII file for " + str(qtr_idx) + " was either NaT or empty...skipped that iteration")
+
+  logging.debug("\n\nThe QTR DF Prepared from AAII Data is \n" + aaii_qtr_df.to_string() + "\n")
+
 
   aaii_yr_df = pd.DataFrame(columns=['AAII_YR_DATA'])
   aaii_yr_df.set_index(['AAII_YR_DATA'], inplace=True)
@@ -160,11 +182,14 @@ for ticker_raw in ticker_list:
       aaii_yr_df.assign(tmp_val = "")
       aaii_yr_df.loc['Revenue', tmp_val] = aaii_financials_yr_series['Sales '+str(yr_idx)]
       # aaii_yr_df.loc['Dividend', tmp_val] = aaii_financials_yr_series['Dividend '+str(yr_idx)]
-      # aaii_yr_df.loc['Diluted_EPS', tmp_val] = aaii_financials_yr_series['EPS-Diluted Continuing '+str(yr_idx)]
+      aaii_yr_df.loc['Net_Income', tmp_val] = aaii_financials_yr_series['Net income '+str(yr_idx)]
+      aaii_yr_df.loc['Diluted_EPS', tmp_val] = aaii_financials_yr_series['EPS-Diluted '+str(yr_idx)]
+      aaii_yr_df.loc['Cash_from_Operations', tmp_val] = aaii_financials_yr_series['Cash from operations '+str(yr_idx)]
+      aaii_yr_df.loc['Capital_Expenditures', tmp_val] = aaii_financials_yr_series['Capital expenditures '+str(yr_idx)]
+      aaii_yr_df.loc['Shares_Diluted', tmp_val] = aaii_financials_yr_series['Shares Diluted '+str(yr_idx)]
       aaii_yr_df.loc['LT_Debt', tmp_val] = aaii_financials_yr_series['Long-term debt '+str(yr_idx)]
       aaii_yr_df.loc['Total_Assets', tmp_val] = aaii_financials_yr_series['Total assets '+str(yr_idx)]
       aaii_yr_df.loc['Total_Liabilities', tmp_val] = aaii_financials_yr_series['Total liabilities '+str(yr_idx)]
-      aaii_yr_df.loc['Shares_Diluted', tmp_val] = aaii_financials_yr_series['Shares Diluted '+str(yr_idx)]
       # aaii_yr_df.loc['Current_Assets', tmp_val] = aaii_financials_yr_series['Current assets '+str(yr_idx)]
       # aaii_yr_df.loc['Short_Term_Debt', tmp_val] = aaii_financials_yr_series['Short-term debt '+str(yr_idx)]
     else:
@@ -176,7 +201,7 @@ for ticker_raw in ticker_list:
   # aaii_yr_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in aaii_yr_df_col_list]
   # logging.debug("\n\nThe AAII YR DF Datelist is " + str(aaii_yr_date_list_dt) + " and the number of elements is " + str(len(aaii_yr_date_list_dt)))
   logging.info("Read in QTR and YR data from AAII file : " + str(aaii_xls_file))
-  sys.exit(1)
+  # sys.exit(1)
   # ---------------------------------------------------------------------------
 
   # ###########################################################################
@@ -185,7 +210,7 @@ for ticker_raw in ticker_list:
   # ###########################################################################
   
   # Loop for qtr and yr data
-  for qtr_yr_idx in ['yr']:
+  for qtr_yr_idx in ['qtr','yr']:
     ticker_csv_exists = 0
     ticker_csv_filename = ticker + "_" + qtr_yr_idx + "_data.csv"
     if qtr_yr_idx == 'yr':
@@ -193,10 +218,10 @@ for ticker_raw in ticker_list:
       aaii_df = aaii_yr_df.copy()
     else:
       ticker_csv_filepath = dir_path + analysis_dir + "\\" + "Quarterly"
-      # aaii_df = aaii_qtr_df.copy()
+      aaii_df = aaii_qtr_df.copy()
 
     aaii_datelist_dt =  [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in list(aaii_df)]
-    logging.debug("The AAII YR DF Datelist is " + str(type(aaii_datelist_dt)) + " \nand the number of elements is " + str(len(aaii_datelist_dt)))
+    logging.debug("The AAII DF Datelist is " + str(type(aaii_datelist_dt)) + " \nand the number of elements is " + str(len(aaii_datelist_dt)))
 
     if (os.path.exists(ticker_csv_filepath + "\\" + ticker_csv_filename) is True):
       ticker_csv_df = data = pd.read_csv(ticker_csv_filepath + "\\" + ticker_csv_filename)
@@ -276,6 +301,6 @@ for ticker_raw in ticker_list:
     #   for  cols_idx in ticker_csv_df_cols:
     #     logging.debug("Row : " + str(rows_idx) + ", Column : " + str(cols_idx) + ", Value : " + str(ticker_csv_df.loc[rows_idx,cols_idx]))
 
-    logging.info("Done " + str(ticker))
+    logging.info("Done processing for " + str(qtr_yr_idx) + " for " + str(ticker))
 
   logging.debug("All Done")

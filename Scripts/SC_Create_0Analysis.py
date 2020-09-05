@@ -4,6 +4,7 @@ from openpyxl.styles import PatternFill
 import os
 import xlrd
 import sys
+import math
 import time
 import pandas as pd
 import datetime as dt
@@ -37,6 +38,7 @@ earnings_dir = "\\..\\" + "Earnings"
 dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
 analysis_dir = "\\..\\" + "Analysis"
+analysis_plot_dir = "\\..\\" + "Analysis_Plots"
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -114,9 +116,6 @@ logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 # Set the various dirs and read the AAII file
 # -----------------------------------------------------------------------------
-qtr_str_list = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8']
-yr_str_list = ['Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7']
-
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
@@ -129,7 +128,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # #############################################################################
 #                   MAIN LOOP FOR TICKERS
 # #############################################################################
-ticker_list = ['NATI']
+ticker_list = ['IBM']
 for ticker_raw in ticker_list:
 
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
@@ -155,6 +154,11 @@ for ticker_raw in ticker_list:
 
   # Start working with the dataframe to generate various numbers
   ticker_qtr_numbers_df = ticker_datain_qtr_df.copy()
+  col_list = ticker_qtr_numbers_df.columns.tolist()
+  most_recent_qtr_date_str = col_list[0]
+  most_recent_qtr_date_dt = dt.datetime.strptime(most_recent_qtr_date_str, '%m/%d/%Y').date()
+  most_recent_qtr_date_str = dt.datetime.strftime(most_recent_qtr_date_dt, '%b-%Y')
+  logging.debug("The most recent Quarter Date is : " + str(most_recent_qtr_date_str))
   #   Earnings
   #   Revenue
   #   # of Employees (only available in 10-K?). So do it annually??
@@ -167,21 +171,36 @@ for ticker_raw in ticker_list:
   #   Shareholders Equity
   #   Current Ratio (Should I calculate or should it be directly downloaded from AAII - This is also a philosophical question in general)
 
-  # Add the rows for Revenue growth, EPS growth
   col_list = ticker_qtr_numbers_df.columns.tolist()
-  qtr_eps_growth_list = []
-  qtr_revenue_growth_list = []
   for col_idx in range(len(col_list)):
-    qtr_eps_growth_list.append(float('nan'))
-    qtr_revenue_growth_list.append(float('nan'))
-  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(qtr_eps_growth_list, index=ticker_qtr_numbers_df.columns, name='EPS_Growth'))
-  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(qtr_revenue_growth_list, index=ticker_qtr_numbers_df.columns, name='Revenue_Growth'))
+    col_val = col_list[col_idx]
+    ticker_qtr_numbers_df.loc['Inventory', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Inventory', col_val])
+    ticker_qtr_numbers_df.loc['Revenue', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Revenue', col_val])
+    ticker_qtr_numbers_df.loc['Shares_Diluted', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Shares_Diluted', col_val])
+    ticker_qtr_numbers_df.loc['Current_Assets', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Current_Assets', col_val])
+    ticker_qtr_numbers_df.loc['Current_Liabilities', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Current_Liabilities', col_val])
+
+  col_list = ticker_qtr_numbers_df.columns.tolist()
+  dummy_list = []
+  for col_idx in range(len(col_list)):
+    dummy_list.append(float('nan'))
+
+  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='EPS_Growth'))
+  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Revenue_Growth'))
+  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Current_Ratio'))
   logging.debug("The QTR  df after adding rows \n" + ticker_qtr_numbers_df.to_string())
+
+  # Watch out if the current Liabilites are 0
+  col_list = ticker_qtr_numbers_df.columns.tolist()
+  for col_idx in range(len(col_list)):
+    col_val = col_list[col_idx]
+    ticker_qtr_numbers_df.loc['Current_Ratio', col_val] = ticker_qtr_numbers_df.loc['Current_Assets', col_val] / ticker_qtr_numbers_df.loc['Current_Liabilities', col_val]
 
   # Now calculate the EPS and sales grwoth and put them in just added rows
   col_list = ticker_qtr_numbers_df.columns.tolist()
   no_of_qts_to_calculate_growth_rate_for = 4
   for col_idx in range(0, no_of_qts_to_calculate_growth_rate_for):
+
     # Only calculate the qtrs for which the back data is available...this will get better are more date becomes available.
     if (col_idx+4 <= len(col_list)-1):
       col_val = col_list[col_idx]
@@ -194,7 +213,7 @@ for ticker_raw in ticker_list:
         ticker_qtr_numbers_df.loc['EPS_Growth', col_val] = 100*((eps_this_qtr/eps_same_qtr_last_year)-1)
 
       ticker_qtr_numbers_df.loc['Revenue_Growth', col_val] = 100*((ticker_qtr_numbers_df.loc['Revenue', col_val]/ticker_qtr_numbers_df.loc['Revenue', col_val_same_qtr_last_year])-1)
-  logging.debug("The QTR  df after calculation grwoth rates for Revenue and EPS  \n" + ticker_qtr_numbers_df.to_string())
+  logging.debug("The QTR  df after calculation growth rates for Revenue and EPS  \n" + ticker_qtr_numbers_df.to_string())
   # Now that dataframe is ready - It will be modified in the chart section -- Read there to find out more
 
   # ===========================================================================
@@ -202,24 +221,19 @@ for ticker_raw in ticker_list:
   # ===========================================================================
   # Read the ticker AAII data yr file
   # ===========================================================================
+  logging.debug("=======================================")
+  logging.info("Starting to process YR data")
+  logging.debug("=======================================")
   ticker_datain_yr_file = ticker +  "_yr_data.csv"
   ticker_datain_yr_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Yearly" + "\\" + ticker_datain_yr_file)
   ticker_datain_yr_df.set_index("AAII_YR_DATA",inplace=True)
   logging.debug("The YR dataframe (datain_df) read from the AAII file is : \n" + ticker_datain_yr_df.to_string())
 
   # ---------------------------------------------------------------------------
-  # Now we have a dataframe that we need to make calculation for our 0_Analysis
-  # Various dateframes can be generated off the dataframes that we have read in.
-  # Those generated dataframes can be reprensed as tables and or used to create
-  # graphs later on
+  # Copy Yearly numbers dataframe (todo : Do we really need a copy?)
   # ---------------------------------------------------------------------------
-
-  # ---------------------------------------------------------------------------
-  # Yearly numbers dataframe
-  # ---------------------------------------------------------------------------
-  logging.info("Starting to process YR data")
   ticker_yr_numbers_df = ticker_datain_yr_df.copy()
-  logging.debug("The input YR df after copying over to yr_numbers_df \n" + ticker_yr_numbers_df.to_string())
+  logging.debug("The YR df after copying over to yr_numbers_df \n" + ticker_yr_numbers_df.to_string())
 
   # These rows are not needed / Remove the unwanted rows (Not really needed but do it for now)
   # ticker_yr_numbers_df.drop(index= ['Current_Assets'], inplace=True)
@@ -230,25 +244,68 @@ for ticker_raw in ticker_list:
   # ticker_yr_numbers_df = ticker_yr_numbers_df.loc[['Revenue', 'Diluted_EPS', 'BV_Per_Share', 'LT_Debt'], :]
   # logging.debug("The YR datain df after rearranging the rows \n" + ticker_yr_numbers_df.to_string())
 
-  # This reverses the dataframe by columns - Both of these work
+  # This works : This reverses the dataframe by columns - Both of these work
   # tmp_df = ticker_yr_numbers_df[ticker_yr_numbers_df.columns[::-1]]
   tmp_df = ticker_yr_numbers_df.iloc[:, ::-1]
   ticker_yr_numbers_df = tmp_df.copy()
   logging.debug("The ticker yr dataframe now reversed is \n" + ticker_yr_numbers_df.to_string())
 
   # First convert the numbers to raw numbers (like the revenue is in millions etc)
-  # and create a bsee growth row
+  # and create rows that need to be crated for
+  # Book Value
+  # ROE
+  # ROIC
+  # Free Cash flow
   col_list = ticker_yr_numbers_df.columns.tolist()
+  for col_idx in range(len(col_list)):
+    col_val = col_list[col_idx]
+    ticker_yr_numbers_df.loc['Capital_Expenditures', col_val] = 1000000 * (ticker_datain_yr_df.loc['Capital_Expenditures', col_val])
+    ticker_yr_numbers_df.loc['Cash_from_Operations', col_val] = 1000000 * (ticker_datain_yr_df.loc['Cash_from_Operations', col_val])
+    ticker_yr_numbers_df.loc['LT_Debt', col_val] = 1000000 * (ticker_datain_yr_df.loc['LT_Debt', col_val])
+    ticker_yr_numbers_df.loc['Net_Income', col_val] = 1000000 * (ticker_datain_yr_df.loc['Net_Income', col_val])
+    ticker_yr_numbers_df.loc['Revenue', col_val] = 1000000 * (ticker_datain_yr_df.loc['Revenue', col_val])
+    ticker_yr_numbers_df.loc['Shares_Diluted', col_val] = 1000000 * (ticker_datain_yr_df.loc['Shares_Diluted', col_val])
+    ticker_yr_numbers_df.loc['Total_Assets', col_val] = 1000000 * (ticker_datain_yr_df.loc['Total_Assets', col_val])
+    ticker_yr_numbers_df.loc['Total_Liabilities', col_val] = 1000000 * (ticker_datain_yr_df.loc['Total_Liabilities', col_val])
+
+  logging.debug("The ticker yr dataframe after converting the numbers to raw numbers \n" + ticker_yr_numbers_df.to_string())
+
+  # Now create and pouplate the rows that are needed for the chart/table
+  dummy_list =[]
+  col_list = ticker_yr_numbers_df.columns.tolist()
+  for col_idx in range(len(col_list)):
+    col_val = col_list[col_idx]
+    dummy_list.append(float('nan'))
+
+  # Add the rows for -- These will be populated later
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='BV_Per_Share'))
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='FCF_Per_Share'))
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='ROE'))
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='ROIC'))
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='Revenue_Growth'))
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='Diluted_EPS_Growth'))
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='BV_Per_Share_Growth'))
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='FCF_Per_Share_Growth'))
+
+  col_list = ticker_yr_numbers_df.columns.tolist()
+  for col_idx in range(len(col_list)):
+    col_val = col_list[col_idx]
+    ticker_yr_numbers_df.loc['BV_Per_Share', col_val] = (ticker_yr_numbers_df.loc['Total_Assets', col_val]-ticker_yr_numbers_df.loc['Total_Liabilities', col_val])/ticker_yr_numbers_df.loc['Shares_Diluted', col_val]
+    ticker_yr_numbers_df.loc['FCF_Per_Share', col_val] = (ticker_yr_numbers_df.loc['Cash_from_Operations', col_val]-ticker_yr_numbers_df.loc['Capital_Expenditures', col_val])/ticker_yr_numbers_df.loc['Shares_Diluted', col_val]
+    ticker_yr_numbers_df.loc['ROE', col_val] = 100*ticker_yr_numbers_df.loc['Net_Income', col_val]/(ticker_yr_numbers_df.loc['Total_Assets', col_val]-ticker_yr_numbers_df.loc['Total_Liabilities', col_val])
+    ticker_yr_numbers_df.loc['ROIC', col_val] = 100*ticker_yr_numbers_df.loc['Net_Income', col_val]/(ticker_yr_numbers_df.loc['Total_Assets', col_val]-ticker_yr_numbers_df.loc['Total_Liabilities', col_val]+ticker_yr_numbers_df.loc['LT_Debt', col_val])
+
+
+  # Create a bsee growth row
   base_growth_rate_percent_10 = .1
   base_growth_rate_percent_20 = .2
   base_growth_10_percent_list = []
   base_growth_20_percent_list = []
+  col_list = ticker_yr_numbers_df.columns.tolist()
   for col_idx in range(len(col_list)):
     col_val = col_list[col_idx]
     base_growth_10_percent_list.append(float('nan'))
     base_growth_20_percent_list.append(float('nan'))
-    ticker_yr_numbers_df.loc['Revenue', col_val] = 1000000 * (ticker_datain_yr_df.loc['Revenue', col_val])
-    ticker_yr_numbers_df.loc['LT_Debt', col_val] = 1000000 * (ticker_datain_yr_df.loc['LT_Debt', col_val])
     if (col_idx == 0):
       base_growth_10_percent_list[col_idx] = 1
       base_growth_20_percent_list[col_idx] = 1
@@ -256,38 +313,78 @@ for ticker_raw in ticker_list:
       base_growth_10_percent_list[col_idx] = base_growth_10_percent_list[col_idx-1]*(1+base_growth_rate_percent_10)
       base_growth_20_percent_list[col_idx] = base_growth_20_percent_list[col_idx-1]*(1+base_growth_rate_percent_20)
 
-  # Reverse the list
+  # Thiw works - Reverse the list
   # base_growth_10_percent_list = base_growth_10_percent_list[::-1]
   logging.debug("The base growth 10% list is " + str(base_growth_10_percent_list))
   logging.debug("The base growth 20% list is " + str(base_growth_20_percent_list))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(base_growth_10_percent_list, index=ticker_yr_numbers_df.columns, name='Base_Growth_10'))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(base_growth_20_percent_list, index=ticker_yr_numbers_df.columns, name='Base_Growth_20'))
-  # Add token growth rate rows -- these will be populated properly below
-  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(base_growth_10_percent_list, index=ticker_yr_numbers_df.columns, name='Revenue_Growth'))
-  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(base_growth_10_percent_list, index=ticker_yr_numbers_df.columns, name='Diluted_EPS_Growth'))
-  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(base_growth_10_percent_list, index=ticker_yr_numbers_df.columns, name='BV_Per_Share_Growth'))
 
-  logging.debug("The ticker yr dataframe after adding token growth rates is: \n" + ticker_yr_numbers_df.to_string())
+  logging.debug("The ticker yr dataframe after adding rows needed for furthur calculations and token growth rates is: \n" + ticker_yr_numbers_df.to_string())
 
+
+  # Populate the grwoth rates
+  col_list = ticker_yr_numbers_df.columns.tolist()
   for col_idx in range(len(col_list)):
     col_val = col_list[col_idx]
     if (col_idx == 0):
       ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = 1
       ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = 1
       ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = 1
+      ticker_yr_numbers_df.loc['FCF_Per_Share_Growth', col_val] = 1
     else:
       col_val_starting = col_list[0]
       # ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = (ticker_datain_yr_df.loc['Revenue', col_val]/ticker_datain_yr_df.loc['Revenue', col_val_starting])**(1/col_idx)
       # ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = (ticker_datain_yr_df.loc['Diluted_EPS', col_val]/ticker_datain_yr_df.loc['Diluted_EPS', col_val_starting])**(1/col_idx)
       # ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = (ticker_datain_yr_df.loc['BV_Per_Share', col_val]/ticker_datain_yr_df.loc['BV_Per_Share', col_val_starting])**(1/col_idx)
-      ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = (ticker_datain_yr_df.loc['Revenue', col_val]/ticker_datain_yr_df.loc['Revenue', col_val_starting])
-      ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = (ticker_datain_yr_df.loc['Diluted_EPS', col_val]/ticker_datain_yr_df.loc['Diluted_EPS', col_val_starting])
-      ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = (ticker_datain_yr_df.loc['BV_Per_Share', col_val]/ticker_datain_yr_df.loc['BV_Per_Share', col_val_starting])
+      logging.debug("Calculating Revenue Growth")
+      ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = (ticker_yr_numbers_df.loc['Revenue', col_val]/ticker_yr_numbers_df.loc['Revenue', col_val_starting])
+      logging.debug("Calculating EPS Growth")
+      ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = (ticker_yr_numbers_df.loc['Diluted_EPS', col_val]/ticker_yr_numbers_df.loc['Diluted_EPS', col_val_starting])
+      logging.debug("Calculating BV_Per_Share Growth")
+      ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = (ticker_yr_numbers_df.loc['BV_Per_Share', col_val]/ticker_yr_numbers_df.loc['BV_Per_Share', col_val_starting])
+      ticker_yr_numbers_df.loc['FCF_Per_Share_Growth', col_val] = (ticker_yr_numbers_df.loc['FCF_Per_Share', col_val]/ticker_yr_numbers_df.loc['FCF_Per_Share', col_val_starting])
 
   logging.debug("The ticker yr dataframe after adding actual growth rates is : \n" + ticker_yr_numbers_df.to_string())
   # This works - if you want to rearrange the rows of the dataframe in certain order
   # ticker_yr_numbers_df = ticker_yr_numbers_df.loc[['Base_Growth_10', 'Base_Growth_10','Revenue_Growth', 'Diluted_EPS_Growth', 'BV_Per_Share_Growth'], :]
   # ===========================================================================
+
+  # ===========================================================================
+  # Price  -- Done
+  # most_recent_quarter -- Done
+  # mrq_quick_ratio (Cash and liabilities in Q)
+  # mrq_current_ratio (Current Assets and Liabilities in Q)
+  # mrq_current_liabilities (in Q)
+  # mrq_equity (Total Assets and Liabilites in Q)
+  # mrq_lt_debt (LT debt in Q)
+  # mrq_lt_debt_over_equity
+  # mrq_shares_outstanding (Shares Diluted in Q)
+  # expected_growth (next 3 years/ 5 years) [Maybe in Misc Tab in AAII]
+  # TTM Sales (to generate P/S) -- Do we need this
+  # TTM Book  (to generate P/B)
+
+  # Extract the numbers that are needed for Key Statistics
+  # Current Ratio
+  # Debt to Equity
+
+  # Read the historical to get the latest Price -
+  # todo - Can get the latest price from the yahoo financials as well
+  historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
+  ticker_adj_close_list = historical_df.Adj_Close.tolist()
+  date_str_list = historical_df.Date.tolist()
+  date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
+  ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
+  ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
+  # Now round the ticker_curr_price to 2 decimal places
+  round(ticker_curr_price, 2)
+  logging.debug("The most recent price for " + str(ticker) + " is : " + str(ticker_curr_price) + " for date " + str(ticker_curr_date))
+
+  # Get the most recent quarter date
+
+  # ===========================================================================
+
+
 
 
   # #############################################################################
@@ -505,16 +602,17 @@ for ticker_raw in ticker_list:
   yr_growth_plt.tick_params(axis="y", direction="in", pad=-22)
 
   # Choose which indices need to be plotted for the growth chart and plot them
-  yr_growth_plt_inst_00 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), base_growth_10_percent_list, label='Base_Growth_10', linestyle='--',color='blue',marker="*",markersize='12')
-  yr_growth_plt_inst_01 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), base_growth_20_percent_list, label='Base_Growth_20', linestyle='--',color='blue',marker="*",markersize='12')
-  yr_growth_plt_inst_02 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
-  yr_growth_plt_inst_03 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
+  yr_growth_plt_inst_00 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), base_growth_10_percent_list, label='10%', linestyle='--',color='blue',marker="*",markersize='12')
+  yr_growth_plt_inst_01 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), base_growth_20_percent_list, label='20%', linestyle='--',color='blue',marker="*",markersize='12')
+  yr_growth_plt_inst_02 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
+  yr_growth_plt_inst_03 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
   yr_growth_plt_inst_04 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
+  yr_growth_plt_inst_05 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"], label='FCFPS', color="yellow", marker='.', markersize='10')
 
   # Print the labels in the plot...This needs to adjust if the plot gets
   # moved/resized as the position of the lables is hardcoded in the legend
   # statement below
-  lns = yr_growth_plt_inst_02+yr_growth_plt_inst_03+yr_growth_plt_inst_04
+  lns = yr_growth_plt_inst_00+yr_growth_plt_inst_01+yr_growth_plt_inst_02+yr_growth_plt_inst_03+yr_growth_plt_inst_04+yr_growth_plt_inst_05
   labs = [l.get_label() for l in lns]
   logging.debug("The Labels are" + str(labs))
   yr_growth_plt.legend(lns, labs, bbox_to_anchor=(.2, 1.02), loc="upper right", borderaxespad=2, fontsize='x-small')
@@ -529,7 +627,7 @@ for ticker_raw in ticker_list:
   yr_table_plt.set_xticks([])
 
   # Create a new dataframe - ticker_yr_table_df - that only has the indices that we want to display in the table
-  desired_indices = ['Revenue','Diluted_EPS','BV_Per_Share','LT_Debt']
+  desired_indices = ['Revenue','Diluted_EPS','BV_Per_Share','FCF_Per_Share','LT_Debt','Shares_Diluted','ROE','ROIC']
   ticker_yr_table_df = ticker_yr_numbers_df.loc[desired_indices]
   logging.debug("Inside the plotting area : The ticker yr df with only the desired rows \n" + ticker_yr_table_df.to_string())
 
@@ -542,6 +640,9 @@ for ticker_raw in ticker_list:
   # These can be used later to format the data in the respective rows
   lt_debt_row_idx =  ticker_yr_table_df.index.get_loc('LT_Debt') + 1
   revenue_row_idx =  ticker_yr_table_df.index.get_loc('Revenue') + 1
+  shares_outstanding_row_idx =  ticker_yr_table_df.index.get_loc('Shares_Diluted') + 1
+  roe_row_idx =  ticker_yr_table_df.index.get_loc('ROE') + 1
+  roic_row_idx =  ticker_yr_table_df.index.get_loc('ROIC') + 1
   # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
   for key, cell in yr_table_plt_inst.get_celld().items():
     row_idx = key[0]
@@ -549,43 +650,59 @@ for ticker_raw in ticker_list:
     cell_val = cell.get_text().get_text()
     logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
 
+    # Alternate the colors on the rows
     if (row_idx % 2 == 0):
       yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
     else:
       yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
 
+    # Set bold the header row and index column
     if ((row_idx == 0) or (col_idx < 0)):
       cell.get_text().set_fontweight('bold')
     elif (cell_val == 'nan'):
       x = "-"
       cell.get_text().set_text(x)
     else:
-      # if (row_idx == current_assets_row_idx):
-      #   x = f'{int(float(cell_val)):,}'
-        # This works - for now comment out as I try to think whether to have % here or not
-        # if (row_idx == revenue_row_idx):
-          # x = x + "%"
-      if ((row_idx == revenue_row_idx) or (row_idx == lt_debt_row_idx)):
+      if float(cell_val) < 0:
+        cell.get_text().set_color('Red')
+        cell.get_text().set_fontstyle('italic')
+        yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
+
+      if ((row_idx == revenue_row_idx) or (row_idx == lt_debt_row_idx) or (row_idx == shares_outstanding_row_idx)):
         x_int = int(float(cell_val))
         x = human_format(x_int)
+      elif ((row_idx == roe_row_idx) or (row_idx == roic_row_idx)):
+        x =  f'{float(cell.get_text().get_text()):.2f}'
+        x = x + "%"
       else:
         x =  f'{float(cell.get_text().get_text()):.2f}'
 
       cell.get_text().set_text(x)
 
-      if float(cell_val) < 0:
-        cell.get_text().set_color('Red')
-        cell.get_text().set_fontstyle('italic')
-        yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
 
   yr_table_plt.axis('off')
   logging.info("Done with plotting YR table...")
   # ===========================================================================
 
 
-  plt.show()
+  # Save the plot
+  now = dt.datetime.now()
+  # date_time = now.strftime("%Y_%m_%d_%H_%M")
+  date_time = now.strftime("%Y_%m_%d")
 
-  logging.debug("All Done")
+  # todo : The background color is not getting saved
+  fig.savefig(dir_path + analysis_plot_dir + "\\" + ticker + "_Analysis_" + date_time + ".jpg",dpi=200, bbox_inches='tight')
+
+  # Only show the plot if we are making only one chart
+  if (len(ticker_list) == 1):
+    plt.show()
+  else:
+    plt.close(fig)
+
+  # Outer loop ends here
+
+logging.info("")
+logging.info("All Done")
 
 
 
