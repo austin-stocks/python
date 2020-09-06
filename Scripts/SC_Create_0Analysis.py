@@ -157,7 +157,7 @@ for ticker_raw in ticker_list:
   col_list = ticker_qtr_numbers_df.columns.tolist()
   most_recent_qtr_date_str = col_list[0]
   most_recent_qtr_date_dt = dt.datetime.strptime(most_recent_qtr_date_str, '%m/%d/%Y').date()
-  most_recent_qtr_date_str = dt.datetime.strftime(most_recent_qtr_date_dt, '%b-%Y')
+  most_recent_qtr_date_str = dt.datetime.strftime(most_recent_qtr_date_dt, '%b-%y')
   logging.debug("The most recent Quarter Date is : " + str(most_recent_qtr_date_str))
   #   Earnings
   #   Revenue
@@ -237,7 +237,7 @@ for ticker_raw in ticker_list:
   # then come back and get the other numbers that remain
   # Now that dataframe is ready - It will be modified in the chart section -- Read there to find out more
   logging.debug("Starting to populate Keys Statistics numbers...")
-  key_stats_01_df = pd.DataFrame(columns=['key_stats_01_df','Values'])
+  key_stats_01_df = pd.DataFrame(columns=['key_stats_01_df',most_recent_qtr_date_str])
   key_stats_01_df.set_index(['key_stats_01_df'], inplace=True)
   key_stats_01_df.loc['Curr. Ratio']= [mrq_current_ratio]
   key_stats_01_df.loc['LT_Debt']= [mrq_lt_debt]
@@ -513,7 +513,7 @@ for ticker_raw in ticker_list:
     # -----------------------------------------------------
     if (col_idx == -1):
       x_date = dt.datetime.strptime(cell_val,'%m/%d/%Y').date()
-      x = dt.datetime.strftime(x_date, '%m/%y')
+      x = dt.datetime.strftime(x_date, '%b-%y')
       logging.debug("The date is " + str(x))
       cell.get_text().set_text(x)
     # -----------------------------------------------------

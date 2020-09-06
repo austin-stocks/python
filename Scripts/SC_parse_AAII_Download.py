@@ -145,8 +145,26 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # Prepare the dataframe for Key Statistics
   # ---------------------------------------------------------------------------
-  # sundeep is here
+  aaii_key_statistics_df = pd.DataFrame(columns=['Key_Statistics'])
+  aaii_key_statistics_df.set_index(['Key_Statistics'], inplace=True)
+  qtr_idx = qtr_str_list[0]
+  most_recent_qtr_date_str = aaii_date_and_misc_series['Ending date ' + str(qtr_idx)]
+  most_recent_qtr_date_dt = dt.datetime.strptime(str(most_recent_qtr_date_str), '%Y-%m-%d %H:%M:%S').date()
+  most_recent_qtr_date_str = most_recent_qtr_date_dt.strftime('%m/%d/%Y')
+  logging.debug("The most recent qtr date is : " + str(most_recent_qtr_date_str))
+  aaii_key_statistics_df.assign(most_recent_qtr_date_str = "")
+  aaii_key_statistics_df.loc['No_of_Employees', most_recent_qtr_date_str] = aaii_date_and_misc_series['Number of employees']
+  aaii_key_statistics_df.loc['No_of_Institutions', most_recent_qtr_date_str] = aaii_date_and_misc_series['Institutional shareholders']
+  aaii_key_statistics_df.loc['Net_Insider_Purchases', most_recent_qtr_date_str] = aaii_date_and_misc_series['Insiders--net shares purchased']
+  aaii_key_statistics_df.loc['Institutional_Ownership', most_recent_qtr_date_str] = aaii_date_and_misc_series['Institutional Ownership %']
+  aaii_key_statistics_df.loc['Insider_Ownership', most_recent_qtr_date_str] = aaii_date_and_misc_series['Insider Ownership %']
 
+  logging.debug("\n\nThe Key Statistics DF Prepared from AAII Data is \n" + aaii_key_statistics_df.to_string() + "\n")
+  # sundeep is here - I think we have what we need to Key Statistics right now - Now create/merge test
+  # Then in the 0_Analysis
+  #  # of Employess - to yr tabel
+  #  Rest of the stuff in Key statistics table or qtr table - decide item by item 
+  sys.exit(1)
   # ---------------------------------------------------------------------------
   # Prepare the dataframe for Financials qtr
   # ---------------------------------------------------------------------------
