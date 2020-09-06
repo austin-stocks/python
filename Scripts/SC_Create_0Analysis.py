@@ -232,6 +232,8 @@ for ticker_raw in ticker_list:
   logging.debug("mrq : Current Ratio : " + str(mrq_current_ratio))
   logging.debug("mrq : Equity : " + str(mrq_equity))
   logging.debug("mrq : Debt_2_Equity Ratio : " + str(mrq_debt_2_equity))
+  # Sundeep is here - Try to get these  numbers in the key statistics table in the plot and
+  # then come back and get the other numbers that remain
   # Now that dataframe is ready - It will be modified in the chart section -- Read there to find out more
   # ===========================================================================
 
