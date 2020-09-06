@@ -94,6 +94,14 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
 # #############################################################################
 #                   MAIN LOOP FOR TICKERS
+# Part 1 : Get the various fields from those series that we need for financial data
+#   (qtr/yr) and misc data (for Key Statistics)
+# Those fields are used to create the respective dataframes :
+# 1. aaii_key_statistics_df --> Contains Key Statistics data
+# 2. aaii_qtr_df            --> Contains Financial qtr data
+# 3. aaii_qtr_df            --> Contains  Financial yr data
+# Part 2 : Those dataframe are then used to create/merge into existing the ticker csv
+# for respective (Key Statistics/Financial qtr/Financial yr) data
 # #############################################################################
 ticker_list = ['IBM']
 # ticker_list = ['IBM','AAPL', 'AUDC','MED']
@@ -128,18 +136,22 @@ for ticker_raw in ticker_list:
 
   logging.debug("-------------------------------------")
 
+  # ===========================================================================
+  #                PART 1 - Process the various read in series to prepare
+  #                         the dataframes for Key Statistics, Financial qtr
+  #                         and financial yr data
+  # ===========================================================================
+
   # ---------------------------------------------------------------------------
-  # Get the various fields from those series that we need for Analysis and Key 
-  # statistics. Prepare the analysis df with the data. We just dump all the data
-  # in one df - and the use that dataframe to create the ticker csv. Then there
-  # will be various scripts that will use that ticker csv to create Analysis, 
-  # key statistics etc. 
+  # Prepare the dataframe for Key Statistics
+  # ---------------------------------------------------------------------------
+  # sundeep is here
+
+  # ---------------------------------------------------------------------------
+  # Prepare the dataframe for Financials qtr
   # ---------------------------------------------------------------------------
   aaii_qtr_dates_dict_dt = {}
   aaii_qtr_dates_dict_str = {}
-  aaii_yr_dates_dict_dt = {}
-  aaii_yr_dates_dict_str = {}
-
   aaii_qtr_df = pd.DataFrame(columns=['AAII_QTR_DATA'])
   aaii_qtr_df.set_index(['AAII_QTR_DATA'], inplace=True)
   for qtr_idx in qtr_str_list:
@@ -169,6 +181,11 @@ for ticker_raw in ticker_list:
   logging.debug("\n\nThe QTR DF Prepared from AAII Data is \n" + aaii_qtr_df.to_string() + "\n")
 
 
+  # ---------------------------------------------------------------------------
+  # Prepare the dataframe for Financials qtr
+  # ---------------------------------------------------------------------------
+  aaii_yr_dates_dict_dt = {}
+  aaii_yr_dates_dict_str = {}
   aaii_yr_df = pd.DataFrame(columns=['AAII_YR_DATA'])
   aaii_yr_df.set_index(['AAII_YR_DATA'], inplace=True)
   for yr_idx in yr_str_list:
@@ -184,7 +201,6 @@ for ticker_raw in ticker_list:
       # This add a new column corresponding to the yr date str
       aaii_yr_df.assign(tmp_val = "")
       aaii_yr_df.loc['Revenue', tmp_val] = aaii_financials_yr_series['Sales '+str(yr_idx)]
-      # aaii_yr_df.loc['Dividend', tmp_val] = aaii_financials_yr_series['Dividend '+str(yr_idx)]
       aaii_yr_df.loc['Net_Income', tmp_val] = aaii_financials_yr_series['Net income '+str(yr_idx)]
       aaii_yr_df.loc['Diluted_EPS', tmp_val] = aaii_financials_yr_series['EPS-Diluted '+str(yr_idx)]
       aaii_yr_df.loc['Cash_from_Operations', tmp_val] = aaii_financials_yr_series['Cash from operations '+str(yr_idx)]
@@ -193,24 +209,18 @@ for ticker_raw in ticker_list:
       aaii_yr_df.loc['LT_Debt', tmp_val] = aaii_financials_yr_series['Long-term debt '+str(yr_idx)]
       aaii_yr_df.loc['Total_Assets', tmp_val] = aaii_financials_yr_series['Total assets '+str(yr_idx)]
       aaii_yr_df.loc['Total_Liabilities', tmp_val] = aaii_financials_yr_series['Total liabilities '+str(yr_idx)]
-      # aaii_yr_df.loc['Current_Assets', tmp_val] = aaii_financials_yr_series['Current assets '+str(yr_idx)]
-      # aaii_yr_df.loc['Short_Term_Debt', tmp_val] = aaii_financials_yr_series['Short-term debt '+str(yr_idx)]
     else:
       logging.debug("The date string from the AAII file for " + str(yr_idx) + " was either NaT or empty...skipped that iteration")
 
   logging.debug("\n\nThe YR DF Prepared from AAII Data is \n" + aaii_yr_df.to_string() + "\n")
-  # aaii_yr_df_col_list = aaii_yr_df.columns.tolist()
-  # logging.debug("The column list for AAII YR DF is " + str(aaii_yr_df_col_list))
-  # aaii_yr_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in aaii_yr_df_col_list]
-  # logging.debug("\n\nThe AAII YR DF Datelist is " + str(aaii_yr_date_list_dt) + " and the number of elements is " + str(len(aaii_yr_date_list_dt)))
+
   logging.info("Read in QTR and YR data from AAII file : " + str(aaii_xls_file))
-  # sys.exit(1)
   # ---------------------------------------------------------------------------
 
-  # ###########################################################################
+  # ===========================================================================
   #                PART 2 - Read the alreay existing Analysis Data
   #                   and merge it with created AAII Analysis Data
-  # ###########################################################################
+  # ===========================================================================
   
   # Loop for qtr and yr data
   for qtr_yr_idx in ['qtr','yr']:

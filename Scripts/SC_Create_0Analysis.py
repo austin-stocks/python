@@ -224,10 +224,11 @@ for ticker_raw in ticker_list:
 
   col_list = ticker_qtr_numbers_df.columns.tolist()
   col_val = col_list[0]
-  mrq_shares_diluted = ticker_qtr_numbers_df.loc['Shares_Diluted', col_val]
   mrq_current_ratio = ticker_qtr_numbers_df.loc['Current_Ratio', col_val]
+  mrq_lt_debt = ticker_qtr_numbers_df.loc['LT_Debt', col_val]
   mrq_equity = ticker_qtr_numbers_df.loc['Equity', col_val]
   mrq_debt_2_equity = ticker_qtr_numbers_df.loc['Debt_2_Equity', col_val]
+  mrq_shares_diluted = ticker_qtr_numbers_df.loc['Shares_Diluted', col_val]
   logging.debug("mrq : Number of outstanding shares : " + str(mrq_shares_diluted))
   logging.debug("mrq : Current Ratio : " + str(mrq_current_ratio))
   logging.debug("mrq : Equity : " + str(mrq_equity))
@@ -235,6 +236,18 @@ for ticker_raw in ticker_list:
   # Sundeep is here - Try to get these  numbers in the key statistics table in the plot and
   # then come back and get the other numbers that remain
   # Now that dataframe is ready - It will be modified in the chart section -- Read there to find out more
+  logging.debug("Starting to populate Keys Statistics numbers...")
+  key_stats_01_df = pd.DataFrame(columns=['key_stats_01_df','Values'])
+  key_stats_01_df.set_index(['key_stats_01_df'], inplace=True)
+  key_stats_01_df.loc['Curr. Ratio']= [mrq_current_ratio]
+  key_stats_01_df.loc['LT_Debt']= [mrq_lt_debt]
+  key_stats_01_df.loc['Equity']= [mrq_equity]
+  key_stats_01_df.loc['Debt/Equity']= [mrq_debt_2_equity]
+  key_stats_01_df.loc['# of Shares']= [mrq_shares_diluted]
+  logging.debug("Keys Statistics Table 01 :")
+  logging.debug(key_stats_01_df.to_string())
+
+
   # ===========================================================================
 
   # ===========================================================================
@@ -576,14 +589,64 @@ for ticker_raw in ticker_list:
   # ===========================================================================
   # Plot the Key Numbers table
   # ===========================================================================
+  logging.debug("Starting to plot Key Statistics Table 01")
   key_numbers_plt.title.set_text("Key Numbers")
   key_numbers_plt.set_facecolor("lightgrey")
   key_numbers_plt.set_yticks([])
   key_numbers_plt.set_xticks([])
-  key_numbers_plt_inst = key_numbers_plt.table(cellText=[[1,5,9], [2,4,8]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'],loc="upper center")
-  # yr_table_plt.table(cellText=[[3, 3], [4, 4]], loc='upper center',rowLabels=['row1', 'row2'], colLabels=['col1', 'col2'])
+  # key_numbers_plt_inst = key_numbers_plt.table(cellText=[[1,5,9], [2,4,8]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'],loc="upper center")
+  key_numbers_plt_inst = key_numbers_plt.table(cellText=key_stats_01_df.values, rowLabels=key_stats_01_df.index,colLabels=key_stats_01_df.columns,loc="upper center")
   key_numbers_plt_inst[(1,0)].set_facecolor("#56b5fd")
   key_numbers_plt.axis('off')
+
+  # Get the row numbers for various row headings (indices).
+  # These can be used later to format the data in the respective rows
+  curr_ratio_row_idx =  key_stats_01_df.index.get_loc('Curr. Ratio') + 1
+  lt_debt_row_idx =  key_stats_01_df.index.get_loc('LT_Debt') + 1
+  equity_row_idx =  key_stats_01_df.index.get_loc('Equity') + 1
+  shares_outstanding_row_idx =  key_stats_01_df.index.get_loc('# of Shares') + 1
+  debt_2_equity_row_idx =  key_stats_01_df.index.get_loc('Debt/Equity') + 1
+  # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
+  for key, cell in key_numbers_plt_inst.get_celld().items():
+    row_idx = key[0]
+    col_idx = key[1]
+    cell_val = cell.get_text().get_text()
+    logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
+
+    # Alternate the colors on the rows
+    if (row_idx % 2 == 0):
+      key_numbers_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
+    else:
+      key_numbers_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
+
+    # Set bold the header row and index column
+    if ((row_idx == 0) or (col_idx < 0)):
+      cell.get_text().set_fontweight('bold')
+    elif (cell_val == 'nan'):
+      x = "-"
+      cell.get_text().set_text(x)
+    else:
+      if float(cell_val) < 0:
+        cell.get_text().set_color('Red')
+        cell.get_text().set_fontstyle('italic')
+        key_numbers_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
+
+      if ((row_idx == lt_debt_row_idx) or (row_idx == equity_row_idx) or (row_idx == shares_outstanding_row_idx)):
+        x_int = int(float(cell_val))
+        x = human_format(x_int)
+      elif (row_idx == debt_2_equity_row_idx):
+        x =  f'{float(cell.get_text().get_text()):.2f}'
+        x = x + "%"
+      else:
+        x =  f'{float(cell.get_text().get_text()):.2f}'
+
+      cell.get_text().set_text(x)
+
+
+  yr_table_plt.axis('off')
+  logging.info("Done with plotting Key Statistics table 01...")
+
+
   # ===========================================================================
 
 
