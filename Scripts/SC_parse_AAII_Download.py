@@ -160,6 +160,9 @@ for ticker_raw in ticker_list:
       aaii_qtr_df.loc['Shares_Diluted', tmp_val] = aaii_financials_qtr_series['Shares Diluted '+str(qtr_idx)]
       aaii_qtr_df.loc['Current_Assets', tmp_val] = aaii_financials_qtr_series['Current assets '+str(qtr_idx)]
       aaii_qtr_df.loc['Current_Liabilities', tmp_val] = aaii_financials_qtr_series['Current liabilities '+str(qtr_idx)]
+      aaii_qtr_df.loc['Total_Assets', tmp_val] = aaii_financials_qtr_series['Total assets '+str(qtr_idx)]
+      aaii_qtr_df.loc['Total_Liabilities', tmp_val] = aaii_financials_qtr_series['Total liabilities '+str(qtr_idx)]
+      aaii_qtr_df.loc['LT_Debt', tmp_val] = aaii_financials_qtr_series['Long-term debt '+str(qtr_idx)]
     else:
       logging.debug("The date string from the AAII file for " + str(qtr_idx) + " was either NaT or empty...skipped that iteration")
 

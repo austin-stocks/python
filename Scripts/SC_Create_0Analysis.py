@@ -179,6 +179,9 @@ for ticker_raw in ticker_list:
     ticker_qtr_numbers_df.loc['Shares_Diluted', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Shares_Diluted', col_val])
     ticker_qtr_numbers_df.loc['Current_Assets', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Current_Assets', col_val])
     ticker_qtr_numbers_df.loc['Current_Liabilities', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Current_Liabilities', col_val])
+    ticker_qtr_numbers_df.loc['Total_Assets', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Total_Assets', col_val])
+    ticker_qtr_numbers_df.loc['LT_Debt', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['LT_Debt', col_val])
+    ticker_qtr_numbers_df.loc['Total_Liabilities', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Total_Liabilities', col_val])
 
   col_list = ticker_qtr_numbers_df.columns.tolist()
   dummy_list = []
@@ -188,6 +191,8 @@ for ticker_raw in ticker_list:
   ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='EPS_Growth'))
   ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Revenue_Growth'))
   ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Current_Ratio'))
+  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Equity'))
+  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Debt_2_Equity'))
   logging.debug("The QTR  df after adding rows \n" + ticker_qtr_numbers_df.to_string())
 
   # Watch out if the current Liabilites are 0
@@ -195,6 +200,8 @@ for ticker_raw in ticker_list:
   for col_idx in range(len(col_list)):
     col_val = col_list[col_idx]
     ticker_qtr_numbers_df.loc['Current_Ratio', col_val] = ticker_qtr_numbers_df.loc['Current_Assets', col_val] / ticker_qtr_numbers_df.loc['Current_Liabilities', col_val]
+    ticker_qtr_numbers_df.loc['Equity', col_val] = ticker_qtr_numbers_df.loc['Total_Assets', col_val] - ticker_qtr_numbers_df.loc['Total_Liabilities', col_val]
+    ticker_qtr_numbers_df.loc['Debt_2_Equity', col_val] = 100*ticker_qtr_numbers_df.loc['LT_Debt', col_val] / ticker_qtr_numbers_df.loc['Equity', col_val]
 
   # Now calculate the EPS and sales grwoth and put them in just added rows
   col_list = ticker_qtr_numbers_df.columns.tolist()
@@ -214,8 +221,18 @@ for ticker_raw in ticker_list:
 
       ticker_qtr_numbers_df.loc['Revenue_Growth', col_val] = 100*((ticker_qtr_numbers_df.loc['Revenue', col_val]/ticker_qtr_numbers_df.loc['Revenue', col_val_same_qtr_last_year])-1)
   logging.debug("The QTR  df after calculation growth rates for Revenue and EPS  \n" + ticker_qtr_numbers_df.to_string())
-  # Now that dataframe is ready - It will be modified in the chart section -- Read there to find out more
 
+  col_list = ticker_qtr_numbers_df.columns.tolist()
+  col_val = col_list[0]
+  mrq_shares_diluted = ticker_qtr_numbers_df.loc['Shares_Diluted', col_val]
+  mrq_current_ratio = ticker_qtr_numbers_df.loc['Current_Ratio', col_val]
+  mrq_equity = ticker_qtr_numbers_df.loc['Equity', col_val]
+  mrq_debt_2_equity = ticker_qtr_numbers_df.loc['Debt_2_Equity', col_val]
+  logging.debug("mrq : Number of outstanding shares : " + str(mrq_shares_diluted))
+  logging.debug("mrq : Current Ratio : " + str(mrq_current_ratio))
+  logging.debug("mrq : Equity : " + str(mrq_equity))
+  logging.debug("mrq : Debt_2_Equity Ratio : " + str(mrq_debt_2_equity))
+  # Now that dataframe is ready - It will be modified in the chart section -- Read there to find out more
   # ===========================================================================
 
   # ===========================================================================
