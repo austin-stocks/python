@@ -430,13 +430,13 @@ for ticker_raw in ticker_list:
   # ===========================================================================
 
   # ===========================================================================
-  # Prepare the Key Statistics Dataframe - It needs input from Key statistics file
-  # and the qtr financials file
+  # Prepare the Key Statistics Dataframe
+  # Right now all the information for Key Stats comes from qtr df
   # ===========================================================================
   key_stats_01_df = pd.DataFrame(columns=['key_stats_01_df'])
   key_stats_01_df.set_index("key_stats_01_df",inplace=True)
   col_list = ticker_qtr_numbers_df.columns.tolist()
-  logging.debug("Starting to populate Keys Statistics numbers...")
+  logging.debug("\n\nKey Stats 01 DF : Starting to populate Keys Statistics numbers...")
   for col_idx in range(len(col_list)-3):
     col_val = col_list[col_idx]
     key_stats_01_df.loc['Curr. Ratio',col_val] = ticker_qtr_numbers_df.loc['Current_Ratio',col_val]
@@ -447,12 +447,7 @@ for ticker_raw in ticker_list:
     key_stats_01_df.loc['# of Shares',col_val] = ticker_qtr_numbers_df.loc['Shares_Diluted',col_val]
     key_stats_01_df.loc['Institutions',col_val] =ticker_qtr_numbers_df.loc['No_of_Institutions',col_val]
 
-  logging.debug("The Key Statistics dataframe after inserting from qtr dataframe \n" + key_stats_01_df.to_string())
-  tmp_df = key_stats_01_df.iloc[:, ::-1]
-  key_stats_01_df = tmp_df.copy()
-  logging.debug("Keys Statistics Table 01 :")
-  logging.debug(key_stats_01_df.to_string())
-  # sys.exit(1)
+  logging.debug("Key Stats 01 DF : df after inserting from qtr dataframe \n" + key_stats_01_df.to_string())
   # ---------------------------------------------------------------------------
   # ===========================================================================
 
@@ -666,6 +661,10 @@ for ticker_raw in ticker_list:
   # Plot the Key Numbers table
   # ===========================================================================
   logging.debug("Starting to plot Key Statistics Table 01")
+  logging.debug("\n\nKey Stats 01 DF : Reversing the Key Stats df")
+  tmp_df = key_stats_01_df.iloc[:, ::-1]
+  key_stats_01_df = tmp_df.copy()
+  logging.debug("\n\nKey Stats 01 DF : Key Stats df after reversing is \n" + key_stats_01_df.to_string())
   key_numbers_plt.title.set_text("Key Numbers")
   key_numbers_plt.set_facecolor("lightgrey")
   key_numbers_plt.set_yticks([])
