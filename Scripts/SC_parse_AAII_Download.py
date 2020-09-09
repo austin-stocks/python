@@ -245,6 +245,15 @@ for ticker_raw in ticker_list:
   #                PART 2 - Read the alreay existing Analysis Data
   #                   and merge it with created AAII Analysis Data
   # ===========================================================================
+  # todo : Check if the data merges alright
+  #   ticker csv has less cols
+  #   ticker csv has more cols
+  #   ticker csv has equal cols
+  #   ticker csv has less rows
+  #   ticker csv has more rows
+  #   ticker csv has equal rows
+  #   Ensure that date does not give a problem.
+
   logging.debug("")
   logging.debug("==============================================================================================================")
   logging.info("Now merging/creating(if the data does not exist) the Key Statistics, QTR and YR data into already existing data")
@@ -286,6 +295,10 @@ for ticker_raw in ticker_list:
       logging.debug("If they are present only in ticker df, then that data will be left as is. The most common reason for this is that ticker df has 2012 data while AAII start from 2013")
       logging.debug("")
 
+      # -----------------------------------------------------------------------
+      # Start the process of comparing aaii df rows and columns with
+      # ticker csv df rows and columns respectively
+      # -----------------------------------------------------------------------
       ticker_csv_df_cols = ticker_csv_df.columns.tolist()
       ticker_csv_df_rows = ticker_csv_df.index.tolist()
       aaii_df_cols = aaii_df.columns.tolist()
@@ -294,6 +307,12 @@ for ticker_raw in ticker_list:
       common_cols = []
       different_rows = []
       different_cols = []
+
+      # -----------------------------------------------------------------------
+      # Iterate through the rows for aaii_df and ticker csv
+      # to find out if there are row(s) in aaii_df that are not in ticker csv.
+      # If so then that rows(s) gets appended to ticker csv df row list
+      # -----------------------------------------------------------------------
       logging.debug("Checking for rows...")
       logging.debug("The rows in aaii df " + str(aaii_df_rows))
       logging.debug("The rows in ticker df " + str(ticker_csv_df_rows))
@@ -305,11 +324,19 @@ for ticker_raw in ticker_list:
           logging.debug("Row --> " + str(rows_idx) + " <-- is present only in AAII df. Will insert that row in ticker df with latest data from AAII df...")
           ticker_csv_df_rows.append(rows_idx)
           different_rows.append(rows_idx)
+      # -----------------------------------------------------------------------
 
+      # -----------------------------------------------------------------------
+      # Iterate through the columns for aaii_df and ticker csv
+      # to find out if there are column(s) in aaii_df that are not in ticker csv.
+      # If so then that column(s) gets appended to ticker csv df column list
+      # -----------------------------------------------------------------------
       logging.debug("")
       logging.debug("Checking for columns...")
       logging.debug("The columns in aaii df " + str(list(aaii_df)))
       logging.debug("The columns in ticker df " + str(ticker_csv_df_cols))
+      # todo : Make sure that dates here do not give trouble...
+      #  otherwise need to do a datetime conversion and then compare???
       for cols_idx in aaii_df_cols:
         if cols_idx in ticker_csv_df_cols:
           logging.debug("Column --> " + str(cols_idx) + " <-- is present in both AAII df and ticker df. Will replace that column in ticker df with latest data from AAII df...")
@@ -318,6 +345,7 @@ for ticker_raw in ticker_list:
           logging.debug("Column --> " + str(cols_idx) + " <-- is present only in AAII df. Will insert that column in ticker df with latest data from AAII df...")
           ticker_csv_df_cols.append(cols_idx)
           different_cols.append(cols_idx)
+      # -----------------------------------------------------------------------
 
       logging.debug("")
       logging.debug("The common rows b/w the ticker and aaii df are " + str(common_rows))
@@ -325,7 +353,13 @@ for ticker_raw in ticker_list:
       logging.debug("")
       logging.debug("The different rows b/w the ticker and aaii df are " + str(different_rows))
       logging.debug("The different cols b/w the ticker and aaii df are " + str(different_cols))
+      # -----------------------------------------------------------------------
 
+      # -----------------------------------------------------------------------
+      # Reindex the ticker_csv_df based on any new rows/columns added after
+      # comparing it with aaii_df and add aaii data to the added columns (the row
+      # date get automatically added when the column data gets added
+      # -----------------------------------------------------------------------
       tmp_df = ticker_csv_df.reindex(index=ticker_csv_df_rows)
       ticker_csv_df = tmp_df.reindex(columns=ticker_csv_df_cols)
       logging.debug("\n\nThe Ticker df after adding missing rows and cols, if any : \n" + ticker_csv_df.to_string() + "\n")
@@ -334,9 +368,12 @@ for ticker_raw in ticker_list:
       for cols_idx in aaii_df_cols:
         ticker_csv_df[cols_idx] = aaii_df[cols_idx]
       logging.debug("\n\nThe Ticker df after copying the latest (and missing data, if there were lesser number of rows/columns in the ticker csv) : \n" + ticker_csv_df.to_string() + "\n")
+      # -----------------------------------------------------------------------
 
-      # Don't understand how this works...but it works
+      # -----------------------------------------------------------------------
       # Now sort the ticker columns decscening based on dates and write it to csv
+      # -----------------------------------------------------------------------
+      # Don't understand how this works...but it works
       ticker_csv_df = ticker_csv_df.iloc[:, pd.to_datetime(ticker_csv_df.columns, format='%m/%d/%Y').argsort()[::-1]].reset_index()
       ticker_csv_df.set_index("AAII_" + str(qtr_yr_idx).upper() + "_DATA", inplace=True)
       ticker_csv_df.sort_index(ascending=True,inplace=True)
@@ -348,7 +385,7 @@ for ticker_raw in ticker_list:
       logging.info("File "  + str(ticker_csv_filename) + " does not exist. Will create anew and write the latest AAII data - with rows sorted in ascending order - into it")
       aaii_df.sort_index(ascending=True,inplace=True)
       aaii_df.to_csv(ticker_csv_filepath + "\\" + ticker_csv_filename, sep=',', index=True, header=True)
-
+      # -----------------------------------------------------------------------
 
     # This works
     # Try access the dataframe element by element - this can be used later

@@ -67,10 +67,6 @@ logging.disable(logging.NOTSET)
 
 # -----------------------------------------------------------------------------
 # Sundeep thoughts on what to do for 0_Analysis
-# Maybe start with 5 quarters and see if that makes sense...we can increase it to 8 quarters too.
-# Zebras like Market Smith -- for EPS and Revenue for 5 quarters
-# Number of Employees - Yearly Table
-# Inventory Change - 5 Quarters
 # Institutional Shares Sold vs Institutional Shares Purchased - 5 quarters
 # Insiders buying / selling?  (Net Insiders buy Insiders-net shares purchased or Net Insider Buys % Shares Out or Net Insider Buys % Shares Out.) - 5 quarters
 # Get the projected Revenue and Diluted EPS growth rates -- Do we need it
@@ -83,15 +79,6 @@ logging.disable(logging.NOTSET)
 #   TTM earnings and growth rate from projected earnings...(even though the projected earnings are not
 #   always diluted earnings...but that is the best thing available right now
 
-# todo
-# Create a quarterly xls and dataframe
-#   Earnings
-#   Revenue
-#   Share Count Diluted
-#   Inventory
-#   Institutional Ownership
-#   Insider buy/sell
-#   Projected Revenue and EPS for next 2 quarters (where to put it? -- Maybe add two rows for the current quarter)
 #
 # todo : Maybe add a one row table at the top - with has
 # Price, PB, PS, ROE, PEG, Current Ratio, Expected Growth, it can also list some past trends in one word - etc...think about more
@@ -294,7 +281,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # Limit the number of columns to display - say 10 years...Make it user controlled
   # ---------------------------------------------------------------------------
-  number_of_years_to_display = 5
+  number_of_years_to_display = 10
   logging.debug("\n\nYR DF : Truncating the df to only have : " + str(number_of_years_to_display) + " years of data")
   tmp_df = ticker_yr_numbers_df.iloc[:, : number_of_years_to_display]
   ticker_yr_numbers_df = tmp_df.copy()
