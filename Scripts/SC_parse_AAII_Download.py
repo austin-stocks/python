@@ -281,7 +281,7 @@ for ticker_raw in ticker_list:
       ticker_csv_df = data = pd.read_csv(ticker_csv_filepath + "\\" + ticker_csv_filename)
       logging.info("File "  + str(ticker_csv_filename) + " exists. Will read-in and merge the latest AAII data into it")
       ticker_csv_df.set_index("AAII_" + str(qtr_yr_idx).upper() + "_DATA", inplace=True)
-      logging.debug("\n\nThe Ticker df is \n" + ticker_csv_df.to_string() + "\n")
+      logging.debug("\n\nThe Ticker df as read from the ticker csv file : \n" + ticker_csv_df.to_string() + "\n")
       logging.debug("Will now check for all the rows and column in aaii df and see if they exist in ticker df")
       logging.debug("If the are present in both, then will replace that data with AAII data - assumption being that AAII might have updated data meanwhile - company restated etc...")
       logging.debug("If they are present only in AAII, then will insert them in the ticker df because ticker df is lacking those rows/columns b/c AAII has the latest data (from 2020 while ticker df only has data till 2019 etc")
@@ -292,46 +292,53 @@ for ticker_raw in ticker_list:
       # Start the process of comparing aaii df rows and columns with
       # ticker csv df rows and columns respectively
       # -----------------------------------------------------------------------
-      ticker_csv_df_cols_list = ticker_csv_df.columns.tolist()
-      ticker_csv_df_rows_list = ticker_csv_df.index.tolist()
-      aaii_df_cols_list = aaii_df.columns.tolist()
-      aaii_df_rows_list = aaii_df.index.tolist()
-      logging.debug("The columns in aaii df " + str(list(aaii_df)))
-      logging.debug("The columns in ticker df " + str(ticker_csv_df_cols_list))
-      aaii_datelist_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in aaii_df_cols_list]
-      ticker_datelist_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in ticker_csv_df_cols_list]
-
-      common_rows = []
-      common_cols = []
-      different_rows = []
-      different_cols = []
 
       # -----------------------------------------------------------------------
       # Iterate through the rows for aaii_df and ticker csv
       # to find out if there are row(s) in aaii_df that are not in ticker csv.
-      # If so then that rows(s) gets appended to ticker csv df row list
+      # If so then that rows(s) gets appended ticker df
       # -----------------------------------------------------------------------
-      logging.debug("Checking for rows...")
+      logging.debug("Checking for rows (in order to insert rows, if aaii df has additional rows as compared to ticker df...")
+      logging.debug("")
+      common_rows = []
+      different_rows = []
+      aaii_df_rows_list = aaii_df.index.tolist()
+      ticker_csv_df_rows_list = ticker_csv_df.index.tolist()
       logging.debug("The rows in aaii df " + str(aaii_df_rows_list))
       logging.debug("The rows in ticker df " + str(ticker_csv_df_rows_list))
+      logging.debug("")
 
+      # -----------------------------------------------------------------------
+      # One other alternative is to save that row data and then merge with the
+      # dataframe later after aaii data has merged but more than likely we should
+      # not end up in a situation like this, so sys.exit for now here.
+      # -----------------------------------------------------------------------
+      if (len(ticker_csv_df_rows_list)) > len(aaii_df_rows_list):
+        logging.error("The number of rows in ticker df : " + str(len(ticker_csv_df_rows_list)))
+        logging.error("The number of rows in aaii   df : " + str(len(aaii_df_rows_list)))
+        logging.error("Since the number of rows in ticker df is greater than the number of rows in aaii df")
+        logging.error("that row(s) data will most likely be overwritten to NaN as during the col. merge ")
+        logging.error("Please correct the situation and rerun - Either remove the additional rows from ticker df or most likely download that row data in the aaii file")
+        logging.error("Exiting...")
+        sys.exit(1)
+
+      ticker_csv_df_cols_list = ticker_csv_df.columns.tolist()
       dummy_list = []
       for col_idx in range(len(ticker_csv_df_cols_list)):
         dummy_list.append(float('nan'))
 
-
-      for rows_idx in aaii_df_rows_list:
-        if rows_idx in ticker_csv_df_rows_list:
-          logging.debug("Row --> " + str(rows_idx) + " <-- is present in both AAII df and ticker df. Will replace that row in ticker df with latest data from AAII df...")
-          common_rows.append(rows_idx)
+      for row_val in aaii_df_rows_list:
+        if row_val in ticker_csv_df_rows_list:
+          logging.debug("Row --> " + str(row_val) + " <-- is present in both AAII df and ticker df. Will replace that row data in ticker df with latest data from AAII df later...")
+          common_rows.append(row_val)
         else:
-          logging.debug("Row --> " + str(rows_idx) + " <-- is present only in AAII df. Will insert that row in ticker df with latest data from AAII df...")
-          ticker_csv_df = ticker_csv_df.append(pd.Series(dummy_list, index=ticker_csv_df.columns, name=rows_idx))
-          ticker_csv_df_rows_list.append(rows_idx)
-          different_rows.append(rows_idx)
+          logging.debug("Row --> " + str(row_val) + " <-- is present ONLY in AAII df. Inserting the row in ticker df with dummy data for now ")
+          different_rows.append(row_val)
+          ticker_csv_df = ticker_csv_df.append(pd.Series(dummy_list, index=ticker_csv_df.columns, name=row_val))
       logging.debug("")
-      logging.debug("The common rows b/w the ticker and aaii df are " + str(common_rows))
-      logging.debug("The different rows b/w the ticker and aaii df are " + str(different_rows))
+      logging.debug("The common rows b/w the ticker and aaii df are : \n" + str(common_rows))
+      logging.debug("")
+      logging.debug("The different rows b/w the ticker and aaii df are : \n" + str(different_rows))
       logging.debug("The ticker df after potentially inserting new rows : \n"  + ticker_csv_df.to_string() + "\n")
       # -----------------------------------------------------------------------
 
@@ -340,39 +347,57 @@ for ticker_raw in ticker_list:
       # if there are ccmmon cols, then delete that col from ticker df for now
       # -----------------------------------------------------------------------
       logging.debug("")
-      logging.debug("Checking for columns...")
+      logging.debug("Checking for columns b/w aaii and ticker df")
+      logging.debug("If there are common cols. then will delete them for ticker df and will insert from aaii later with latest data")
+      logging.debug("The cols that are not common b/w aaii and ticker df, then the ticker df cols will be left untouched")
+      ticker_csv_df_cols_list = ticker_csv_df.columns.tolist()
+      aaii_df_cols_list = aaii_df.columns.tolist()
+      aaii_datelist_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in aaii_df_cols_list]
+      ticker_datelist_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in ticker_csv_df_cols_list]
       logging.debug("The columns in aaii df " + str(list(aaii_df)))
       logging.debug("The columns in ticker df " + str(ticker_csv_df_cols_list))
-      # todo : Make sure that dates here do not give trouble...
-      #  otherwise need to do a datetime conversion and then compare???
+
+      common_cols = []
+      different_cols = []
+
       for ticker_cols_idx in range(len(ticker_csv_df_cols_list)) :
         ticker_col_val_org = ticker_csv_df_cols_list[ticker_cols_idx]
         ticker_col_val_dt = dt.datetime.strptime(ticker_col_val_org, '%m/%d/%Y').date()
         ticker_col_val = dt.datetime.strftime(ticker_col_val_dt, '%m/%d/%Y')
         if ticker_col_val_dt in aaii_datelist_dt:
-          logging.debug("Column --> " + str(ticker_col_val) + " <-- is present in both AAII df and ticker df. Will delete column in ticker df and will replace it with latest data from AAII df later...")
+          logging.debug("Column --> " + str(ticker_col_val_org) + " <-- is present in both AAII df and ticker df")
+          logging.debug("Will delete " + str(ticker_col_val_org) + " column in ticker df and will replace it with latest data from AAII df later...")
           del ticker_csv_df[ticker_col_val_org]
           common_cols.append(ticker_col_val)
       logging.debug("")
       logging.debug("The common cols b/w the ticker and aaii df are " + str(common_cols))
       logging.debug("The ticker df after potentially inserting new rows and deleting common cols : \n"  + ticker_csv_df.to_string() + "\n")
 
-      # Here we are sure that all the common cols from the ticker df are deleted, so the cols from aaii
-      # can be safely inserted here
+      # -----------------------------------------------------------------------
+      # At this point :
+      # 1. The rows that were present in aaii and not in ticker df have been
+      #     inserted in tcker df with dummy data
+      # 2. The common cols from the ticker df are deleted, so all cols from aaii
+      #     can be safely inserted here (they are supposedly going to have the
+      #     latest data
+      # -----------------------------------------------------------------------
       # How to deal with the case when aaii has fewer rows than ticker df - what will happen in that case?
+      # Copy all the cols from aaii df into ticker df here
       for aaii_col_val in aaii_df_cols_list:
         ticker_csv_df[aaii_col_val] = aaii_df[aaii_col_val]
-      logging.debug("\n\nThe Ticker df after copying the latest (and missing data, if there were lesser number of rows/columns in the ticker csv) : \n" + ticker_csv_df.to_string() + "\n")
+      logging.debug("\n\nThe Ticker df after copying the latest from aaii df : \n" + ticker_csv_df.to_string() + "\n")
+      # -----------------------------------------------------------------------
 
       # -----------------------------------------------------------------------
       # Reindex the ticker_csv_df based on any new rows/columns added after
       # comparing it with aaii_df and add aaii data to the added columns (the row
       # date get automatically added when the column data gets added
       # -----------------------------------------------------------------------
-      ticker_csv_df_cols_list = ticker_csv_df.columns.tolist()
-      tmp_df = ticker_csv_df.reindex(index=ticker_csv_df_rows_list)
-      ticker_csv_df = tmp_df.reindex(columns=ticker_csv_df_cols_list)
-      logging.debug("\n\nThe Ticker df after adding missing rows and cols, if any : \n" + ticker_csv_df.to_string() + "\n")
+      # ticker_csv_df_rows_list = ticker_csv_df.index.tolist()
+      # ticker_csv_df_cols_list = ticker_csv_df.columns.tolist()
+      # tmp_df = ticker_csv_df.reindex(index=ticker_csv_df_rows_list)
+      # ticker_csv_df = tmp_df.reindex(columns=ticker_csv_df_cols_list)
+      # logging.debug("\n\nThe Ticker df after adding missing rows and cols, if any : \n" + ticker_csv_df.to_string() + "\n")
       # -----------------------------------------------------------------------
 
       # -----------------------------------------------------------------------
