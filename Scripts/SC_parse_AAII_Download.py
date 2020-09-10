@@ -155,7 +155,7 @@ for ticker_raw in ticker_list:
   logging.debug("=======================================")
   aaii_key_statistics_df = pd.DataFrame(columns=['AAII_KEY_STATISTICS_DATA'])
   aaii_key_statistics_df.set_index(['AAII_KEY_STATISTICS_DATA'], inplace=True)
-  qtr_idx = qtr_str_list[0] # this should be Q1
+  qtr_idx = qtr_str_list[0] # this should always translate to Q1
   most_recent_qtr_date_str = aaii_date_and_misc_series['Ending date ' + str(qtr_idx)]
   most_recent_qtr_date_dt = dt.datetime.strptime(str(most_recent_qtr_date_str), '%Y-%m-%d %H:%M:%S').date()
   most_recent_qtr_date_str = most_recent_qtr_date_dt.strftime('%m/%d/%Y')
@@ -247,13 +247,12 @@ for ticker_raw in ticker_list:
   #                   and merge it with created AAII Analysis Data
   # ===========================================================================
   # todo : Check if the data merges alright
-  #   ticker csv has less cols
-  #   ticker csv has more cols
-  #   ticker csv has equal cols
-  #   ticker csv has less rows
-  #   ticker csv has more rows
-  #   ticker csv has equal rows
-  #   Ensure that date does not give a problem.
+  #   ticker csv has less cols    : Need to check if aaii date cols get inserted
+  #   ticker csv has more cols    : Need to check if aaii date cols get inserted and ticker already existing cols don't get affected
+  #   ticker csv has equal cols   : Need to change the data and see if the data is corrected from AAII
+  #   ticker csv has less rows    : Works
+  #   ticker csv has more rows    : Error flagged
+  #   ticker csv has equal rows   : Need to change the data and see if the data is corrected from AAII
 
   logging.debug("")
   logging.debug("==============================================================================================================")
@@ -322,10 +321,15 @@ for ticker_raw in ticker_list:
         logging.error("Exiting...")
         sys.exit(1)
 
+      # -----------------------------------------------------------------------
+      # Dummy row is needed if there are more rows in aaii df and we need to add
+      # row(s) to ticker df in the loop below
+      # -----------------------------------------------------------------------
       ticker_csv_df_cols_list = ticker_csv_df.columns.tolist()
       dummy_list = []
       for col_idx in range(len(ticker_csv_df_cols_list)):
         dummy_list.append(float('nan'))
+      # -----------------------------------------------------------------------
 
       for row_val in aaii_df_rows_list:
         if row_val in ticker_csv_df_rows_list:
@@ -334,6 +338,7 @@ for ticker_raw in ticker_list:
         else:
           logging.debug("Row --> " + str(row_val) + " <-- is present ONLY in AAII df. Inserting the row in ticker df with dummy data for now ")
           different_rows.append(row_val)
+          # Add a dummy row to the ticker df. This will get populated later
           ticker_csv_df = ticker_csv_df.append(pd.Series(dummy_list, index=ticker_csv_df.columns, name=row_val))
       logging.debug("")
       logging.debug("The common rows b/w the ticker and aaii df are : \n" + str(common_rows))
@@ -344,7 +349,8 @@ for ticker_raw in ticker_list:
 
       # -----------------------------------------------------------------------
       # Iterate through the columns for ticker_df_cols
-      # if there are ccmmon cols, then delete that col from ticker df for now
+      # if there are ccmmon cols, then delete that col from ticker df as they
+      # will get replaced by the aaii columns with latest data later
       # -----------------------------------------------------------------------
       logging.debug("")
       logging.debug("Checking for columns b/w aaii and ticker df")
@@ -358,7 +364,6 @@ for ticker_raw in ticker_list:
       logging.debug("The columns in ticker df " + str(ticker_csv_df_cols_list))
 
       common_cols = []
-      different_cols = []
 
       for ticker_cols_idx in range(len(ticker_csv_df_cols_list)) :
         ticker_col_val_org = ticker_csv_df_cols_list[ticker_cols_idx]
@@ -379,25 +384,12 @@ for ticker_raw in ticker_list:
       #     inserted in tcker df with dummy data
       # 2. The common cols from the ticker df are deleted, so all cols from aaii
       #     can be safely inserted here (they are supposedly going to have the
-      #     latest data
+      #     latest data)
       # -----------------------------------------------------------------------
-      # How to deal with the case when aaii has fewer rows than ticker df - what will happen in that case?
       # Copy all the cols from aaii df into ticker df here
       for aaii_col_val in aaii_df_cols_list:
         ticker_csv_df[aaii_col_val] = aaii_df[aaii_col_val]
       logging.debug("\n\nThe Ticker df after copying the latest from aaii df : \n" + ticker_csv_df.to_string() + "\n")
-      # -----------------------------------------------------------------------
-
-      # -----------------------------------------------------------------------
-      # Reindex the ticker_csv_df based on any new rows/columns added after
-      # comparing it with aaii_df and add aaii data to the added columns (the row
-      # date get automatically added when the column data gets added
-      # -----------------------------------------------------------------------
-      # ticker_csv_df_rows_list = ticker_csv_df.index.tolist()
-      # ticker_csv_df_cols_list = ticker_csv_df.columns.tolist()
-      # tmp_df = ticker_csv_df.reindex(index=ticker_csv_df_rows_list)
-      # ticker_csv_df = tmp_df.reindex(columns=ticker_csv_df_cols_list)
-      # logging.debug("\n\nThe Ticker df after adding missing rows and cols, if any : \n" + ticker_csv_df.to_string() + "\n")
       # -----------------------------------------------------------------------
 
       # -----------------------------------------------------------------------
