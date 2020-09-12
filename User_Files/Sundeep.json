@@ -1,8 +1,16 @@
 {
 
+  "AMZN" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "07/11/2018","Buy_Price_str" :  "1755"},
+       {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$3295"}
+    ]
+  },
+
   "BABA" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "12/07/2017","Buy_Price_str" :  "$174.81"}
+       {"Buy_Date" : "12/07/2017","Buy_Price_str" :  "$175"},
+       {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$274"}
     ]
   },
 
@@ -14,7 +22,8 @@
 
   "CTXS" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "04/27/2020","Buy_Price_str" :  "$141.01"}
+       {"Buy_Date" : "04/27/2020","Buy_Price_str" :  "$141"},
+       {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$142"}
     ]
   },
 
@@ -27,13 +36,15 @@
 
   "IIPR" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "02/28/2020","Buy_Price_str" :  "$87"}
+       {"Buy_Date" : "02/28/2020","Buy_Price_str" :  "$87"},
+       {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$124"}
     ]
   },
 
   "MED" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "09/13/2019","Buy_Price_str" :  "$105.97"}
+       {"Buy_Date" : "09/13/2019","Buy_Price_str" :  "$106"},
+       {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$175"}
     ]
   },
 
@@ -51,7 +62,8 @@
 
   "QLYS" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "08/12/2020","Buy_Price_str" :  "$103.69"}
+       {"Buy_Date" : "08/12/2020","Buy_Price_str" :  "$104"},
+       {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$103"}
     ]
   },
 
