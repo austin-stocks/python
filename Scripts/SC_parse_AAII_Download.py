@@ -5,6 +5,7 @@ from openpyxl.styles import PatternFill
 import os
 import xlrd
 import sys
+import re
 import time
 import pandas as pd
 import datetime as dt
@@ -77,6 +78,12 @@ aaii_misc_00_df = pd.read_excel(aaii_xls, '0_Analysis_Misc_00')
 aaii_financials_qtr_df = pd.read_excel(aaii_xls, '0_Analysis_QTR')
 aaii_financials_yr_df = pd.read_excel(aaii_xls, '0_Analysis_YR')
 
+use_tickers_in_aaii_file = 1
+if (use_tickers_in_aaii_file):
+  ticker_list_unclean = aaii_misc_00_df['Ticker'].tolist()
+else:
+  ticker_list_unclean = tracklist_df['Tickers'].tolist()
+
 aaii_misc_00_df.set_index('Ticker', inplace=True)
 aaii_financials_qtr_df.set_index('Ticker', inplace=True)
 aaii_financials_yr_df.set_index('Ticker', inplace=True)
@@ -86,10 +93,9 @@ aaii_financials_yr_df.set_index('Ticker', inplace=True)
 
 # RGP is RECN old --- need to handle
 aaii_missing_tickers_list = [
-'CBOE','CP','CRZO','GOOG','RACE','NTR','RGP','WCG'
+'CBOE','CP','CRZO','GOOG','RACE','NTR','RGP','WCG','FOX','DISCK','BRK-B'
 ]
 
-ticker_list_unclean = tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
 # #############################################################################
@@ -103,20 +109,33 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # Part 2 : Those dataframe are merge into existing data from the ticker csv
 # If the corresponding ticker csv does not exist, then one is created
 # #############################################################################
-ticker_list = ['IBM']
+# ticker_list = ['AAPL','BCRHF','IBM']
 # ticker_list = ['IBM','AAPL', 'AUDC','MED']
 i_idx = 1
 for ticker_raw in ticker_list:
 
-  ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
-  if ((ticker in aaii_missing_tickers_list)) or  (ticker in ["QQQ"]):
-    logging.debug(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections..")
-    continue
+  # What to do about the ticker name TRUE
+  # ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
+  ticker = ticker_raw.upper()
 
+  logging.debug("")
+  logging.debug("")
   logging.info("========================================================")
   logging.info("Iteration no : " + str(i_idx) + ", Processing : " + ticker)
   logging.info("========================================================")
   i_idx += 1
+
+  if ((ticker in aaii_missing_tickers_list)) or  (ticker in ["QQQ"]):
+    logging.debug(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections..")
+    continue
+
+  if (len(re.findall('\s', ticker)) > 0):
+    if (use_tickers_in_aaii_file == 1):
+      logging.warning("The ticker : " + str(ticker) + ", has spaces. Will skip processing this ticker")
+      continue
+    else:
+      logging.error("The ticker : " + str(ticker) + ", has spaces. Please correct and rerun")
+      sys.exit(1)
 
   # Get the ticker information in series from the various AAII df
   aaii_date_and_misc_series = aaii_misc_00_df.loc[ticker]
@@ -157,6 +176,14 @@ for ticker_raw in ticker_list:
   aaii_key_statistics_df.set_index(['AAII_KEY_STATISTICS_DATA'], inplace=True)
   qtr_idx = qtr_str_list[0] # this should always translate to Q1
   most_recent_qtr_date_str = aaii_date_and_misc_series['Ending date ' + str(qtr_idx)]
+  try:
+    dt.datetime.strptime(str(most_recent_qtr_date_str), '%Y-%m-%d %H:%M:%S').date()
+  # except:
+  except ValueError:
+    logging.warning("The date for : " + str(qtr_idx) + ", is : " + str(most_recent_qtr_date_str) + ", which does not follow to format %Y-%m-%d %H:%M:%S")
+    logging.warning("Will skip this ticker and move on to the next one")
+    continue
+
   most_recent_qtr_date_dt = dt.datetime.strptime(str(most_recent_qtr_date_str), '%Y-%m-%d %H:%M:%S').date()
   most_recent_qtr_date_str = most_recent_qtr_date_dt.strftime('%m/%d/%Y')
   logging.debug("The most recent qtr date is : " + str(most_recent_qtr_date_str))
@@ -200,8 +227,10 @@ for ticker_raw in ticker_list:
       aaii_qtr_df.loc['Total_Liabilities', tmp_val] = aaii_financials_qtr_series['Total liabilities '+str(qtr_idx)]
       aaii_qtr_df.loc['LT_Debt', tmp_val] = aaii_financials_qtr_series['Long-term debt '+str(qtr_idx)]
     else:
-      logging.error("The date string from the AAII file for " + str(qtr_idx) + " was either NaT or empty. Please check the AAII Data. Exiting...")
-      sys.exit(1)
+      logging.warning("The date string from the AAII file for quarter \"" + str(qtr_idx) + "\" was either NaT or empty. Please check the AAII Data. ")
+      logging.warning("This can happen if the company is a recent IPO in the last few years and does not have all the data")
+      logging.warning("Will continue with whatever quarters of data is avaialble")
+      continue
 
   logging.debug("\n\nThe QTR DF Prepared from AAII Data is \n" + aaii_qtr_df.to_string() + "\n")
   logging.info("Read in QTR data from AAII file")
@@ -235,8 +264,11 @@ for ticker_raw in ticker_list:
       aaii_yr_df.loc['Total_Assets', tmp_val] = aaii_financials_yr_series['Total assets '+str(yr_idx)]
       aaii_yr_df.loc['Total_Liabilities', tmp_val] = aaii_financials_yr_series['Total liabilities '+str(yr_idx)]
     else:
-      logging.error("The date string from the AAII file for " + str(yr_idx) + " was either NaT or empty. Please check the AAII Data. Exiting...")
-      sys.exit(1)
+      logging.warning("The date string from the AAII file for year \"" + str(yr_idx) + "\" was either NaT or empty. Please check the AAII Data. ")
+      logging.warning("This can happen if the company is a recent IPO in the last 7 years and does not have all the data")
+      logging.warning("Will continue with whatever years of data is avaialble")
+      continue
+      # sys.exit(1)
 
   logging.debug("\n\nThe YR DF Prepared from AAII Data is \n" + aaii_yr_df.to_string() + "\n")
   logging.info("Read in YR data from AAII file")
@@ -259,6 +291,7 @@ for ticker_raw in ticker_list:
   logging.info("Now merging/creating(if the data does not exist) the Key Statistics, QTR and YR data into already existing data")
   logging.debug("==============================================================================================================")
 
+  # Read the appropriate file
   for qtr_yr_idx in ['key_statistics','qtr','yr']:
     logging.debug("")
     logging.debug("=======================================")
@@ -275,7 +308,7 @@ for ticker_raw in ticker_list:
       ticker_csv_filepath = dir_path + analysis_dir + "\\" + "Quarterly"
       aaii_df = aaii_qtr_df.copy()
 
-
+    # if ticker csv exists, then merge aaii df with it, else put aaii df in new ticker csv file
     if (os.path.exists(ticker_csv_filepath + "\\" + ticker_csv_filename) is True):
       ticker_csv_df = data = pd.read_csv(ticker_csv_filepath + "\\" + ticker_csv_filename)
       logging.info("File "  + str(ticker_csv_filename) + " exists. Will read-in and merge the latest AAII data into it")
@@ -311,7 +344,12 @@ for ticker_raw in ticker_list:
       # One other alternative is to save that row data and then merge with the
       # dataframe later after aaii data has merged but more than likely we should
       # not end up in a situation like this, so sys.exit for now here.
-      # -----------------------------------------------------------------------
+      # Another option is the delete that row from the ticker df - this will
+      # permanently delete that row from ticker csv as well - when it gets
+      # written later in the script (That is a cheap way of cleaning up the
+      # ticker csv file)
+      # maybe make a list ignore_ticker_row_list / delete_ticker_cs_row_list
+      # ----------------------------------------------------------------------
       if (len(ticker_csv_df_rows_list)) > len(aaii_df_rows_list):
         logging.error("The number of rows in ticker df : " + str(len(ticker_csv_df_rows_list)))
         logging.error("The number of rows in aaii   df : " + str(len(aaii_df_rows_list)))
@@ -400,7 +438,7 @@ for ticker_raw in ticker_list:
       ticker_csv_df.set_index("AAII_" + str(qtr_yr_idx).upper() + "_DATA", inplace=True)
       ticker_csv_df.sort_index(ascending=True,inplace=True)
       logging.debug("\n\nThe Ticker df after sorting by rows (ascending) column dates (descending)  \n" + ticker_csv_df.to_string() + "\n")
-      sys.exit(1)
+      # sys.exit(1)
       ticker_csv_df.to_csv(ticker_csv_filepath + "\\" + ticker_csv_filename, sep=',', index=True, header=True)
       logging.debug("Done with merging ticker and aaii df for : " + str(qtr_yr_idx).upper())
       logging.debug("")

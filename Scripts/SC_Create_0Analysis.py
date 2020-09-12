@@ -28,6 +28,36 @@ def human_format(num, precision=2, suffixes=['', 'K', 'M', 'B', 'T', 'P']):
   m = sum([abs(num / 1000.0 ** x) >= 1 for x in range(1, len(suffixes))])
   return f'{num / 1000.0 ** m:.{precision}f} {suffixes[m]}'
 
+# -----------------------------------------------------------------------------
+# Returns growth between the current and previous number
+# ----------|-----------|------------------------------------------|
+# Previous  |  Current  |  Notes                                   |
+# ----------|-----------|------------------------------------------|
+#    +      |     +     | Meaningful. Can be positive or negative  |
+# ----------|-----------|------------------------------------------|
+#    +      |     -     | Meaningful. Will always be negative      |
+# ----------|-----------|------------------------------------------|
+#    -      |     +     | Earnings are improving...maybe meaningful|
+# ----------|-----------|------------------------------------------|
+#    -      |     -     | If current > previous - Improving        |
+#           |           | If current < previous - Deteriorating    |
+# ----------|-----------|------------------------------------------|
+def get_growth(current, previous):
+  if (previous == 0):
+    previous = 0.01
+    # return "Div#0#"
+    return 0
+  elif current == previous:
+    return 0
+  if (previous > 0) and (current > 0):
+    return round(((current - previous) / previous), 2)
+  elif (previous > 0) and (current < 0):
+    return round(((current - previous) / previous), 2)
+  elif (previous < 0) and (current > 0):
+    return round(((current - previous) / previous), 2)*(-1)
+  elif (previous < 0) and (current < 0):
+    return round(((current - previous) / previous), 2)*(-1)
+
 # ---------------------------------------------------------------------------
 # Define the directories and the paths
 # ---------------------------------------------------------------------------
@@ -99,20 +129,27 @@ tracklist_df = pd.read_csv(tracklist_file_full_path)
 
 ticker_list_unclean = tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+
+aaii_missing_tickers_list = [
+'CBOE','CP','CRZO','GOOG','RACE','NTR','RGP','WCG','FOX','DISCK','BRK-B',
+  'BCRHF'
+]
 # #############################################################################
 #                   MAIN LOOP FOR TICKERS
 # #############################################################################
-ticker_list = ['IBM']
+# ticker_list = ['AFIB']
+i_idx = 1
 for ticker_raw in ticker_list:
 
-  ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
-  logging.info("========================================================")
-  logging.info("Processing for " + ticker)
-  logging.info("========================================================")
-  if (ticker in ["QQQ"]):
+  ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
+  if ((ticker in aaii_missing_tickers_list)) or  (ticker in ["QQQ"]):
     logging.debug(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections..")
     continue
 
+  logging.info("========================================================")
+  logging.info("Iteration no : " + str(i_idx) + ", Processing : " + ticker)
+  logging.info("========================================================")
+  i_idx += 1
 
   ticker_datain_qtr_file = ticker +  "_qtr_data.csv"
   ticker_datain_qtr_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Quarterly" + "\\" + ticker_datain_qtr_file)
@@ -203,14 +240,18 @@ for ticker_raw in ticker_list:
   # from Key Statistics df
   # ---------------------------------------------------------------------------
   # Watch out if the current Liabilites are 0
-  logging.debug("\n\nQTR DF : Calculating the various numbers and inserting the data from Key Statistics")
+  logging.debug("\n\nQTR DF : 1. Calculating the various numbers and 2. Inserting the data from Key Statistics")
   logging.debug("The Key Statistics Date List is : " + str(ks_date_list))
   col_list = ticker_qtr_numbers_df.columns.tolist()
   for col_idx in range(len(col_list)):
     col_val = col_list[col_idx]
+    # todo :The current ratio cannot be calcuated for companies that are in Financial Sector - Maybe put a comment in the chart
     ticker_qtr_numbers_df.loc['Current_Ratio', col_val] = ticker_qtr_numbers_df.loc['Current_Assets', col_val] / ticker_qtr_numbers_df.loc['Current_Liabilities', col_val]
+    logging.debug("The Current ratio for : " + str(col_val) + ", is : " + str(ticker_qtr_numbers_df.loc['Current_Ratio', col_val]))
     ticker_qtr_numbers_df.loc['Equity', col_val] = ticker_qtr_numbers_df.loc['Total_Assets', col_val] - ticker_qtr_numbers_df.loc['Total_Liabilities', col_val]
+    logging.debug("The Equity for : " + str(col_val) + ", is : " + str(ticker_qtr_numbers_df.loc['Equity', col_val]))
     ticker_qtr_numbers_df.loc['Debt_2_Equity', col_val] = 100*ticker_qtr_numbers_df.loc['LT_Debt', col_val] / ticker_qtr_numbers_df.loc['Equity', col_val]
+    logging.debug("The Debt_2_Equity for : " + str(col_val) + ", is : " + str(ticker_qtr_numbers_df.loc['Debt_2_Equity', col_val]))
     # todo : test : Test if Key statistics have multiple columns
     # todo : test : Make sure that the dates from Key Statistics and qtr and yr dateframes match - this will ensure that
     # Sundeep ran the other macro right ....
@@ -395,12 +436,13 @@ for ticker_raw in ticker_list:
     else:
       col_val_starting = col_list[0]
       logging.debug("Calculating Revenue Growth")
-      ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = (ticker_yr_numbers_df.loc['Revenue', col_val]/ticker_yr_numbers_df.loc['Revenue', col_val_starting])
+      ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = get_growth(ticker_yr_numbers_df.loc['Revenue', col_val],ticker_yr_numbers_df.loc['Revenue', col_val_starting])
       logging.debug("Calculating EPS Growth")
-      ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = (ticker_yr_numbers_df.loc['Diluted_EPS', col_val]/ticker_yr_numbers_df.loc['Diluted_EPS', col_val_starting])
+      ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = get_growth(ticker_yr_numbers_df.loc['Diluted_EPS', col_val],ticker_yr_numbers_df.loc['Diluted_EPS', col_val_starting])
       logging.debug("Calculating BV_Per_Share Growth")
-      ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = (ticker_yr_numbers_df.loc['BV_Per_Share', col_val]/ticker_yr_numbers_df.loc['BV_Per_Share', col_val_starting])
-      ticker_yr_numbers_df.loc['FCF_Per_Share_Growth', col_val] = (ticker_yr_numbers_df.loc['FCF_Per_Share', col_val]/ticker_yr_numbers_df.loc['FCF_Per_Share', col_val_starting])
+      ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = get_growth(ticker_yr_numbers_df.loc['BV_Per_Share', col_val],ticker_yr_numbers_df.loc['BV_Per_Share', col_val_starting])
+      logging.debug("Calculating FCF_Per_Share Growth")
+      ticker_yr_numbers_df.loc['FCF_Per_Share_Growth', col_val] = get_growth(ticker_yr_numbers_df.loc['FCF_Per_Share', col_val],ticker_yr_numbers_df.loc['FCF_Per_Share', col_val_starting])
 
     col_val_dt = dt.datetime.strptime(col_val, '%m/%d/%Y').date()
     if (col_val_dt in ks_date_list_dt):
@@ -420,11 +462,21 @@ for ticker_raw in ticker_list:
   # Prepare the Key Statistics Dataframe
   # Right now all the information for Key Stats comes from qtr df
   # ===========================================================================
+  logging.debug("=======================================")
+  logging.info("Staring to work on Key Statistics df")
+  logging.debug("=======================================")
   key_stats_01_df = pd.DataFrame(columns=['key_stats_01_df'])
   key_stats_01_df.set_index("key_stats_01_df",inplace=True)
   col_list = ticker_qtr_numbers_df.columns.tolist()
-  logging.debug("\n\nKey Stats 01 DF : Starting to populate Keys Statistics numbers...")
-  for col_idx in range(len(col_list)-3):
+  no_of_cols_to_put_in_key_stats = 5
+  # If there are fewer than 5 cols in the qtr df -
+  #   then copy the data from all all the cols into key stats df
+  #   otherwise copy the data from only first 5 cols
+  if (len(col_list) < no_of_cols_to_put_in_key_stats):
+    no_of_cols_to_put_in_key_stats = len(col_list)
+  logging.debug("\n\nKey Stats 01 DF : Populate Keys Statistics numbers from qtr df cols : " + str(col_list))
+  # todo : What if the number of cols are less than 8
+  for col_idx in range(no_of_cols_to_put_in_key_stats):
     col_val = col_list[col_idx]
     key_stats_01_df.loc['Curr. Ratio',col_val] = ticker_qtr_numbers_df.loc['Current_Ratio',col_val]
     key_stats_01_df.loc['Inventory',col_val] = ticker_qtr_numbers_df.loc['Inventory',col_val]
@@ -460,16 +512,16 @@ for ticker_raw in ticker_list:
 
   # Read the historical to get the latest Price -
   # todo - Can get the latest price from the yahoo financials as well
-  historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
-  ticker_adj_close_list = historical_df.Adj_Close.tolist()
-  date_str_list = historical_df.Date.tolist()
-  date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
-  ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
-  ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
-  # Now round the ticker_curr_price to 2 decimal places
-  round(ticker_curr_price, 2)
-  logging.debug("The most recent price for " + str(ticker) + " is : " + str(ticker_curr_price) + " for date " + str(ticker_curr_date))
-
+  # historical_df = pd.read_csv(dir_path + "\\" + historical_dir + "\\" + ticker + "_historical.csv")
+  # ticker_adj_close_list = historical_df.Adj_Close.tolist()
+  # date_str_list = historical_df.Date.tolist()
+  # date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
+  # ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
+  # ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
+  # # Now round the ticker_curr_price to 2 decimal places
+  # round(ticker_curr_price, 2)
+  # logging.debug("The most recent price for " + str(ticker) + " is : " + str(ticker_curr_price) + " for date " + str(ticker_curr_date))
+  #
   # Get the most recent quarter date
 
   # ===========================================================================
@@ -727,6 +779,10 @@ for ticker_raw in ticker_list:
   # todo : Get the ticklines (both x axis and y axis)
   # todo : Print the values on Blue line, if you want
 
+  logging.debug("-------------------------------------------")
+  logging.debug("Starting to plot the Yearly Growth Chart")
+  logging.debug("-------------------------------------------")
+  logging.debug("The YR DF is \n" + ticker_yr_numbers_df.to_string())
   # Get only last 10 years to plot
   col_list = ticker_yr_numbers_df.columns.tolist()
   if (len(col_list)) > 10:
@@ -740,22 +796,43 @@ for ticker_raw in ticker_list:
   yr_growth_plt_lim_upper = 3.5
   # Extract the various growth numbers and set the upper limit, if greater than
   #  3.5 (set by default up - based on 20% grwoth rate for 8 years)
-  tmp_max = max(ticker_yr_numbers_df.loc["Diluted_EPS_Growth"])
-  logging.debug("The max value in Diluted EPS Growth List is "  + str(tmp_max))
-  if (tmp_max > yr_growth_plt_lim_upper):
-    yr_growth_plt_lim_upper = int(round(tmp_max))+.5
 
-  tmp_max = max(ticker_yr_numbers_df.loc["Revenue_Growth"])
-  logging.debug("The max value in Diluted Revenue Growth List is " + str(tmp_max))
-  if (tmp_max > yr_growth_plt_lim_upper):
-    yr_growth_plt_lim_upper = int(round(tmp_max))+.5
+  all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["Diluted_EPS_Growth"])
+  all_numbers = True
+  if (all_numbers is True):
+    tmp_max = max(ticker_yr_numbers_df.loc["Diluted_EPS_Growth"])
+    logging.debug("The max value in Diluted EPS Growth List is "  + str(tmp_max))
+    if (tmp_max > yr_growth_plt_lim_upper):
+      yr_growth_plt_lim_upper = int(round(tmp_max))+.5
 
-  tmp_max = max(ticker_yr_numbers_df.loc["BV_Per_Share_Growth"])
-  logging.debug("The max value in Diluted BVPS Growth List is " + str(tmp_max))
-  if (tmp_max > yr_growth_plt_lim_upper):
-    yr_growth_plt_lim_upper = int(round(tmp_max))+.5
+  all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["Revenue_Growth"])
+  all_numbers = True
+  if (all_numbers is True):
+    tmp_max = max(ticker_yr_numbers_df.loc["Revenue_Growth"])
+    logging.debug("The max value in  Revenue Growth List is " + str(tmp_max))
+    if (tmp_max > yr_growth_plt_lim_upper):
+      yr_growth_plt_lim_upper = int(round(tmp_max))+.5
 
-  logging.debug("The upper limit for the Growth Plot is set to " + str(yr_growth_plt_lim_upper))
+  all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["BV_Per_Share_Growth"])
+  all_numbers = True
+  if (all_numbers is True):
+    tmp_max = max(ticker_yr_numbers_df.loc["BV_Per_Share_Growth"])
+    logging.debug("The max value in BVPS Growth List is " + str(tmp_max))
+    if (tmp_max > yr_growth_plt_lim_upper):
+      yr_growth_plt_lim_upper = int(round(tmp_max))+.5
+
+  all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"])
+  all_numbers = True
+  if (all_numbers is True):
+    tmp_max = max(ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"])
+    logging.debug("The max value in FCFPS Growth List is " + str(tmp_max))
+    if (tmp_max > yr_growth_plt_lim_upper):
+      yr_growth_plt_lim_upper = int(round(tmp_max)) + .5
+
+  logging.debug("The upper limit for the Growth Plot is calculate to be : " + str(yr_growth_plt_lim_upper))
+  if (yr_growth_plt_lim_upper > 10):
+    yr_growth_plt_lim_upper = 10
+    logging.debug("The upper limit for the Growth Plot was calcualated to be very high. Resetting it to : " + str(yr_growth_plt_lim_upper))
 
   yr_growth_plt.set_ylim(yr_growth_plt_lim_lower, yr_growth_plt_lim_upper)
   yr_growth_plt.tick_params(axis="y", direction="in", pad=-22)
