@@ -78,8 +78,8 @@ aaii_misc_00_df = pd.read_excel(aaii_xls, '0_Analysis_Misc_00')
 aaii_financials_qtr_df = pd.read_excel(aaii_xls, '0_Analysis_QTR')
 aaii_financials_yr_df = pd.read_excel(aaii_xls, '0_Analysis_YR')
 
-use_tickers_in_aaii_file = 1
-if (use_tickers_in_aaii_file):
+use_tickers_from_aaii_file = 1
+if (use_tickers_from_aaii_file):
   ticker_list_unclean = aaii_misc_00_df['Ticker'].tolist()
 else:
   ticker_list_unclean = tracklist_df['Tickers'].tolist()
@@ -126,12 +126,12 @@ for ticker_raw in ticker_list:
   i_idx += 1
 
   if ((ticker in aaii_missing_tickers_list)) or  (ticker in ["QQQ"]):
-    logging.debug(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections..")
+    logging.debug(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections. Skipping...")
     continue
 
   if (len(re.findall('\s', ticker)) > 0):
-    if (use_tickers_in_aaii_file == 1):
-      logging.warning("The ticker : " + str(ticker) + ", has spaces. Will skip processing this ticker")
+    if (use_tickers_from_aaii_file == 1):
+      logging.warning("The ticker : " + str(ticker) + ", has spaces in the aaii ticker list, Will skip processing this ticker. Skipping...")
       continue
     else:
       logging.error("The ticker : " + str(ticker) + ", has spaces. Please correct and rerun")
@@ -181,7 +181,7 @@ for ticker_raw in ticker_list:
   # except:
   except ValueError:
     logging.warning("The date for : " + str(qtr_idx) + ", is : " + str(most_recent_qtr_date_str) + ", which does not follow to format %Y-%m-%d %H:%M:%S")
-    logging.warning("Will skip this ticker and move on to the next one")
+    logging.warning("Will skip processing this ticker and move on to the next one. Skipping...")
     continue
 
   most_recent_qtr_date_dt = dt.datetime.strptime(str(most_recent_qtr_date_str), '%Y-%m-%d %H:%M:%S').date()

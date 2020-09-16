@@ -3208,6 +3208,17 @@
     }
   },
 
+
+  "EBS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2014", "Stop_Date" :   "Next"},
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2016", "Stop_Date" :   "04/05/2016", "Adj_Amount" : "-.16"}
+    ]
+  },
+
   "BAC" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2016", "Stop_Date" :   "06/30/2019"}

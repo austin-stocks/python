@@ -29,6 +29,13 @@ def human_format(num, precision=2, suffixes=['', 'K', 'M', 'B', 'T', 'P']):
   return f'{num / 1000.0 ** m:.{precision}f} {suffixes[m]}'
 
 # -----------------------------------------------------------------------------
+def get_ratio(current, previous):
+  if (previous == 0):
+    # return "Div#0#"
+    return 0
+  else :
+    return round((current/previous), 2)
+
 # Returns growth between the current and previous number
 # ----------|-----------|------------------------------------------|
 # Previous  |  Current  |  Notes                                   |
@@ -120,54 +127,109 @@ logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 # Set the various dirs and read the AAII file
 # -----------------------------------------------------------------------------
+master_tracklist_file = "Master_Tracklist.xlsx"
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 tracklist_df = pd.read_csv(tracklist_file_full_path)
-
+master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
+master_tracklist_list = master_tracklist_df['Ticker'].tolist()
+logging.debug("The master tracklist tickers are " + str(master_tracklist_list))
 
 ticker_list_unclean = tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
 aaii_missing_tickers_list = [
-'CBOE','CP','CRZO','GOOG','RACE','NTR','RGP','WCG','FOX','DISCK','BRK-B',
-  'BCRHF'
+'CBOE','CP','CRZO','GOOG','RACE','NTR','RGP','WCG','FOX','DISCK','BRK-B'
 ]
+watchlist_0analysis_df = pd.DataFrame(columns=['Ticker','Rev_growth','EPS_growth','BVPS_growth','FCFPS_growth','Spacer_00','No_of_Years','In_Master','Spacer_01','Revs','EPS','BVPS','FCFPS'])
+skipped_tickers_df = pd.DataFrame(columns=['Ticker','Reason'])
+skipped_tickers_df.set_index('Ticker', inplace=True)
+total_number_of_ticker = len(ticker_list)
+
 # #############################################################################
 #                   MAIN LOOP FOR TICKERS
 # #############################################################################
-# ticker_list = ['AFIB']
+# ticker_list = ['IBM', 'BCRHF', 'CCXU', 'GIXU', 'GLEOU', 'HRRB', 'LGCU', 'LIZI', 'MFACU', 'OACU', 'PTKU', 'RGP', 'RPLAU', 'SBEU', 'SPAQU', 'STPKU','AAPL']
+# ticker_list = ['AAPL','IBM','MED']
+ticker_list = ['AACH', 'AAOI', 'AAPL', 'AAXN', 'ABBV', 'ABC', 'ABCB', 'ABG', 'ABMD', 'ABR', 'ABTX', 'ABUS', 'ACAD',
+               'ACBI', 'ACGL', 'ACHC', 'ACIA', 'ACIU', 'ACMR', 'ACN', 'ACNB', 'ACRS', 'ADAP', 'ADBE', 'ADC', 'ADI',
+               'ADIL', 'ADOM', 'ADP', 'ADPT', 'ADRNY', 'ADRO', 'ADT', 'ADTX', 'ADUS', 'ADVM', 'ADVV', 'AEIS', 'AEL',
+               'AER', 'AERO', 'AFG', 'AFI', 'AFIB', 'AFMD', 'AFYA', 'AGEN', 'AGIO', 'AGLE', 'AGM', 'AGTC', 'AHH',
+               'AIH', 'AIMC', 'AIMT', 'AIN', 'AIRT', 'AIV', 'AJG', 'AJRD', 'AJX', 'AKAM', 'AKBA', 'AKRO', 'AKUS', 'AL',
+               'ALDA', 'ALEC', 'ALG', 'ALGN', 'ALGT', 'ALIM', 'ALK', 'ALLE', 'ALLK', 'ALNA', 'ALNY', 'ALRM', 'ALRS',
+               'ALRT', 'ALSN', 'ALTA', 'ALTR', 'ALVR', 'ALXN', 'ALXO', 'AMAG', 'AMAT', 'AMCT', 'AME', 'AMGN', 'AMHC',
+               'AMHG', 'AMK', 'AMN', 'AMOT', 'AMP', 'AMRC', 'AMT', 'AMTB', 'AMTD', 'AMTX', 'AMWD', 'AMZN', 'AN',
+               'ANAB', 'ANAV', 'ANCUF', 'ANET', 'ANGI', 'ANIP', 'ANNX', 'ANPC', 'ANSS', 'ANTM', 'ANVS', 'AOS', 'AOXY', 'APH', 'API', 'APLS', 'APLT', 'APM', 'APOG', 'APPF', 'APPN', 'APRE', 'APRN', 'APTS', 'APTX', 'AQMS', 'AQST', 'AR', 'ARDS', 'ARE', 'ARLO', 'ARMK', 'ARNA', 'ARQT', 'ARST', 'ARVN', 'ARWR', 'ASC', 'ASGN', 'ASM', 'ASMIY', 'ASML', 'ASR', 'ASUR', 'ATEX', 'ATGN', 'ATH', 'ATHM', 'ATLC', 'ATNX', 'ATOM', 'ATRA', 'ATRC', 'ATSG', 'ATUS', 'ATVI', 'ATXI', 'AUB', 'AUTL', 'AVCO', 'AVDL', 'AVGO', 'AVLR', 'AVNT', 'AVRO', 'AVYA', 'AWCMY', 'AX', 'AXDX', 'AXGN', 'AXGT', 'AXIM', 'AXL', 'AXLA', 'AXNX', 'AXSM', 'AYI', 'AYLA', 'AYX', 'AZO', 'AZPN', 'AZRE', 'AZRX', 'AZUL', 'BABA', 'BAH', 'BAND', 'BANF', 'BANM', 'BAP', 'BAYK', 'BBAR', 'BBGI', 'BBIO', 'BBSI', 'BBX', 'BBY', 'BCAUY', 'BCEL', 'BCH', 'BCML', 'BCPC', 'BCSF', 'BCYC', 'BDGE', 'BDL', 'BDTX', 'BDX', 'BEAM', 'BEAT', 'BECN', 'BEKE', 'BERY', 'BESIY', 'BEST', 'BFAM', 'BFC', 'BFIN', 'BFST', 'BGNE', 'BGSF', 'BHB', 'BHVN', 'BIDU', 'BIGC', 'BIIB', 'BILI', 'BILL', 'BIO', 'BIOQ', 'BIOX', 'BIP', 'BIPC', 'BITA', 'BJ', 'BK', 'BKI', 'BKNG', 'BL', 'BLCT', 'BLD', 'BLDR', 'BLFS', 'BLGO', 'BLKB', 'BLL', 'BLU', 'BLUE', 'BMA', 'BMCH', 'BMI', 'BMNM', 'BMO', 'BMRA', 'BMRG', 'BMRN', 'BMTC', 'BMTM', 'BMY', 'BNFT', 'BNR', 'BNTC', 'BNTX', 'BOID', 'BOOM', 'BOOT', 'BOTH', 'BPMC', 'BPMP', 'BPY', 'BPYU', 'BRBR', 'BRBS', 'BRG', 'BRID', 'BRK.A', 'BRMK', 'BSFO', 'BSRR', 'BSTC', 'BTAI', 'BTBT', 'BTCY', 'BTI', 'BTZI', 'BUSE', 'BVXV', 'BWB', 'BXMT', 'BY', 'BYD', 'BYND', 'BYSI', 'BZH', 'BZLFY', 'BZUN', 'CAAP', 'CAC', 'CACC', 'CACI', 'CAI', 'CAL', 'CALA', 'CALB', 'CANG', 'CANN', 'CARG', 'CASH', 'CASI', 'CASY', 'CATC', 'CATY', 'CBMB', 'CBNK', 'CBPO', 'CBRE', 'CBTX', 'CCAC', 'CCB', 'CCEL', 'CCF', 'CCI', 'CCMP', 'CCNE', 'CCO', 'CCOM', 'CCRC', 'CCS', 'CCSB', 'CDNS', 'CDTX', 'CDW', 'CDXC', 'CEA', 'CELC', 'CELP', 'CEQP', 'CERN', 'CETX', 'CFBK', 'CFIIU', 'CFR', 'CGNX', 'CGRO', 'CHDN', 'CHE', 'CHEF', 'CHMA', 'CHRA', 'CHRW', 'CHTR', 'CHUY', 'CI', 'CIB', 'CIH', 'CIIC', 'CIO', 'CISO', 'CIVB', 'CKPT', 'CLCS', 'CLDR', 'CLDT', 'CLFD', 'CLHRF', 'CLLS', 'CLNC', 'CLNY', 'CLPS', 'CLRI', 'CLSD', 'CLVS', 'CLWD', 'CLX', 'CLXT', 'CM', 'CMCM', 'CMCSA', 'CMD', 'CME', 'CMI', 'CMLS', 'CMPI', 'CMPR', 'CNABQ', 'CNBB', 'CNBKA', 'CNC', 'CNCE', 'CNET', 'CNF', 'CNFR', 'CNNB', 'CNOB', 'CNR', 'CNS', 'CNST', 'CNTG', 'CNXM', 'CNXN', 'CO', 'CODI', 'CODX', 'COE', 'COIL', 'COKE', 'COLB', 'COLM', 'COMM', 'COOP', 'COR', 'CORR', 'CORT', 'COST', 'COTY', 'COUP', 'COWN', 'CPAA', 'CPE', 'CPHC', 'CPIX', 'CPK', 'CPRT', 'CPSS', 'CPTP', 'CRAWA', 'CRBO', 'CRBP', 'CRESY', 'CREX', 'CRH', 'CRI', 'CRKN', 'CRL', 'CRM', 'CRMT', 'CRNC', 'CRNX', 'CRSA', 'CRTO', 'CRTX', 'CRUS', 'CRVS', 'CRVW', 'CRWD', 'CSGP', 'CSIQ', 'CSL', 'CSLT', 'CSOD', 'CSPR', 'CSSE', 'CSTR', 'CSWI', 'CSX', 'CTAS', 'CTEK', 'CTMX', 'CTO', 'CTSH', 'CTT', 'CUBE', 'CUBI', 'CUE', 'CUII', 'CUTR', 'CVAC', 'CVBF', 'CVCO', 'CVCY', 'CVE', 'CVGI', 'CVGW', 'CVLB', 'CVNA', 'CVS', 'CVVUF', 'CW', 'CWBR', 'CXO', 'CYBR', 'CZR', 'CZWI', 'CZZ', 'DADA', 'DAO', 'DAR', 'DASTY', 'DAVA', 'DBX', 'DCPH', 'DDOG', 'DFNS', 'DFPH', 'DFS', 'DG', 'DHI', 'DHIL', 'DIOD', 'DIS', 'DISCA', 'DKL', 'DKNG', 'DL', 'DLHC', 'DLTH', 'DLTR', 'DMYT', 'DNK', 'DNKN', 'DNLI', 'DOC', 'DOCU', 'DOGZ', 'DORM', 'DOYU', 'DPWW', 'DPZ', 'DQ', 'DSGX', 'DSKE', 'DTEA', 'DTEGY', 'DTIL', 'DUO', 'DVA', 'DVCR', 'DXCM', 'DY', 'DYAI', 'DYNT', 'EA', 'EACO', 'EAST', 'EB', 'EBF', 'EBIX', 'EBMT', 'EBSB', 'EBTC', 'ECHO', 'ECOL', 'ECOR', 'ECPG', 'EDAP', 'EDIT', 'EDN', 'EDNT', 'EDRY', 'EDTK', 'EDU', 'EDUC', 'EEFT', 'EFBI', 'EFSC', 'EGAN', 'EGBN', 'EGOV', 'EGP', 'EGRX', 'EH', 'EHC', 'EHTH', 'EIDX', 'EIG', 'ELCQ', 'ELMD', 'ELP', 'ELUXY', 'ELY', 'EMCF', 'EME', 'EML', 'EMYB', 'ENB', 'ENPH', 'ENSG', 'ENTA', 'ENTG', 'ENTX', 'ENV', 'ENVA', 'EOLS', 'EPAM', 'EPM', 'EPRT', 'EQ', 'EQIX', 'ERIE', 'ERJ', 'ERKH', 'ESBS', 'ESGR', 'ESNT', 'ESQ', 'ESS', 'ESSC', 'ESTA', 'ESTC', 'ET', 'ETFC', 'ETNB', 'ETON', 'ETSY', 'ETTX', 'EV', 'EVBG', 'EVBN', 'EVER', 'EVH', 'EVI', 'EVIO', 'EVK', 'EVLO', 'EVR', 'EVTC', 'EW', 'EWBC', 'EXAS', 'EXEL', 'EXETF', 'EXLS', 'EXPD', 'EXPE', 'EXPI', 'EXR', 'EXSR', 'EXTR', 'EYEN', 'FAF', 'FAMI', 'FANG', 'FANH', 'FAST', 'FAT', 'FB', 'FBC', 'FBHS', 'FBK', 'FBM', 'FBMS', 'FBRX', 'FCBP', 'FCCO', 'FCCY', 'FCFS', 'FCPT', 'FDCT', 'FEDU', 'FENG', 'FERGY', 'FETM', 'FFBC', 'FFBW', 'FFIN', 'FFIV', 'FFWM', 'FGEN', 'FHN', 'FICO', 'FIIIU', 'FIND', 'FINV', 'FISV', 'FIT', 'FIVE', 'FIX', 'FIXX', 'FIZZ', 'FLGT', 'FLT', 'FLWS', 'FLXN', 'FMAO', 'FMCB', 'FMCIU', 'FMNB', 'FMTX', 'FMX', 'FN', 'FND', 'FNF', 'FNKO', 'FNWB', 'FOCS', 'FOLD', 'FONR', 'FORK', 'FORTY', 'FOUR', 'FOXF', 'FPH', 'FPI', 'FR', 'FRBK', 'FRC', 'FRME', 'FRT', 'FRTA', 'FSBW', 'FSFG', 'FSLY', 'FTAI', 'FTCH', 'FTHM', 'FTNT', 'FULC', 'FUSN', 'FUTU', 'FUV', 'FVCB', 'FVE', 'FVRR', 'FWAV', 'FWRD', 'GABC', 'GBCI', 'GBIO', 'GBLI', 'GBT', 'GCBC', 'GDDY', 'GDOT', 'GDS', 'GFF', 'GGAL', 'GGG', 'GH', 'GHG', 'GHMP', 'GHSI', 'GIB', 'GIII', 'GILD', 'GKOS', 'GL', 'GLIBA', 'GLOB', 'GLOP', 'GLPI', 'GLUU', 'GLXZ', 'GMDA', 'GMED', 'GMS', 'GNAL', 'GNL', 'GNLN', 'GNPX', 'GNRS', 'GNSS', 'GNTX', 'GO', 'GOCO', 'GOLF', 'GOOGL', 'GORO', 'GPL', 'GPMT', 'GPN', 'GPP', 'GPRK', 'GRLB', 'GRMM', 'GRNQ', 'GRNV', 'GRTS', 'GRTX', 'GRUB', 'GRWG', 'GSHD', 'GSKY', 'GSMG', 'GSUM', 'GTH', 'GTHX', 'GTN', 'GTT', 'GV', 'GWGH', 'GWPH', 'GWRE', 'HA', 'HARP', 'HAS', 'HBCP', 'HBIO', 'HBMD', 'HBNC', 'HCA', 'HCAT', 'HCCC', 'HCCH', 'HCCO', 'HCHC', 'HCYT', 'HD', 'HDSN', 'HEES', 'HEI', 'HELE', 'HFWA', 'HHC', 'HHR', 'HIFS', 'HII', 'HKIB', 'HLG', 'HLI', 'HLIO', 'HLNE', 'HLYK', 'HMHC', 'HMI', 'HMY', 'HNNA', 'HOFT', 'HOLI', 'HOMB', 'HOME', 'HONE', 'HOOK', 'HOTH', 'HQY', 'HRGG', 'HRMY', 'HRTG', 'HSTM', 'HTBI', 'HTBK', 'HTHT', 'HTLF', 'HUBG', 'HUBS', 'HUD', 'HUM', 'HUN', 'HUSN', 'HVBC', 'HWKE', 'HX', 'HXL', 'HYAC', 'HZN', 'HZO', 'IAIC', 'IART', 'IBKR', 'IBP', 'IBTX', 'ICCH', 'ICCT', 'ICD', 'ICE', 'ICHR', 'ICLK', 'ICLR', 'ICPT', 'ICUI', 'IDXX', 'IDYA', 'IEHC', 'IESC', 'IFNNY', 'IFRX', 'IGMS', 'IHG', 'IHT', 'IIIV', 'IIN', 'IIPR', 'IIVI', 'ILAL', 'ILMN', 'IMAB', 'IMAC', 'IMAX', 'IMKTA', 'IMMU', 'IMRA', 'INCY', 'INDB', 'INFN', 'INFY', 'INGN', 'INMD', 'INOV', 'INS', 'INSM', 'INTC', 'INTEQ', 'INTU', 'INTZ', 'INVH', 'INZY', 'IONS', 'IOSP', 'IPG', 'IPGP', 'IPHI', 'IPOB', 'IPOC', 'IPTK', 'IQ', 'IRBT', 'IRCP', 'IRMD', 'IRNC', 'IRS', 'IRT', 'IRTC', 'ISBC', 'ISDR', 'ISRG', 'ISTR', 'IT', 'ITCI', 'ITGR', 'ITOS', 'ITRM', 'ITT', 'ITUB', 'IVFH', 'JACK', 'JAZZ', 'JBHT', 'JBLU', 'JBSS', 'JBT', 'JCI', 'JCOM', 'JD', 'JFU', 'JG', 'JHG', 'JIH', 'JKS', 'JLL', 'JMIA', 'JOB', 'JOBS', 'JOUT', 'JP', 'JRSH', 'JRVR', 'JSHG', 'JT', 'JYNT', 'KAI', 'KALA', 'KBH', 'KBNT', 'KC', 'KERN', 'KEWL', 'KEY', 'KGJI', 'KHC', 'KIDS', 'KITL', 'KKR', 'KLAC', 'KLBAY', 'KLDO', 'KMPR', 'KNL', 'KNOS', 'KNSA', 'KNSL', 'KOD', 'KPAY', 'KR', 'KRC', 'KREF', 'KRKR', 'KRMD', 'KRNT', 'KRNY', 'KRP', 'KRTX', 'KRUS', 'KRYS', 'KSHB', 'KTHN', 'KULR', 'KZR', 'L', 'LAD', 'LAIX', 'LAND', 'LASR', 'LBAI', 'LBC', 'LBRT', 'LC', 'LCAPU', 'LCI', 'LCII', 'LDL', 'LDOS', 'LEA', 'LEGH', 'LEGN', 'LEN', 'LEVL', 'LFC', 'LFUS', 'LGHL', 'LGIH', 'LGND', 'LH', 'LHCG', 'LHX', 'LI', 'LICT', 'LII', 'LILA', 'LIN', 'LITE', 'LIVE', 'LIVN', 'LIVX', 'LKCO', 'LKFN', 'LKNCY', 'LKQ', 'LMAT', 'LMND', 'LMNR', 'LMPX', 'LMT', 'LN', 'LOAK', 'LOAN', 'LOB', 'LOCO', 'LOGC', 'LOGI', 'LOPE', 'LOV', 'LOVE', 'LPG', 'LPLA', 'LPTH', 'LQDA', 'LRCX', 'LSAC', 'LSI', 'LSTR', 'LSYN', 'LTHM', 'LUKOY', 'LULU', 'LUNA', 'LUV', 'LVGO', 'LVMUY', 'LX', 'LYFT', 'LYRA', 'LYTS', 'MA', 'MAN', 'MASI', 'MAYS', 'MBIN', 'MBUU', 'MCAC', 'MCB', 'MCBI', 'MCEM', 'MCFT', 'MCHP', 'MCO', 'MCRB', 'MCS', 'MCUJF', 'MCY', 'MDB', 'MDIA', 'MDLA', 'MDRX', 'MDTR', 'MDXG', 'MEC', 'MED', 'MEDP', 'MEDS', 'MEG', 'MEI', 'MELI', 'MFC', 'MGNI', 'MGNX', 'MGTA', 'MGTX', 'MGY', 'MHGU', 'MHH', 'MHK', 'MHO', 'MIC', 'MIDD', 'MIME', 'MIRM', 'MIST', 'MITK', 'MJCO', 'MKC', 'MKD', 'MKL', 'MKSI', 'MKTX', 'MLAB', 'MLM', 'MLR', 'MMAC', 'MMI', 'MMMM', 'MMS', 'MMSI', 'MMYT', 'MNK', 'MNLO', 'MNPR', 'MNRL', 'MNST', 'MNTR', 'MOH', 'MOHO', 'MOMO', 'MORF', 'MOTS', 'MPAA', 'MPB', 'MPLX', 'MPW', 'MPWR', 'MPX', 'MRBK', 'MRCY', 'MRGE', 'MRNA', 'MRSN', 'MRUS', 'MSBI', 'MSCI', 'MSFT', 'MSON', 'MSTR', 'MTBC', 'MTC', 'MTCH', 'MTD', 'MTH', 'MTL', 'MTLS', 'MTN', 'MTZ', 'MU', 'MVBF', 'MWK', 'MXL', 'MYFW', 'MYOK', 'MYOV', 'NAII', 'NAOV', 'NBAC', 'NBEV', 'NBIX', 'NBLX', 'NBN', 'NCBS', 'NCLH', 'NCNA', 'NCNO', 'NCSM', 'NDAQ', 'NDRA', 'NEIK', 'NEO', 'NEOG', 'NEOV', 'NEP', 'NET', 'NEW', 'NEWA', 'NEWR', 'NEX', 'NFBK', 'NFE', 'NFIN', 'NFLX', 'NGHC', 'NGM', 'NGTF', 'NGVC', 'NHYDY', 'NICE', 'NIO', 'NIU', 'NK', 'NKLA', 'NKTR', 'NKTX', 'NMCI', 'NMRK', 'NNOX', 'NOAH', 'NOBH', 'NODK', 'NOVA', 'NOVC', 'NOVKY', 'NOVN', 'NOVT', 'NOW', 'NRC', 'NREF', 'NRZ', 'NSA', 'NSIT', 'NSP', 'NSSC', 'NTCT', 'NTES', 'NTIC', 'NTLA', 'NTNX', 'NTRA', 'NTRS', 'NTRU', 'NUMD', 'NUVA', 'NUZE', 'NVDA', 'NVEE', 'NVMI', 'NVR', 'NVRO', 'NVTA', 'NWBO', 'NX', 'NXPI', 'NXRT', 'NXST', 'NXTC', 'NYT', 'OAOFY', 'OBCI', 'OBNK', 'OBSV', 'OC', 'OCFC', 'OCFT', 'OCUL', 'ODFL', 'ODT', 'OFC', 'OKTA', 'OLB', 'OLED', 'OLLI', 'OMAB', 'OMCL', 'OMER', 'OMF', 'OMP', 'ON', 'ONDK', 'ONE', 'ONEM', 'ONTO', 'OOMA', 'OPBK', 'OPK', 'OPRA', 'OPRT', 'OPRX', 'OPTN', 'ORCC', 'ORIC', 'ORLY', 'ORPB', 'ORRF', 'ORTX', 'OSH', 'OSS', 'OTCM', 'OTEX', 'OVID', 'OVLY', 'OWCP', 'OXM', 'OYST', 'OZK', 'PAC', 'PACK', 'PACW', 'PAG', 'PAGS', 'PAM', 'PAND', 'PANW', 'PASG', 'PATK', 'PAYC', 'PAYS', 'PBH', 'PBIP', 'PBR', 'PCAR', 'PCB', 'PCOM', 'PCRX', 'PCSB', 'PCTL', 'PCTY', 'PCVX', 'PCYG', 'PCYO', 'PD', 'PDD', 'PE', 'PEB', 'PEGA', 'PEN', 'PETQ', 'PETS', 'PFBC', 'PFC', 'PFGC', 'PFHD', 'PFIS', 'PFNX', 'PFPT', 'PFSI', 'PGC', 'PGNT', 'PGR', 'PGRE', 'PGTI', 'PHAS', 'PHBI', 'PHR', 'PII', 'PINE', 'PING', 'PINS', 'PIPR', 'PIRS', 'PIXY', 'PKBK', 'PKG', 'PKKW', 'PKTX', 'PLAN', 'PLAY', 'PLBC', 'PLD', 'PLMR', 'PLNT', 'PLOW', 'PLSE', 'PLUS', 'PLYM', 'PNFP', 'PNRG', 'PODD', 'POLA', 'POOL', 'POST', 'POWI', 'PPBI', 'PPHI', 'PQG', 'PRAH', 'PRI', 'PRKA', 'PRLB', 'PRLX', 'PRNB', 'PROG', 'PRQR', 'PRSC', 'PRSI', 'PRU', 'PRVL', 'PS', 'PSB', 'PSBP', 'PSBQ', 'PSNL', 'PSTG', 'PSTI', 'PSTX', 'PSV', 'PSXP', 'PT', 'PTAC', 'PTGX', 'PTI', 'PTON', 'PTRS', 'PUK', 'PUMP', 'PUODY', 'PVBC', 'PVH', 'PWFL', 'PYPD', 'PYPL', 'QDEL', 'QH', 'QIWI', 'QK', 'QLYS', 'QNTO', 'QRVO', 'QTRX', 'QTS', 'QTT', 'QTWO', 'QURE', 'RAPT', 'RARE', 'RBA', 'RBB', 'RBBN', 'RBCAA', 'RBNC', 'RC', 'RCAR', 'RCUS', 'RDCM', 'RDFN', 'RDN', 'RDSMY', 'RDVT', 'REAL', 'REDU', 'REED', 'REG', 'REGN', 'REI', 'RELT', 'REPH', 'REPL', 'RETA', 'REV', 'REXR', 'RGA', 'RGEN', 'RGLD', 'RGNX', 'RHI', 'RICK', 'RILY', 'RIO', 'RLAY', 'RLGT', 'RM', 'RMAX', 'RMBS', 'RMD', 'RMED', 'RMR', 'RNA', 'RNG', 'RNGR', 'RNLX', 'RNR', 'RNST', 'ROAD', 'ROCH', 'ROKU', 'ROL', 'ROLL', 'ROP', 'ROST', 'RP', 'RPD', 'RPTX', 'RS', 'RSG', 'RTLR', 'RTOKY', 'RTTO', 'RUBY', 'RUHN', 'RUN', 'RUSHA', 'RVLV', 'RVMD', 'RVRF', 'RVSB', 'RWT', 'RXN', 'RY', 'SACH', 'SAFE', 'SAGE', 'SAH', 'SAIA', 'SAIC', 'SAIL', 'SAMA', 'SANM', 'SAQN', 'SAR', 'SASR', 'SAVE', 'SBBP', 'SBCF', 'SBEV', 'SBGI', 'SBNY', 'SBPH', 'SBSI', 'SBT', 'SBUX', 'SC', 'SCHW', 'SCPL', 'SCS', 'SCVL', 'SCVX', 'SD', 'SDC', 'SDGR', 'SE', 'SECO', 'SEM', 'SENEA', 'SFBS', 'SFIX', 'SFM', 'SFNC', 'SFST', 'SGBX', 'SGC', 'SGEN', 'SGLB', 'SGMO', 'SGMS', 'SGRP', 'SGRY', 'SGTZY', 'SHAK', 'SHEN', 'SHLX', 'SHOP', 'SHSP', 'SHW', 'SHWZ', 'SHYF', 'SI', 'SIBN', 'SIC', 'SIEN', 'SIFY', 'SIGA', 'SIGI', 'SILK', 'SIMO', 'SINA', 'SIRI', 'SITE', 'SITO', 'SIVB', 'SJ', 'SKLV', 'SKX', 'SKY', 'SLDB', 'SLF', 'SLGG', 'SLGL', 'SLM', 'SLP', 'SLQT', 'SMAR', 'SMBC', 'SMBK', 'SMCI', 'SMED', 'SMID', 'SMMF', 'SMPL', 'SNA', 'SNAP', 'SNBR', 'SND', 'SNDE', 'SNDL', 'SNEX', 'SNNAQ', 'SNNF', 'SNRG', 'SNV', 'SNX', 'SOAC', 'SOFO', 'SOGO', 'SOHO', 'SOI', 'SOL', 'SOLO', 'SOLY', 'SONA', 'SONM', 'SP', 'SPKE', 'SPLK', 'SPMYY', 'SPNS', 'SPOT', 'SPRO', 'SPRS', 'SPSC', 'SPT', 'SPTN', 'SQ', 'SQBG', 'SRAC', 'SRAX', 'SRC', 'SRG', 'SRI', 'SRPT', 'SRRA', 'SRRK', 'SRTS', 'SSB', 'SSBP', 'SSD', 'SSNC', 'SSNT', 'SSP', 'STAA', 'STBA', 'STE', 'STG', 'STIM', 'STKS', 'STL', 'STLD', 'STMH', 'STMP', 'STND', 'STNE', 'STOK', 'STOR', 'STRA', 'STRO', 'STSA', 'STXB', 'STZ', 'SUI', 'SUM', 'SUME', 'SUN', 'SUPN', 'SUPV', 'SURF', 'SVC', 'SVIN', 'SVMK', 'SVT', 'SWAV', 'SWBI', 'SWI', 'SWK', 'SWKS', 'SWTX', 'SXTC', 'SY', 'SYF', 'SYNA', 'SYNH', 'SYRS', 'TAL', 'TAST', 'TAYD', 'TBBK', 'TBIO', 'TBK', 'TBLT', 'TBPH', 'TC', 'TCBI', 'TCBK', 'TCDA', 'TCF', 'TCMD', 'TCOM', 'TCRR', 'TCX', 'TD', 'TDG', 'TDNT', 'TDY', 'TEAM', 'TECH', 'TEDU', 'TELA', 'TEN', 'TEO', 'TER', 'TETAA', 'TFFP', 'TFX', 'TGAN', 'TGRO', 'TGS', 'TGTX', 'TH', 'THBRU', 'THCA', 'THG', 'THMG', 'THO', 'THRM', 'TIG', 'TIKK', 'TJX', 'TKAT', 'TKC', 'TKR', 'TLGT', 'TLND', 'TLRY', 'TMDX', 'TME', 'TMHC', 'TMO', 'TMUS', 'TNET', 'TNK', 'TOL', 'TOUR', 'TOWN', 'TPB', 'TPCS', 'TPH', 'TPIC', 'TPL', 'TPRE', 'TPTW', 'TPTX', 'TPX', 'TRCK', 'TREE', 'TREX', 'TRHC', 'TRNF', 'TRNO', 'TRNS', 'TRTX', 'TRU', 'TRVI', 'TSBK', 'TSC', 'TSCO', 'TSEM', 'TSLA', 'TSM', 'TSN', 'TSU', 'TT', 'TTC', 'TTD', 'TTLO', 'TTNDY', 'TUFN', 'TURN', 'TUSK', 'TW', 'TWLO', 'TWNK', 'TWOU', 'TWST', 'TXG', 'TXMD', 'TXN', 'TXRH', 'TXT', 'TYL', 'UAA', 'UAL', 'UBER', 'UBOH', 'UBX', 'UCTT', 'UDR', 'UEEC', 'UFAB', 'UFPI', 'UFPT', 'UGRO', 'UHAL', 'UHS', 'UI', 'ULTA', 'UMPQ', 'UMRX', 'UNH', 'UNP', 'UNTY', 'UONEK', 'UPLD', 'UPWK', 'URGN', 'URI', 'UROV', 'USAT', 'USCR', 'USDP', 'USFD', 'USIO', 'USPH', 'UTGN', 'UVE', 'UXIN', 'V', 'VAC', 'VALE', 'VALU', 'VAPO', 'VBTX', 'VCBD', 'VCNX', 'VCTR', 'VCYT', 'VEEV', 'VEL', 'VERF', 'VERI', 'VERO', 'VERX', 'VGR', 'VIAC', 'VICI', 'VIE', 'VIOT', 'VIPS', 'VIR', 'VIRT', 'VJET', 'VKIN', 'VKTX', 'VLRS', 'VLY', 'VMC', 'VMW', 'VNDA', 'VNE', 'VNET', 'VNOM', 'VPG', 'VRAY', 'VRCA', 'VRM', 'VRNS', 'VRSK', 'VRSN', 'VRTX', 'VSLR', 'VSTA', 'VTSI', 'W', 'WAB', 'WAL', 'WATT', 'WB', 'WCRS', 'WD', 'WDAY', 'WEI', 'WELL', 'WEN', 'WES', 'WETF', 'WETG', 'WEX', 'WFCF', 'WFTLF', 'WGO', 'WHD', 'WIFI', 'WIMI', 'WINA', 'WING', 'WIX', 'WKHS', 'WLDN', 'WLFC', 'WLK', 'WLTW', 'WM', 'WMGI', 'WMS', 'WNC', 'WNS', 'WORK', 'WRTC', 'WSBC', 'WSBF', 'WSFS', 'WSR', 'WST', 'WTFC', 'WTNW', 'WTS', 'WTTR', 'WUBA', 'WVE', 'WVFC', 'WVVI', 'WWD', 'WWE', 'XENT', 'XERS', 'XGN', 'XNCR', 'XOGAQ', 'XP', 'XPEL', 'XPEV', 'XXII', 'XYF', 'XYL', 'YAYO', 'YCBD', 'YELP', 'YETI', 'YEWB', 'YEXT', 'YGYI', 'YJ', 'YMAB', 'YNDX', 'YPF', 'YRD', 'YUMC', 'YY', 'ZAGG', 'ZBRA', 'ZCMD', 'ZEN', 'ZG', 'ZGYH', 'ZI', 'ZIXI', 'ZKIN', 'ZLAB', 'ZM', 'ZNTL', 'ZS', 'ZTO', 'ZTS', 'ZUO', 'ZYME', 'ZYNE', 'ZYXI']
+
 i_idx = 1
 for ticker_raw in ticker_list:
 
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   if ((ticker in aaii_missing_tickers_list)) or  (ticker in ["QQQ"]):
-    logging.debug(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections..")
+    logging.warning(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections..")
+    skipped_tickers_df.loc[ticker,'Reason'] = "Is_ETF_or_missing_in_AAII_Database"
     continue
 
   logging.info("========================================================")
   logging.info("Iteration no : " + str(i_idx) + ", Processing : " + ticker)
   logging.info("========================================================")
-  i_idx += 1
 
   ticker_datain_qtr_file = ticker +  "_qtr_data.csv"
-  ticker_datain_qtr_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Quarterly" + "\\" + ticker_datain_qtr_file)
+  if (os.path.exists(dir_path + analysis_dir + "\\" + "Quarterly" + "\\" + ticker_datain_qtr_file) is True):
+    ticker_datain_qtr_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Quarterly" + "\\" + ticker_datain_qtr_file)
+  else:
+    logging.warning("The file : " + str(ticker_datain_qtr_file) + " does not exist....Skipping")
+    skipped_tickers_df.loc[ticker,'Reason'] = "qtr_data.csv_file_does_not_exits_Check_AAII_parse_Download_script_output_for_reason_why_the_file_does_not_exist"
+    continue
+
+  ticker_datain_yr_file = ticker +  "_yr_data.csv"
+  if (os.path.exists(dir_path + analysis_dir + "\\" + "Yearly" + "\\" + ticker_datain_yr_file) is True):
+    ticker_datain_yr_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Yearly" + "\\" + ticker_datain_yr_file)
+  else:
+    logging.warning("The file : " + str(ticker_datain_yr_file) + " does not exist....Skipping")
+    skipped_tickers_df.loc[ticker, 'Reason'] = "yr_data.csv_file_does_not_exits_Check_AAII_parse_Download_script_output_for_reason_why_the_file_does_not_exist"
+    continue
+
+  ticker_datain_ks_file = ticker +  "_key_statistics_data.csv"
+  if (os.path.exists(dir_path + analysis_dir + "\\" + "Key_Statistics" + "\\" + ticker_datain_ks_file) is True):
+    ticker_datain_ks_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Key_Statistics" + "\\" + ticker_datain_ks_file)
+  else:
+    logging.warning("The file : " + str(ticker_datain_ks_df) + " does not exist....Skipping")
+    skipped_tickers_df.loc[ticker, 'Reason'] = "key_statistics_data.csv_file_does_not_exits_Check_AAII_parse_Download_script_output_for_reason_why_the_file_does_not_exist"
+    continue
+
+  # ---------------------------------------------------------------------------
+  # Sanity check the data
+  # ---------------------------------------------------------------------------
   ticker_datain_qtr_df.set_index("AAII_QTR_DATA",inplace=True)
   logging.debug("The QTR dataframe (datain_df) read from the AAII file is : \n" + ticker_datain_qtr_df.to_string())
   ticker_qtr_numbers_df = ticker_datain_qtr_df.copy()
+  if ( (len(ticker_qtr_numbers_df.columns) == 0) or (len(ticker_qtr_numbers_df.index) == 0) ) :
+    logging.warning("The QTR dataframe (datain_df) for ticker : " + str(ticker) + ", either has no rows or no columns. Skipping...")
+    skipped_tickers_df.loc[ticker, 'Reason'] = "qtr_data.csv_file_either_has_no_rows_or_no_columns"
+    continue
   qtr_date_list = ticker_qtr_numbers_df.columns.tolist()
 
-  ticker_datain_yr_file = ticker +  "_yr_data.csv"
-  ticker_datain_yr_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Yearly" + "\\" + ticker_datain_yr_file)
   ticker_datain_yr_df.set_index("AAII_YR_DATA",inplace=True)
   logging.debug("The YR dataframe (datain_df) read from the AAII file is : \n" + ticker_datain_yr_df.to_string())
   ticker_yr_numbers_df = ticker_datain_yr_df.copy()
+  if ( (len(ticker_yr_numbers_df.columns) == 0) or (len(ticker_yr_numbers_df.index) == 0) ) :
+    logging.warning("The YR dataframe (datain_df) for ticker : " + str(ticker) + ", either has no rows or no columns. Skipping...")
+    skipped_tickers_df.loc[ticker, 'Reason'] = "yr_data.csv_file_either_has_no_rows_or_no_columns"
+    continue
   yr_date_list = ticker_yr_numbers_df.columns.tolist()
+
+  ticker_datain_ks_df.set_index("AAII_KEY_STATISTICS_DATA",inplace=True)
+  logging.debug("The Key Statistics dataframe (datain_df) read from the AAII file is : \n" + ticker_datain_ks_df.to_string())
+  key_stats_datain_df = ticker_datain_ks_df.copy()
+  ks_date_list = ticker_datain_ks_df.columns.tolist()
+  # ---------------------------------------------------------------------------
 
   # ===========================================================================
   # Read the ticker AAII Key Statistics file
-  # We read this first because some of the items from this file will be inserted
+  # Some of the items from this file will be inserted
   # in the qtr and other in yr dataframe later.
   # The items to be inserted in qtr dataframe
   # Number of Institutions
@@ -177,12 +239,7 @@ for ticker_raw in ticker_list:
   # The items to be inserted in yr dataframe
   # Number of Employess
   # ===========================================================================
-  ticker_datain_ks_file = ticker +  "_key_statistics_data.csv"
-  ticker_datain_ks_df = pd.read_csv(dir_path + analysis_dir + "\\" + "Key_Statistics" + "\\" + ticker_datain_ks_file)
-  ticker_datain_ks_df.set_index("AAII_KEY_STATISTICS_DATA",inplace=True)
-  logging.debug("The Key Statistics dataframe (datain_df) read from the AAII file is : \n" + ticker_datain_ks_df.to_string())
-  key_stats_datain_df = ticker_datain_ks_df.copy()
-  ks_date_list = ticker_datain_ks_df.columns.tolist()
+
   ks_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in ks_date_list]
 
   logging.debug("The date list from QTR df " + str(qtr_date_list))
@@ -436,13 +493,13 @@ for ticker_raw in ticker_list:
     else:
       col_val_starting = col_list[0]
       logging.debug("Calculating Revenue Growth")
-      ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = get_growth(ticker_yr_numbers_df.loc['Revenue', col_val],ticker_yr_numbers_df.loc['Revenue', col_val_starting])
+      ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = get_ratio(ticker_yr_numbers_df.loc['Revenue', col_val],ticker_yr_numbers_df.loc['Revenue', col_val_starting])
       logging.debug("Calculating EPS Growth")
-      ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = get_growth(ticker_yr_numbers_df.loc['Diluted_EPS', col_val],ticker_yr_numbers_df.loc['Diluted_EPS', col_val_starting])
+      ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = get_ratio(ticker_yr_numbers_df.loc['Diluted_EPS', col_val],ticker_yr_numbers_df.loc['Diluted_EPS', col_val_starting])
       logging.debug("Calculating BV_Per_Share Growth")
-      ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = get_growth(ticker_yr_numbers_df.loc['BV_Per_Share', col_val],ticker_yr_numbers_df.loc['BV_Per_Share', col_val_starting])
+      ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = get_ratio(ticker_yr_numbers_df.loc['BV_Per_Share', col_val],ticker_yr_numbers_df.loc['BV_Per_Share', col_val_starting])
       logging.debug("Calculating FCF_Per_Share Growth")
-      ticker_yr_numbers_df.loc['FCF_Per_Share_Growth', col_val] = get_growth(ticker_yr_numbers_df.loc['FCF_Per_Share', col_val],ticker_yr_numbers_df.loc['FCF_Per_Share', col_val_starting])
+      ticker_yr_numbers_df.loc['FCF_Per_Share_Growth', col_val] = get_ratio(ticker_yr_numbers_df.loc['FCF_Per_Share', col_val],ticker_yr_numbers_df.loc['FCF_Per_Share', col_val_starting])
 
     col_val_dt = dt.datetime.strptime(col_val, '%m/%d/%Y').date()
     if (col_val_dt in ks_date_list_dt):
@@ -451,6 +508,96 @@ for ticker_raw in ticker_list:
       logging.debug("Found " + str(col_val) + " in Key Statistics Dataframe")
       logging.debug("Inserting No_of_Employees from Key Statistics in YR DF")
       ticker_yr_numbers_df.loc['No_of_Employees', col_val] = key_stats_datain_df.loc['No_of_Employees', ks_col_val]
+
+  # ---------------------------------------------------------------------------
+  # Check the growth numbers for Revenue and Diluted EPS and see if both fo them
+  # are greater than 10% per annum growth and if so, then add it to the dataframe
+  # that lists the eligible growth
+  # ---------------------------------------------------------------------------
+  col_list = ticker_yr_numbers_df.columns.tolist()
+  number_of_years_data_available = len(col_list)
+  last_col_val = col_list[len(col_list)-1]
+  rev_growth_cummulative =  ticker_yr_numbers_df.loc['Revenue_Growth', last_col_val]
+  eps_growth_cummulative =  ticker_yr_numbers_df.loc['Diluted_EPS_Growth', last_col_val]
+  bvps_growth_cummulative =  ticker_yr_numbers_df.loc['BV_Per_Share_Growth', last_col_val]
+  fcfps_growth_cummulative =  ticker_yr_numbers_df.loc['FCF_Per_Share_Growth', last_col_val]
+  base_growth_cummulative = ticker_yr_numbers_df.loc['Base_Growth_10', last_col_val]
+
+  rev_last_col_val = ticker_yr_numbers_df.loc['Revenue', last_col_val]
+  eps_last_col_val = ticker_yr_numbers_df.loc['Diluted_EPS', last_col_val]
+  bvps_last_col_val = ticker_yr_numbers_df.loc['BV_Per_Share', last_col_val]
+  fcfps_last_col_val = ticker_yr_numbers_df.loc['FCF_Per_Share', last_col_val]
+
+  logging.debug("The Cummulative Revenue growth has been : " + str(rev_growth_cummulative))
+  logging.debug("The Cummulative EPS     growth has been : " + str(eps_growth_cummulative))
+  logging.debug("The Cummulative BVPS    growth has been : " + str(bvps_growth_cummulative))
+  logging.debug("The Cummulative FCFPS   growth has been : " + str(fcfps_growth_cummulative))
+  logging.debug("The Cummulative Base    growth has been : " + str(base_growth_cummulative))
+
+  if ((rev_growth_cummulative >= 1) and
+      (eps_growth_cummulative >= 1) and
+      (bvps_growth_cummulative >= 1) and
+      (fcfps_growth_cummulative >= 1)):
+    are_all_growths_numbers_positive = 1
+  else:
+    are_all_growths_numbers_positive = 0
+
+  # All the 4 numbers last year are positive
+  if ((rev_last_col_val >= 0) and
+      (eps_last_col_val >= 0) and
+      (bvps_last_col_val >= 0) and
+      (fcfps_last_col_val >= 0)):
+    all_4_numbers_last_col_non_negative = 1
+  else:
+    all_4_numbers_last_col_non_negative = 0
+
+  if (ticker in master_tracklist_list):
+    ticker_in_master_tracklist = 1
+  else:
+    ticker_in_master_tracklist = 0
+
+  is_rev_growth_gt_base = False
+  is_eps_growth_gt_base = False
+  is_bvps_growth_gt_base = False
+  is_fcfps_growth_gt_base = False
+
+  is_rev_growth_gt_base = (rev_growth_cummulative >= base_growth_cummulative)
+  is_eps_growth_gt_base = (eps_growth_cummulative >= base_growth_cummulative)
+  is_bvps_growth_gt_base = (bvps_growth_cummulative >= base_growth_cummulative)
+  is_fcfps_growth_gt_base = (fcfps_growth_cummulative >= base_growth_cummulative)
+
+  logging.debug("")
+  logging.debug("Is Cummulative Revenue growth greater than Base growth : " + str(is_rev_growth_gt_base))
+  logging.debug("Is Cummulative EPS     growth greater than Base growth : " + str(is_eps_growth_gt_base))
+  logging.debug("Is Cummulative BVPS    growth greater than Base growth : " + str(is_bvps_growth_gt_base))
+  logging.debug("Is Cummulative FCFPS   growth greater than Base growth : " + str(is_fcfps_growth_gt_base))
+
+  is_rev_growth_gt_base = int(is_rev_growth_gt_base)
+  is_eps_growth_gt_base = int(is_eps_growth_gt_base)
+  is_bvps_growth_gt_base = int(is_bvps_growth_gt_base)
+  is_fcfps_growth_gt_base = int(is_fcfps_growth_gt_base)
+
+
+  no_of_growth_rates_gt_base_growth = is_rev_growth_gt_base + is_eps_growth_gt_base + is_bvps_growth_gt_base + is_fcfps_growth_gt_base
+  # If all the growth rates are positive and greater than one (which means that the respective metric is growting) and
+  # If atleast two growth reates are greater than base growth and
+  # both the first and last numbers are either positive
+  if ((number_of_years_data_available >= 3) and (all_4_numbers_last_col_non_negative == 1) and (are_all_growths_numbers_positive == 1) and (no_of_growth_rates_gt_base_growth >= 2)):
+    logging.debug("Ticker : " + str(ticker) + ", has YR data available for : " + str(number_of_years_data_available))
+    logging.debug("Ticker : " + str(ticker) + ", has all 4 numbers gt 0")
+    logging.debug("Ticker : " + str(ticker) + ", has all growth numbers gt 1")
+    logging.debug("Ticker : " + str(ticker) + ", has atleast 2 growth rates greater than base growth rate")
+    watchlist_0analysis_df.loc[ticker,'Rev_growth'] = rev_growth_cummulative
+    watchlist_0analysis_df.loc[ticker, 'EPS_growth'] = eps_growth_cummulative
+    watchlist_0analysis_df.loc[ticker, 'BVPS_growth'] = bvps_growth_cummulative
+    watchlist_0analysis_df.loc[ticker, 'FCFPS_growth'] = fcfps_growth_cummulative
+    watchlist_0analysis_df.loc[ticker, 'No_of_Years'] = number_of_years_data_available
+    watchlist_0analysis_df.loc[ticker, 'In_Master'] = ticker_in_master_tracklist
+    watchlist_0analysis_df.loc[ticker, 'Revs'] = human_format(rev_last_col_val)
+    watchlist_0analysis_df.loc[ticker, 'EPS'] = round(eps_last_col_val,2)
+    watchlist_0analysis_df.loc[ticker, 'BVPS'] = round(bvps_last_col_val,2)
+    watchlist_0analysis_df.loc[ticker, 'FCFPS'] = round(fcfps_last_col_val,2)
+  # ---------------------------------------------------------------------------
 
   logging.debug("YR Dataframe after calculating numbers for various rows and inserting the data from Key Statistics DF and after adding actual growth rates for Revenue, Diluted_EPS, BVPS and FCFS is\n" + ticker_yr_numbers_df.to_string())
   # ---------------------------------------------------------------------------
@@ -540,445 +687,449 @@ for ticker_raw in ticker_list:
   # #############################################################################
   # #############################################################################
   # #############################################################################
-  logging.debug("=========================================================")
-  logging.info("Starting to plot the data now...")
-  logging.debug("=========================================================")
-  fig = plt.figure()
-  fig.set_size_inches(14.431, 7.639)  # Length x height
-  # This sets the background color of the whole figure
-  fig.patch.set_facecolor('#E0E0E0')
-  fig.patch.set_alpha(0.7)
+  plot_en = 0
+  if (plot_en == 1):
+    logging.debug("=========================================================")
+    logging.info("Starting to plot the data now...")
+    logging.debug("=========================================================")
+    fig = plt.figure()
+    fig.set_size_inches(14.431, 7.639)  # Length x height
+    # This sets the background color of the whole figure
+    fig.patch.set_facecolor('#E0E0E0')
+    fig.patch.set_alpha(0.7)
 
-  qtr_table_plt = plt.subplot2grid((6, 6), (0, 0), rowspan=2,colspan=3)
-  yr_growth_plt = plt.subplot2grid((6, 6), (0, 3), rowspan=4,colspan=3)
-  key_numbers_plt = plt.subplot2grid((6, 6), (2, 0), rowspan=2, colspan=3)
-  yr_table_plt = plt.subplot2grid((6, 6), (4, 0), rowspan=2, colspan=6)
-  plt.subplots_adjust(hspace=.1, wspace=.15)
-  fig.suptitle("Analysis for " + ticker)
-  # ===========================================================================
+    qtr_table_plt = plt.subplot2grid((6, 6), (0, 0), rowspan=2,colspan=3)
+    yr_growth_plt = plt.subplot2grid((6, 6), (0, 3), rowspan=4,colspan=3)
+    key_numbers_plt = plt.subplot2grid((6, 6), (2, 0), rowspan=2, colspan=3)
+    yr_table_plt = plt.subplot2grid((6, 6), (4, 0), rowspan=2, colspan=6)
+    plt.subplots_adjust(hspace=.1, wspace=.15)
+    fig.suptitle("Analysis for " + ticker)
+    # ===========================================================================
 
 
-  # ===========================================================================
-  # Plot the Quarterly Table
-  # ===========================================================================
-  qtr_table_plt.title.set_text("Quarterly Numbers")
-  qtr_table_plt.set_yticks([])
-  qtr_table_plt.set_xticks([])
+    # ===========================================================================
+    # Plot the Quarterly Table
+    # ===========================================================================
+    qtr_table_plt.title.set_text("Quarterly Numbers")
+    qtr_table_plt.set_yticks([])
+    qtr_table_plt.set_xticks([])
 
-  # Extract the desired rows out of the dataframe in tmp_df
-  tmp_df  = pd.DataFrame()
-  desired_indices = ['Revenue','Revenue_Growth','Diluted_EPS','EPS_Growth']
-  tmp_df = ticker_qtr_numbers_df.loc[desired_indices]
-  logging.debug("The QTR df with only desired indices extracted out : \n" + tmp_df.to_string())
+    # Extract the desired rows out of the dataframe in tmp_df
+    tmp_df  = pd.DataFrame()
+    desired_indices = ['Revenue','Revenue_Growth','Diluted_EPS','EPS_Growth']
+    tmp_df = ticker_qtr_numbers_df.loc[desired_indices]
+    logging.debug("The QTR df with only desired indices extracted out : \n" + tmp_df.to_string())
 
-  # Now keep only the first 4 columns of the dataframe as these are the date that we want to display - this can get
-  # exteneded if user desires later on..
-  tmp_df_1 = tmp_df.iloc[:, : 8]
-  logging.debug("The QTR df with only first 4 quarters of data  \n" + tmp_df_1.to_string())
+    # Now keep only the first 4 columns of the dataframe as these are the date that we want to display - this can get
+    # exteneded if user desires later on..
+    tmp_df_1 = tmp_df.iloc[:, : 8]
+    logging.debug("The QTR df with only first 4 quarters of data  \n" + tmp_df_1.to_string())
 
-  # Now reverse the dataframe - so that the older dates are first in the column
-  tmp_df_2 = tmp_df_1.iloc[:, ::-1]
-  logging.debug("The QTR df with only first 4 quarters of data now reversed  \n" + tmp_df_2.to_string())
-  # Finally transpose  the  dataframe so that it can be displayed vertically
-  tmp_df = tmp_df_2.transpose().copy()
-  logging.debug("The QTR df with only first 4 quarters of data reversed and now transposed \n" + tmp_df.to_string())
+    # Now reverse the dataframe - so that the older dates are first in the column
+    tmp_df_2 = tmp_df_1.iloc[:, ::-1]
+    logging.debug("The QTR df with only first 4 quarters of data now reversed  \n" + tmp_df_2.to_string())
+    # Finally transpose  the  dataframe so that it can be displayed vertically
+    tmp_df = tmp_df_2.transpose().copy()
+    logging.debug("The QTR df with only first 4 quarters of data reversed and now transposed \n" + tmp_df.to_string())
 
-  # Now plot the dataframe
-  # qtr_table_plt_inst = qtr_table_plt.table(cellText=tmp_df.values, rowLabels=tmp_df.index,colWidths=[0.1] * len(tmp_df.columns),colLabels=tmp_df.columns,loc="upper center")
-  qtr_table_plt_inst = qtr_table_plt.table(cellText=tmp_df.values, rowLabels=tmp_df.index,colLabels=tmp_df.columns,loc="upper center")
+    # Now plot the dataframe
+    # qtr_table_plt_inst = qtr_table_plt.table(cellText=tmp_df.values, rowLabels=tmp_df.index,colWidths=[0.1] * len(tmp_df.columns),colLabels=tmp_df.columns,loc="upper center")
+    qtr_table_plt_inst = qtr_table_plt.table(cellText=tmp_df.values, rowLabels=tmp_df.index,colLabels=tmp_df.columns,loc="upper center")
 
-  # iterate through the table and set the fonts etc to desired values
-  logging.debug("Iterating through the QTR table to reformat for the text etc...")
-  eps_col_idx = tmp_df.columns.get_loc("Diluted_EPS")
-  eps_growth_col_idx = tmp_df.columns.get_loc("EPS_Growth")
-  revenue_col_idx = tmp_df.columns.get_loc("Revenue")
-  revenue_growth_col_idx = tmp_df.columns.get_loc("Revenue_Growth")
-  logging.debug("The column index for EPS_Growth is " + str(eps_growth_col_idx))
-  logging.debug("The column index for Revenue_Growth is " + str(revenue_growth_col_idx))
-  # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
-  for key, cell in qtr_table_plt_inst.get_celld().items():
-    row_idx = key[0]
-    col_idx = key[1]
-    cell_val = cell.get_text().get_text()
-    logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
+    # iterate through the table and set the fonts etc to desired values
+    logging.debug("Iterating through the QTR table to reformat for the text etc...")
+    eps_col_idx = tmp_df.columns.get_loc("Diluted_EPS")
+    eps_growth_col_idx = tmp_df.columns.get_loc("EPS_Growth")
+    revenue_col_idx = tmp_df.columns.get_loc("Revenue")
+    revenue_growth_col_idx = tmp_df.columns.get_loc("Revenue_Growth")
+    logging.debug("The column index for EPS_Growth is " + str(eps_growth_col_idx))
+    logging.debug("The column index for Revenue_Growth is " + str(revenue_growth_col_idx))
+    # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
+    for key, cell in qtr_table_plt_inst.get_celld().items():
+      row_idx = key[0]
+      col_idx = key[1]
+      cell_val = cell.get_text().get_text()
+      logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
 
-    # -----------------------------------------------------
-    # Set the row headers and columns to bold
-    # -----------------------------------------------------
-    if ((row_idx == 0) or (col_idx < 0)):
-      cell.get_text().set_fontweight('bold')
-    # -----------------------------------------------------
+      # -----------------------------------------------------
+      # Set the row headers and columns to bold
+      # -----------------------------------------------------
+      if ((row_idx == 0) or (col_idx < 0)):
+        cell.get_text().set_fontweight('bold')
+      # -----------------------------------------------------
 
-    # -----------------------------------------------------
-    # Set the colors every alternating rows
-    # -----------------------------------------------------
-    if (row_idx % 2 == 0):
-      qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
-    else:
-      qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
-    # -----------------------------------------------------
-
-    # -----------------------------------------------------
-    # Change the Date format to be shorter
-    # -----------------------------------------------------
-    if (col_idx == -1):
-      x_date = dt.datetime.strptime(cell_val,'%m/%d/%Y').date()
-      x = dt.datetime.strftime(x_date, '%b-%y')
-      logging.debug("The date is " + str(x))
-      cell.get_text().set_text(x)
-    # -----------------------------------------------------
-
-    # -----------------------------------------------------
-    # Change the heading of the various row according to the liking of the user
-    # -----------------------------------------------------
-    if (row_idx == 0):
-      if (col_idx == revenue_col_idx):
-        x = "Rev #"
-      if (col_idx == revenue_growth_col_idx):
-        x = "Rev %"
-      if (col_idx == eps_col_idx):
-        x = "EPS #"
-        cell.get_text().set_text(x)
-      if (col_idx == eps_growth_col_idx):
-        x = "EPS %"
-      cell.get_text().set_text(x)
-    # -----------------------------------------------------
-
-    # -----------------------------------------------------
-    # Change
-    # -----------------------------------------------------
-    if (((col_idx == eps_growth_col_idx) or (col_idx == revenue_growth_col_idx)) and (row_idx > 0)):
-      if (cell_val == 'nan'):
-        x = "-"
-        cell.get_text().set_text(x)
+      # -----------------------------------------------------
+      # Set the colors every alternating rows
+      # -----------------------------------------------------
+      if (row_idx % 2 == 0):
+        qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
       else:
-        x =  f'{float(cell.get_text().get_text()):.1f}'
-        x = x + "%"
-        cell.get_text().set_text(x)
-      # if (row_idx == current_assets_row_idx):
-      #   x = f'{int(float(cell_val)):,}'
-        # This works - for now comment out as I try to think whether to have % here or not
-        # if (row_idx == revenue_row_idx):
-          # x = x + "%"
-    # -----------------------------------------------------
+        qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
+      # -----------------------------------------------------
 
-    # -----------------------------------------------------
-    # -----------------------------------------------------
-    # -----------------------------------------------------
-    if ((col_idx == revenue_col_idx) and (row_idx > 0 ) and (col_idx > -1)):
-      if (cell_val == 'nan'):
-        x = "-"
-        cell.get_text().set_text(x)
-      else:
-        x_int = int(float(cell_val))
-        x = human_format(x_int)
-        cell.get_text().set_text(x)
-    if ((col_idx == eps_col_idx) and (row_idx > 0 ) and (col_idx > -1)):
-      if (cell_val == 'nan'):
-        x = "-"
-        cell.get_text().set_text(x)
-      else:
-        x =  f'{float(cell.get_text().get_text()):.2f}'
-        cell.get_text().set_text(x)
+      # -----------------------------------------------------
+      # Change the Date format to be shorter
+      # -----------------------------------------------------
+      if (col_idx == -1):
+        x_date = dt.datetime.strptime(cell_val,'%m/%d/%Y').date()
+        x = dt.datetime.strftime(x_date, '%b-%y')
+        logging.debug("The date is " + str(x))
         cell.get_text().set_text(x)
       # -----------------------------------------------------
-      # else:
-      #   x =  f'{float(cell.get_text().get_text()):.2f}'
+
+      # -----------------------------------------------------
+      # Change the heading of the various row according to the liking of the user
+      # -----------------------------------------------------
+      if (row_idx == 0):
+        if (col_idx == revenue_col_idx):
+          x = "Rev #"
+        if (col_idx == revenue_growth_col_idx):
+          x = "Rev %"
+        if (col_idx == eps_col_idx):
+          x = "EPS #"
+          cell.get_text().set_text(x)
+        if (col_idx == eps_growth_col_idx):
+          x = "EPS %"
+        cell.get_text().set_text(x)
+      # -----------------------------------------------------
+
+      # -----------------------------------------------------
+      # Change
+      # -----------------------------------------------------
+      if (((col_idx == eps_growth_col_idx) or (col_idx == revenue_growth_col_idx)) and (row_idx > 0)):
+        if (cell_val == 'nan'):
+          x = "-"
+          cell.get_text().set_text(x)
+        else:
+          x =  f'{float(cell.get_text().get_text()):.1f}'
+          x = x + "%"
+          cell.get_text().set_text(x)
+        # if (row_idx == current_assets_row_idx):
+        #   x = f'{int(float(cell_val)):,}'
+          # This works - for now comment out as I try to think whether to have % here or not
+          # if (row_idx == revenue_row_idx):
+            # x = x + "%"
+      # -----------------------------------------------------
+
+      # -----------------------------------------------------
+      # -----------------------------------------------------
+      # -----------------------------------------------------
+      if ((col_idx == revenue_col_idx) and (row_idx > 0 ) and (col_idx > -1)):
+        if (cell_val == 'nan'):
+          x = "-"
+          cell.get_text().set_text(x)
+        else:
+          x_int = int(float(cell_val))
+          x = human_format(x_int)
+          cell.get_text().set_text(x)
+      if ((col_idx == eps_col_idx) and (row_idx > 0 ) and (col_idx > -1)):
+        if (cell_val == 'nan'):
+          x = "-"
+          cell.get_text().set_text(x)
+        else:
+          x =  f'{float(cell.get_text().get_text()):.2f}'
+          cell.get_text().set_text(x)
+          cell.get_text().set_text(x)
+        # -----------------------------------------------------
+        # else:
+        #   x =  f'{float(cell.get_text().get_text()):.2f}'
 
 
-    # if float(cell_val) < 0:
-    #   cell.get_text().set_color('Red')
-    #   cell.get_text().set_fontstyle('italic')
-    #   qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
+      # if float(cell_val) < 0:
+      #   cell.get_text().set_color('Red')
+      #   cell.get_text().set_fontstyle('italic')
+      #   qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
 
-  qtr_table_plt.axis('off')
-  logging.info("Done with plotting QTR table...")
-  # ===========================================================================
+    qtr_table_plt.axis('off')
+    logging.info("Done with plotting QTR table...")
+    # ===========================================================================
 
 
-  # ===========================================================================
-  # Plot the Key Numbers table
-  # ===========================================================================
-  logging.debug("Starting to plot Key Statistics Table 01")
-  logging.debug("\n\nKey Stats 01 DF : Reversing the Key Stats df")
-  tmp_df = key_stats_01_df.iloc[:, ::-1]
-  key_stats_01_df = tmp_df.copy()
-  logging.debug("\n\nKey Stats 01 DF : Key Stats df after reversing is \n" + key_stats_01_df.to_string())
-  key_numbers_plt.title.set_text("Key Numbers")
-  key_numbers_plt.set_facecolor("lightgrey")
-  key_numbers_plt.set_yticks([])
-  key_numbers_plt.set_xticks([])
-  # key_numbers_plt_inst = key_numbers_plt.table(cellText=[[1,5,9], [2,4,8]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'],loc="upper center")
-  key_numbers_plt_inst = key_numbers_plt.table(cellText=key_stats_01_df.values, rowLabels=key_stats_01_df.index,colLabels=key_stats_01_df.columns,loc="upper center")
-  key_numbers_plt_inst[(1,0)].set_facecolor("#56b5fd")
-  key_numbers_plt.axis('off')
+    # ===========================================================================
+    # Plot the Key Numbers table
+    # ===========================================================================
+    logging.debug("Starting to plot Key Statistics Table 01")
+    logging.debug("\n\nKey Stats 01 DF : Reversing the Key Stats df")
+    tmp_df = key_stats_01_df.iloc[:, ::-1]
+    key_stats_01_df = tmp_df.copy()
+    logging.debug("\n\nKey Stats 01 DF : Key Stats df after reversing is \n" + key_stats_01_df.to_string())
+    key_numbers_plt.title.set_text("Key Numbers")
+    key_numbers_plt.set_facecolor("lightgrey")
+    key_numbers_plt.set_yticks([])
+    key_numbers_plt.set_xticks([])
+    # key_numbers_plt_inst = key_numbers_plt.table(cellText=[[1,5,9], [2,4,8]], rowLabels=['row1', 'row2'], colLabels=['col1', 'col2','col3'],loc="upper center")
+    key_numbers_plt_inst = key_numbers_plt.table(cellText=key_stats_01_df.values, rowLabels=key_stats_01_df.index,colLabels=key_stats_01_df.columns,loc="upper center")
+    key_numbers_plt_inst[(1,0)].set_facecolor("#56b5fd")
+    key_numbers_plt.axis('off')
 
-  # Get the row numbers for various row headings (indices).
-  # These can be used later to format the data in the respective rows
-  curr_ratio_row_idx =  key_stats_01_df.index.get_loc('Curr. Ratio') + 1
-  inventory_row_idx =  key_stats_01_df.index.get_loc('Inventory') + 1
-  lt_debt_row_idx =  key_stats_01_df.index.get_loc('LT_Debt') + 1
-  equity_row_idx =  key_stats_01_df.index.get_loc('Equity') + 1
-  shares_outstanding_row_idx =  key_stats_01_df.index.get_loc('# of Shares') + 1
-  debt_2_equity_row_idx =  key_stats_01_df.index.get_loc('Debt/Equity') + 1
-  institutions_row_idx = key_stats_01_df.index.get_loc('Institutions') + 1
-  # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
-  for key, cell in key_numbers_plt_inst.get_celld().items():
-    row_idx = key[0]
-    col_idx = key[1]
-    cell_val = cell.get_text().get_text()
-    logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
+    # Get the row numbers for various row headings (indices).
+    # These can be used later to format the data in the respective rows
+    curr_ratio_row_idx =  key_stats_01_df.index.get_loc('Curr. Ratio') + 1
+    inventory_row_idx =  key_stats_01_df.index.get_loc('Inventory') + 1
+    lt_debt_row_idx =  key_stats_01_df.index.get_loc('LT_Debt') + 1
+    equity_row_idx =  key_stats_01_df.index.get_loc('Equity') + 1
+    shares_outstanding_row_idx =  key_stats_01_df.index.get_loc('# of Shares') + 1
+    debt_2_equity_row_idx =  key_stats_01_df.index.get_loc('Debt/Equity') + 1
+    institutions_row_idx = key_stats_01_df.index.get_loc('Institutions') + 1
+    # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
+    for key, cell in key_numbers_plt_inst.get_celld().items():
+      row_idx = key[0]
+      col_idx = key[1]
+      cell_val = cell.get_text().get_text()
+      logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
 
-    # Alternate the colors on the rows
-    if (row_idx % 2 == 0):
-      key_numbers_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
-    else:
-      key_numbers_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
-
-    # Change the Date format to be shorter
-    if (row_idx == 0):
-      x_date = dt.datetime.strptime(cell_val,'%m/%d/%Y').date()
-      x = dt.datetime.strftime(x_date, '%b-%y')
-      logging.debug("The date is " + str(x))
-      cell.get_text().set_text(x)
-    # -----------------------------------------------------
-    # Set bold the header row and index column
-    if ((row_idx == 0) or (col_idx < 0)):
-      cell.get_text().set_fontweight('bold')
-    elif (cell_val == 'nan'):
-      x = "-"
-      cell.get_text().set_text(x)
-    else:
-      if float(cell_val) < 0:
-        cell.get_text().set_color('Red')
-        cell.get_text().set_fontstyle('italic')
-        key_numbers_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
-
-      if ((row_idx == inventory_row_idx) or (row_idx == lt_debt_row_idx) or (row_idx == equity_row_idx) or (row_idx == shares_outstanding_row_idx)):
-        x_int = int(float(cell_val))
-        x = human_format(x_int)
-      elif (row_idx == institutions_row_idx):
-        x = int(float(cell_val))
-      elif (row_idx == debt_2_equity_row_idx):
-        x =  f'{float(cell.get_text().get_text()):.2f}'
-        x = x + "%"
+      # Alternate the colors on the rows
+      if (row_idx % 2 == 0):
+        key_numbers_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
       else:
-        x =  f'{float(cell.get_text().get_text()):.2f}'
+        key_numbers_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
 
-      cell.get_text().set_text(x)
-
-
-  key_numbers_plt.axis('off')
-  logging.info("Done with plotting Key Statistics table 01...")
-  # ===========================================================================
-
-
-  # ===========================================================================
-  # Plot the Yearly Growth Chart
-  # ===========================================================================
-  # todo : Get the ticklines (both x axis and y axis)
-  # todo : Print the values on Blue line, if you want
-
-  logging.debug("-------------------------------------------")
-  logging.debug("Starting to plot the Yearly Growth Chart")
-  logging.debug("-------------------------------------------")
-  logging.debug("The YR DF is \n" + ticker_yr_numbers_df.to_string())
-  # Get only last 10 years to plot
-  col_list = ticker_yr_numbers_df.columns.tolist()
-  if (len(col_list)) > 10:
-    logging.debug("The yearly dataframe has more than 10 cols.")
-
-
-  yr_growth_plt.title.set_text("Yearly Growth Chart")
-  yr_growth_plt.set_facecolor("lightgrey")
-
-  yr_growth_plt_lim_lower = 0
-  yr_growth_plt_lim_upper = 3.5
-  # Extract the various growth numbers and set the upper limit, if greater than
-  #  3.5 (set by default up - based on 20% grwoth rate for 8 years)
-
-  all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["Diluted_EPS_Growth"])
-  all_numbers = True
-  if (all_numbers is True):
-    tmp_max = max(ticker_yr_numbers_df.loc["Diluted_EPS_Growth"])
-    logging.debug("The max value in Diluted EPS Growth List is "  + str(tmp_max))
-    if (tmp_max > yr_growth_plt_lim_upper):
-      yr_growth_plt_lim_upper = int(round(tmp_max))+.5
-
-  all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["Revenue_Growth"])
-  all_numbers = True
-  if (all_numbers is True):
-    tmp_max = max(ticker_yr_numbers_df.loc["Revenue_Growth"])
-    logging.debug("The max value in  Revenue Growth List is " + str(tmp_max))
-    if (tmp_max > yr_growth_plt_lim_upper):
-      yr_growth_plt_lim_upper = int(round(tmp_max))+.5
-
-  all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["BV_Per_Share_Growth"])
-  all_numbers = True
-  if (all_numbers is True):
-    tmp_max = max(ticker_yr_numbers_df.loc["BV_Per_Share_Growth"])
-    logging.debug("The max value in BVPS Growth List is " + str(tmp_max))
-    if (tmp_max > yr_growth_plt_lim_upper):
-      yr_growth_plt_lim_upper = int(round(tmp_max))+.5
-
-  all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"])
-  all_numbers = True
-  if (all_numbers is True):
-    tmp_max = max(ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"])
-    logging.debug("The max value in FCFPS Growth List is " + str(tmp_max))
-    if (tmp_max > yr_growth_plt_lim_upper):
-      yr_growth_plt_lim_upper = int(round(tmp_max)) + .5
-
-  logging.debug("The upper limit for the Growth Plot is calculate to be : " + str(yr_growth_plt_lim_upper))
-  if (yr_growth_plt_lim_upper > 10):
-    yr_growth_plt_lim_upper = 10
-    logging.debug("The upper limit for the Growth Plot was calcualated to be very high. Resetting it to : " + str(yr_growth_plt_lim_upper))
-
-  yr_growth_plt.set_ylim(yr_growth_plt_lim_lower, yr_growth_plt_lim_upper)
-  yr_growth_plt.tick_params(axis="y", direction="in", pad=-22)
-  yr_growth_plt.tick_params(axis="x", direction="in",pad=-12)
-
-  # Choose which indices need to be plotted for the growth chart and plot them
-  yr_growth_plt_inst_00 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), base_growth_10_percent_list, label='10%', linestyle='--',color='blue',marker="*",markersize='12')
-  yr_growth_plt_inst_01 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), base_growth_20_percent_list, label='20%', linestyle='--',color='blue',marker="*",markersize='12')
-  yr_growth_plt_inst_02 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
-  yr_growth_plt_inst_03 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
-  yr_growth_plt_inst_04 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
-  yr_growth_plt_inst_05 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"], label='FCFPS', color="yellow", marker='.', markersize='10')
-
-  yr_growth_plt_date_list = ticker_yr_numbers_df.columns.tolist()
-  fiscal_yr_dates = []
-  for x in yr_growth_plt_date_list:
-    logging.debug("The original Yearly Date is : " + str(x))
-    x_date = dt.datetime.strptime(x,'%m/%d/%Y').date()
-    fiscal_yr_dates.append(x_date.strftime('%b-%y'))
-  yr_growth_plt.set_xticklabels(fiscal_yr_dates, rotation=0, fontsize=10, minor=False, fontstyle='italic')
-
-  # Print the labels in the plot...This needs to adjust if the plot gets
-  # moved/resized as the position of the lables is hardcoded in the legend
-  # statement below
-  lns = yr_growth_plt_inst_00+yr_growth_plt_inst_01+yr_growth_plt_inst_02+yr_growth_plt_inst_03+yr_growth_plt_inst_04+yr_growth_plt_inst_05
-  labs = [l.get_label() for l in lns]
-  logging.debug("The Labels are" + str(labs))
-  yr_growth_plt.legend(lns, labs, bbox_to_anchor=(.2, 1.02), loc="upper right", borderaxespad=2, fontsize='x-small')
-  # ===========================================================================
-
-  # ===========================================================================
-  # Plot the Yearly Numbers table
-  # ===========================================================================
-  yr_table_plt.set_title("Yearly Table",color='black', loc='center')
-  yr_table_plt.set_facecolor("black")
-  yr_table_plt.set_yticks([])
-  yr_table_plt.set_xticks([])
-
-  # Create a new dataframe - ticker_yr_table_df - that only has the indices that we want to display in the table
-  desired_indices = ['Revenue','Diluted_EPS','BV_Per_Share','FCF_Per_Share','LT_Debt','Shares_Diluted','ROE','ROIC','No_of_Employees']
-  ticker_yr_table_df = ticker_yr_numbers_df.loc[desired_indices]
-  logging.debug("Inside the plotting area : The ticker yr df with only the desired rows \n" + ticker_yr_table_df.to_string())
-
-  yr_table_plt_inst = yr_table_plt.table(cellText=ticker_yr_table_df.values, rowLabels=ticker_yr_table_df.index,colWidths=[0.1] * len(ticker_yr_table_df.columns),colLabels=ticker_yr_table_df.columns,loc="upper center")
-
-  logging.debug("")
-  logging.debug("Will now set the appropriate cell colors in the dataframe")
-
-  # Get the row numbers for various row headings (indices).
-  # These can be used later to format the data in the respective rows
-  lt_debt_row_idx =  ticker_yr_table_df.index.get_loc('LT_Debt') + 1
-  revenue_row_idx =  ticker_yr_table_df.index.get_loc('Revenue') + 1
-  shares_outstanding_row_idx =  ticker_yr_table_df.index.get_loc('Shares_Diluted') + 1
-  no_of_employees_row_idx =  ticker_yr_table_df.index.get_loc('No_of_Employees') + 1
-  roe_row_idx =  ticker_yr_table_df.index.get_loc('ROE') + 1
-  roic_row_idx =  ticker_yr_table_df.index.get_loc('ROIC') + 1
-  # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
-  for key, cell in yr_table_plt_inst.get_celld().items():
-    row_idx = key[0]
-    col_idx = key[1]
-    cell_val = cell.get_text().get_text()
-    logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
-
-    # Alternate the colors on the rows
-    if (row_idx % 2 == 0):
-      yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
-    else:
-      yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
-
-    # Change the Date format to be shorter
-    if (row_idx == 0):
-      x_date = dt.datetime.strptime(cell_val,'%m/%d/%Y').date()
-      x = dt.datetime.strftime(x_date, '%b-%y')
-      logging.debug("The date is " + str(x))
-      cell.get_text().set_text(x)
-
-    # Set bold the header row and index column
-    if ((row_idx == 0) or (col_idx < 0)):
-      cell.get_text().set_fontweight('bold')
-    elif (cell_val == 'nan'):
-      x = "-"
-      cell.get_text().set_text(x)
-    else:
-      if float(cell_val) < 0:
-        cell.get_text().set_color('Red')
-        cell.get_text().set_fontstyle('italic')
-        yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
-
-      if ((row_idx == revenue_row_idx) or (row_idx == lt_debt_row_idx) or (row_idx == shares_outstanding_row_idx)):
-        x_int = int(float(cell_val))
-        x = human_format(x_int)
-      elif (row_idx == no_of_employees_row_idx):
-        x = int(float(cell_val))
-      elif ((row_idx == roe_row_idx) or (row_idx == roic_row_idx)):
-        x =  f'{float(cell.get_text().get_text()):.2f}'
-        x = x + "%"
+      # Change the Date format to be shorter
+      if (row_idx == 0):
+        x_date = dt.datetime.strptime(cell_val,'%m/%d/%Y').date()
+        x = dt.datetime.strftime(x_date, '%b-%y')
+        logging.debug("The date is " + str(x))
+        cell.get_text().set_text(x)
+      # -----------------------------------------------------
+      # Set bold the header row and index column
+      if ((row_idx == 0) or (col_idx < 0)):
+        cell.get_text().set_fontweight('bold')
+      elif (cell_val == 'nan'):
+        x = "-"
+        cell.get_text().set_text(x)
       else:
-        x =  f'{float(cell.get_text().get_text()):.2f}'
+        if float(cell_val) < 0:
+          cell.get_text().set_color('Red')
+          cell.get_text().set_fontstyle('italic')
+          key_numbers_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
 
-      cell.get_text().set_text(x)
+        if ((row_idx == inventory_row_idx) or (row_idx == lt_debt_row_idx) or (row_idx == equity_row_idx) or (row_idx == shares_outstanding_row_idx)):
+          x_int = int(float(cell_val))
+          x = human_format(x_int)
+        elif (row_idx == institutions_row_idx):
+          x = int(float(cell_val))
+        elif (row_idx == debt_2_equity_row_idx):
+          x =  f'{float(cell.get_text().get_text()):.2f}'
+          x = x + "%"
+        else:
+          x =  f'{float(cell.get_text().get_text()):.2f}'
+
+        cell.get_text().set_text(x)
 
 
-  yr_table_plt.axis('off')
-  logging.info("Done with plotting YR table...")
-  # ===========================================================================
+    key_numbers_plt.axis('off')
+    logging.info("Done with plotting Key Statistics table 01...")
+    # ===========================================================================
 
 
-  # Save the plot
-  now = dt.datetime.now()
-  # date_time = now.strftime("%Y_%m_%d_%H_%M")
-  date_time = now.strftime("%Y_%m_%d")
+    # ===========================================================================
+    # Plot the Yearly Growth Chart
+    # ===========================================================================
+    # todo : Get the ticklines (both x axis and y axis)
+    # todo : Print the values on Blue line, if you want
 
-  # todo : The background color is not getting saved
-  fig.savefig(dir_path + analysis_plot_dir + "\\" + ticker + "_Analysis_" + date_time + ".jpg",dpi=200, bbox_inches='tight',facecolor='#E0E0E0')
-  # fig.patch.set_alpha(0.7)
+    logging.debug("-------------------------------------------")
+    logging.debug("Starting to plot the Yearly Growth Chart")
+    logging.debug("-------------------------------------------")
+    logging.debug("The YR DF is \n" + ticker_yr_numbers_df.to_string())
+    # Get only last 10 years to plot
+    col_list = ticker_yr_numbers_df.columns.tolist()
+    if (len(col_list)) > 10:
+      logging.debug("The yearly dataframe has more than 10 cols.")
 
-  # Only show the plot if we are making only one chart
-  if (len(ticker_list) == 1):
-    plt.show()
-  else:
-    plt.close(fig)
 
+    yr_growth_plt.title.set_text("Yearly Growth Chart")
+    yr_growth_plt.set_facecolor("lightgrey")
+
+    yr_growth_plt_lim_lower = 0
+    yr_growth_plt_lim_upper = 3.5
+    # Extract the various growth numbers and set the upper limit, if greater than
+    #  3.5 (set by default up - based on 20% grwoth rate for 8 years)
+
+    all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["Diluted_EPS_Growth"])
+    all_numbers = True
+    if (all_numbers is True):
+      tmp_max = max(ticker_yr_numbers_df.loc["Diluted_EPS_Growth"])
+      logging.debug("The max value in Diluted EPS Growth List is "  + str(tmp_max))
+      if (tmp_max > yr_growth_plt_lim_upper):
+        yr_growth_plt_lim_upper = int(round(tmp_max))+.5
+
+    all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["Revenue_Growth"])
+    all_numbers = True
+    if (all_numbers is True):
+      tmp_max = max(ticker_yr_numbers_df.loc["Revenue_Growth"])
+      logging.debug("The max value in  Revenue Growth List is " + str(tmp_max))
+      if (tmp_max > yr_growth_plt_lim_upper):
+        yr_growth_plt_lim_upper = int(round(tmp_max))+.5
+
+    all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["BV_Per_Share_Growth"])
+    all_numbers = True
+    if (all_numbers is True):
+      tmp_max = max(ticker_yr_numbers_df.loc["BV_Per_Share_Growth"])
+      logging.debug("The max value in BVPS Growth List is " + str(tmp_max))
+      if (tmp_max > yr_growth_plt_lim_upper):
+        yr_growth_plt_lim_upper = int(round(tmp_max))+.5
+
+    all_numbers = all(isinstance(item, (int, float)) for item in ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"])
+    all_numbers = True
+    if (all_numbers is True):
+      tmp_max = max(ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"])
+      logging.debug("The max value in FCFPS Growth List is " + str(tmp_max))
+      if (tmp_max > yr_growth_plt_lim_upper):
+        yr_growth_plt_lim_upper = int(round(tmp_max)) + .5
+
+    logging.debug("The upper limit for the Growth Plot is calculate to be : " + str(yr_growth_plt_lim_upper))
+    if (yr_growth_plt_lim_upper > 10):
+      yr_growth_plt_lim_upper = 10
+      logging.debug("The upper limit for the Growth Plot was calcualated to be very high. Resetting it to : " + str(yr_growth_plt_lim_upper))
+
+    yr_growth_plt.set_ylim(yr_growth_plt_lim_lower, yr_growth_plt_lim_upper)
+    yr_growth_plt.tick_params(axis="y", direction="in", pad=-22)
+    yr_growth_plt.tick_params(axis="x", direction="in",pad=-12)
+
+    # Choose which indices need to be plotted for the growth chart and plot them
+    yr_growth_plt_inst_00 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), base_growth_10_percent_list, label='10%', linestyle='--',color='blue',marker="*",markersize='12')
+    yr_growth_plt_inst_01 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), base_growth_20_percent_list, label='20%', linestyle='--',color='blue',marker="*",markersize='12')
+    yr_growth_plt_inst_02 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
+    yr_growth_plt_inst_03 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
+    yr_growth_plt_inst_04 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
+    yr_growth_plt_inst_05 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"], label='FCFPS', color="yellow", marker='.', markersize='10')
+
+    yr_growth_plt_date_list = ticker_yr_numbers_df.columns.tolist()
+    fiscal_yr_dates = []
+    for x in yr_growth_plt_date_list:
+      logging.debug("The original Yearly Date is : " + str(x))
+      x_date = dt.datetime.strptime(x,'%m/%d/%Y').date()
+      fiscal_yr_dates.append(x_date.strftime('%b-%y'))
+    yr_growth_plt.set_xticklabels(fiscal_yr_dates, rotation=0, fontsize=10, minor=False, fontstyle='italic')
+
+    # Print the labels in the plot...This needs to adjust if the plot gets
+    # moved/resized as the position of the lables is hardcoded in the legend
+    # statement below
+    lns = yr_growth_plt_inst_00+yr_growth_plt_inst_01+yr_growth_plt_inst_02+yr_growth_plt_inst_03+yr_growth_plt_inst_04+yr_growth_plt_inst_05
+    labs = [l.get_label() for l in lns]
+    logging.debug("The Labels are" + str(labs))
+    yr_growth_plt.legend(lns, labs, bbox_to_anchor=(.2, 1.02), loc="upper right", borderaxespad=2, fontsize='x-small')
+    # ===========================================================================
+
+    # ===========================================================================
+    # Plot the Yearly Numbers table
+    # ===========================================================================
+    yr_table_plt.set_title("Yearly Table",color='black', loc='center')
+    yr_table_plt.set_facecolor("black")
+    yr_table_plt.set_yticks([])
+    yr_table_plt.set_xticks([])
+
+    # Create a new dataframe - ticker_yr_table_df - that only has the indices that we want to display in the table
+    desired_indices = ['Revenue','Diluted_EPS','BV_Per_Share','FCF_Per_Share','LT_Debt','Shares_Diluted','ROE','ROIC','No_of_Employees']
+    ticker_yr_table_df = ticker_yr_numbers_df.loc[desired_indices]
+    logging.debug("Inside the plotting area : The ticker yr df with only the desired rows \n" + ticker_yr_table_df.to_string())
+
+    yr_table_plt_inst = yr_table_plt.table(cellText=ticker_yr_table_df.values, rowLabels=ticker_yr_table_df.index,colWidths=[0.1] * len(ticker_yr_table_df.columns),colLabels=ticker_yr_table_df.columns,loc="upper center")
+
+    logging.debug("")
+    logging.debug("Will now set the appropriate cell colors in the dataframe")
+
+    # Get the row numbers for various row headings (indices).
+    # These can be used later to format the data in the respective rows
+    lt_debt_row_idx =  ticker_yr_table_df.index.get_loc('LT_Debt') + 1
+    revenue_row_idx =  ticker_yr_table_df.index.get_loc('Revenue') + 1
+    shares_outstanding_row_idx =  ticker_yr_table_df.index.get_loc('Shares_Diluted') + 1
+    no_of_employees_row_idx =  ticker_yr_table_df.index.get_loc('No_of_Employees') + 1
+    roe_row_idx =  ticker_yr_table_df.index.get_loc('ROE') + 1
+    roic_row_idx =  ticker_yr_table_df.index.get_loc('ROIC') + 1
+    # The column header starts with (0, 0)...(0, n - 1).The row header starts with (1, -1)...(n, -1)
+    for key, cell in yr_table_plt_inst.get_celld().items():
+      row_idx = key[0]
+      col_idx = key[1]
+      cell_val = cell.get_text().get_text()
+      logging.debug("Row idx " + str(row_idx) + " Col idx " + str(col_idx) + " Value " + str(cell_val))
+
+      # Alternate the colors on the rows
+      if (row_idx % 2 == 0):
+        yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('seashell')
+      else:
+        yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('azure')
+
+      # Change the Date format to be shorter
+      if (row_idx == 0):
+        x_date = dt.datetime.strptime(cell_val,'%m/%d/%Y').date()
+        x = dt.datetime.strftime(x_date, '%b-%y')
+        logging.debug("The date is " + str(x))
+        cell.get_text().set_text(x)
+
+      # Set bold the header row and index column
+      if ((row_idx == 0) or (col_idx < 0)):
+        cell.get_text().set_fontweight('bold')
+      elif (cell_val == 'nan'):
+        x = "-"
+        cell.get_text().set_text(x)
+      else:
+        if float(cell_val) < 0:
+          cell.get_text().set_color('Red')
+          cell.get_text().set_fontstyle('italic')
+          yr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
+
+        if ((row_idx == revenue_row_idx) or (row_idx == lt_debt_row_idx) or (row_idx == shares_outstanding_row_idx)):
+          x_int = int(float(cell_val))
+          x = human_format(x_int)
+        elif (row_idx == no_of_employees_row_idx):
+          x = int(float(cell_val))
+        elif ((row_idx == roe_row_idx) or (row_idx == roic_row_idx)):
+          x =  f'{float(cell.get_text().get_text()):.2f}'
+          x = x + "%"
+        else:
+          x =  f'{float(cell.get_text().get_text()):.2f}'
+
+        cell.get_text().set_text(x)
+
+
+    yr_table_plt.axis('off')
+    logging.info("Done with plotting YR table...")
+    # ===========================================================================
+
+
+    # Save the plot
+    now = dt.datetime.now()
+    # date_time = now.strftime("%Y_%m_%d_%H_%M")
+    date_time = now.strftime("%Y_%m_%d")
+
+    # todo : The background color is not getting saved
+    fig.savefig(dir_path + analysis_plot_dir + "\\" + ticker + "_Analysis_" + date_time + ".jpg",dpi=200, bbox_inches='tight',facecolor='#E0E0E0')
+    # fig.patch.set_alpha(0.7)
+
+    # Only show the plot if we are making only one chart
+    if (len(ticker_list) == 1):
+      plt.show()
+    else:
+      plt.close(fig)
+
+    # if plot_en statement
+  i_idx += 1
   # Outer loop ends here
+
+
+logging.info("")
+logging.info("Total Number of tickers in the list : " + str(total_number_of_ticker))
+logging.info("Made Plots for                      : " + str(i_idx-1))
+logging.info("Did not make Plot for               : " + str(len(skipped_tickers_df.index.tolist())))
+logging.info("List of Tickers that did not plot   : " + str(skipped_tickers_df.index.tolist()))
+skipped_tickers_logfile="SC_Create_0Analysis_skipped_tickers.txt"
+logging.info("Created : " + str(skipped_tickers_logfile) + " <-- Sorted by Ticker - Lists all the tickers that were not plotted along with a reason")
+skipped_tickers_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + skipped_tickers_logfile,sep=' ', index=True, header=True)
+
+logging.info("")
+watchlist_0analysis_logfile="SC_Create_0Analysis_watchlist.csv"
+logging.info("No.  of tickers that matched the growth criteria : " + str(len(watchlist_0analysis_df.index.tolist())))
+logging.info("List of Tickers that matched to growth criteria  : " + str(watchlist_0analysis_df.index.tolist()))
+logging.info("Created : " + str(watchlist_0analysis_logfile) + " <-- Sorted by Ticker - Lists all the tickers that were not plotted along with a reason")
+watchlist_0analysis_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + watchlist_0analysis_logfile,sep=',', index=True, header=True)
+
 
 logging.info("")
 logging.info("All Done")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  # table_props = yr_table_plt_inst.properties()
+# table_props = yr_table_plt_inst.properties()
   # logging.debug("The dictionary of table properties is \n" + str(table_props))
   # table_cells = table_props['child_artists']
   # for cell in table_cells:
