@@ -75,7 +75,7 @@ logging.debug("The tracklist from Ann after renaming and removing NaN from the t
 # 1. List that contains the tickers that are ONLY found in Master Tracklist
 # 2. List the contains  the tickers that are ONLY found in Ann Tracklist
 # =============================================================================
-master_ticker_list = master_tracklist_df['Ticker'].tolist()
+master_ticker_list = master_tracklist_df['Tickers'].tolist()
 ann_ticker_list     = tracklist_ann_df['Ticker'].tolist()
 logging.debug("Total Number of Tickers extracted from Master Tracklist " + str(len(master_ticker_list)))
 logging.debug("Total Number of Tickers extracted from Ann Tracklist " + str(len(ann_ticker_list)))
@@ -112,14 +112,14 @@ logging.debug("Found these tickers only in Ann Tracklist" + str(only_in_ann_list
 
 # =============================================================================
 # Now that we have gotten the Tickers in the "ONLY" lists Reindex the original dataframes
-master_tracklist_df.set_index('Ticker', inplace=True)
+master_tracklist_df.set_index('Tickers', inplace=True)
 tracklist_ann_df.set_index('Ticker', inplace=True)
 
 # Declare the dataframes that we will use to store the exclusive Tickers along
 # with their respective Quality_of_Stock
-only_in_master_df = pd.DataFrame(columns=['Ticker','Quality_of_Stock'])
+only_in_master_df = pd.DataFrame(columns=['Tickers','Quality_of_Stock'])
 only_in_ann_df = pd.DataFrame(columns=['Ticker','Quality_of_Stock', 'Owned_By'])
-only_in_master_df.set_index('Ticker', inplace=True)
+only_in_master_df.set_index('Tickers', inplace=True)
 only_in_ann_df.set_index('Ticker', inplace=True)
 
 # Start Populating the "only" dataframes

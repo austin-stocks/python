@@ -76,6 +76,7 @@ dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
 analysis_dir = "\\..\\" + "Analysis"
 analysis_plot_dir = "\\..\\" + "Analysis_Plots"
+analysis_plot_watchlist_dir = "Analysis_Watchlist"
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -123,6 +124,8 @@ logging.disable(logging.NOTSET)
 
 # Print the date of latest price and what is the price (read the historical)
 # -----------------------------------------------------------------------------
+g_var_plot_en = 1
+g_var_copy_ticker_plot_2_watchlist_dir_en = 1
 
 # -----------------------------------------------------------------------------
 # Set the various dirs and read the AAII file
@@ -134,7 +137,7 @@ configuration_file = "Configurations.csv"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 tracklist_df = pd.read_csv(tracklist_file_full_path)
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
-master_tracklist_list = master_tracklist_df['Ticker'].tolist()
+master_tracklist_list = master_tracklist_df['Tickers'].tolist()
 logging.debug("The master tracklist tickers are " + str(master_tracklist_list))
 
 ticker_list_unclean = tracklist_df['Tickers'].tolist()
@@ -552,9 +555,9 @@ for ticker_raw in ticker_list:
     all_4_numbers_last_col_non_negative = 0
 
   if (ticker in master_tracklist_list):
-    ticker_in_master_tracklist = 1
+    ticker_in_master_tracklist = 'Y'
   else:
-    ticker_in_master_tracklist = 0
+    ticker_in_master_tracklist = 'N'
 
   is_rev_growth_gt_base = False
   is_eps_growth_gt_base = False
@@ -582,6 +585,7 @@ for ticker_raw in ticker_list:
   # If all the growth rates are positive and greater than one (which means that the respective metric is growting) and
   # If atleast two growth reates are greater than base growth and
   # both the first and last numbers are either positive
+  this_ticker_qualifies_in_watchlist = 0
   if ((number_of_years_data_available >= 3) and (all_4_numbers_last_col_non_negative == 1) and (are_all_growths_numbers_positive == 1) and (no_of_growth_rates_gt_base_growth >= 2)):
     logging.debug("Ticker : " + str(ticker) + ", has YR data available for : " + str(number_of_years_data_available))
     logging.debug("Ticker : " + str(ticker) + ", has all 4 numbers gt 0")
@@ -597,6 +601,7 @@ for ticker_raw in ticker_list:
     watchlist_0analysis_df.loc[ticker, 'EPS'] = round(eps_last_col_val,2)
     watchlist_0analysis_df.loc[ticker, 'BVPS'] = round(bvps_last_col_val,2)
     watchlist_0analysis_df.loc[ticker, 'FCFPS'] = round(fcfps_last_col_val,2)
+    this_ticker_qualifies_in_watchlist = 1
   # ---------------------------------------------------------------------------
 
   logging.debug("YR Dataframe after calculating numbers for various rows and inserting the data from Key Statistics DF and after adding actual growth rates for Revenue, Diluted_EPS, BVPS and FCFS is\n" + ticker_yr_numbers_df.to_string())
@@ -687,8 +692,7 @@ for ticker_raw in ticker_list:
   # #############################################################################
   # #############################################################################
   # #############################################################################
-  plot_en = 0
-  if (plot_en == 1):
+  if (g_var_plot_en == 1):
     logging.debug("=========================================================")
     logging.info("Starting to plot the data now...")
     logging.debug("=========================================================")
@@ -1097,6 +1101,8 @@ for ticker_raw in ticker_list:
     # todo : The background color is not getting saved
     fig.savefig(dir_path + analysis_plot_dir + "\\" + ticker + "_Analysis_" + date_time + ".jpg",dpi=200, bbox_inches='tight',facecolor='#E0E0E0')
     # fig.patch.set_alpha(0.7)
+    if (g_var_copy_ticker_plot_2_watchlist_dir_en == 1) and (this_ticker_qualifies_in_watchlist == 1):
+      fig.savefig(dir_path + analysis_plot_dir + "\\" + analysis_plot_watchlist_dir +  "\\" + ticker + "_Analysis_" + date_time + ".jpg", dpi=200,bbox_inches='tight', facecolor='#E0E0E0')
 
     # Only show the plot if we are making only one chart
     if (len(ticker_list) == 1):
@@ -1104,7 +1110,7 @@ for ticker_raw in ticker_list:
     else:
       plt.close(fig)
 
-    # if plot_en statement
+    # if g_var_plot_en statement
   i_idx += 1
   # Outer loop ends here
 

@@ -33,10 +33,10 @@ calendar_file = "Calendar.csv"
 config_df = pd.read_csv(dir_path + user_dir + "\\" + configuration_file)
 config_df.set_index('Ticker', inplace=True)
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
-ticker_list_unclean = master_tracklist_df['Ticker'].tolist()
+ticker_list_unclean = master_tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
-master_tracklist_df.sort_values('Ticker', inplace=True)
-master_tracklist_df.set_index('Ticker', inplace=True)
+master_tracklist_df.sort_values('Tickers', inplace=True)
+master_tracklist_df.set_index('Tickers', inplace=True)
 # The index can only be changed after the Ticker has been put to list
 # In other words index cannot be read as a list
 # -----------------------------------------------------------------------------

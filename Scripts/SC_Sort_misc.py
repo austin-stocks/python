@@ -28,12 +28,12 @@ earnings_dir = "\\..\\" + "Earnings"
 historical_dir = "\\..\\" + "Historical"
 master_tracklist_file = "Master_Tracklist.xlsx"
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
-master_tracklist_df.sort_values('Ticker', inplace=True)
-ticker_list_unclean = master_tracklist_df['Ticker'].tolist()
+master_tracklist_df.sort_values('Tickers', inplace=True)
+ticker_list_unclean = master_tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # The index can only be changed after the Ticker has been put to list
 # In other words index cannot be read as a list
-master_tracklist_df.set_index('Ticker', inplace=True)
+master_tracklist_df.set_index('Tickers', inplace=True)
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------

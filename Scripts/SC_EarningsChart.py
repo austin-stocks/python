@@ -230,7 +230,7 @@ config_df = pd.read_csv(dir_path + user_dir + "\\" + configuration_file)
 config_df.set_index('Ticker', inplace=True)
 schiller_pe_df = pd.read_csv(dir_path + user_dir + "\\" + schiller_pe_monthly_file)
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
-master_tracklist_df.set_index('Ticker', inplace=True)
+master_tracklist_df.set_index('Tickers', inplace=True)
 
 with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
   config_json = json.load(json_file)
