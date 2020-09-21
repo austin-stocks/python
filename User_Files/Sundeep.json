@@ -16,7 +16,8 @@
 
   "COHR" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "03/23/2018","Buy_Price_str" :  "$191.69"}
+       {"Buy_Date" : "03/23/2018","Buy_Price_str" :  "$191.69"},
+       {"Sell_Date" : "09/21/2020","Sell_Price_str" :  "$105"}
     ]
   },
 
@@ -50,7 +51,8 @@
 
   "MU" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "12/19/2019","Buy_Price_str" :  "$54.5"}
+       {"Buy_Date" : "12/19/2019","Buy_Price_str" :  "$54.5"},
+       {"Sell_Date" : "09/21/2020","Sell_Price_str" :  "$49"}
     ]
   },
 
@@ -66,8 +68,6 @@
        {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$103"}
     ]
   },
-
-
 
   "CYBR" : {
     "Buy_Sell" : [
