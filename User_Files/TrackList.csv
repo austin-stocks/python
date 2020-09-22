@@ -1,18 +1,18 @@
 Tickers,,,,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,,,,,Overall,Profitspi,Second_Cut,Notes,,My_Collection,,From AAII,,Master_Tracklist
-ALGN,NVDA,A,,AKAM,N,AMZN,ABT,,AVGO,,AR,N,IB,Sell,ABC,N,N,,,ADUS,,ABC,,AAN
-CMG,NVR,AA,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,CCJ,N,IB,Sell,ACN,Y,,,,AEYE,,ABMD,,AAON
-ENTG,OSIS,AACG,,AVGO,,COHR,BAC,,COO,,CDE,N,F,,AFL,Y,,,,AFL,,ABTX,,AAPL
-FAF,PGR,AACH,,CCS,,CTXS,BIIB,,LULU,,CTL,N,IB/F,Sell,AIN,Y,,Ann says potentially interesting,,AMGN,,ACGL,,ABBV
-ICLR,PHM,AAL,,COST,,HOLX,CDNS,,NSSC,,MT,N,F,Sell,AJG,Y,,Ann says remain in Chaff,,APPS,,ACMR,,ABG
-IIPR,POOL,AAMC,,CTXS,,IIPR,CP,,RH,,OVV,N,IB,Sell,ALG,Y,,Ann says remain in Chaff,,BC,,ACN,,ABT
-INTC,QCOM,AAME,,CYBR,,MED,CRWS,,ZUMZ,,OXY,N,IB,,ALTA,Y,,Ann says interesting but not interested in Bank Stock,,BILI,,ACNB,,ACU
-KMB,TDY,AAN,,FTNT,,MU,DPZ,,LEN,,RIG,N,IB,,AMGN,Y,,,,BLK,,ADI,,ADBE
-KMI,TMO,AAOI,,HD,,NMIH,IBM,,ADBE,,SLB,N,IB,,AMTD,Y,,Schwab is buying AMTD,,BLKB,,AFG,,ADM
-LAD,,AAON,,IIPR,,QLYS,IIIN,,MLHR,,,,,,AX,y,,Ann says remain in Chaff,,BRC,,AFYA,,ADP
-LUV,,AAP,,LPLA,,FORM,ISRG,,,,,,,,BAP,Y,,,,CAR,,AIH,,ADSK
-MKTX,,AAPL,,LUV,,AUDC,KO,,,,,,,,BFAM,Y,,,,CBOE,,AIMC,,AKAM
-MSFT,,AASP,,MA,,CIEN,LMT,,NSSC,9/8/2020,,,,,BMCH,Y,,,,CCK,,AIN,,AL
-NMIH,,AAT,,MED,,CHTR,NFLX,,LEN,9/14/2020,,,,,BMI,Y,,Don't we track this already ,,CDR,,AJG,,ALGN
+NVDA,,A,,AKAM,N,AMZN,ABT,,AVGO,,AR,N,IB,Sell,ABC,N,N,,,ADUS,,ABC,,AAN
+NVR,,AA,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,CCJ,N,IB,Sell,ACN,Y,,,,AEYE,,ABMD,,AAON
+OSIS,,AACG,,AVGO,,COHR,BAC,,COO,,CDE,N,F,,AFL,Y,,,,AFL,,ABTX,,AAPL
+PGR,,AACH,,CCS,,CTXS,BIIB,,LULU,,CTL,N,IB/F,Sell,AIN,Y,,Ann says potentially interesting,,AMGN,,ACGL,,ABBV
+PHM,,AAL,,COST,,HOLX,CDNS,,NSSC,,MT,N,F,Sell,AJG,Y,,Ann says remain in Chaff,,APPS,,ACMR,,ABG
+POOL,,AAMC,,CTXS,,IIPR,CP,,RH,,OVV,N,IB,Sell,ALG,Y,,Ann says remain in Chaff,,BC,,ACN,,ABT
+QCOM,,AAME,,CYBR,,MED,CRWS,,ZUMZ,,OXY,N,IB,,ALTA,Y,,Ann says interesting but not interested in Bank Stock,,BILI,,ACNB,,ACU
+TDY,,AAN,,FTNT,,MU,DPZ,,LEN,,RIG,N,IB,,AMGN,Y,,,,BLK,,ADI,,ADBE
+TMO,,AAOI,,HD,,NMIH,IBM,,ADBE,,SLB,N,IB,,AMTD,Y,,Schwab is buying AMTD,,BLKB,,AFG,,ADM
+,,AAON,,IIPR,,QLYS,IIIN,,MLHR,,,,,,AX,y,,Ann says remain in Chaff,,BRC,,AFYA,,ADP
+,,AAP,,LPLA,,FORM,ISRG,,,,,,,,BAP,Y,,,,CAR,,AIH,,ADSK
+,,AAPL,,LUV,,AUDC,KO,,,,,,,,BFAM,Y,,,,CBOE,,AIMC,,AKAM
+,,AASP,,MA,,CIEN,LMT,,NSSC,9/8/2020,,,,,BMCH,Y,,,,CCK,,AIN,,AL
+,,AAT,,MED,,CHTR,NFLX,,LEN,9/14/2020,,,,,BMI,Y,,Don't we track this already ,,CDR,,AJG,,ALGN
 ,,AATP,,MNST,,PFSI,PFGC,,KBH,9/22/2020,,,,,BPMP,Y,,Profitspi looks good,,CGEMY,,ALG,,ALL
 ,,AAU,,MSI,,,TER,,CTAS,9/23/2020,,,,,BSTC,Y,,Profitspi looks good,,CMLSA,,ALK,,ALXN
 ,,AAWW,,NMIH,,,UAL,,GIS,9/23/2020,,,,,CACI,Y,,Don't we track this already ,,CNRC,,ALRM,,AMAT
@@ -151,134 +151,134 @@ NMIH,,AAT,,MED,,CHTR,NFLX,,LEN,9/14/2020,,,,,BMI,Y,,Don't we track this already 
 ,,AGEN,,,,,,,,,,,,,EVR,,N,,Earning Trending down,,,GGG,,LEN
 ,,AGFS,,,,,,,,,,,,,EWBC,,N,Another Bank,Earning flat but price down as well,,,GIB,,LGIH
 ,,AGGG,,,,,,,,,,,,,EXLS,,Y,Mediocre Chaff - Not the time yet,Earning flat and price not growing,,,GIII,,LH
-,,AGIO,,,,,,,,,,,,,FASK,,,,,,,GL,,LHCG
-,,AGLE,,,,,,,,,,,,,FAST,,,,,,,GLPI,,LKQ
-,,AGM,,,,,,,,,,,,,FBHS,,,,,,,GMED,,LMT
-,,AGMH,,,,,,,,,,,,,FCAU,,,,,,,GNSS,,LNN
-,,AGNC,,,,,,,,,,,,,FCBP,,,,,,,GNTX,,LOPE
-,,AGO,,,,,,,,,,,,,FCFS,,,,,,,GOLF,,LPLA
-,,AGR,,,,,,,,,,,,,FERGY,,,,,,,GOOGL,,LSCC
-,,AGRIP,,,,,,,,,,,,,FFIN,,,,,,,GPMT,,LSI
-,,AGRO,,,,,,,,,,,,,FFIV,,,,,,,GPN,,LULU
-,,AGRX,,,,,,,,,,,,,FFWM,,,,,,,GTN,,LUV
-,,AGS,,,,,,,,,,,,,FHN,,,,,,,HAS,,MA
-,,AGTC,,,,,,,,,,,,,FISV,,,,,,,HBCP,,MANT
-,,AGTK,,,,,,,,,,,,,FIVRR,,,,,,,HBNC,,MAS
-,,AGTX,,,,,,,,,,,,,FIZZ,,,,,,,HFWA,,MASI
-,,AGX,,,,,,,,,,,,,FLO,,,,,,,HIFS,,MCO
-,,AGYS,,,,,,,,,,,,,FLT,,,,,,,HKIB,,MDT
-,,AHC,,,,,,,,,,,,,FLWS,,,,,,,HLG,,MED
-,,AHCO,,,,,,,,,,,,,FMAO,,,,,,,HLI,,MEDP
-,,AHH,,,,,,,,,,,,,FMCB,,,,,,,HLIO,,MKTX
-,,AHNR,,,,,,,,,,,,,FMNB,,,,,,,HNNA,,MLHR
-,,AHPI,,,,,,,,,,,,,FMX,,,,,,,HOFT,,MNST
-,,AHT,,,,,,,,,,,,,FNKO,,,,,,,HOMB,,MPWR
-,,AI,,,,,,,,,,,,,FNWB,,,,,,,HSTM,,MRCY
-,,AIFM,,,,,,,,,,,,,FONR,,,,,,,HTBK,,MRK
-,,AIG,,,,,,,,,,,,,FORTY,,,,,,,HUBG,,MRVL
-,,AIH,,,,,,,,,,,,,FRC,,,,,,,HXL,,MSFT
-,,AIHS,,,,,,,,,,,,,FSBW,,,,,,,IBKR,,MSI
-,,AIKI,,,,,,,,,,,,,FSLY,,,,,,,IBTX,,MU
-,,AIKO,,,,,,,,,,,,,FTCH,,,,,,,IEHC,,MXIM
-,,AILLP,,,,,,,,,,,,,FUTU,,,,,,,IMAX,,NFLX
-,,AIM,,,,,,,,,,,,,FVCB,,,,,,,IMKTA,,NMIH
-,,AIMC,,,,,,,,,,,,,FVRR,,,,,,,INDB,,NSSC
-,,AIMT,,,,,,,,,,,,,FWRD,,,,,,,INFY,,NTES
-,,AIN,,,,,,,,,,,,,G,,,,,,,INGN,,NVDA
-,,AINC,,,,,,,,,,,,,GABC,,,,,,,INMD,,NVR
-,,AINV,,,,,,,,,,,,,GGG,,,,,,,INS,,OLED
-,,AIR,,,,,,,,,,,,,GIB,,,,,,,IOSP,,OMCL
-,,AIRG,,,,,,,,,,,,,GIII,,,,,,,IPG,,ORLY
-,,AIRI,,,,,,,,,,,,,GL,,,,,,,IPGP,,OSIS
-,,AIRT,,,,,,,,,,,,,GLOB,,,,,,,IRBT,,OTEX
-,,AIT,,,,,,,,,,,,,GLPI,,,,,,,IRMD,,PAYC
-,,AIV,,,,,,,,,,,,,GMED,,,,,,,ISBC,,PFE
-,,AIXN,,,,,,,,,,,,,GNRC,,,,,,,ISTR,,PFGC
-,,AIZ,,,,,,,,,,,,,GNSS,,,,,,,ITGR,,PFSI
-,,AJG,,,,,,,,,,,,,GNTX,,,,,,,ITUB,,PGR
-,,AJIA,,,,,,,,,,,,,GOLF,,,,,,,JAZZ,,PHM
-,,AJRD,,,,,,,,,,,,,GOOGL,,,,,,,JBHT,,PLNT
-,,AJX,,,,,,,,,,,,,GPMT,,,,,,,JBLU,,POOL
-,,AKAM,,,,,,,,,,,,,GPN,,,,,,,JBSS,,PRAA
-,,AKBA,,,,,,,,,,,,,GRVY,,,,,,,JBT,,PRAH
-,,AKCA,,,,,,,,,,,,,GT,,,,,,,JCOM,,PRU
-,,AKER,,,,,,,,,,,,,GTLS,,,,,,,JHG,,PSXP
-,,AKO.B,,,,,,,,,,,,,GTN,,,,,,,JLL,,PYPL
-,,AKOM,,,,,,,,,,,,,HAS,,,,,,,JOBS,,QCOM
-,,AKR,,,,,,,,,,,,,HBCP,,,,,,,JOUT,,QDEL
-,,AKRO,,,,,,,,,,,,,HBNC,,,,,,,KAI,,QLYS
-,,AKRXQ,,,,,,,,,,,,,HFWA,,,,,,,KEY,,RCII
-,,AKTS,,,,,,,,,,,,,HIFS,,,,,,,KMPR,,REGI
-,,AKTX,,,,,,,,,,,,,HKIB,,,,,,,KNL,,REGN
-,,AKUS,,,,,,,,,,,,,HLG,,,,,,,KR,,RGLD
-,,AKZOY,,,,,,,,,,,,,HLI,,,,,,,KREF,,RGP
-,,AL,,,,,,,,,,,,,HLIO,,,,,,,KRNT,,RH
-,,ALAC,,,,,,,,,,,,,HNNA,,,,,,,KTHN,,RJF
-,,ALB,,,,,,,,,,,,,HOFT,,,,,,,L,,RMD
-,,ALBKY,,,,,,,,,,,,,HOMB,,,,,,,LBAI,,ROK
-,,ALBO,,,,,,,,,,,,,HSTM,,,,,,,LCII,,ROP
-,,ALBY,,,,,,,,,,,,,HTBK,,,,,,,LEA,,RP
-,,ALCO,,,,,,,,,,,,,HUBG,,,,,,,LFC,,RS
-,,ALDA,,,,,,,,,,,,,HWKN,,,,,,,LFUS,,SAH
-,,ALDS,,,,,,,,,,,,,HXL,,,,,,,LICT,,SCVL
-,,ALDX,,,,,,,,,,,,,HZNP,,,,,,,LITE,,SEDG
-,,ALE,,,,,,,,,,,,,IBKR,,,,,,,LKFN,,SHW
-,,ALEC,,,,,,,,,,,,,IBTX,,,,,,,LMAT,,SKYW
-,,ALEX,,,,,,,,,,,,,IEHC,,,,,,,LOGI,,SNBR
-,,ALG,,,,,,,,,,,,,IMAX,,,,,,,LRCX,,SNPS
-,,ALGN,,,,,,,,,,,,,IMKTA,,,,,,,LSTR,,SNX
-,,ALGT,,,,,,,,,,,,,INDB,,,,,,,LSYN,,SPGI
-,,ALID,,,,,,,,,,,,,INFY,,,,,,,LUKOY,,SSD
-,,ALIM,,,,,,,,,,,,,INGN,,,,,,,LVMUY,,SSNC
-,,ALJJ,,,,,,,,,,,,,INMD,,,,,,,MAN,,STWD
-,,ALK,,,,,,,,,,,,,INS,,,,,,,MCB,,TAYD
-,,ALKS,,,,,,,,,,,,,IOSP,,,,,,,MCHP,,TCBI
-,,ALL,,,,,,,,,,,,,IPG,,,,,,,MCS,,TDY
-,,ALLE,,,,,,,,,,,,,IPGP,,,,,,,MEI,,TER
-,,ALLK,,,,,,,,,,,,,IRBT,,,,,,,MFC,,TFX
-,,ALLO,,,,,,,,,,,,,IRMD,,,,,,,MHH,,TKR
-,,ALLY,,,,,,,,,,,,,ISBC,,,,,,,MHK,,TMO
-,,ALNA,,,,,,,,,,,,,ISTR,,,,,,,MIC,,TMUS
-,,ALNY,,,,,,,,,,,,,ITGR,,,,,,,MIDD,,TREX
-,,ALOT,,,,,,,,,,,,,ITUB,,,,,,,MJCO,,TROW
-,,ALPE,,,,,,,,,,,,,JAZZ,,,,,,,MKC,,TRU
-,,ALPN,,,,,,,,,,,,,JBHT,,,,,,,MKL,,TSCO
-,,ALPP,,,,,,,,,,,,,JBLU,,,,,,,MKSI,,TTD
-,,ALRM,,,,,,,,,,,,,JBSS,,,,,,,MMS,,TTEK
-,,ALRN,,,,,,,,,,,,,JBT,,,,,,,MOH,,TTGT
-,,ALRS,,,,,,,,,,,,,JCOM,,,,,,,MPLX,,TTWO
-,,ALRT,,,,,,,,,,,,,JD,,,,,,,MPX,,TYL
-,,ALSK,,,,,,,,,,,,,JHG,,,,,,,MSBI,,UAL
-,,ALSN,,,,,,,,,,,,,JLL,,,,,,,MTCH,,UFPT
-,,ALT,,,,,,,,,,,,,JOBS,,,,,,,MTN,,UI
-,,ALTA,,,,,,,,,,,,,JOUT,,,,,,,MTZ,,UNF
-,,ALTG,,,,,,,,,,,,,KAI,,,,,,,NCBS,,UNH
-,,ALTM,,,,,,,,,,,,,KEY,,,,,,,NEO,,URI
-,,ALTR,,,,,,,,,,,,,KMPR,,,,,,,NEOG,,USPH
-,,ALTX,,,,,,,,,,,,,KNL,,,,,,,NFBK,,V
-,,ALV,,,,,,,,,,,,,KR,,,,,,,NICE,,VAC
-,,ALVR,,,,,,,,,,,,,KREF,,,,,,,NOAH,,VEEV
-,,ALX,,,,,,,,,,,,,KRNT,,,,,,,NOBH,,VMC
-,,ALXN,,,,,,,,,,,,,KTHN,,,,,,,NODK,,VRTX
-,,ALXO,,,,,,,,,,,,,L,,,,,,,NOVKY,,WAL
-,,ALYE,,,,,,,,,,,,,LBAI,,,,,,,NOVT,,WILC
-,,AM,,,,,,,,,,,,,LCII,,,,,,,NSIT,,WINA
-,,AMAG,,,,,,,,,,,,,LEA,,,,,,,NTIC,,WLTW
-,,AMAL,,,,,,,,,,,,,LFC,,,,,,,NTRS,,WMT
-,,AMAR,,,,,,,,,,,,,LFUS,,,,,,,NUVA,,YNDX
-,,AMAT,,,,,,,,,,,,,LHX,,,,,,,NVEE,,ZBRA
-,,AMAZ,,,,,,,,,,,,,LICT,,,,,,,NVMI,,ZTO
-,,AMBA,,,,,,,,,,,,,LITE,,,,,,,NYT,,ZTS
-,,AMBC,,,,,,,,,,,,,LKFN,,,,,,,OAOFY,,ZUMZ
-,,AMBO,,,,,,,,,,,,,LMAT,,,,,,,OBCI,,ZYXI
-,,AMC,,,,,,,,,,,,,LOGI,,,,,,,OC,,SLB
-,,AMCI,,,,,,,,,,,,,LRCX,,,,,,,OCFC,,XRX
-,,AMCR,,,,,,,,,,,,,LSTL,,,,,,,ODFL,,HOLX
-,,AMCT,,,,,,,,,,,,,LSTR,,,,,,,OLLI,,SFM
-,,AMCX,,,,,,,,,,,,,LSYN,,,,,,,OMAB,,BIO
-,,AMD,,,,,,,,,,,,,LTRPB,,,,,,,ON,,DLA
-,,AME,,,,,,,,,,,,,LUKOY,,,,,,,ORPB,,FIX
-,,AMED,,,,,,,,,,,,,LVMUY,,,,,,,OVLY,,TNET
+,,AGIO,,,,,,,,,,,,,FASK,,N,Not found in profitspi,,,,GL,,LHCG
+,,AGLE,,,,,,,,,,,,,FAST,Y,,Earnings still growing,,,,GLPI,,LKQ
+,,AGM,,,,,,,,,,,,,FBHS,Y,,Earnings still growing,,,,GMED,,LMT
+,,AGMH,,,,,,,,,,,,,FCAU,,N,,Negative Earnings,,,GNSS,,LNN
+,,AGNC,,,,,,,,,,,,,FCBP,,N,Another Bank,,,,GNTX,,LOPE
+,,AGO,,,,,,,,,,,,,FCFS,,Y,Good Chaff,Earnings beginning to trend up,,,GOLF,,LPLA
+,,AGR,,,,,,,,,,,,,FERGY,,N,Not found in profitspi,,,,GOOGL,,LSCC
+,,AGRIP,,,,,,,,,,,,,FFIN,,N,Another Bank,,,,GPMT,,LSI
+,,AGRO,,,,,,,,,,,,,FFIV,,N,,Earnings trending down,,,GPN,,LULU
+,,AGRX,,,,,,,,,,,,,FFWM,Y,,,Earnings Growing but price not,,,GTN,,LUV
+,,AGS,,,,,,,,,,,,,FHN,,N,Earnings flat and price flat,,,,HAS,,MA
+,,AGTC,,,,,,,,,,,,,FISV,,N,,Earnings down but price keep going up,,,HBCP,,MANT
+,,AGTK,,,,,,,,,,,,,FIVRR,,N,Not found in profitspi,,,,HBNC,,MAS
+,,AGTX,,,,,,,,,,,,,FIZZ,Y,,,Earning beginning to trend up,,,HFWA,,MASI
+,,AGX,,,,,,,,,,,,,FLO,,N,,Earnings flat and price flat,,,HIFS,,MCO
+,,AGYS,,,,,,,,,,,,,FLT,,Y,Mediocre Chaff - Not the time yet,Earning coming down,,,HKIB,,MDT
+,,AHC,,,,,,,,,,,,,FLWS,,N,,Price went up without corresponding earnings growth,,,HLG,,MED
+,,AHCO,,,,,,,,,,,,,FMAO,,N,Another bank,,,,HLI,,MEDP
+,,AHH,,,,,,,,,,,,,FMCB,,N,Not found in profitspi,,,,HLIO,,MKTX
+,,AHNR,,,,,,,,,,,,,FMNB,,N,Another bank,,,,HNNA,,MLHR
+,,AHPI,,,,,,,,,,,,,FMX,,N,,Negative Earnings,,,HOFT,,MNST
+,,AHT,,,,,,,,,,,,,FNKO,,N,,Negative Earnings,,,HOMB,,MPWR
+,,AI,,,,,,,,,,,,,FNWB,,N,Another bank,,,,HSTM,,MRCY
+,,AIFM,,,,,,,,,,,,,FONR,,N,,Earnings flat and price flat,,,HTBK,,MRK
+,,AIG,,,,,,,,,,,,,FORTY,,N,,Strange Chart,,,HUBG,,MRVL
+,,AIH,,,,,,,,,,,,,FRC,,N,Another bank,,,,HXL,,MSFT
+,,AIHS,,,,,,,,,,,,,FSBW,,N,Another bank,,,,IBKR,,MSI
+,,AIKI,,,,,,,,,,,,,FSLY,,N,,Negative Earnings,,,IBTX,,MU
+,,AIKO,,,,,,,,,,,,,FTCH,,N,,Negative Earnings,,,IEHC,,MXIM
+,,AILLP,,,,,,,,,,,,,FUTU,,Y,,Very little data on profitspi,,,IMAX,,NFLX
+,,AIM,,,,,,,,,,,,,FVCB,,N,Another bank,,,,IMKTA,,NMIH
+,,AIMC,,,,,,,,,,,,,FVRR,,N,,Negative Earnings,,,INDB,,NSSC
+,,AIMT,,,,,,,,,,,,,FWRD,,N,,Earnings trending down,,,INFY,,NTES
+,,AIN,,,,,,,,,,,,,G,Y,,,Everything looks good,,,INGN,,NVDA
+,,AINC,,,,,,,,,,,,,GABC,,N,Another bank,,,,INMD,,NVR
+,,AINV,,,,,,,,,,,,,GGG,,N,,Earnings flat,,,INS,,OLED
+,,AIR,,,,,,,,,,,,,GIB,Y,,,Everything looks good,,,IOSP,,OMCL
+,,AIRG,,,,,,,,,,,,,GIII,,N,,Earnings trending down,,,IPG,,ORLY
+,,AIRI,,,,,,,,,,,,,GL,,N,Insurance Company,,,,IPGP,,OSIS
+,,AIRT,,,,,,,,,,,,,GLOB,,N,,Price way up than earnings,,,IRBT,,OTEX
+,,AIT,,,,,,,,,,,,,GLPI,,N,,Earnings flat and price flat,,,IRMD,,PAYC
+,,AIV,,,,,,,,,,,,,GMED,,Y,Mediocre Chaff - Not the time yet,Earning down but watch,,,ISBC,,PFE
+,,AIXN,,,,,,,,,,,,,GNRC,,N,,Earnings flat and price up,,,ISTR,,PFGC
+,,AIZ,,,,,,,,,,,,,GNSS,,N,Not found in profitspi,,,,ITGR,,PFSI
+,,AJG,,,,,,,,,,,,,GNTX,,Y,Good Chaff,Earning flattened but may go up,,,ITUB,,PGR
+,,AJIA,,,,,,,,,,,,,GOLF,,N,,Earnings down but price keep going up,,,JAZZ,,PHM
+,,AJRD,,,,,,,,,,,,,GOOGL,Y,,Already track this,,,,JBHT,,PLNT
+,,AJX,,,,,,,,,,,,,GPMT,,N,,Negative Earnings,,,JBLU,,POOL
+,,AKAM,,,,,,,,,,,,,GPN,,N,,Earnings trending down,,,JBSS,,PRAA
+,,AKBA,,,,,,,,,,,,,GRVY,Y,,,Earnings up and price up,,,JBT,,PRAH
+,,AKCA,,,,,,,,,,,,,GT,,N,,Negative Earnings,,,JCOM,,PRU
+,,AKER,,,,,,,,,,,,,GTLS,,N,,Earnings flat and price flat,,,JHG,,PSXP
+,,AKO.B,,,,,,,,,,,,,GTN,,N,,Earnings flat and price flat,,,JLL,,PYPL
+,,AKOM,,,,,,,,,,,,,HAS,,N,,Earnings trending down,,,JOBS,,QCOM
+,,AKR,,,,,,,,,,,,,HBCP,,N,Another Bank,,,,JOUT,,QDEL
+,,AKRO,,,,,,,,,,,,,HBNC,,N,Another Bank,,,,KAI,,QLYS
+,,AKRXQ,,,,,,,,,,,,,HFWA,,N,Finance,,,,KEY,,RCII
+,,AKTS,,,,,,,,,,,,,HIFS,,,ETF,,,,KMPR,,REGI
+,,AKTX,,,,,,,,,,,,,HKIB,,N,No earnings found in profitspi,,,,KNL,,REGN
+,,AKUS,,,,,,,,,,,,,HLG,Y,,Not a lot of history,Everything looks good,,,KR,,RGLD
+,,AKZOY,,,,,,,,,,,,,HLI,Y,,,Everything looks good,,,KREF,,RGP
+,,AL,,,,,,,,,,,,,HLIO,,N,,Earning flat and price not growing,,,KRNT,,RH
+,,ALAC,,,,,,,,,,,,,HNNA,,N,,Earnings trending down,,,KTHN,,RJF
+,,ALB,,,,,,,,,,,,,HOFT,,N,,Negative Earnings,,,L,,RMD
+,,ALBKY,,,,,,,,,,,,,HOMB,,N,Another Bank,,,,LBAI,,ROK
+,,ALBO,,,,,,,,,,,,,HSTM,,N,,Earnings flat and price not growing,,,LCII,,ROP
+,,ALBY,,,,,,,,,,,,,HTBK,,N,,Chart not exciting,,,LEA,,RP
+,,ALCO,,,,,,,,,,,,,HUBG,,N,,Chart not exciting,,,LFC,,RS
+,,ALDA,,,,,,,,,,,,,HWKN,,N,,Earnings flat and price not growing,,,LFUS,,SAH
+,,ALDS,,,,,,,,,,,,,HXL,,N,,Chart not exciting,,,LICT,,SCVL
+,,ALDX,,,,,,,,,,,,,HZNP,,Y,Mediocre Chaff - Not the time yet,,,,LITE,,SEDG
+,,ALE,,,,,,,,,,,,,IBKR,,N,,Earnings flat and price not growing,,,LKFN,,SHW
+,,ALEC,,,,,,,,,,,,,IBTX,,N,Another Bank,,,,LMAT,,SKYW
+,,ALEX,,,,,,,,,,,,,IEHC,,N,Not found in profitspi,,,,LOGI,,SNBR
+,,ALG,,,,,,,,,,,,,IMAX,,N,,Negative Earnings,,,LRCX,,SNPS
+,,ALGN,,,,,,,,,,,,,IMKTA,,Y,,Earning growing but price flat,,,LSTR,,SNX
+,,ALGT,,,,,,,,,,,,,INDB,,N,Another Bank,,,,LSYN,,SPGI
+,,ALID,,,,,,,,,,,,,INFY,,N,,Earnings flat and price flat,,,LUKOY,,SSD
+,,ALIM,,,,,,,,,,,,,INGN,,N,,Negative Earnings,,,LVMUY,,SSNC
+,,ALJJ,,,,,,,,,,,,,INMD,,N,No earnings found in profitspi,,,,MAN,,STWD
+,,ALK,,,,,,,,,,,,,INS,Y,,Earnings growing and price starting to move,,,,MCB,,TAYD
+,,ALKS,,,,,,,,,,,,,IOSP,,N,,Earnings flat and price flat,,,MCHP,,TCBI
+,,ALL,,,,,,,,,,,,,IPG,,N,,Earning trending down and price trending down,,,MCS,,TDY
+,,ALLE,,,,,,,,,,,,,IPGP,,N,,Earning treding down and price flat,,,MEI,,TER
+,,ALLK,,,,,,,,,,,,,IRBT,,Y,Mediocre Chaff - Not the time yet,,,,MFC,,TFX
+,,ALLO,,,,,,,,,,,,,IRMD,,Y,Mediocre Chaff - Not the time yet,,,,MHH,,TKR
+,,ALLY,,,,,,,,,,,,,ISBC,,N,Another Bank,,,,MHK,,TMO
+,,ALNA,,,,,,,,,,,,,ISTR,,N,Finance,,,,MIC,,TMUS
+,,ALNY,,,,,,,,,,,,,ITGR,,N,Not found in profitspi,,,,MIDD,,TREX
+,,ALOT,,,,,,,,,,,,,ITUB,,N,,Earning flat and price not growing,,,MJCO,,TROW
+,,ALPE,,,,,,,,,,,,,JAZZ,,N,,Earnings trending down,,,MKC,,TRU
+,,ALPN,,,,,,,,,,,,,JBHT,,N,,Earnings flat and price not growing,,,MKL,,TSCO
+,,ALPP,,,,,,,,,,,,,JBLU,,N,Airline,Negative Earnings,,,MKSI,,TTD
+,,ALRM,,,,,,,,,,,,,JBSS,Y,,,Earnings growing,,,MMS,,TTEK
+,,ALRN,,,,,,,,,,,,,JBT,Y,,,Earnings growing,,,MOH,,TTGT
+,,ALRS,,,,,,,,,,,,,JCOM,,N,,Chart not exciting,,,MPLX,,TTWO
+,,ALRT,,,,,,,,,,,,,JD,,Y,Mediocre Chaff,Earnings growing but maybe overpriced,,,MPX,,TYL
+,,ALSK,,,,,,,,,,,,,JHG,,N,,Earnings trending down,,,MSBI,,UAL
+,,ALSN,,,,,,,,,,,,,JLL,,N,,Earnings and price flat,,,MTCH,,UFPT
+,,ALT,,,,,,,,,,,,,JOBS,,N,,Earnings flat,,,MTN,,UI
+,,ALTA,,,,,,,,,,,,,JOUT,,Y,Mediocre Chaff,Earnings and price flat,,,MTZ,,UNF
+,,ALTG,,,,,,,,,,,,,KAI,,N,Mediocre Chaff - Not the time yet,Earning and price flat,,,NCBS,,UNH
+,,ALTM,,,,,,,,,,,,,KEY,,N,,Chart not exciting,,,NEO,,URI
+,,ALTR,,,,,,,,,,,,,KMPR,Y,,,Earnings Growing but price not,,,NEOG,,USPH
+,,ALTX,,,,,,,,,,,,,KNL,,N,,Chart not exciting,,,NFBK,,V
+,,ALV,,,,,,,,,,,,,KR,,N,Grocer,Chart not exciting,,,NICE,,VAC
+,,ALVR,,,,,,,,,,,,,KREF,,N,,Earnings trending down,,,NOAH,,VEEV
+,,ALX,,,,,,,,,,,,,KRNT,,N,,Earnings flattening but price up,,,NOBH,,VMC
+,,ALXN,,,,,,,,,,,,,KTHN,,N,Not found in profitspi,,,,NODK,,VRTX
+,,ALXO,,,,,,,,,,,,,L,,N,,Earnings flat and now negative,,,NOVKY,,WAL
+,,ALYE,,,,,,,,,,,,,LBAI,,N,Another Bank,,,,NOVT,,WILC
+,,AM,,,,,,,,,,,,,LCII,,N,Earnings were growing with price in the past,Earnings flat and now trending down,,,NSIT,,WINA
+,,AMAG,,,,,,,,,,,,,LEA,,N,,Earnings in inverted V,,,NTIC,,WLTW
+,,AMAL,,,,,,,,,,,,,LFC,,N,Chinese,Earnings flat and price flat,,,NTRS,,WMT
+,,AMAR,,,,,,,,,,,,,LFUS,,N,,Earnings cyclical and now down,,,NUVA,,YNDX
+,,AMAT,,,,,,,,,,,,,LHX,,Y,Mediocre Chaff - Not the time yet,Earnings trending down,,,NVEE,,ZBRA
+,,AMAZ,,,,,,,,,,,,,LICT,,N,Not found in profitspi,,,,NVMI,,ZTO
+,,AMBA,,,,,,,,,,,,,LITE,,N,,Earnings up and down in the last couple of years,,,NYT,,ZTS
+,,AMBC,,,,,,,,,,,,,LKFN,,Y,price follows earnings,Earnings flat in the last couple of years,,,OAOFY,,ZUMZ
+,,AMBO,,,,,,,,,,,,,LMAT,,Y,Mediocre Chaff - Not the time yet,Earnings trending down in the last year,,,OBCI,,ZYXI
+,,AMC,,,,,,,,,,,,,LOGI,Y,,Could be expensive,Earnings trending up,,,OC,,SLB
+,,AMCI,,,,,,,,,,,,,LRCX,,N,Mediocre Chaff - Not the time yet,Earnings flat in the last couple of years,,,OCFC,,XRX
+,,AMCR,,,,,,,,,,,,,LSTL,,N,Not found in profitspi,,,,ODFL,,HOLX
+,,AMCT,,,,,,,,,,,,,LSTR,,N,,Earnings flat and now trending down,,,OLLI,,SFM
+,,AMCX,,,,,,,,,,,,,LSYN,,N,Not found in profitspi,,,,OMAB,,BIO
+,,AMD,,,,,,,,,,,,,LTRPB,,N,No earnings found in profitspi,,,,ON,,DLA
+,,AME,,,,,,,,,,,,,LUKOY,,N,Not found in profitspi,,,,ORPB,,FIX
+,,AMED,,,,,,,,,,,,,LVMUY,,N,Not found in profitspi,,,,OVLY,,TNET
 ,,AMEH,,,,,,,,,,,,,MAN,,,,,,,OXM,,BERY
 ,,AMFC,,,,,,,,,,,,,MCB,,,,,,,OZK,,HAE
 ,,AMG,,,,,,,,,,,,,MCHP,,,,,,,PACW,,CVS
