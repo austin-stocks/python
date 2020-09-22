@@ -3887,6 +3887,12 @@
     ]
   },
 
+  "AIN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2014", "Stop_Date" :   "End"}
+    ]
+  },
+
   "BSX" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
