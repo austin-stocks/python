@@ -106,6 +106,18 @@
     ]
   },
 
+  "MMS" : {
+    "Splits" : {
+      "07/05/2013" : "2:1",
+      "07/05/2011" : "2:1"
+    },
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2013", "Stop_Date" :   "Next"},
+       {"Start_Date" : "09/30/2016", "Stop_Date" :   "End"}
+    ]
+  },
+
+
   "TNET" : {
     "Splits" : {
       "03/07/2014" : "2:1"
