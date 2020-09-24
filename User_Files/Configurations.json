@@ -129,6 +129,12 @@
     ]
   },
 
+  "SITE" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2017", "Stop_Date" :   "End"}
+    ]
+  },
+
   "ENSG" : {
     "Splits" : {
       "12/09/2015" : "2:1"
@@ -3083,6 +3089,15 @@
     ],
     "Anchored_Text" : {
       "upper center": "1 share/ADS\nCNBC Reports non-GAAP Diluted"
+    }
+  },
+
+  "QRVO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ],
+    "Anchored_Text" : {
+      "upper left": "QRVO = Merger of RFMD and TriQuint in late 2014"
     }
   },
 
