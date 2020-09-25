@@ -1,13 +1,13 @@
 Tickers,,,,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,,,,,Overall,Profitspi,Second_Cut,Notes,,My_Collection,,From AAII,,Master_Tracklist
-MMS,,A,,AKAM,N,AMZN,ABT,,AVGO,,AR,N,IB,Sell,ABC,N,N,,,ADUS,,ABC,,AAN
-,,AA,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,CCJ,N,IB,Sell,ACN,Y,,,,AEYE,,ABMD,,AAON
-,,AACG,,AVGO,,COHR,BAC,,COO,,CDE,N,F,,AFL,Y,,,,AFL,,ABTX,,AAPL
-,,AACH,,CCS,,CTXS,BIIB,,LULU,,CTL,N,IB/F,Sell,AIN,Y,,Ann says potentially interesting,,AMGN,,ACGL,,ABBV
-,,AAL,,COST,,HOLX,CDNS,,NSSC,,MT,N,F,Sell,AJG,Y,,Ann says remain in Chaff,,APPS,,ACMR,,ABG
-,,AAMC,,CTXS,,IIPR,CP,,RH,,OVV,N,IB,Sell,ALG,Y,,Ann says remain in Chaff,,BC,,ACN,,ABT
-,,AAME,,CYBR,,MED,CRWS,,ZUMZ,,OXY,N,IB,,ALTA,Y,,Ann says interesting but not interested in Bank Stock,,BILI,,ACNB,,ACU
-,,AAN,,FTNT,,MU,DPZ,,LEN,,RIG,N,IB,,AMGN,Y,,,,BLK,,ADI,,ADBE
-,,AAOI,,HD,,NMIH,IBM,,ADBE,,SLB,N,IB,,AMTD,Y,,Schwab is buying AMTD,,BLKB,,AFG,,ADM
+ADBE,,A,,AKAM,N,AMZN,ABT,,AVGO,,CCJ,N,IB,Sell,ABC,N,N,,,ADUS,,ABC,,AAN
+COST,,AA,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,OVV,N,IB,Sell,ACN,Y,,,,AEYE,,ABMD,,AAON
+CTAS,,AACG,,AVGO,,COHR,BAC,,COO,,OXY,N,IB,,AFL,Y,,,,AFL,,ABTX,,AAPL
+FDS,,AACH,,CCS,,CTXS,BIIB,,LULU,,RIG,N,IB,,AIN,Y,,Ann says potentially interesting,,AMGN,,ACGL,,ABBV
+GIS,,AAL,,COST,,HOLX,CDNS,,NSSC,,SLB,N,IB,,AJG,Y,,Ann says remain in Chaff,,APPS,,ACMR,,ABG
+JEF,,AAMC,,CTXS,,IIPR,CP,,RH,,,,,,ALG,Y,,Ann says remain in Chaff,,BC,,ACN,,ABT
+KBH,,AAME,,CYBR,,MED,CRWS,,ZUMZ,,,,,,ALTA,Y,,Ann says interesting but not interested in Bank Stock,,BILI,,ACNB,,ACU
+KMX,,AAN,,FTNT,,MU,DPZ,,LEN,,,,,,AMGN,Y,,,,BLK,,ADI,,ADBE
+MLHR,,AAOI,,HD,,NMIH,IBM,,ADBE,,,,,,AMTD,Y,,Schwab is buying AMTD,,BLKB,,AFG,,ADM
 ,,AAON,,IIPR,,QLYS,IIIN,,MLHR,,,,,,AX,y,,Ann says remain in Chaff,,BRC,,AFYA,,ADP
 ,,AAP,,LPLA,,FORM,ISRG,,KBH,,,,,,BAP,Y,,,,CAR,,AIH,,ADSK
 ,,AAPL,,LUV,,AUDC,KO,,GIS,,,,,,BFAM,Y,,,,CBOE,,AIMC,,AKAM
@@ -15,7 +15,7 @@ MMS,,A,,AKAM,N,AMZN,ABT,,AVGO,,AR,N,IB,Sell,ABC,N,N,,,ADUS,,ABC,,AAN
 ,,AAT,,MED,,CHTR,NFLX,,FDS,,,,,,BMI,Y,,Don't we track this already ,,CDR,,AJG,,ALGN
 ,,AATP,,MNST,,PFSI,PFGC,,JEF,,,,,,BPMP,Y,,Profitspi looks good,,CGEMY,,ALG,,ALL
 ,,AAU,,MSI,,,TER,,KMX,,,,,,BSTC,Y,,Profitspi looks good,,CMLSA,,ALK,,ALXN
-,,AAWW,,NMIH,,,UAL,,,,,,,,CACI,Y,,Don't we track this already ,,CNRC,,ALRM,,AMAT
+,,AAWW,,NMIH,,,UAL,,COST,,,,,,CACI,Y,,Don't we track this already ,,CNRC,,ALRM,,AMAT
 ,,AAXN,,OLED,,,WAL,,,,,,,,CCK,Y,,Don't we track this already ,,COR,,ALTA,,AMD
 ,,AB,,OMCL,,,AMZN,,,,,,,,CHE,Y,,Don't we track this already ,,CPSI,,AMN,,AME
 ,,ABB,,PRU,,,COHR,,,,,,,,CHRW,Y,,Don't we track this already ,,CREN,,AMOT,,AMKR
