@@ -63,20 +63,28 @@ qtr_str_list =['Q1', 'Q2','Q3','Q4','Q5','Q6','Q7','Q8']
 yr_str_list =['Y1', 'Y2','Y3','Y4','Y5','Y6','Y7']
 
 
-# ---------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Read the AAII file
-# Declare the dataframes that will be used
-# Set the columns and index
-# ---------------------------------------------------------
+# Declare the dataframes that will be used for the read in data and set the index
+# -----------------------------------------------------------------------------
 # This takes around 21 sec
 start = time.process_time()
-aaii_xls_file = '2020_09_04_AAII_Analysis.xlsx'
+aaii_xls_file = '2020_09_28_AAII_Analysis.xlsx'
 aaii_xls = pd.ExcelFile(aaii_xls_file)
-print(time.process_time() - start)
 
+# ---------------------------------------------------------
+# Read in the various tabs from the AAII file
 aaii_misc_00_df = pd.read_excel(aaii_xls, '0_Analysis_Misc_00')
 aaii_financials_qtr_df = pd.read_excel(aaii_xls, '0_Analysis_QTR')
 aaii_financials_yr_df = pd.read_excel(aaii_xls, '0_Analysis_YR')
+logging.info("")
+logging.info("Read in the tabs : 1. 0_Analysis_Misc_00  2. 0_Analysis_QTR and 3. 0_Analysis_YR")
+# logging.info("                   0_Analysis_QTR")
+# logging.info("               and 0_Analysis_YR from the workbook ")
+logging.info("from the workbook " + str(aaii_xls_file))
+logging.info("Reading the AAII workbook took : " + str(time.process_time() - start) + " seconds")
+logging.info("Will now start processing the individual tickers")
+# ---------------------------------------------------------
 
 use_tickers_from_aaii_file = 1
 if (use_tickers_from_aaii_file):
@@ -87,8 +95,6 @@ else:
 aaii_misc_00_df.set_index('Ticker', inplace=True)
 aaii_financials_qtr_df.set_index('Ticker', inplace=True)
 aaii_financials_yr_df.set_index('Ticker', inplace=True)
-# ---------------------------------------------------------
-
 # -----------------------------------------------------------------------------
 
 # RGP is RECN old --- need to handle
@@ -111,6 +117,9 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # #############################################################################
 # ticker_list = ['AAPL','BCRHF','IBM']
 # ticker_list = ['IBM','AAPL', 'AUDC','MED']
+ticker_list = ['CASY','LULU','NSSC','RH','FIZZ']
+
+
 i_idx = 1
 for ticker_raw in ticker_list:
 
@@ -129,6 +138,8 @@ for ticker_raw in ticker_list:
     logging.debug(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections. Skipping...")
     continue
 
+  # Some tickers in the AAII tickerlist have spaces...Skip processsing those tickers for now
+  # todo : (Not sure if they are useful stocks to process anyway...but keep on thinking)
   if (len(re.findall('\s', ticker)) > 0):
     if (use_tickers_from_aaii_file == 1):
       logging.warning("The ticker : " + str(ticker) + ", has spaces in the aaii ticker list, Will skip processing this ticker. Skipping...")
@@ -170,7 +181,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   logging.debug("")
   logging.debug("=======================================")
-  logging.debug("\n\nReading Key Statistics Data ")
+  logging.debug("Preparing Key Statistics Data ")
   logging.debug("=======================================")
   aaii_key_statistics_df = pd.DataFrame(columns=['AAII_KEY_STATISTICS_DATA'])
   aaii_key_statistics_df.set_index(['AAII_KEY_STATISTICS_DATA'], inplace=True)
@@ -180,8 +191,8 @@ for ticker_raw in ticker_list:
     dt.datetime.strptime(str(most_recent_qtr_date_str), '%Y-%m-%d %H:%M:%S').date()
   # except:
   except ValueError:
-    logging.warning("The date for : " + str(qtr_idx) + ", is : " + str(most_recent_qtr_date_str) + ", which does not follow to format %Y-%m-%d %H:%M:%S")
-    logging.warning("Will skip processing this ticker and move on to the next one. Skipping...")
+    logging.warning("Ticker : " + str(ticker) + ", has date for : " + str(qtr_idx) + ", as : " + str(most_recent_qtr_date_str) + ", which does not follow to format %Y-%m-%d %H:%M:%S")
+    logging.warning("Will skip processing " + str(ticker) + "  and move on to the next one. Skipping...")
     continue
 
   most_recent_qtr_date_dt = dt.datetime.strptime(str(most_recent_qtr_date_str), '%Y-%m-%d %H:%M:%S').date()
@@ -194,7 +205,8 @@ for ticker_raw in ticker_list:
   aaii_key_statistics_df.loc['Institutional_Ownership', most_recent_qtr_date_str] = aaii_date_and_misc_series['Institutional Ownership %']
   aaii_key_statistics_df.loc['Insider_Ownership', most_recent_qtr_date_str] = aaii_date_and_misc_series['Insider Ownership %']
 
-  logging.debug("\n\nThe Key Statistics DF Prepared from AAII Data is \n" + aaii_key_statistics_df.to_string() + "\n")
+  logging.debug("")
+  logging.debug("The Key Statistics DF Prepared from AAII Data is \n" + aaii_key_statistics_df.to_string() + "\n")
   logging.info("Read in Key Statistics data from AAII file")
   # ---------------------------------------------------------------------------
 
@@ -203,7 +215,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   logging.debug("")
   logging.debug("=======================================")
-  logging.debug("\n\n\ Reading QTR Data ")
+  logging.debug("Preparing QTR Data ")
   logging.debug("=======================================")
   aaii_qtr_df = pd.DataFrame(columns=['AAII_QTR_DATA'])
   aaii_qtr_df.set_index(['AAII_QTR_DATA'], inplace=True)
@@ -212,27 +224,46 @@ for ticker_raw in ticker_list:
     aaii_qtr_date_str = aaii_date_and_misc_series['Ending date ' + str(qtr_idx)]
     logging.debug("Getting Quarterly data from AAII file for : " + str(qtr_idx) + ", which corresponds to date : " + str(aaii_qtr_date_str))
     if not ((str(aaii_qtr_date_str) == 'NaT') or (len(str(aaii_qtr_date_str)) == 0)):
-      tmp_val_dt =  dt.datetime.strptime(str(aaii_qtr_date_str),'%Y-%m-%d %H:%M:%S').date()
-      tmp_val =  tmp_val_dt.strftime('%m/%d/%Y')
+      tmp_date_dt =  dt.datetime.strptime(str(aaii_qtr_date_str),'%Y-%m-%d %H:%M:%S').date()
+      tmp_date_str =  tmp_date_dt.strftime('%m/%d/%Y')
       # This add a new column corresponding to the qtr date
-      aaii_qtr_df.assign(tmp_val = "")
+      aaii_qtr_df.assign(tmp_date_str = "")
       # These add rows/index for the corresponding dates (which are the columns columns - as added one by one in the above line)
-      aaii_qtr_df.loc['Revenue', tmp_val] = aaii_financials_qtr_series['Sales '+str(qtr_idx)]
-      aaii_qtr_df.loc['Inventory', tmp_val] = aaii_financials_qtr_series['Inventory '+str(qtr_idx)]
-      aaii_qtr_df.loc['Diluted_EPS', tmp_val] = aaii_financials_qtr_series['EPS-Diluted '+str(qtr_idx)]
-      aaii_qtr_df.loc['Shares_Diluted', tmp_val] = aaii_financials_qtr_series['Shares Diluted '+str(qtr_idx)]
-      aaii_qtr_df.loc['Current_Assets', tmp_val] = aaii_financials_qtr_series['Current assets '+str(qtr_idx)]
-      aaii_qtr_df.loc['Current_Liabilities', tmp_val] = aaii_financials_qtr_series['Current liabilities '+str(qtr_idx)]
-      aaii_qtr_df.loc['Total_Assets', tmp_val] = aaii_financials_qtr_series['Total assets '+str(qtr_idx)]
-      aaii_qtr_df.loc['Total_Liabilities', tmp_val] = aaii_financials_qtr_series['Total liabilities '+str(qtr_idx)]
-      aaii_qtr_df.loc['LT_Debt', tmp_val] = aaii_financials_qtr_series['Long-term debt '+str(qtr_idx)]
+      aaii_qtr_df.loc['Revenue', tmp_date_str] = aaii_financials_qtr_series['Sales '+str(qtr_idx)]
+      aaii_qtr_df.loc['Inventory', tmp_date_str] = aaii_financials_qtr_series['Inventory '+str(qtr_idx)]
+      aaii_qtr_df.loc['Diluted_EPS', tmp_date_str] = aaii_financials_qtr_series['EPS-Diluted '+str(qtr_idx)]
+      aaii_qtr_df.loc['Shares_Diluted', tmp_date_str] = aaii_financials_qtr_series['Shares Diluted '+str(qtr_idx)]
+      aaii_qtr_df.loc['Current_Assets', tmp_date_str] = aaii_financials_qtr_series['Current assets '+str(qtr_idx)]
+      aaii_qtr_df.loc['Current_Liabilities', tmp_date_str] = aaii_financials_qtr_series['Current liabilities '+str(qtr_idx)]
+      aaii_qtr_df.loc['Total_Assets', tmp_date_str] = aaii_financials_qtr_series['Total assets '+str(qtr_idx)]
+      aaii_qtr_df.loc['Total_Liabilities', tmp_date_str] = aaii_financials_qtr_series['Total liabilities '+str(qtr_idx)]
+      aaii_qtr_df.loc['LT_Debt', tmp_date_str] = aaii_financials_qtr_series['Long-term debt '+str(qtr_idx)]
     else:
-      logging.warning("The date string from the AAII file for quarter \"" + str(qtr_idx) + "\" was either NaT or empty. Please check the AAII Data. ")
+      logging.warning("Ticker : " + str(ticker) + ", has date for : " + str(qtr_idx) + ", which is either NaT or empty. Please check the AAII Data. ")
       logging.warning("This can happen if the company is a recent IPO in the last few years and does not have all the data")
-      logging.warning("Will continue with whatever quarters of data is avaialble")
+      logging.warning("Will continue with whatever quarters of data is available")
       continue
 
-  logging.debug("\n\nThe QTR DF Prepared from AAII Data is \n" + aaii_qtr_df.to_string() + "\n")
+  logging.debug("")
+  logging.debug("The QTR DF Prepared from AAII Data is \n" + aaii_qtr_df.to_string() + "\n")
+  # -------------------------------------------------------
+  # Do a sanity check here to ensure that the qtr dates are
+  # atleast 80 days apart but no more than 100 days apart
+  # -------------------------------------------------------
+  qtr_date_list = aaii_qtr_df.columns.tolist()
+  qtr_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_date_list]
+  for col_idx_outer in range(len(qtr_date_list_dt)-1):
+    curr_qtr_date_dt = qtr_date_list_dt[col_idx_outer]
+    prev_qtr_date_dt = qtr_date_list_dt[col_idx_outer + 1]
+    diff_days = (curr_qtr_date_dt - prev_qtr_date_dt).days
+    logging.debug("Comparing successive QTR dates : " + str(prev_qtr_date_dt) + " and : " + str(curr_qtr_date_dt) + " and the number of days b/w them are " + str(diff_days))
+    if (diff_days > 100) or (diff_days < 80):
+      logging.error("The two successive QTR dates in the AAII QTR df : " + str(prev_qtr_date_dt) + " and : " + str(curr_qtr_date_dt) + " are : " + str(diff_days) + " days apart")
+      logging.error("They should be either less than 100 days or more than 80 days apart. This should not happen and can point to an error in AAII data. Please check")
+      logging.error("Exiting...")
+      sys.exit(1)
+
+
   logging.info("Read in QTR data from AAII file")
   # ---------------------------------------------------------------------------
 
@@ -241,7 +272,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   logging.debug("")
   logging.debug("=======================================")
-  logging.debug("Starting to Read YR Data ")
+  logging.debug("Preparing YR Data ")
   logging.debug("=======================================")
   aaii_yr_df = pd.DataFrame(columns=['AAII_YR_DATA'])
   aaii_yr_df.set_index(['AAII_YR_DATA'], inplace=True)
@@ -249,28 +280,46 @@ for ticker_raw in ticker_list:
     aaii_yr_date_str = aaii_date_and_misc_series['Ending date ' + str(yr_idx)]
     logging.debug("Getting Yearly data from AAII file for : " + str(yr_idx) + ", which corresponds to date : " + str(aaii_yr_date_str))
     if not ((str(aaii_yr_date_str) == 'NaT') or (len(str(aaii_yr_date_str)) == 0)):
-      tmp_val_dt = dt.datetime.strptime(str(aaii_yr_date_str),'%Y-%m-%d %H:%M:%S').date()
-      tmp_val =  tmp_val_dt.strftime('%m/%d/%Y')
+      tmp_date_dt = dt.datetime.strptime(str(aaii_yr_date_str),'%Y-%m-%d %H:%M:%S').date()
+      tmp_date_str =  tmp_date_dt.strftime('%m/%d/%Y')
       # This add a new column corresponding to the yr date str
-      aaii_yr_df.assign(tmp_val = "")
+      aaii_yr_df.assign(tmp_date_str = "")
       # These add rows/index for the corresponding dates (which are the columns columns - as added one by one in the above line)
-      aaii_yr_df.loc['Revenue', tmp_val] = aaii_financials_yr_series['Sales '+str(yr_idx)]
-      aaii_yr_df.loc['Net_Income', tmp_val] = aaii_financials_yr_series['Net income '+str(yr_idx)]
-      aaii_yr_df.loc['Diluted_EPS', tmp_val] = aaii_financials_yr_series['EPS-Diluted '+str(yr_idx)]
-      aaii_yr_df.loc['Cash_from_Operations', tmp_val] = aaii_financials_yr_series['Cash from operations '+str(yr_idx)]
-      aaii_yr_df.loc['Capital_Expenditures', tmp_val] = aaii_financials_yr_series['Capital expenditures '+str(yr_idx)]
-      aaii_yr_df.loc['Shares_Diluted', tmp_val] = aaii_financials_yr_series['Shares Diluted '+str(yr_idx)]
-      aaii_yr_df.loc['LT_Debt', tmp_val] = aaii_financials_yr_series['Long-term debt '+str(yr_idx)]
-      aaii_yr_df.loc['Total_Assets', tmp_val] = aaii_financials_yr_series['Total assets '+str(yr_idx)]
-      aaii_yr_df.loc['Total_Liabilities', tmp_val] = aaii_financials_yr_series['Total liabilities '+str(yr_idx)]
+      aaii_yr_df.loc['Revenue', tmp_date_str] = aaii_financials_yr_series['Sales '+str(yr_idx)]
+      aaii_yr_df.loc['Net_Income', tmp_date_str] = aaii_financials_yr_series['Net income '+str(yr_idx)]
+      aaii_yr_df.loc['Diluted_EPS', tmp_date_str] = aaii_financials_yr_series['EPS-Diluted '+str(yr_idx)]
+      aaii_yr_df.loc['Cash_from_Operations', tmp_date_str] = aaii_financials_yr_series['Cash from operations '+str(yr_idx)]
+      aaii_yr_df.loc['Capital_Expenditures', tmp_date_str] = aaii_financials_yr_series['Capital expenditures '+str(yr_idx)]
+      aaii_yr_df.loc['Shares_Diluted', tmp_date_str] = aaii_financials_yr_series['Shares Diluted '+str(yr_idx)]
+      aaii_yr_df.loc['LT_Debt', tmp_date_str] = aaii_financials_yr_series['Long-term debt '+str(yr_idx)]
+      aaii_yr_df.loc['Total_Assets', tmp_date_str] = aaii_financials_yr_series['Total assets '+str(yr_idx)]
+      aaii_yr_df.loc['Total_Liabilities', tmp_date_str] = aaii_financials_yr_series['Total liabilities '+str(yr_idx)]
     else:
-      logging.warning("The date string from the AAII file for year \"" + str(yr_idx) + "\" was either NaT or empty. Please check the AAII Data. ")
-      logging.warning("This can happen if the company is a recent IPO in the last 7 years and does not have all the data")
-      logging.warning("Will continue with whatever years of data is avaialble")
+      logging.warning("Ticker : " + str(ticker) + ", has date for : " + str(yr_idx) + ", which is either NaT or empty. Please check the AAII Data. ")
+      logging.warning("This can happen if the company is a recent IPO in the last few years and does not have all the data")
+      logging.warning("Will continue with whatever years of data is available")
       continue
       # sys.exit(1)
 
-  logging.debug("\n\nThe YR DF Prepared from AAII Data is \n" + aaii_yr_df.to_string() + "\n")
+  logging.debug("")
+  logging.debug("The YR DF Prepared from AAII Data is \n" + aaii_yr_df.to_string() + "\n")
+  # -------------------------------------------------------
+  # Do a sanity check here to ensure that the yr dates are
+  # atleast 355 days apart but no more than 375 days apart
+  # -------------------------------------------------------
+  yr_date_list = aaii_yr_df.columns.tolist()
+  yr_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in yr_date_list]
+  for col_idx_outer in range(len(yr_date_list_dt)-1):
+    curr_yr_date_dt = yr_date_list_dt[col_idx_outer]
+    prev_yr_date_dt = yr_date_list_dt[col_idx_outer + 1]
+    diff_days = (curr_yr_date_dt - prev_yr_date_dt).days
+    logging.debug("Comparing successive YR dates : " + str(prev_yr_date_dt) + " and : " + str(curr_yr_date_dt) + " and the number of days b/w them are " + str(diff_days))
+    if (diff_days > 372) or (diff_days < 358):
+      logging.error("The two successive YR dates in the AAII YR df : " + str(prev_yr_date_dt) + " and : " + str(curr_yr_date_dt) + " are : " + str(diff_days) + " days apart")
+      logging.error("They should be either less than 372 days or more than 358 days apart. This should not happen and can point to an error in AAII data. Please check")
+      logging.error("Exiting...")
+      sys.exit(1)
+
   logging.info("Read in YR data from AAII file")
   # ---------------------------------------------------------------------------
 
@@ -288,7 +337,7 @@ for ticker_raw in ticker_list:
 
   logging.debug("")
   logging.debug("==============================================================================================================")
-  logging.info("Now merging/creating(if the data does not exist) the Key Statistics, QTR and YR data into already existing data")
+  logging.info("Now merging/creating(if the data does not exist) the Key Statistics, QTR and YR data into already existing file")
   logging.debug("==============================================================================================================")
 
   # Read the appropriate file
@@ -316,7 +365,7 @@ for ticker_raw in ticker_list:
       logging.debug("\n\nThe Ticker df as read from the ticker csv file : \n" + ticker_csv_df.to_string() + "\n")
       logging.debug("Will now check for all the rows and column in aaii df and see if they exist in ticker df")
       logging.debug("If the are present in both, then will replace that data with AAII data - assumption being that AAII might have updated data meanwhile - company restated etc...")
-      logging.debug("If they are present only in AAII, then will insert them in the ticker df because ticker df is lacking those rows/columns b/c AAII has the latest data (from 2020 while ticker df only has data till 2019 etc")
+      logging.debug("If they are present only in AAII, then will insert them in the ticker df because ticker df is lacking those rows/columns b/c AAII has the latest data (from 2020 while ticker df only has data till 2019 etc)")
       logging.debug("If they are present only in ticker df, then that data will be left as is. The most common reason for this is that ticker df has 2012 data while AAII start from 2013")
       logging.debug("")
 
@@ -336,8 +385,8 @@ for ticker_raw in ticker_list:
       different_rows = []
       aaii_df_rows_list = aaii_df.index.tolist()
       ticker_csv_df_rows_list = ticker_csv_df.index.tolist()
-      logging.debug("The rows in aaii df " + str(aaii_df_rows_list))
-      logging.debug("The rows in ticker df " + str(ticker_csv_df_rows_list))
+      logging.debug("The rows in aaii df   : " + str(sorted(aaii_df_rows_list)))
+      logging.debug("The rows in ticker df : " + str(sorted(ticker_csv_df_rows_list)))
       logging.debug("")
 
       # -----------------------------------------------------------------------
@@ -354,7 +403,7 @@ for ticker_raw in ticker_list:
         logging.error("The number of rows in ticker df : " + str(len(ticker_csv_df_rows_list)))
         logging.error("The number of rows in aaii   df : " + str(len(aaii_df_rows_list)))
         logging.error("Since the number of rows in ticker df is greater than the number of rows in aaii df")
-        logging.error("that row(s) data will most likely be overwritten to NaN as during the col. merge ")
+        logging.error("that row(s) data will most likely be overwritten to NaN during the col. merge ")
         logging.error("Please correct the situation and rerun - Either remove the additional rows from ticker df or most likely download that row data in the aaii file")
         logging.error("Exiting...")
         sys.exit(1)
@@ -365,9 +414,10 @@ for ticker_raw in ticker_list:
       # -----------------------------------------------------------------------
       ticker_csv_df_cols_list = ticker_csv_df.columns.tolist()
       dummy_list = []
+      # This creates a dummy list with the number of elements equal to
+      # the number of columns in the ticker df
       for col_idx in range(len(ticker_csv_df_cols_list)):
         dummy_list.append(float('nan'))
-      # -----------------------------------------------------------------------
 
       for row_val in aaii_df_rows_list:
         if row_val in ticker_csv_df_rows_list:
@@ -376,7 +426,7 @@ for ticker_raw in ticker_list:
         else:
           logging.debug("Row --> " + str(row_val) + " <-- is present ONLY in AAII df. Inserting the row in ticker df with dummy data for now ")
           different_rows.append(row_val)
-          # Add a dummy row to the ticker df. This will get populated later
+          # Add a dummy row to the ticker df. This will get populated with aaii data later
           ticker_csv_df = ticker_csv_df.append(pd.Series(dummy_list, index=ticker_csv_df.columns, name=row_val))
       logging.debug("")
       logging.debug("The common rows b/w the ticker and aaii df are : \n" + str(common_rows))
@@ -387,7 +437,7 @@ for ticker_raw in ticker_list:
 
       # -----------------------------------------------------------------------
       # Iterate through the columns for ticker_df_cols
-      # if there are ccmmon cols, then delete that col from ticker df as they
+      # if there are common cols, then delete that col from ticker df as they
       # will get replaced by the aaii columns with latest data later
       # -----------------------------------------------------------------------
       logging.debug("")
@@ -419,7 +469,7 @@ for ticker_raw in ticker_list:
       # -----------------------------------------------------------------------
       # At this point :
       # 1. The rows that were present in aaii and not in ticker df have been
-      #     inserted in tcker df with dummy data
+      #     inserted in ticker df with dummy data
       # 2. The common cols from the ticker df are deleted, so all cols from aaii
       #     can be safely inserted here (they are supposedly going to have the
       #     latest data)
