@@ -130,7 +130,7 @@ g_dict_chart_options = {
 }
 
 aaii_missing_tickers_list = [
-'CBOE','CP','GOOG','RACE','NTR','RTN','DISCK', 'BRK-B'
+'CBOE','CP','GOOG','RACE','NTR','RTN','DISCK', 'BRK-B','KL'
 ]
 # =============================================================================
 
