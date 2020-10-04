@@ -117,9 +117,9 @@ tracklist_ann_df.set_index('Ticker', inplace=True)
 
 # Declare the dataframes that we will use to store the exclusive Tickers along
 # with their respective Quality_of_Stock
-only_in_master_df = pd.DataFrame(columns=['Tickers','Quality_of_Stock'])
+only_in_master_df = pd.DataFrame(columns=['Ticker','Quality_of_Stock'])
 only_in_ann_df = pd.DataFrame(columns=['Ticker','Quality_of_Stock', 'Owned_By'])
-only_in_master_df.set_index('Tickers', inplace=True)
+only_in_master_df.set_index('Ticker', inplace=True)
 only_in_ann_df.set_index('Ticker', inplace=True)
 
 # Start Populating the "only" dataframes
