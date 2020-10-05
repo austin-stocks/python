@@ -2433,11 +2433,25 @@
        {"Start_Date" : "09/30/2012", "Stop_Date" :   "End"}
     ]
   },
+
   "WWD" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
     ]
   },
+
+  "PTC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "PZZA" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
   "WSM" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "07/30/2012", "Stop_Date" :   "Next"},
@@ -4066,6 +4080,15 @@
     }
   },
 
+  "SNY" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Anchored_Text" : {
+      "upper center": "Report earnings in euros - Just copy Ann for now"
+    }
+  },
+
   "COST" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "02/28/2017", "Stop_Date" :   "05/30/2019"},
@@ -4159,13 +4182,18 @@
     ]
   },
 
-
   "CBRE" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2013", "Stop_Date" :   "06/30/2019"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".12"}
+    ]
+  },
+
+  "SYNA" : {
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".8"}
     ]
   },
 
