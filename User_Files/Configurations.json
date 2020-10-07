@@ -96,6 +96,19 @@
     ]
   },
 
+  "UCTT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "12/30/2016", "Stop_Date" :   "Next"}
+    ]
+  },
+
+  "UMC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
   "UFPI" : {
     "Splits" : {
       "11/14/2017" : "3:1"
@@ -103,6 +116,15 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2013", "Stop_Date" :   "Next"},
        {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "TSLA" : {
+    "Splits" : {
+      "08/31/2020" : "5:1"
+    },
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"}
     ]
   },
 
@@ -223,7 +245,24 @@
     ]
   },
 
+  "VMI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2015", "Stop_Date" :   "Next"},
+       {"Start_Date" : "03/30/2019", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/20/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".5"},
+      {"Start_Date" : "12/20/2016", "Stop_Date" :   "10/05/2017", "Adj_Amount" : "-.4"},
+      {"Start_Date" : "12/20/2015", "Stop_Date" :   "10/05/2016", "Adj_Amount" : ".5"}
+    ]
+  },
 
+  "VRTU" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "Next"},
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
   "EBF" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "05/30/2017", "Stop_Date" :   "05/30/2019"}
@@ -4163,6 +4202,17 @@
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "07/05/2018", "Adj_Amount" : "-.3"},
       {"Start_Date" : "09/25/2018", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.6"},
       {"Start_Date" : "12/25/2018", "Stop_Date" :   "07/05/2019", "Adj_Amount" : "-.3"}
+    ]
+  },
+
+  "TPX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2015", "Stop_Date" :   "07/05/2016", "Adj_Amount" : ".22"},
+      {"Start_Date" : "12/25/2016", "Stop_Date" :   "07/05/2017", "Adj_Amount" : "-.22"},
+      {"Start_Date" : "12/25/2018", "Stop_Date" :   "10/05/2019", "Adj_Amount" : ".13"}
     ]
   },
 
