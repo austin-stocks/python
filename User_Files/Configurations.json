@@ -1729,6 +1729,9 @@
 
 
   "TREX" : {
+    "Splits" : {
+      "09/14/2020" : "2:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
     ]
