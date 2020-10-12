@@ -1,5 +1,11 @@
 
 
+# RGP is RECN old --- need to handle
+aaii_missing_tickers_list = [
+'CBOE','CP','CRZO','GOOG','RACE','NTR','RGP','WCG','FOX','DISCK','BRK-B'
+]
+
+
 aaii_qtr_or_yr_report_dates_too_far_apart = ['RETC',
                                              'TURN',
                                              'GOED',

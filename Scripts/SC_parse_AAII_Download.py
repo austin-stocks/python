@@ -13,8 +13,8 @@ from yahoofinancials import YahooFinancials
 import time
 import logging
 import xlsxwriter
-from SC_Global_functions import aaii_qtr_or_yr_report_dates_too_far_apart
-
+from SC_Global_functions import aaii_missing_tickers_list
+# from SC_Global_functions import aaii_qtr_or_yr_report_dates_too_far_apart
 
 #
 # Define the directories and the paths
@@ -99,11 +99,6 @@ aaii_misc_00_df.set_index('Ticker', inplace=True)
 aaii_financials_qtr_df.set_index('Ticker', inplace=True)
 aaii_financials_yr_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
-
-# RGP is RECN old --- need to handle
-aaii_missing_tickers_list = [
-'CBOE','CP','CRZO','GOOG','RACE','NTR','RGP','WCG','FOX','DISCK','BRK-B'
-]
 
 # ---------------------------------------------------------
 # Declare the df that will be used to write to the logfiles
@@ -637,8 +632,8 @@ logging.info("Tickers for which AAII DID NOT have new dates for yr              
 # -----------------------------------------------------------------------------
 skipped_tickers_logfile="SC_parse_AAII_skipped_tickers.csv"
 tickers_with_irregular_report_dates_logfile="SC_parse_AAII_tickers_with_irregular_report_dates.csv"
-
 new_csv_file_created_tickers_logfile="SC_parse_AAII_new_csv_file_created_tickers.csv"
+
 ticker_updated_with_new_dates_from_aaii_logfile="SC_parse_AAII_was_ticker_updated_with_new_dates_from_aaii.csv"
 ticker_NOT_updated_with_new_dates_from_aaii_logfile="SC_parse_AAII_was_ticker_NOT_updated_with_new_dates_from_aaii.csv"
 
