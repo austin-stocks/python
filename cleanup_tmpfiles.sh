@@ -38,9 +38,12 @@ rm -f Latest_Charts/Long_Linear/Charts_Without_Numbers/*-2020-10-*.jpg
 rm -f Latest_Charts/Log/Charts_Without_Numbers/*-2020-10-*.jpg
 
 rm -f Logs/*-2020-10-*.csv
+rm -f Logs/*-2020-10-*.txt
 
 rm -f Readme/*-2020-10-*.csv
+rm -f Readme/*-2020-10-*.txt
 
 rm -f User_Files/*-2020-10-*.csv
+rm -f User_Files/*-2020-10-*.txt
 
 

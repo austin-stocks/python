@@ -1749,6 +1749,12 @@
     ]
   },
 
+  "AMN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2015", "Stop_Date" :   "End"}
+    ]
+  },
+
   "PRAH" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
