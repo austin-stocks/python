@@ -128,6 +128,24 @@
     ]
   },
 
+  "KAI" : {
+    "Splits" : {
+      "07/12/2001" : "1:5"
+    },
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2014", "Stop_Date" :   "Next"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/20/2002", "Stop_Date" :   "01/05/2003", "Adj_Amount" : ".7"},
+      {"Start_Date" : "12/20/2004", "Stop_Date" :   "10/05/2005", "Adj_Amount" : ".12"},
+      {"Start_Date" : "12/20/2008", "Stop_Date" :   "10/05/2009", "Adj_Amount" : ".75"},
+      {"Start_Date" : "06/20/2009", "Stop_Date" :   "10/05/2009", "Adj_Amount" : ".15"},
+      {"Start_Date" : "12/20/2011", "Stop_Date" :   "10/05/2012", "Adj_Amount" : "-.10"},
+      {"Start_Date" : "12/20/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".15"}
+    ]
+  },
+
   "MMS" : {
     "Splits" : {
       "07/05/2013" : "2:1",
