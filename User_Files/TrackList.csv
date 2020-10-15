@@ -1,11 +1,11 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,13-Oct,14-Oct,15-Oct,16-Oct,,19-Oct,20-Oct,21-Oct,22-Oct,23-Oct,,26-Oct,27-Oct,28-Oct,29-Oct,30-Oct
-BAC,,A,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,,,ISRG,NVR,,CDNS,ABG,ABT,CHKP,AXP,,AMKR,AKAM,ADP,AAON,ABBV
-PGR,,AA,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,,,TCBI,SLB,,IBM,DOV,ALGN,CRS,,,IR,AMD,ALGT,AAPL,AON
-SNBR,,AACG,,AVGO,,COHR,BAC,,COO,,,,,,,WAL,,,,LMT,ALXN,CTXS,,,JBT,AUDC,AMGN,ADM,BABA
-UAL,,AACH,,CCS,,CTXS,BIIB,,LULU,,,,,,,WNS,,,,MPWR,AMP,DECK,,,MEDP,CAT,ANTM,AME,BAH
-UNH,,AAL,,COST,,HOLX,CDNS,,NSSC,,,,,,,,,,,NFLX,BIIB,ENTG,,,SSD,CHE,ASGN,AMT,CACC
-EDU,,AAMC,,CTXS,,IIPR,CP,,RH,,,,,,,,,,,TER,CCI,FAF,,,TMUS,CHRW,AZPN,AMZN,CHTR
-CMC,,AAME,,CYBR,,MED,CRWS,,ZUMZ,,,,,,,,,,,,CMG,FIX,,,TREX,CNC,BA,ATVI,IBP
+,,A,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,,,ISRG,NVR,,CDNS,ABG,ABT,CHKP,AXP,,AMKR,AKAM,ADP,AAON,ABBV
+,,AA,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,,,TCBI,SLB,,IBM,DOV,ALGN,CRS,,,IR,AMD,ALGT,AAPL,AON
+,,AACG,,AVGO,,COHR,BAC,,COO,,,,,,,WAL,,,,LMT,ALXN,CTXS,,,JBT,AUDC,AMGN,ADM,BABA
+,,AACH,,CCS,,CTXS,BIIB,,LULU,,,,,,,WNS,,,,MPWR,AMP,DECK,,,MEDP,CAT,ANTM,AME,BAH
+,,AAL,,COST,,HOLX,CDNS,,NSSC,,,,,,,,,,,NFLX,BIIB,ENTG,,,SSD,CHE,ASGN,AMT,CACC
+,,AAMC,,CTXS,,IIPR,CP,,RH,,,,,,,,,,,TER,CCI,FAF,,,TMUS,CHRW,AZPN,AMZN,CHTR
+,,AAME,,CYBR,,MED,CRWS,,ZUMZ,,,,,,,,,,,,CMG,FIX,,,TREX,CNC,BA,ATVI,IBP
 ,,AAN,,FTNT,,MU,DPZ,,LEN,,,,,,,,,,,,EW,GILD,,,,CPSS,BSX,BIO,PSXP
 ,,AAOI,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,,ICLR,GPI,,,,CSGP,CACI,BLD,
 ,,AAON,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,,,,,KMI,HTH,,,,DXCM,CCS,CBRE,
@@ -24,18 +24,18 @@ CMC,,AAME,,CYBR,,MED,CRWS,,ZUMZ,,,,,,,,,,,,CMG,FIX,,,TREX,CNC,BA,ATVI,IBP
 ,,ABC,,TRU,,,MED,,,,,,,,,,,,,,,TROW,,,,ROP,MA,MCO,
 ,,ABCB,,UNH,,,QLYS,,,,,,,,,,,,,,,TSCO,,,,SHW,MAS,MLM,
 ,,ABCE,,VEEV,,,RBA,,,,,,,,,,,,,,,,,,,SPGI,MKTX,MMC,
-,,ABCP,,,,,,,,,,,,,,,,,,,,,,,,TRU,MSI,OLED,
-,,ABEO,,,,,,,,,,,,,,,,,,,,,,,,XRX,MYRG,PFSI,
-,,ABG,,,,,,,,,,,,,,,,,,,,,,,,,ORLY,RMD,
-,,ABIO,,,,,,,,,,,,,,,,,,,,,,,,,PTC,SKYW,
-,,ABM,,,,,,,,,,,,,,,,,,,,,,,,,QDEL,SYNH,
-,,ABMC,,,,,,,,,,,,,,,,,,,,,,,,,SFM,TFX,
-,,ABMD,,,,,,,,,,,,,,,,,,,,,,,,,SITE,TKR,
-,,ABML,,,,,,,,,,,,,,,,,,,,,,,,,SSNC,TPX,
-,,ABMT,,,,,,,,,,,,,,,,,,,,,,,,,TYL,WLTW,
-,,ABQQ,,,,,,,,,,,,,,,,,,,,,,,,,UCTT,,
-,,ABR,,,,,,,,,,,,,,,,,,,,,,,,,URI,,
-,,ABT,,,,,,,,,,,,,,,,,,,,,,,,,V,,
+,,ABCP,,,,,,,,,,,,EBS,9/14/2020,,,,,,,,,,,TRU,MSI,OLED,
+,,ABEO,,,,,,,,,,,,AVGO,9/18/2020,,,,,,,,,,,XRX,MYRG,PFSI,
+,,ABG,,,,,,,,,,,,CASY,9/18/2020,,,,,,,,,,,,ORLY,RMD,
+,,ABIO,,,,,,,,,,,,ACU,9/19/2020,,,,,,,,,,,,PTC,SKYW,
+,,ABM,,,,,,,,,,,,COO,9/19/2020,,,,,,,,,,,,QDEL,SYNH,
+,,ABMC,,,,,,,,,,,,CP,9/19/2020,,,,,,,,,,,,SFM,TFX,
+,,ABMD,,,,,,,,,,,,CRWS,9/19/2020,,,,,,,,,,,,SITE,TKR,
+,,ABML,,,,,,,,,,,,LEN,9/19/2020,,,,,,,,,,,,SSNC,TPX,
+,,ABMT,,,,,,,,,,,,LULU,9/19/2020,,,,,,,,,,,,TYL,WLTW,
+,,ABQQ,,,,,,,,,,,,NSSC,9/19/2020,,,,,,,,,,,,UCTT,,
+,,ABR,,,,,,,,,,,,RH,9/19/2020,,,,,,,,,,,,URI,,
+,,ABT,,,,,,,,,,,,ZUMZ,9/19/2020,,,,,,,,,,,,V,,
 ,,ABTX,,,,,,,,,,,,,,,,,,,,,,,,,VRTX,,
 ,,ABUS,,,,,,,,,,,,,,,,,,,,,,,,,YNDX,,
 ,,ABVC,,,,,,,,,,,,,,,,,,,,,,,,,,,
