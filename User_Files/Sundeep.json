@@ -40,7 +40,8 @@
   "IIPR" : {
     "Buy_Sell" : [
        {"Buy_Date" : "02/28/2020","Buy_Price_str" :  "$87"},
-       {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$124"}
+       {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$124"},
+       {"Buy_Date" : "10/13/2020","Buy_Price_str" :  "$136"}
     ]
   },
 
