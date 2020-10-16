@@ -1109,7 +1109,10 @@ for ticker_raw in ticker_list:
     fig.savefig(dir_path + analysis_plot_dir + "\\" + ticker + "_Analysis_" + date_time + ".jpg",dpi=200, bbox_inches='tight',facecolor='#E0E0E0')
     # fig.patch.set_alpha(0.7)
     if (g_var_copy_ticker_plot_2_watchlist_dir_en == 1) and (this_ticker_qualifies_in_watchlist == 1):
-      fig.savefig(dir_path + analysis_plot_watchlist_dir +  "\\" + ticker + "_Analysis_" + date_time + ".jpg", dpi=200,bbox_inches='tight', facecolor='#E0E0E0')
+      if (ticker_in_master_tracklist == 'Y'):
+        fig.savefig(dir_path + analysis_plot_watchlist_dir +  "\\" + "Wheat" +  "\\" + ticker + "_Analysis" + ".jpg", dpi=200,bbox_inches='tight', facecolor='#E0E0E0')
+      else:
+        fig.savefig(dir_path + analysis_plot_watchlist_dir +  "\\" + "Not_Wheat" +  "\\" + ticker + "_Analysis" + ".jpg", dpi=200,bbox_inches='tight', facecolor='#E0E0E0')
 
     # Only show the plot if we are making only one chart
     if (len(ticker_list) == 1):
