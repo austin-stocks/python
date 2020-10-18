@@ -33,6 +33,9 @@ def get_ratio(current, previous):
   if (previous == 0):
     # return "Div#0#"
     return 0
+  # if both are negative and current is less than previous, then the growth rate has been negative
+  elif ((previous < 0) and (current < 0) and (current < previous)):
+    return round(-(current / previous), 2)
   else :
     return round((current/previous), 2)
 
@@ -158,7 +161,7 @@ skipped_tickers_df.set_index('Ticker', inplace=True)
 #                   MAIN LOOP FOR TICKERS
 # #############################################################################
 # ticker_list = ['AAPL','IBM','MED']
-# ticker_list = ['CASY']
+ticker_list = ['CSCO','IBM']
 
 i_idx = 1
 total_number_of_ticker = len(ticker_list)
@@ -263,6 +266,7 @@ for ticker_raw in ticker_list:
     ticker_qtr_numbers_df.loc['Revenue', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Revenue', col_val])
     ticker_qtr_numbers_df.loc['Shares_Diluted', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Shares_Diluted', col_val])
     ticker_qtr_numbers_df.loc['Total_Assets', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Total_Assets', col_val])
+    ticker_qtr_numbers_df.loc['Goodwill_Intangibles', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Goodwill_Intangibles', col_val])
     ticker_qtr_numbers_df.loc['Total_Liabilities', col_val] = 1000000 * (ticker_qtr_numbers_df.loc['Total_Liabilities', col_val])
 
   logging.debug("QTR DF : df after converting the numbers in Millions/Thousands to raw numbers \n" + ticker_qtr_numbers_df.to_string())
@@ -279,6 +283,7 @@ for ticker_raw in ticker_list:
 
   ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Current_Ratio'))
   ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Equity'))
+  ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Net_Tangible_Assets'))
   ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Debt_2_Equity'))
   ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='No_of_Institutions'))
   ticker_qtr_numbers_df = ticker_qtr_numbers_df.append(pd.Series(dummy_list, index=ticker_qtr_numbers_df.columns, name='Institutional_Ownership'))
@@ -305,6 +310,8 @@ for ticker_raw in ticker_list:
     logging.debug("The Current ratio for : " + str(col_val) + ", is : " + str(ticker_qtr_numbers_df.loc['Current_Ratio', col_val]))
     ticker_qtr_numbers_df.loc['Equity', col_val] = ticker_qtr_numbers_df.loc['Total_Assets', col_val] - ticker_qtr_numbers_df.loc['Total_Liabilities', col_val]
     logging.debug("The Equity for : " + str(col_val) + ", is : " + str(ticker_qtr_numbers_df.loc['Equity', col_val]))
+    ticker_qtr_numbers_df.loc['Net_Tangible_Assets', col_val] = ticker_qtr_numbers_df.loc['Total_Assets', col_val] - ticker_qtr_numbers_df.loc['Total_Liabilities', col_val] - ticker_qtr_numbers_df.loc['Goodwill_Intangibles', col_val]
+    logging.debug("The Net Tangible Assets for : " + str(col_val) + ", is : " + str(ticker_qtr_numbers_df.loc['Net_Tangible_Assets', col_val]))
     ticker_qtr_numbers_df.loc['Debt_2_Equity', col_val] = 100*ticker_qtr_numbers_df.loc['LT_Debt', col_val] / ticker_qtr_numbers_df.loc['Equity', col_val]
     logging.debug("The Debt_2_Equity for : " + str(col_val) + ", is : " + str(ticker_qtr_numbers_df.loc['Debt_2_Equity', col_val]))
     # todo : test : Test if Key statistics have multiple columns
@@ -412,6 +419,7 @@ for ticker_raw in ticker_list:
     ticker_yr_numbers_df.loc['Revenue', col_val] = 1000000 * (ticker_datain_yr_df.loc['Revenue', col_val])
     ticker_yr_numbers_df.loc['Shares_Diluted', col_val] = 1000000 * (ticker_datain_yr_df.loc['Shares_Diluted', col_val])
     ticker_yr_numbers_df.loc['Total_Assets', col_val] = 1000000 * (ticker_datain_yr_df.loc['Total_Assets', col_val])
+    ticker_yr_numbers_df.loc['Goodwill_Intangibles', col_val] = 1000000 * (ticker_datain_yr_df.loc['Goodwill_Intangibles', col_val])
     ticker_yr_numbers_df.loc['Total_Liabilities', col_val] = 1000000 * (ticker_datain_yr_df.loc['Total_Liabilities', col_val])
 
   logging.debug("The ticker yr dataframe after converting the numbers to raw numbers \n" + ticker_yr_numbers_df.to_string())
@@ -429,12 +437,14 @@ for ticker_raw in ticker_list:
 
   # Add the rows for -- These will be populated later
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='BV_Per_Share'))
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='NTA_Per_Share'))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='FCF_Per_Share'))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='ROE'))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='ROIC'))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='Revenue_Growth'))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='Diluted_EPS_Growth'))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='BV_Per_Share_Growth'))
+  ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='NTA_Per_Share_Growth'))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='FCF_Per_Share_Growth'))
   ticker_yr_numbers_df = ticker_yr_numbers_df.append(pd.Series(dummy_list, index=ticker_yr_numbers_df.columns, name='No_of_Employees'))
   logging.debug("YR DF : df after adding dummy(NaN) rows that are needed to store calculated numbers \n" + ticker_yr_numbers_df.to_string())
@@ -475,12 +485,12 @@ for ticker_raw in ticker_list:
   # Calculate various numbers and also insert the data from key Statistics df
   # Insert the growth rates for Revenue, Diluted_EPS, BVPS and FCFPS
   # ---------------------------------------------------------------------------
-  logging.debug("\n\nYR DF : Calculating the various numbers and inserting the data from Key Statistics")
-  logging.debug("\n\nYR DF : Inserting growth rates for Revenue, Diluted_EPS, BVPS and FCFS")
+  logging.debug("\n\nYR DF : Calculating various numbers like BVPS, ROE, FCFPS etc and growth rates for Revenue, Diluted_EPS, NTAPS, BVPS and FCFS")
   col_list = ticker_yr_numbers_df.columns.tolist()
   for col_idx in range(len(col_list)):
     col_val = col_list[col_idx]
     ticker_yr_numbers_df.loc['BV_Per_Share', col_val] = (ticker_yr_numbers_df.loc['Total_Assets', col_val]-ticker_yr_numbers_df.loc['Total_Liabilities', col_val])/ticker_yr_numbers_df.loc['Shares_Diluted', col_val]
+    ticker_yr_numbers_df.loc['NTA_Per_Share', col_val] = (ticker_yr_numbers_df.loc['Total_Assets', col_val]-ticker_yr_numbers_df.loc['Total_Liabilities', col_val]-ticker_yr_numbers_df.loc['Goodwill_Intangibles', col_val])/ticker_yr_numbers_df.loc['Shares_Diluted', col_val]
     ticker_yr_numbers_df.loc['FCF_Per_Share', col_val] = (ticker_yr_numbers_df.loc['Cash_from_Operations', col_val]-ticker_yr_numbers_df.loc['Capital_Expenditures', col_val])/ticker_yr_numbers_df.loc['Shares_Diluted', col_val]
     ticker_yr_numbers_df.loc['ROE', col_val] = 100*ticker_yr_numbers_df.loc['Net_Income', col_val]/(ticker_yr_numbers_df.loc['Total_Assets', col_val]-ticker_yr_numbers_df.loc['Total_Liabilities', col_val])
     ticker_yr_numbers_df.loc['ROIC', col_val] = 100*ticker_yr_numbers_df.loc['Net_Income', col_val]/(ticker_yr_numbers_df.loc['Total_Assets', col_val]-ticker_yr_numbers_df.loc['Total_Liabilities', col_val]+ticker_yr_numbers_df.loc['LT_Debt', col_val])
@@ -488,13 +498,21 @@ for ticker_raw in ticker_list:
       ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = 1
       ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = 1
       ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = 1
+      ticker_yr_numbers_df.loc['NTA_Per_Share_Growth', col_val] = 1
       ticker_yr_numbers_df.loc['FCF_Per_Share_Growth', col_val] = 1
     else:
+      # todo : What if the col_val_starting is NaN? That can happen as we add more stuff
       col_val_starting = col_list[0]
+      if (str(ticker_yr_numbers_df.loc['NTA_Per_Share', col_val_starting]) == 'nan'):
+        logging.error("Yearly Numbers : The NTA_Per_Share is NaN for date : " + str(col_val_starting))
+        ticker_yr_numbers_df.loc['NTA_Per_Share', col_val_starting] = ticker_yr_numbers_df.loc['NTA_Per_Share', col_list[1]]
+        # sys.exit(1)
       logging.debug("Calculating Revenue Growth")
       ticker_yr_numbers_df.loc['Revenue_Growth', col_val] = get_ratio(ticker_yr_numbers_df.loc['Revenue', col_val],ticker_yr_numbers_df.loc['Revenue', col_val_starting])
       logging.debug("Calculating EPS Growth")
       ticker_yr_numbers_df.loc['Diluted_EPS_Growth', col_val] = get_ratio(ticker_yr_numbers_df.loc['Diluted_EPS', col_val],ticker_yr_numbers_df.loc['Diluted_EPS', col_val_starting])
+      logging.debug("Calculating NTA_Per_Share Growth")
+      ticker_yr_numbers_df.loc['NTA_Per_Share_Growth', col_val] = get_ratio(ticker_yr_numbers_df.loc['NTA_Per_Share', col_val],ticker_yr_numbers_df.loc['NTA_Per_Share', col_val_starting])
       logging.debug("Calculating BV_Per_Share Growth")
       ticker_yr_numbers_df.loc['BV_Per_Share_Growth', col_val] = get_ratio(ticker_yr_numbers_df.loc['BV_Per_Share', col_val],ticker_yr_numbers_df.loc['BV_Per_Share', col_val_starting])
       logging.debug("Calculating FCF_Per_Share Growth")
@@ -713,8 +731,8 @@ for ticker_raw in ticker_list:
     yr_table_plt = plt.subplot2grid((6, 6), (4, 0), rowspan=2, colspan=6)
     plt.subplots_adjust(hspace=.1, wspace=.15)
     # fig.suptitle(ticker_company_name + "(" + ticker + ")")
-    plt.text(x=0.03, y=0.95, s=ticker_company_name + "(" + ticker + ")", fontsize=14, fontweight='bold', ha="left",transform=fig.transFigure)
-    plt.text(x=0.03, y=0.93, s=ticker_sector + " - " + ticker_industry  , fontsize=11, fontweight='bold', ha="left",fontstyle='italic', transform=fig.transFigure)
+    plt.text(x=0.6, y=0.95, s=ticker_company_name + "(" + ticker + ")", fontsize=14, fontweight='bold', ha="left",transform=fig.transFigure)
+    plt.text(x=0.6, y=0.93, s=ticker_sector + " - " + ticker_industry  , fontsize=11, fontweight='bold', ha="left",fontstyle='italic', transform=fig.transFigure)
     # ===========================================================================
 
 
@@ -805,13 +823,17 @@ for ticker_raw in ticker_list:
       # -----------------------------------------------------
 
       # -----------------------------------------------------
-      # Change
+      # Append "%" to the EPS and revenue change numbers
       # -----------------------------------------------------
       if (((col_idx == eps_growth_col_idx) or (col_idx == revenue_growth_col_idx)) and (row_idx > 0)):
         if (cell_val == 'nan'):
           x = "-"
           cell.get_text().set_text(x)
         else:
+          if float(cell_val) < 0:
+            cell.get_text().set_color('Red')
+            cell.get_text().set_fontstyle('italic')
+            qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
           x =  f'{float(cell.get_text().get_text()):.1f}'
           x = x + "%"
           cell.get_text().set_text(x)
@@ -838,19 +860,16 @@ for ticker_raw in ticker_list:
           x = "-"
           cell.get_text().set_text(x)
         else:
+          if float(cell_val) < 0:
+            cell.get_text().set_color('Red')
+            cell.get_text().set_fontstyle('italic')
+            qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
           x =  f'{float(cell.get_text().get_text()):.2f}'
           cell.get_text().set_text(x)
           cell.get_text().set_text(x)
         # -----------------------------------------------------
         # else:
         #   x =  f'{float(cell.get_text().get_text()):.2f}'
-
-
-      # if float(cell_val) < 0:
-      #   cell.get_text().set_color('Red')
-      #   cell.get_text().set_fontstyle('italic')
-      #   qtr_table_plt_inst[(row_idx, col_idx)].set_facecolor('lightpink')
-
     qtr_table_plt.axis('off')
     logging.info("Done with plotting QTR table...")
     # ===========================================================================
@@ -949,7 +968,7 @@ for ticker_raw in ticker_list:
       logging.debug("The yearly dataframe has more than 10 cols.")
 
 
-    yr_growth_plt.title.set_text("Yearly Growth Chart")
+    # yr_growth_plt.title.set_text("Yearly Growth Chart")
     yr_growth_plt.set_facecolor("lightgrey")
 
     yr_growth_plt_lim_lower = 0
@@ -1003,8 +1022,9 @@ for ticker_raw in ticker_list:
     yr_growth_plt_inst_01 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), base_growth_20_percent_list, label='20%', linestyle='--',color='blue',marker="*",markersize='12')
     yr_growth_plt_inst_02 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Revenue_Growth"], label='Rev', color="green", marker='.', markersize='10')
     yr_growth_plt_inst_03 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["Diluted_EPS_Growth"], label='EPS', color="deeppink", marker='.', markersize='10')
-    yr_growth_plt_inst_04 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
-    yr_growth_plt_inst_05 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"], label='FCFPS', color="yellow", marker='.', markersize='10')
+    yr_growth_plt_inst_04 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["NTA_Per_Share_Growth"], label='NTAPS', color="tomato", marker='.', markersize='10')
+    yr_growth_plt_inst_05 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["BV_Per_Share_Growth"], label='BVPS', color="brown", marker='.', markersize='10')
+    yr_growth_plt_inst_06 = yr_growth_plt.plot(ticker_yr_numbers_df.columns.tolist(), ticker_yr_numbers_df.loc["FCF_Per_Share_Growth"], label='FCFPS', color="yellow", marker='.', markersize='10')
 
     yr_growth_plt_date_list = ticker_yr_numbers_df.columns.tolist()
     fiscal_yr_dates = []
@@ -1017,7 +1037,7 @@ for ticker_raw in ticker_list:
     # Print the labels in the plot...This needs to adjust if the plot gets
     # moved/resized as the position of the lables is hardcoded in the legend
     # statement below
-    lns = yr_growth_plt_inst_00+yr_growth_plt_inst_01+yr_growth_plt_inst_02+yr_growth_plt_inst_03+yr_growth_plt_inst_04+yr_growth_plt_inst_05
+    lns = yr_growth_plt_inst_00+yr_growth_plt_inst_01+yr_growth_plt_inst_02+yr_growth_plt_inst_03+yr_growth_plt_inst_04+yr_growth_plt_inst_05+yr_growth_plt_inst_06
     labs = [l.get_label() for l in lns]
     logging.debug("The Labels are" + str(labs))
     yr_growth_plt.legend(lns, labs, bbox_to_anchor=(.2, 1.02), loc="upper right", borderaxespad=2, fontsize='x-small')
@@ -1026,13 +1046,13 @@ for ticker_raw in ticker_list:
     # ===========================================================================
     # Plot the Yearly Numbers table
     # ===========================================================================
-    yr_table_plt.set_title("Yearly Table",color='black', loc='center')
+    # yr_table_plt.set_title("Yearly Table",color='black', loc='center')
     yr_table_plt.set_facecolor("black")
     yr_table_plt.set_yticks([])
     yr_table_plt.set_xticks([])
 
     # Create a new dataframe - ticker_yr_table_df - that only has the indices that we want to display in the table
-    desired_indices = ['Revenue','Diluted_EPS','BV_Per_Share','FCF_Per_Share','LT_Debt','Shares_Diluted','ROE','ROIC','No_of_Employees']
+    desired_indices = ['Revenue','Diluted_EPS','NTA_Per_Share','BV_Per_Share','FCF_Per_Share','LT_Debt','Shares_Diluted','ROE','ROIC','No_of_Employees']
     ticker_yr_table_df = ticker_yr_numbers_df.loc[desired_indices]
     logging.debug("Inside the plotting area : The ticker yr df with only the desired rows \n" + ticker_yr_table_df.to_string())
 
@@ -1105,9 +1125,8 @@ for ticker_raw in ticker_list:
     # date_time = now.strftime("%Y_%m_%d_%H_%M")
     date_time = now.strftime("%Y_%m_%d")
 
-    # todo : The background color is not getting saved
-    fig.savefig(dir_path + analysis_plot_dir + "\\" + ticker + "_Analysis_" + date_time + ".jpg",dpi=200, bbox_inches='tight',facecolor='#E0E0E0')
-    # fig.patch.set_alpha(0.7)
+    # fig.savefig(dir_path + analysis_plot_dir + "\\" + ticker + "_Analysis_" + date_time + ".jpg",dpi=200, bbox_inches='tight',facecolor='#E0E0E0')
+    fig.savefig(dir_path + analysis_plot_dir + "\\" + ticker + "_Analysis" + ".jpg",dpi=200, bbox_inches='tight',facecolor='#E0E0E0')
     if (g_var_copy_ticker_plot_2_watchlist_dir_en == 1) and (this_ticker_qualifies_in_watchlist == 1):
       if (ticker_in_master_tracklist == 'Y'):
         fig.savefig(dir_path + analysis_plot_watchlist_dir +  "\\" + "Wheat" +  "\\" + ticker + "_Analysis" + ".jpg", dpi=200,bbox_inches='tight', facecolor='#E0E0E0')

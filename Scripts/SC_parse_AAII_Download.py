@@ -137,7 +137,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # Part 2 : Those dataframe are merge into existing data from the ticker csv
 # If the corresponding ticker csv does not exist, then one is created
 # #############################################################################
-# ticker_list = ['AAPL','BCRHF','IBM']
+ticker_list = ['CSCO','BRC','IBM']
 # ticker_list = ['IBM','AAPL', 'AUDC','MED']
 # ticker_list = ['HRRB']
 
@@ -263,6 +263,7 @@ for ticker_raw in ticker_list:
       aaii_qtr_df.loc['Current_Assets', tmp_date_str] = aaii_financials_qtr_series['Current assets '+str(qtr_idx)]
       aaii_qtr_df.loc['Current_Liabilities', tmp_date_str] = aaii_financials_qtr_series['Current liabilities '+str(qtr_idx)]
       aaii_qtr_df.loc['Total_Assets', tmp_date_str] = aaii_financials_qtr_series['Total assets '+str(qtr_idx)]
+      aaii_qtr_df.loc['Goodwill_Intangibles', tmp_date_str] = aaii_financials_qtr_series['Goodwill and intangibles '+str(qtr_idx)]
       aaii_qtr_df.loc['Total_Liabilities', tmp_date_str] = aaii_financials_qtr_series['Total liabilities '+str(qtr_idx)]
       aaii_qtr_df.loc['LT_Debt', tmp_date_str] = aaii_financials_qtr_series['Long-term debt '+str(qtr_idx)]
     else:
@@ -324,6 +325,7 @@ for ticker_raw in ticker_list:
       aaii_yr_df.loc['Shares_Diluted', tmp_date_str] = aaii_financials_yr_series['Shares Diluted '+str(yr_idx)]
       aaii_yr_df.loc['LT_Debt', tmp_date_str] = aaii_financials_yr_series['Long-term debt '+str(yr_idx)]
       aaii_yr_df.loc['Total_Assets', tmp_date_str] = aaii_financials_yr_series['Total assets '+str(yr_idx)]
+      aaii_yr_df.loc['Goodwill_Intangibles', tmp_date_str] = aaii_financials_yr_series['Goodwill and intangibles '+str(yr_idx)]
       aaii_yr_df.loc['Total_Liabilities', tmp_date_str] = aaii_financials_yr_series['Total liabilities '+str(yr_idx)]
     else:
       logging.warning("Ticker : " + str(ticker) + ", has date for : " + str(yr_idx) + ", which is either NaT or empty. Please check the AAII Data. ")
