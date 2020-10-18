@@ -23,10 +23,12 @@ done
 
 for chrs in $alphabets 
 do 
+  echo ""
   echo "Commiting the files that start with [$chrs]*"
+  echo ""
+  sleep 2
   git commit -m "More Updates"  Quarterly/[$chrs]*.csv -v 
   git commit -m "More Updates"  Yearly/[$chrs]*.csv -v 
   git commit -m "More Updates"  Key_Statistics/[$chrs]*.csv -v 
 done
-
 
