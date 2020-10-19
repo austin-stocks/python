@@ -161,7 +161,7 @@ skipped_tickers_df.set_index('Ticker', inplace=True)
 #                   MAIN LOOP FOR TICKERS
 # #############################################################################
 # ticker_list = ['AAPL','IBM','MED']
-ticker_list = ['CSCO','IBM']
+# ticker_list = ['CSCO','IBM']
 
 i_idx = 1
 total_number_of_ticker = len(ticker_list)

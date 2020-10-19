@@ -5,8 +5,14 @@ rm -f *-2020-10-*.csv
 rm -f AAII_Financials/Quarterly/*-2020-10-*.xlsx
 rm -f AAII_Financials/Yearly/*-2020-10-*.xlsx
 
-rm -f Analysis/Quarterly/*-2020-10-*.xlsx
-rm -f Analysis/Yearly/*-2020-10-*.xlsx
+rm -f Analysis/Quarterly/*-2020-10-*.csv
+rm -f Analysis/Yearly/*-2020-10-*.csv
+rm -f Analysis/Key_statistics/*-2020-10-*.csv
+
+rm -f Analysis_Plots/*-2020-10-*.jpg
+rm -f Analysis_Watchlist/Wheat/*-2020-10-*.jpg
+rm -f Analysis_Watchlist/Not_Wheat/*-2020-10-*.jpg
+
 
 rm -f Charts/Linear/Charts_With_Numbers/*-2020-10-*.jpg
 rm -f Charts/Long_Linear/Charts_With_Numbers/*-2020-10-*.jpg

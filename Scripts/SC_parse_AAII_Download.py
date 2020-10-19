@@ -137,7 +137,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # Part 2 : Those dataframe are merge into existing data from the ticker csv
 # If the corresponding ticker csv does not exist, then one is created
 # #############################################################################
-ticker_list = ['CSCO','BRC','IBM']
+# ticker_list = ['CSCO','BRC','IBM']
 # ticker_list = ['IBM','AAPL', 'AUDC','MED']
 # ticker_list = ['HRRB']
 
