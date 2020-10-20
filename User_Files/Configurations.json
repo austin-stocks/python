@@ -592,6 +592,15 @@
     ]
   },
 
+  "TXRH" : {
+    "Splits" : {
+      "9/23/2005" : "2:1"
+    },
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2010", "Stop_Date" :   "End"}
+    ]
+  },
+
   "XPEL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"}
