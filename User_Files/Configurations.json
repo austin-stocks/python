@@ -3427,6 +3427,15 @@
     ]
   },
 
+  "EBIX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2014", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2018", "Stop_Date" :   "10/05/2019", "Adj_Amount" : ".16"}
+    ]
+  },
+
   "AEP" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
