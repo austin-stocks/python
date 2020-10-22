@@ -1,24 +1,24 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,13-Oct,14-Oct,15-Oct,16-Oct,,19-Oct,20-Oct,21-Oct,22-Oct,23-Oct,,26-Oct,27-Oct,28-Oct,29-Oct,30-Oct
-TER,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,,,TCBI,,,,MPWR,ALXN,CHKP,AXP,,AMKR,ABG,ADP,AAN,ABBV
-ALGN,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,,,,,,,,EW,CRS,,,IR,AKAM,ALGT,AAON,AON
-CCI,YI,,,AVGO,,COHR,BAC,,COO,,,,,,,,,,,,RJF,CTXS,,,MEDP,AMD,AMGN,AAPL,BABA
-CMG,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,,,,,,,,VMI,DECK,,,SSD,AUDC,AMP,ADM,BAH
-ICLR,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,,,,,,,,,ENTG,,,TNET,CAT,ANTM,AME,CACC
-KMI,TURN,,,CTXS,,IIPR,CP,,RH,,,,,,,,,,,,,FAF,,,,CHRW,ASGN,AMT,CHTR
-LAD,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,,,,,,,,,FIX,,,,CNC,AZPN,AMZN,IBP
-TSLA,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,,,,,,,,,HTH,,,,CPSS,BA,ATVI,PSXP
-UFPI,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,,,IIIN,,,,CSGP,BSX,BIO,
-,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,,,,,,INTC,,,,DXCM,CACI,CBRE,
-,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,,,,,,,KMB,,,,ENPH,CCS,CDW,
-,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,,,,,,,KO,,,,INCY,CLH,CHD,
-,ETFM,,,MA,,CIEN,LMT,,CTAS,,,,,,,,,,,,,LNN,,,,JBT,CMPR,CHE,
-,VNET,,,MED,,CHTR,NFLX,,FDS,,,,,,,,,,,,,LUV,,,,LH,CNXN,CRL,
-,XXII,,,MNST,,PFSI,PFGC,,JEF,,,,,,,,,,,,,OSIS,,,,LSCC,DCO,DNKN,
-,TWOU,,,MSI,,,TER,,KMX,,,,,,,,,,,,,PHM,,,,MASI,ENSG,EME,
-,QFIN,,,NMIH,,,UAL,,COST,,,,,,,,,,,,,POOL,,,,MKSI,EQIX,FB,
-,KRKR,,,OLED,,,WAL,,,,,,,,,,,,,,,RS,,,,MRK,FBHS,FTNT,
-,DDD,,,OMCL,,,AMZN,,,,,,,,,,,,,,,TSCO,,,,MSFT,FLS,GPI,
-,MMM,,,PRU,,,COHR,,,,,,,,,,,,,,,WAL,,,,MXIM,FORM,IDCC,
+CHKP,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,,,,,,,MPWR,ALXN,CRS,AXP,,AMKR,ABG,ADP,AAN,ABBV
+CTXS,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,,,,,,,,RJF,DECK,,,IR,AKAM,ALGT,AAON,AON
+ENTG,YI,,,AVGO,,COHR,BAC,,COO,,,,,,,,,,,,,FIX,,,MEDP,AMD,AMGN,AAPL,BABA
+FAF,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,,,,,,,,,HTH,,,SSD,AUDC,AMP,ADM,BAH
+IIIN,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,,,,,,,,,INTC,,,TNET,CAT,ANTM,AME,CACC
+KMB,TURN,,,CTXS,,IIPR,CP,,RH,,,,,,,,,,,,,OSIS,,,,CHRW,ASGN,AMT,CHTR
+KO,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,,,,,,,,,WAL,,,,CNC,AZPN,AMZN,IBP
+LNN,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,,,,,,,,,,,,,CPSS,BA,ATVI,PSXP
+LUV,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,,,,,,,CSGP,BSX,BIO,
+PHM,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,,,,,,,,,,DXCM,CACI,CBRE,
+POOL,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,,,,,,,,,,,ENPH,CCS,CDW,
+RS,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,,,,,,,,,,,INCY,CLH,CHD,
+TSCO,ETFM,,,MA,,CIEN,LMT,,CTAS,,,,,,,,,,,,,,,,,JBT,CMPR,CHE,
+,VNET,,,MED,,CHTR,NFLX,,FDS,,,,,,,,,,,,,,,,,LH,CNXN,CRL,
+,XXII,,,MNST,,PFSI,PFGC,,JEF,,,,,,,,,,,,,,,,,LSCC,DCO,DNKN,
+,TWOU,,,MSI,,,TER,,KMX,,,,,,,,,,,,,,,,,MASI,ENSG,EME,
+,QFIN,,,NMIH,,,UAL,,COST,,,,,,,,,,,,,,,,,MKSI,EQIX,FB,
+,KRKR,,,OLED,,,WAL,,,,,,,,,,,,,,,,,,,MRK,FBHS,FTNT,
+,DDD,,,OMCL,,,AMZN,,,,,,,,,,,,,,,,,,,MSFT,FLS,GPI,
+,MMM,,,PRU,,,COHR,,,,,,,,,,,,,,,,,,,MXIM,FORM,IDCC,
 ,FLES,,,QLYS,,,CTXS,,,,,,,,,,,,,,,,,,,OMCL,FOXF,IDXX,
 ,WBAI,,,ROK,,,HOLX,,,,,,,,,,,,,,,,,,,PFE,GD,ILMN,
 ,JOBS,,,TRU,,,MED,,,,,,,MRCY,,,,,,,,,,,,ROP,GE,INT,
