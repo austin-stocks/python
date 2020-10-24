@@ -1,5 +1,5 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,13-Oct,14-Oct,15-Oct,16-Oct,,19-Oct,20-Oct,21-Oct,22-Oct,23-Oct,,26-Oct,27-Oct,28-Oct,29-Oct,30-Oct
-DISCA,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,,,,,,,MPWR,ALXN,DECK,,,AMKR,ABG,ADP,AAN,ABBV
+,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,,,,,,,MPWR,ALXN,DECK,,,AMKR,ABG,ADP,AAN,ABBV
 ,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,,,,,,,,RJF,FIX,,,IR,AKAM,ALGT,AAON,AON
 ,YI,,,AVGO,,COHR,BAC,,COO,,,,,,,,,,,,,OSIS,,,MEDP,AMD,AMGN,AAPL,BABA
 ,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,,,,,,,,,,,,SSD,AUDC,AMP,ADM,BAH
@@ -21,13 +21,13 @@ DISCA,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,,,,,,,MPWR,ALXN,DECK,,,AMKR,ABG,ADP,AAN
 ,MMM,,,PRU,,,COHR,,,,,,,,,,,,,,,,,,,MXIM,FORM,IDCC,
 ,FLES,,,QLYS,,,CTXS,,,,,,,,,,,,,,,,,,,OMCL,FOXF,IDXX,
 ,WBAI,,,ROK,,,HOLX,,,,,,,,,,,,,,,,,,,PFE,GD,ILMN,
-,JOBS,,,TRU,,,MED,,,,,,,MRCY,,BGS,,,,,,,,,,ROP,GE,INT,
-,ETNB,,,UNH,,,QLYS,,,,,,,PAYC,,BIG,,,,,,,,,,SHW,GILD,IT,
-,JFK,,,VEEV,,,RBA,,,,,,,TMUS,,DISCA,,,,,,,,,,SPGI,MA,KEX,
-,EGHT,,,,,,,,,,,,,IIPR,,DVA,,,,,,,,,,TRU,MAS,LKQ,
-,NMTR,,,,,,,,,,,,,NMIH,,FHI,,,,,,,,,,XRX,MKTX,LPLA,
-,JFU,,,,,,,,,,,,,NVDA,,HCSG,,,,,,,,,,,MYRG,MCO,
-,AMRK,,,,,,,,,,,,,QCOM,,HUN,,,,,,,,,,,ORLY,MLM,
+,JOBS,,,TRU,,,MED,,,,,,,MRCY,,,,,,,,,,,,ROP,GE,INT,
+,ETNB,,,UNH,,,QLYS,,,,,,,PAYC,,,,,,,,,,,,SHW,GILD,IT,
+,JFK,,,VEEV,,,RBA,,,,,,,TMUS,,,,,,,,,,,,SPGI,MA,KEX,
+,EGHT,,,,,,,,,,,,,IIPR,,,,,,,,,,,,TRU,MAS,LKQ,
+,NMTR,,,,,,,,,,,,,NMIH,,,,,,,,,,,,XRX,MKTX,LPLA,
+,JFU,,,,,,,,,,,,,NVDA,,,,,,,,,,,,,MYRG,MCO,
+,AMRK,,,,,,,,,,,,,QCOM,,,,,,,,,,,,,ORLY,MLM,
 ,AHC,,,,,,,,,,,,,,,HWKN,,,,,,,,,,,PTC,MMC,
 ,AOS,,,,,,,,,,,,,,,JKS,,,,,,,,,,,QDEL,MSI,
 ,ATEN,,,,,,,,,,,,,,,KLIC,,,,,,,,,,,RCII,OLED,
