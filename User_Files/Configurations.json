@@ -2594,6 +2594,21 @@
     ]
   },
 
+  "LNG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "JKS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
+    ],
+    "Anchored_Text" : {
+      "upper center": "CNBC Reports non-GAAP Basic USD per ADS\nGet USD per ADS Earnings from 6K"
+    }
+  },
+
   "TTWO" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"},
@@ -2605,6 +2620,25 @@
     ]
   },
 
+  "KLIC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".3"}
+    ]
+  },
+
+
+  "HWKN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2019", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.25"},
+      {"Start_Date" : "03/25/2018", "Stop_Date" :   "01/05/2019", "Adj_Amount" : ".70"}
+    ]
+  },
   "WAFD" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2017", "Stop_Date" :   "End"},
