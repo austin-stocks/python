@@ -1,5 +1,5 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,,,,26-Oct,27-Oct,28-Oct,29-Oct,30-Oct,,2-Nov,3-Nov,4-Nov,5-Nov,6-Nov
-,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,,,,,AKAM,ADP,AAN,ABBV,,ADUS,ATHM,ALL,AMN,CVS
+NTGR,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,,,,,AKAM,ADP,AAN,ABBV,,ADUS,ATHM,ALL,AMN,CVS
 ,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,,,,,CHRW,ALGT,AAON,AON,,AMRC,BLD,ANSS,BABA,ESNT
 ,YI,,,AVGO,,COHR,BAC,,COO,,,,,,,,,CSGP,AMGN,AAPL,BAH,,ANET,COHR,CLH,BKNG,UI
 ,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,,,,,DXCM,AMP,ADM,CHTR,,BRK-B,EXPD,CSGS,BLL,
@@ -32,8 +32,8 @@ Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_E
 ,AOS,,,,,,,,,,,,,MDT,,,,,SITE,LKQ,,,,,,TMUS,
 ,ATEN,,,,,,,,,,,,,MRVL,,,,,SSNC,LPLA,,,,,,TTD,
 ,AACH,,,,,,,,,,,,,ROK,,,,,TXRH,MCO,,,,,,TTWO,
-,AAON,,,,,,,,,,,,,BRK,,LRCX,,,UCTT,MLM,,,,,,USPH,
-,AIR,,,,,,,,,,,,,MMS,,NTGR,,,URI,MMC,,,,,,VMC,
+,AAON,,,,,,,,,,,,,BRK,,,,,UCTT,MLM,,,,,,USPH,
+,AIR,,,,,,,,,,,,,MMS,,,,,URI,MMC,,,,,,VMC,
 ,AAN,,,,,,,,,,,,,VEEV,,,,,V,MPWR,,,,,,VRTU,
 ,ABQQ,,,,,,,,,,,,,ADBE,,,,,YNDX,MSI,,,,,,ZTS,
 ,SKFRY,,,,,,,,,,,,,COST,,,,,,OLED,,,,,,,
