@@ -611,16 +611,18 @@ for ticker_raw in ticker_list:
 
       max_qtr_eps_from_insertion = max(tmp_eps_list)
       # -------------------------------------------------------------------------
-
+      logging.debug("The qtr_eps dataframe with added projections is \n" + qtr_eps_df.to_string())
       # Now sort and reindex the q_eps_df
       # qtr_eps_df_tmp = qtr_epq_df
       # qtr_eps_df.set_index('Q_Date', inplace=True)
       # qtr_eps_df['Q_Date'] = pd.to_datetime(qtr_eps_df['Q_Date'], format="%m/%d/%Y")
-      qtr_eps_df['Q_Date'] = qtr_eps_df['Q_Date'].astype('datetime64[D]', format="%m/%d/%Y")
+      # qtr_eps_df['Q_Date'] = qtr_eps_df['Q_Date'].astype('datetime64[D]', format="%m/%d/%Y")
+      qtr_eps_df['Q_Date'] = pd.to_datetime(qtr_eps_df['Q_Date'].str.strip(), format='%m/%d/%Y')
+
       qtr_eps_df.sort_values('Q_Date', inplace=True, ascending=False)
       qtr_eps_df.reset_index(inplace=True, drop=True)
       qtr_eps_df['Q_Date'] = pd.to_datetime(qtr_eps_df['Q_Date']).dt.strftime('%m/%d/%Y')
-      logging.debug("The earnings dataframe after adding earning projection and sorting is " + qtr_eps_df.to_string())
+      logging.debug("The earnings dataframe after adding earning projection and sorting is \n" + qtr_eps_df.to_string())
       # ---------------------------------------------------------------------------
       # ---------------------------------------------------------------------------
       # See if there is anything inserted then expand out the historical df as well
@@ -636,12 +638,17 @@ for ticker_raw in ticker_list:
         # logging.debug ("Inserting in historical df at index : " + str(-(i_int-cal_match_date_with_insert_eps_projection_index+1)) + " Date : " + str(calendar_date_list[i_int]))
         historical_df.loc[-(i_int-cal_match_date_with_insert_eps_projection_index+1)]= historical_df.loc[0]
         # qtr_eps_df.loc[-(i_int+1), 'Q_Date'] =  dt.datetime.strptime(fiscal_qtr_dates[i_int], '%m/%d/%Y').date()
-        historical_df.loc[-(i_int-cal_match_date_with_insert_eps_projection_index+1), 'Date'] =  calendar_date_list[i_int]
+        historical_df.loc[-(i_int-cal_match_date_with_insert_eps_projection_index+1), 'Date'] =  calendar_date_list[i_int].strftime('%m/%d/%Y')
 
-      historical_df['Date'] = historical_df['Date'].astype('datetime64[D]', format="%m/%d/%Y")
+      logging.debug("Historical Df after inserting future dates for AAII projections is \n" + historical_df.to_string())
+      # historical_df['Date'] = historical_df['Date'].astype('datetime64[D]', format="%m/%d/%Y")
+      historical_df['Date'] = pd.to_datetime(historical_df['Date'].str.strip(), format='%m/%d/%Y')
+
       historical_df.sort_values('Date', inplace=True, ascending=False)
       historical_df.reset_index(inplace=True, drop=True)
       historical_df['Date'] = pd.to_datetime(historical_df['Date']).dt.strftime('%m/%d/%Y')
+      logging.debug("Historical Df after sorting future dates for AAII projections is \n" + historical_df.to_string())
+
       # logging.debug(str(ticker) + " Historical df after inserting eps projection dates is " + historical_df.to_string())
   logging.info("Done adding data for " + str(no_of_years_to_insert_aaii_eps_projections) + " years in qtr_eps_df and historical df for future EPS projections as per AAII EPS df...")
   # -------------------------------------------------------------------------
@@ -650,10 +657,11 @@ for ticker_raw in ticker_list:
 
 
   ticker_adj_close_list = historical_df.Adj_Close.tolist()
-  date_str_list = historical_df.Date.tolist()
-  logging.debug("The date list - in raw - from historical df is\n" + str(date_str_list))
+  # date_str_list = historical_df.Date.tolist()
+  date_str_list = historical_df['Date'].dropna().tolist()
+  logging.debug("The date list - in raw - from historical df is\n" + str(date_str_list) + "\nit has " + str(len(date_str_list)) + " entries")
   date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
-  logging.debug("The date list - in datetime - from historical is\n" + str(date_list) + "\nit has" + str(len(date_list)) + " entries")
+  logging.debug("The date list - in datetime - from historical is\n" + str(date_list) + "\nit has " + str(len(date_list)) + " entries")
   logging.info("Read in the Historical Data...")
 
 
@@ -1074,6 +1082,7 @@ for ticker_raw in ticker_list:
     yr_projected_eps_expanded_list.append(float('nan'))
 
   logging.debug("\n\nNow working on Expanding the YR EPS Lists\n")
+  logging.debug("The historical datelist is \n" + str(date_list))
   for yr_eps_date in yr_eps_date_list:
     curr_index = yr_eps_date_list.index(yr_eps_date)
     # logging.debug("Looking for " + str(yr_eps_date))
@@ -1336,7 +1345,7 @@ for ticker_raw in ticker_list:
     if ("Earnings_growth_projection_overlay" in config_json[ticker]):
       tmp_df = pd.DataFrame(config_json[ticker]["Earnings_growth_projection_overlay"])
       number_of_growth_proj_overlays = len(tmp_df.index)
-      logging.debug("The Sorted and reindexed dataframe is \n" + tmp_df.to_string() +
+      logging.debug("The Earnings growth overlay converted to dataframe is \n" + tmp_df.to_string() +
                     "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
       # This works : Delete the rows that have Ignore in any column
       tmp_df.drop(tmp_df[(tmp_df.Start_Date == "Ignore") | (tmp_df.Stop_Date == "Ignore")].index, inplace=True)
@@ -1347,18 +1356,22 @@ for ticker_raw in ticker_list:
       tmp_df.reset_index(inplace=True, drop=True)
       # tmp_df.set_index('Start_Date', inplace=True)
       number_of_growth_proj_overlays = len(tmp_df.index)
-      logging.debug("The Sorted and reindexed dataframe is \n" + tmp_df.to_string() +
+      logging.debug("The Sorted (by start date) Earnings growth overlay dataframe - with an added column is \n" + tmp_df.to_string() +
                     "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
+
       # Replace the "End" and "Next" in the stop dates with the appropriate value
       # "End" gets replaced by the end date (which it at index 0) that the historical date list has
       # (So the overlay will extent all the way to the right of the chart)
+      tmp_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
+
       # "Next" gets replaced by the next row start date (remember that the dataframe is already sorted
       # ascending with the start dates - so in essence the current row earning projection overlay
       # will stop at the next start date
-      tmp_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
       # This works : Replaces the stop date of the current row with the value of start date from the next row
-      tmp_df.Stop_Date.replace(to_replace='Next', value=tmp_df.Start_Date.shift(-1), inplace=True)
-      logging.debug("The Sorted and reindexed dataframe is \n" + tmp_df.to_string() +
+      if (number_of_growth_proj_overlays > 1):
+        tmp_df.Stop_Date.replace(to_replace='Next', value=tmp_df.Start_Date.shift(-1), inplace=True)
+
+      logging.debug("The Earning growth overlay dataframe now populated with real dates and sorted is \n" + tmp_df.to_string() +
                     "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
       # This works : Finally put those start and stop dates as datetimes in their own lists
       # start_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
