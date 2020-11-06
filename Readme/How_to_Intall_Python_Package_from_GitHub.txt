@@ -14,6 +14,7 @@ from github - I am not sure how that works but it works)
 	(Again not sure how this happens, but it happens - you can actually go there  and check)
   You also have a way to see all the installed packages in PyCharm - I will tell how shortly (on the side bar - as External Libs)
 	
+
 4. This installed package is then visible in pycharm - 
 	File -> Settings -> Project (Your project name) -> Python interpretor 
 	(Mine is set to C:\ProgramData\Anaconda3\python.exe)
@@ -23,3 +24,5 @@ from github - I am not sure how that works but it works)
   python -m pip install yahoo-earnings-calendar==0.6.0
   You will see the update in the Anaconda Navigator (you need to reindex) and then somehow it is updated in the pycharm (automatically??)
 	(Probably because PyCharm is pointing to the same libraraies through the python pointer - that was setup in Python Interpretor window)
+
+
