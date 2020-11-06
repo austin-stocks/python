@@ -64,6 +64,7 @@ yec = YahooEarningsCalendar()
 yahoo_earnings_calendar_df = pd.DataFrame(columns=['Ticker','Earnings_Date'])
 yahoo_earnings_calendar_df.set_index('Ticker', inplace=True)
 
+
 i_int = 0
 # ticker_list = ["AMT", "JAZZ", "PLNT", "LGIH", "STWD", "RHP", "IIPR", 'USPH', 'EME', 'CBRE']
 for ticker_raw in ticker_list:
@@ -108,7 +109,7 @@ for ticker_raw in ticker_list:
 
 now = dt.datetime.now()
 date_time = now.strftime("%Y_%m_%d")
-yahoo_earnings_calendar_logfile = "yahoo_earnings_calendar_" + date_time  + ".csv"
+yahoo_earnings_calendar_logfile = "yahoo_earnings_calendar_" + date_time + ".csv"
 yahoo_earnings_calendar_df.sort_values(by=['Earnings_Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + yahoo_earnings_calendar_logfile,sep=',', index=True, header=True)
 # logging.debug("Done")
 
@@ -118,15 +119,24 @@ yahoo_earnings_calendar_df.sort_values(by=['Earnings_Date','Ticker'], ascending=
 # This works - maybe use it later
 # -----------------------------------------------------------------------------
 '''
-date_from = datetime.datetime.strptime(
-    'Jan 31 2020  10:00AM', '%b %d %Y %I:%M%p')
-date_to = datetime.datetime.strptime(
-    'Feb 8 2020  1:00PM', '%b %d %Y %I:%M%p')
+date_from = datetime.datetime.strptime('Jan 31 2020  10:00AM', '%b %d %Y %I:%M%p')
+date_to   = datetime.datetime.strptime('Feb 8 2020   1:00PM', '%b %d %Y %I:%M%p')
 logging.debug(yec.earnings_between(date_from, date_to))
 [
 {'ticker': 'PSX', 'companyshortname': 'Phillips 66', 'startdatetime': '2020-01-31T18:30:00.000Z', 'startdatetimetype': 'BMO', 'epsestimate': 1.56, 'epsactual': None, 'epssurprisepct': None, 'gmtOffsetMilliSeconds': 0, 'quoteType': 'EQUITY'}, 
 {'ticker': 'PSXP', 'companyshortname': 'Phillips 66 Partners LP', 'startdatetime': '2020-01-31T18:30:00.000Z', 'startdatetimetype': 'BMO', 'epsestimate': 0.96, 'epsactual': None, 'epssurprisepct': None, 'gmtOffsetMilliSeconds': 0, 'quoteType': 'EQUITY'}, 
 ]
+'''
+
+# This works too - This gives out many many previous earnings data for IBM (if we want to know)
+# but also 4 future dates (how??) but we only need one - and that might be useful for us (but then
+# it may not be useful for us
+'''
+print(yec.get_earnings_of('ibm'))
+sys.exit()
+# Look tat startdatetime - that gives out the earnings date
+{'ticker': 'IBM', 'companyshortname': 'International Business Machines Corp', 'startdatetime': '2021-01-21T21:00:00.000Z', 'startdatetimetype': 'AMC', 'epsestimate': 1.78, 'epsactual': None, 'epssurprisepct': None, 'timeZoneShortName': 'EST', 'gmtOffsetMilliSeconds': -18000000, 'quoteType': 'EQUITY'}, 
+{'ticker': 'IBM', 'companyshortname': 'International Business Machines Corporation', 'startdatetime': '2020-10-19T00:00:00.000Z', 'startdatetimetype': 'TNS', 'epsestimate': 2.58, 'epsactual': 2.58, 'epssurprisepct': 0, 'timeZoneShortName': 'EST', 'gmtOffsetMilliSeconds': 0, 'quoteType': 'EQUITY'}, 
 '''
 
 # ##############################################################################
