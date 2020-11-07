@@ -1359,17 +1359,44 @@ for ticker_raw in ticker_list:
       logging.debug("The Sorted (by start date) Earnings growth overlay dataframe - with an added column is \n" + tmp_df.to_string() +
                     "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
 
+      stop_date_list = tmp_df.Stop_Date.tolist()
+      start_date_list = tmp_df.Start_Date.tolist()
+      logging.debug("The Stop_Date extracted from Earning growth overlay is" + str(stop_date_list))
+      
+      # Now find if there are any "Next" in the stop date 
+      # If there are then"Next" gets replaced by the next row start date 
+      # (remember that the dataframe is already sorted ascending with the 
+      # start dates - so in essence the current row earning projection overlay
+      # will stop at the next start date
+      next_in_stop_date_list_cnt = 0
+      for i_idx in range(number_of_growth_proj_overlays):
+        if (stop_date_list[i_idx] == "Next"):
+          next_in_stop_date_list_cnt = next_in_stop_date_list_cnt + 1
+
+      logging.debug("The number of \"Next\" found in the Earnings_growth_projection_overlay : " + str(next_in_stop_date_list_cnt))
+      # Check if the last row of the dateframe Stop_Date is set to Next - then error out as there is no
+      # Next date available corresponding the the last row of the dateframe (remember that the dataframe is
+      # already sorted)
+      if (tmp_df.loc[number_of_growth_proj_overlays-1, 'Stop_Date'] == "Next"):
+        logging.error("")
+        logging.error("The Stop_Date, corresponding the the Start_Date : " + str(tmp_df.loc[number_of_growth_proj_overlays-1, 'Start_Date']))
+        logging.error("in the Earnings_growth_projection_overlay is set as \"Next\"")
+        logging.error("This cannot be supported as there is no next date available after that date...")
+        logging.error("Please correct in Configuration.json file and rerun...Exiting")
+        sys.exit(1)
+      elif (next_in_stop_date_list_cnt > 0):
+        # This used to work - but does not work now for some reason
+        # tmp_df.Stop_Date.replace(to_replace='Next', value=tmp_df.Start_Date.shift(-1), inplace=True)
+        # So now need to replace it with the loop
+        for i_idx in range(number_of_growth_proj_overlays):
+          if (stop_date_list[i_idx] == "Next"):
+            tmp_df.loc[i_idx, 'Stop_Date'] = tmp_df.loc[i_idx+1, 'Start_Date']
+
       # Replace the "End" and "Next" in the stop dates with the appropriate value
       # "End" gets replaced by the end date (which it at index 0) that the historical date list has
       # (So the overlay will extent all the way to the right of the chart)
       tmp_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
 
-      # "Next" gets replaced by the next row start date (remember that the dataframe is already sorted
-      # ascending with the start dates - so in essence the current row earning projection overlay
-      # will stop at the next start date
-      # This works : Replaces the stop date of the current row with the value of start date from the next row
-      if (number_of_growth_proj_overlays > 1):
-        tmp_df.Stop_Date.replace(to_replace='Next', value=tmp_df.Start_Date.shift(-1), inplace=True)
 
       logging.debug("The Earning growth overlay dataframe now populated with real dates and sorted is \n" + tmp_df.to_string() +
                     "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
