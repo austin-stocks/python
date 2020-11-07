@@ -1,13 +1,13 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,28-Oct,29-Oct,,2-Nov,3-Nov,4-Nov,5-Nov,6-Nov,,9-Nov,10-Nov,11-Nov,12-Nov
-,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,,BRK-B,ATHM,PRI,AAON,CVS,,AL,COHR,TTEK,AMAT
-,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,IR,PGR,QCOM,AMN,ESNT,,CNXN,CYBR,XPEL,DIS
-,YI,,,AVGO,,COHR,BAC,,COO,,,,,,,,,,QLYS,BABA,LNG,,,DHI,,
-,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,,,,,,QRVO,BGS,UI,,,EBIX,,
-,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,,,,,,RGLD,BKNG,,,,FOXF,,
-,TURN,,,CTXS,,IIPR,CP,,RH,,,,,,,,,,TTEC,BLL,,,,ROK,,
-,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,,,,,,TTGT,CI,,,,WILC,,
-,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,,,,,,TYL,CORE,,,,,,
-,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,VAC,DISCA,,,,,,
+,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,,BRK-B,ATHM,,AAON,CVS,,AL,COHR,TTEK,AMAT
+,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,IR,PGR,,AMN,ESNT,,CNXN,CYBR,XPEL,DIS
+,YI,,,AVGO,,COHR,BAC,,COO,,,,,,,,,,,BABA,LNG,,,DHI,,
+,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,,,,,,,BGS,UI,,,EBIX,,
+,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,,,,,,,BKNG,,,,FOXF,,
+,TURN,,,CTXS,,IIPR,CP,,RH,,,,,,,,,,,BLL,,,,ROK,,
+,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,,,,,,,CI,,,,WILC,,
+,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,,,,,,,CORE,,,,,,
+,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,DISCA,,,,,,
 ,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,,,,DISCK,,,,,,
 ,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,,,,,EA,,,,,,
 ,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,,,,,EBS,,,,,,
