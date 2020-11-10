@@ -104,8 +104,14 @@ for ticker_raw in ticker_list:
     # logging.debug ("Next earnings date for " + str(ticker) + " is " + str(ticker_next_earnings_date_str))
     print ("Next earnings date for " + str(ticker) + " is " + str(ticker_next_earnings_date_str))
 
-  # if (i_int == 10):
+  # if (i_int == 5):
   #   break
+
+# todo : See if you can create columns on a per date basis and get them converted to column wise thing
+# tmp_df = yahoo_earnings_calendar_df.copy()
+# logging.debug("Yahoo Earnings Calendar - sorted Dates columnwise is " + tmp_df.to_string())
+
+
 
 now = dt.datetime.now()
 date_time = now.strftime("%Y_%m_%d")
