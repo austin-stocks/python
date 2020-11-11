@@ -4342,7 +4342,7 @@
        {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"}
     ],
     "Anchored_Text" : {
-      "upper center": "Report earnings in euros - Just copy Ann for now"
+      "upper center": "Report earnings in euros - and they provide euro/$ rate in their 6K. \nNeed to take IFRS EPS from 6K and divide by the rate to put in Earnings csv"
     }
   },
 
