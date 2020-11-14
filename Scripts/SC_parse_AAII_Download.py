@@ -72,7 +72,7 @@ yr_str_list =['Y1', 'Y2','Y3','Y4','Y5','Y6','Y7']
 # This takes around 21 sec
 start = time.process_time()
 # aaii_xls_file = '2020_09_04_AAII_Analysis.xlsx'
-aaii_xls_file = '2020_09_28_AAII_Analysis.xlsx'
+aaii_xls_file = '2020_11_13_AAII_Analysis.xlsx'
 
 aaii_xls = pd.ExcelFile(dir_path + aaii_data_dir + "\\" + aaii_xls_file)
 
@@ -558,7 +558,7 @@ for ticker_raw in ticker_list:
       # -----------------------------------------------------------------------
 
       # -----------------------------------------------------------------------
-      # Now sort the ticker columns decscening based on dates and write it to csv
+      # Now sort the ticker columns descending based on dates and write it to csv
       # -----------------------------------------------------------------------
       # Don't understand how this works...but it works
       ticker_csv_df = ticker_csv_df.iloc[:, pd.to_datetime(ticker_csv_df.columns, format='%m/%d/%Y').argsort()[::-1]].reset_index()
