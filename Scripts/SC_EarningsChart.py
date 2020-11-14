@@ -16,6 +16,10 @@ import logging
 
 from dateutil.relativedelta import relativedelta
 from matplotlib.offsetbox import AnchoredText
+
+from SC_Global_functions import aaii_analysts_projection_file
+from SC_Global_functions import aaii_missing_tickers_list
+
 from SC_logger import my_print as my_print
 from yahoofinancials import YahooFinancials
 from mpl_finance import candlestick_ohlc
@@ -128,10 +132,6 @@ g_dict_chart_options = {
   # 'Linear_chart_types': ['Long_Linear']
   'Linear_chart_types': ['Linear']
 }
-
-aaii_missing_tickers_list = [
-'CBOE','CP','GOOG','RACE','NTR','RTN','DISCK', 'BRK-B','KL'
-]
 # =============================================================================
 
 
@@ -201,7 +201,7 @@ master_tracklist_file = "Master_Tracklist.xlsx"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
 configuration_json = "Configurations.json"
-aaii_analysts_projection_file = "AAII_Analysts.csv"
+
 calendar_file = "Calendar.csv"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 
@@ -452,6 +452,7 @@ for ticker_raw in ticker_list:
   # -------------------------------------------------------------------------
   #       *****     Start of AAII insertion of Projected EPS Insertion    *****
   # -------------------------------------------------------------------------
+  logging.info("The AAII Analysts file used is : " + str(aaii_analysts_projection_file))
   # Find the fiscal years y0, y1 and y2 and their respective projections
   no_of_years_to_insert_aaii_eps_projections = 0
   continue_aaii_eps_projections_for_this_ticker = 1
