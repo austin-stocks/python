@@ -1,6 +1,6 @@
-AAII_KEY_STATISTICS_DATA,06/30/2020
-Insider_Ownership,0.0
-Institutional_Ownership,43.2
-Net_Insider_Purchases,120.0
-No_of_Employees,12812.0
-No_of_Institutions,857.0
+AAII_KEY_STATISTICS_DATA,09/30/2020,06/30/2020
+Insider_Ownership,,0.0
+Institutional_Ownership,43.2,43.2
+Net_Insider_Purchases,0.0,120.0
+No_of_Employees,12812.0,12812.0
+No_of_Institutions,826.0,857.0
