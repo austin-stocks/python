@@ -119,6 +119,16 @@
     ]
   },
 
+  "PAGS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Anchored_Text" : {
+      "upper left": "Using ADJUSTED EARNINGS TO PLOT",
+      "upper center": "Company reports in Brazillian Real. CNBC projects in R$ as well"
+    }
+  },
+
   "TSLA" : {
     "Splits" : {
       "08/31/2020" : "5:1"

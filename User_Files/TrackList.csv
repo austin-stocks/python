@@ -1,16 +1,16 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,28-Oct,,17-Nov,18-Nov,19-Nov,,23-Nov,24-Nov
-CDNS,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,JKS,CPRT,BERY,,BZUN,ADSK
-DOV,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,KEYS,BJ,,,BBY
-IBM,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,KLIC,DLA,,,J
-LMT,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,NVDA,INTU,,,MDT
-NVR,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,DISCK,,,SCVL,MMS,,,PGR
+PAGS,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,JKS,CPRT,BERY,,BZUN,ADSK
+,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,KEYS,BJ,,,BBY
+,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,KLIC,DLA,,,J
+,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,NVDA,INTU,,,MDT
+,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,DISCK,,,SCVL,MMS,,,PGR
 ,TURN,,,CTXS,,IIPR,CP,,RH,,,,,POWL,,,ZTO,NTES,,,
 ,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,,,,,,,,
 ,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,,,,,,,,
 ,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,,
-,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,,,,,
-,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,,,,,,
-,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,,,,,,
+,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,ASML,7/15/2020,,,,
+,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,UMC,7/30/2020,,,,
+,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,SNPS,8/19/2020,,,,
 ,ETFM,,,MA,,CIEN,LMT,,CTAS,,,,,,,,,,,,
 ,VNET,,,MED,,CHTR,NFLX,,FDS,,,,,,,,,,,,
 ,XXII,,,MNST,,PFSI,PFGC,,JEF,,,,,,,,,,,,
