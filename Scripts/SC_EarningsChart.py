@@ -510,7 +510,15 @@ for ticker_raw in ticker_list:
     # date that is in the earnings file and find the number of year/quarters than
     # need to be inserted
     # -------------------------------------------------------------------------
-    qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
+    use_diluted_or_adjusted_eps = str(ticker_config_series['Use_Diluted_or_Adjusted_EPS'])
+    if (use_diluted_or_adjusted_eps == "Adjusted"):
+      logging.info("Using ADJUSTED EPS to Plot the chart")
+      qtr_eps_list = qtr_eps_df.Q_EPS_Adjusted.tolist()
+      # Copy the adjusted column over the diluted column as the code further down updates
+      # Q_EPS_Diluted
+      qtr_eps_df['Q_EPS_Diluted'] = qtr_eps_df['Q_EPS_Adjusted']
+    else:
+      qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
     days_bw_y_plus0_and_latest_qtr_date_in_earnings_file = y_plus0_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
     days_bw_y_plus1_and_latest_qtr_date_in_earnings_file = y_plus1_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
     days_bw_y_plus2_and_latest_qtr_date_in_earnings_file = y_plus2_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
