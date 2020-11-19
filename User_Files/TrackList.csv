@@ -1,10 +1,10 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,28-Oct,,17-Nov,18-Nov,19-Nov,,23-Nov,24-Nov
-PAGS,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,JKS,CPRT,BERY,,BZUN,ADSK
-,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,KEYS,BJ,,,BBY
-,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,KLIC,DLA,,,J
-,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,NVDA,INTU,,,MDT
-,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,DISCK,,,SCVL,MMS,,,PGR
-,TURN,,,CTXS,,IIPR,CP,,RH,,,,,POWL,,,ZTO,NTES,,,
+BERY,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,JKS,,DLA,,BZUN,ADSK
+BJ,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,,INTU,,,BBY
+MMS,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,,NTES,,,J
+,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,,,,,MDT
+,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,DISCK,,,,,,,PGR
+,TURN,,,CTXS,,IIPR,CP,,RH,,,,,POWL,,,,,,,
 ,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,,,,,,,,
 ,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,,,,,,,,
 ,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,,
