@@ -119,6 +119,18 @@
     ]
   },
 
+  "SAIA" : {
+    "Splits" : {
+      "06/13/2013" : "3:2"
+    },
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "06/20/2006", "Stop_Date" :   "04/05/2007", "Adj_Amount" : ".5"}
+    ],
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2012", "Stop_Date" :   "End"}
+    ]
+  },
+
   "PAGS" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"}
