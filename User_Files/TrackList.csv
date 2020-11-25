@@ -1,16 +1,16 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,28-Oct,,23-Nov,24-Nov
-SAIA,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,BZUN,ADSK
-,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,BBY
-,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,J
-,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,MDT
+ADSK,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,,ADSK
+BBY,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,BBY
+J,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,J
+MDT,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,MDT
 ,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,DISCK,,,PGR
 ,TURN,,,CTXS,,IIPR,CP,,RH,,,,,POWL,,,
 ,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,JKS,,,
 ,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,NTES,,,
 ,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,
-,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,ASML,7/15/2020
-,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,UMC,7/30/2020
-,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,SNPS,8/19/2020
+,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,
+,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,,
+,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,,
 ,ETFM,,,MA,,CIEN,LMT,,CTAS,,,,,,,,
 ,VNET,,,MED,,CHTR,NFLX,,FDS,,,,,,,,
 ,XXII,,,MNST,,PFSI,PFGC,,JEF,,,,,,,,
