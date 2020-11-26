@@ -1,5 +1,5 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,28-Oct,,11/23/2020,11/24/2020,11/30/2020,12/1/2020,12/2/2020,12/3/2020,12/4/2020,12/7/2020,12/8/2020,12/9/2020,12/10/2020
-VRSK,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,BZUN,JKS,ATHM,MOMO,FIVE,COO,BIG,CASY,POWL,ADBE,AVGO
+CTLT,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,BZUN,JKS,ATHM,MOMO,FIVE,COO,BIG,CASY,POWL,ADBE,AVGO
 ,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,,ZM,VEEV,RH,DG,,,,LULU,CIEN
 ,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,,,,SNPS,MRVL,,,,,COST
 ,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,,,,,ZUMZ,,,,,FIZZ
@@ -15,20 +15,20 @@ VRSK,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,BZUN,JKS,ATHM,MOMO,FIVE,COO,BIG,CA
 ,VNET,,,MED,,CHTR,NFLX,,FDS,,,,,,,,,,,,,,,,,
 ,XXII,,,MNST,,PFSI,PFGC,,JEF,,,,,,,,,,,,,,,,,
 ,TWOU,,,MSI,,,TER,,KMX,,,,,,,,,,,,,,,,,
-,QFIN,,,NMIH,,,UAL,,COST,,,,,,,RS,,,,,,,,,,
-,KRKR,,,OLED,,,WAL,,,,,,,,,TCBI,,,,,,,,,,
-,DDD,,,OMCL,,,AMZN,,,,,,,,,TSCO,,,,,,,,,,
-,MMM,,,PRU,,,COHR,,,,,,,,,VMI,,,,,,,,,,
-,FLES,,,QLYS,,,CTXS,,,,,,,,,WAL,,,,,,,,,,
-,WBAI,,,ROK,,,HOLX,,,,,,,,,AXP,,,,,,,,,,
-,JOBS,,,TRU,,,MED,,,,,,,,,CPSS,,,,,,,,,,
-,ETNB,,,UNH,,,QLYS,,ASML,,,,,,,HTH,,,,,,,,,,
-,JFK,,,VEEV,,,RBA,,CP,,,,,,,LSTR,,,,,,,,,,
-,EGHT,,,,,,,,FOX,,,,,,,RGP,,,,,,,,,,
-,NMTR,,,,,,,,GOOG,,,,,,,,,,,,,,,,,
-,JFU,,,,,,,,KL,,,,,,,,,,,,,,,,,
-,AMRK,,,,,,,,RBA,,,,,,,,,,,,,,,,,
-,AHC,,,,,,,,SNY,,,,,,,,,,,,,,,,,
+,QFIN,,,NMIH,,,UAL,,COST,,,,,,,,,,,,,,,,,
+,KRKR,,,OLED,,,WAL,,,,,,,,,,,,,,,,,,,
+,DDD,,,OMCL,,,AMZN,,,,,,,,,,,,,,,,,,,
+,MMM,,,PRU,,,COHR,,,,,,,,,,,,,,,,,,,
+,FLES,,,QLYS,,,CTXS,,,,,,,,,,,,,,,,,,,
+,WBAI,,,ROK,,,HOLX,,,,,,,,,,,,,,,,,,,
+,JOBS,,,TRU,,,MED,,,,,,,,,,,,,,,,,,,
+,ETNB,,,UNH,,,QLYS,,ASML,,,,,,,AMKR,,,,,,,,,,
+,JFK,,,VEEV,,,RBA,,CP,,,,,,,CP,,,,,,,,,,
+,EGHT,,,,,,,,FOX,,,,,,,CTXS,,,,,,,,,,
+,NMTR,,,,,,,,GOOG,,,,,,,FIX,,,,,,,,,,
+,JFU,,,,,,,,KL,,,,,,,JBSS,,,,,,,,,,
+,AMRK,,,,,,,,RBA,,,,,,,MEDP,,,,,,,,,,
+,AHC,,,,,,,,SNY,,,,,,,TNET,,,,,,,,,,
 ,AOS,,,,,,,,TSM,,,,,,,,,,,,,,,,,
 ,ATEN,,,,,,,,UMC,,,,,,,,,,,,,,,,,
 ,AACH,,,,,,,,,,,,,,,,,,,,,,,,,
