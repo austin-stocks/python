@@ -1,18 +1,18 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,28-Oct,,11/23/2020,11/24/2020,11/30/2020,12/1/2020,12/2/2020,12/3/2020,12/4/2020,12/7/2020,12/8/2020,12/9/2020,12/10/2020
-CCOI,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,BZUN,JKS,ATHM,MOMO,FIVE,COO,BIG,CASY,POWL,ADBE,AVGO
-,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,,ZM,VEEV,RH,DG,,,,LULU,CIEN
-,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,,,,SNPS,MRVL,,,,,COST
-,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,,,,,ZUMZ,,,,,FIZZ
-,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,DISCK,,,,,,,,,,,,
-,TURN,,,CTXS,,IIPR,CP,,RH,,,,,POWL,,,,,,,,,,,,
-,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,JKS,,,,,,,,,,,,
-,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,NTES,,,,,,,,,,,,
-,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,,,,,,,
-,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,,,,,,,,,,
-,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,,,,,,,,,,,
-,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,,,,,,,,,,,
-,ETFM,,,MA,,CIEN,LMT,,CTAS,,,,,,,,,,,,,,,,,
-,VNET,,,MED,,CHTR,NFLX,,FDS,,,,,,,,,,,,,,,,,
+ABG,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,BZUN,JKS,ATHM,MOMO,FIVE,COO,BIG,CASY,POWL,ADBE,AVGO
+ADBE,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,,ZM,VEEV,RH,DG,,,,LULU,CIEN
+AMD,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,,,,SNPS,MRVL,,,,,COST
+CAT,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,,,,,ZUMZ,,,,,FIZZ
+CHRW,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,DISCK,,,,,,,,,,,,
+CNC,TURN,,,CTXS,,IIPR,CP,,RH,,,,,POWL,,,,,,,,,,,,
+CSGP,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,JKS,,,,,,,,,,,,
+DG,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,NTES,,,,,,,,,,,,
+DXCM,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,,,,,,,
+ENPH,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,,,,,,,,,,
+HEI,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,,,,,,,,,,,
+HWKN,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,,,,,,,,,,,
+JBT,ETFM,,,MA,,CIEN,LMT,,CTAS,,,,,,,,,,,,,,,,,
+TSM,VNET,,,MED,,CHTR,NFLX,,FDS,,,,,,,,,,,,,,,,,
 ,XXII,,,MNST,,PFSI,PFGC,,JEF,,,,,,,,,,,,,,,,,
 ,TWOU,,,MSI,,,TER,,KMX,,,,,,,,,,,,,,,,,
 ,QFIN,,,NMIH,,,UAL,,COST,,,,,,,,,,,,,,,,,
@@ -22,13 +22,13 @@ CCOI,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,BZUN,JKS,ATHM,MOMO,FIVE,COO,BIG,CA
 ,FLES,,,QLYS,,,CTXS,,,,,,,,,,,,,,,,,,,
 ,WBAI,,,ROK,,,HOLX,,,,,,,,,,,,,,,,,,,
 ,JOBS,,,TRU,,,MED,,,,,,,,,,,,,,,,,,,
-,ETNB,,,UNH,,,QLYS,,ASML,,,,,,,AMKR,,,,,,,,,,
-,JFK,,,VEEV,,,RBA,,CP,,,,,,,CP,,,,,,,,,,
-,EGHT,,,,,,,,FOX,,,,,,,CTXS,,,,,,,,,,
-,NMTR,,,,,,,,GOOG,,,,,,,FIX,,,,,,,,,,
-,JFU,,,,,,,,KL,,,,,,,JBSS,,,,,,,,,,
-,AMRK,,,,,,,,RBA,,,,,,,MEDP,,,,,,,,,,
-,AHC,,,,,,,,SNY,,,,,,,TNET,,,,,,,,,,
+,ETNB,,,UNH,,,QLYS,,ASML,,,,,,,,,,,,,,,,,
+,JFK,,,VEEV,,,RBA,,CP,,,,,,,,,,,,,,,,,
+,EGHT,,,,,,,,FOX,,,,,,,,,,,,,,,,,
+,NMTR,,,,,,,,GOOG,,,,,,,,,,,,,,,,,
+,JFU,,,,,,,,KL,,,,,,,,,,,,,,,,,
+,AMRK,,,,,,,,RBA,,,,,,,,,,,,,,,,,
+,AHC,,,,,,,,SNY,,,,,,,,,,,,,,,,,
 ,AOS,,,,,,,,TSM,,,,,,,,,,,,,,,,,
 ,ATEN,,,,,,,,UMC,,,,,,,,,,,,,,,,,
 ,AACH,,,,,,,,,,,,,,,,,,,,,,,,,
