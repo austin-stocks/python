@@ -1,18 +1,18 @@
 Tickers,,,CNBC_Matches_Reported_EPS,Team memebers stocks,CNBC_Matches_Reported_EPS,Sundeep,Ann_Chaff,,,,CNBC_Matches_Reported_EPS,Q_Report_Date,,28-Oct,,11/23/2020,11/24/2020,11/30/2020,12/1/2020,12/2/2020,12/3/2020,12/4/2020,12/7/2020,12/8/2020,12/9/2020,12/10/2020
-ABG,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,BZUN,JKS,ATHM,MOMO,FIVE,COO,BIG,CASY,POWL,ADBE,AVGO
-ADBE,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,,ZM,VEEV,RH,DG,,,,LULU,CIEN
-AMD,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,,,,SNPS,MRVL,,,,,COST
-CAT,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,,,,,ZUMZ,,,,,FIZZ
-CHRW,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,DISCK,,,,,,,,,,,,
-CNC,TURN,,,CTXS,,IIPR,CP,,RH,,,,,POWL,,,,,,,,,,,,
-CSGP,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,JKS,,,,,,,,,,,,
-DG,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,NTES,,,,,,,,,,,,
-DXCM,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,,,,,,,
-ENPH,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,,,,,,,,,,
-HEI,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,,,,,,,,,,,
-HWKN,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,,,,,,,,,,,
-JBT,ETFM,,,MA,,CIEN,LMT,,CTAS,,,,,,,,,,,,,,,,,
-TSM,VNET,,,MED,,CHTR,NFLX,,FDS,,,,,,,,,,,,,,,,,
+INT,FLWS,,N,AKAM,N,AMZN,ABT,,AVGO,,N,,,AZPN,,BZUN,JKS,ATHM,MOMO,FIVE,COO,BIG,CASY,POWL,ADBE,AVGO
+KEX,TXG,,,AUDC,No - Non-GAAP diluted ,BABA,ACU,,CASY,,,,,CMPR,,,,ZM,VEEV,RH,DG,,,,,CIEN
+LKQ,YI,,,AVGO,,COHR,BAC,,COO,,,,,IR,,,,,,SNPS,MRVL,,,,,COST
+MCO,RETC,,,CCS,,CTXS,BIIB,,LULU,,,,,ATHM,,,,,,,ZUMZ,,,,,FIZZ
+MLM,PIH,,,COST,,HOLX,CDNS,,NSSC,,,,,DISCK,,,,,,,,,,,,LULU
+MMC,TURN,,,CTXS,,IIPR,CP,,RH,,,,,POWL,,,,,,,,,,,,
+SAH,GOED,,,CYBR,,MED,CRWS,,ZUMZ,,,,,JKS,,,,,,,,,,,,
+SGC,EFSH,,,FTNT,,MU,DPZ,,LEN,,,,,NTES,,,,,,,,,,,,
+SYNH,BCOW,,,HD,,NMIH,IBM,,ADBE,,,,,,,,,,,,,,,,,
+TFX,ONEM,,,IIPR,,QLYS,IIIN,,MLHR,,,,,,,,,,,,,,,,,
+TKR,FCCY,,,LPLA,,FORM,ISRG,,KBH,,,,,,,,,,,,,,,,,
+TPX,SRCE,,,LUV,,AUDC,KO,,GIS,,,,,,,,,,,,,,,,,
+TROW,ETFM,,,MA,,CIEN,LMT,,CTAS,,,,,,,,,,,,,,,,,
+,VNET,,,MED,,CHTR,NFLX,,FDS,,,,,,,,,,,,,,,,,
 ,XXII,,,MNST,,PFSI,PFGC,,JEF,,,,,,,,,,,,,,,,,
 ,TWOU,,,MSI,,,TER,,KMX,,,,,,,,,,,,,,,,,
 ,QFIN,,,NMIH,,,UAL,,COST,,,,,,,,,,,,,,,,,
