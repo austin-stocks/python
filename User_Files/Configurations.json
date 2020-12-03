@@ -3461,6 +3461,13 @@
     ]
   },
 
+  "ATKR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "Next"},
+       {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
   "ATHM" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2013", "Stop_Date" :   "06/30/2019"}
