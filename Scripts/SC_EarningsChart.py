@@ -819,6 +819,25 @@ for ticker_raw in ticker_list:
   logging.debug("The Earnings Projections list for qtr_eps is\n" + str(qtr_eps_projections_list) + "\nand the number of elements are " + str(len(qtr_eps_projections_list)))
   logging.info("The EPS Projections were last updated on : " + str(qtr_eps_projections_date_0) + " and before that on " + str(qtr_eps_projections_date_1))
 
+  # If the last reported Earnings date is later than the Latest earning projections update date
+  # then that is errored out here
+  # it means that Sundeep did not update the earnings projections but updated the actual reported
+  # earnings date - and while that does not violate anything - but that is NOT how things should be done.
+  # The earnings projection update date should always be newer (or equal to, if the projection were
+  # updated on the same day earnings were reported) than the acutal reported earnings date
+  # It is likely the result of a typo in the earnings file - point it out here and let the user
+  # look at the earnings file and see what is going on
+  if (eps_report_date > qtr_eps_projections_date_0):
+    logging.error("")
+    logging.error("********************************************************************************")
+    logging.error("The Last Reported Earnings date is                : " + str(eps_report_date))
+    logging.error("Projected Earnings were last updated on           : " + str(qtr_eps_projections_date_0))
+    logging.error("===== The projected Earnings date should not be older than Last Earnings report date =====")
+    logging.error("Likely : Did you forget to update the Projected Earnings date in the earnings file???")
+    logging.error("Please look at the dates in the earnings file and rerun...")
+    logging.error("********************************************************************************")
+    sys.exit()
+
   # Check if the eps projections list has atleat "x" years of data
   eps_date_list_eps_report_date_match = min(qtr_eps_date_list, key=lambda d: abs(d - eps_report_date))
   eps_date_list_eps_report_date_index = qtr_eps_date_list.index(eps_date_list_eps_report_date_match)

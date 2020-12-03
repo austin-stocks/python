@@ -179,6 +179,7 @@ for ticker_raw in ticker_list:
     logging.error("  This seems like a typo :-)...Please correct it in Earnings csv file and rerun")
     sys.exit(1)
   eps_projections_last_updated_df.loc[ticker,'Date']= eps_projection_date_0_dt
+  eps_projections_last_updated_df.loc[ticker,'Reason']= master_tracklist_df.loc[ticker, 'Reason_Earnings_Projections_NOT_updated']
 
   # if (eps_projection_date_0_dt < one_month_ago_date):
   #   logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a month ago")
@@ -292,7 +293,7 @@ skipped_tickers_logfile="skipped_tickers_Sort_misc.txt"
 
 historical_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + historical_last_updated_logfile,sep=' ', index=True, header=False)
 earnings_last_reported_df.sort_values(by=['Where_found','Reason','Date','Ticker'], ascending=[True,True,True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
-eps_projections_last_updated_df.sort_values(by=['Reason','Date','Ticker'], ascending=[True,True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
+eps_projections_last_updated_df.sort_values(by=['Date','Ticker','Reason'], ascending=[True,True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
 charts_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + charts_last_updated_logfile,sep=' ', index=True, header=False)
 eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=True)
 skipped_tickers_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + skipped_tickers_logfile,sep=' ', index=True, header=True)
