@@ -2714,6 +2714,12 @@
     }
   },
 
+  "PRIM" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
   "TTWO" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"},
