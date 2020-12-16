@@ -76,7 +76,7 @@ logging.debug("The tracklist from Ann after renaming and removing NaN from the t
 # 2. List the contains  the tickers that are ONLY found in Ann Tracklist
 # =============================================================================
 master_ticker_list = master_tracklist_df['Tickers'].tolist()
-ann_ticker_list     = tracklist_ann_df['Ticker'].tolist()
+ann_ticker_list    = tracklist_ann_df['Ticker'].tolist()
 logging.debug("Total Number of Tickers extracted from Master Tracklist " + str(len(master_ticker_list)))
 logging.debug("Total Number of Tickers extracted from Ann Tracklist " + str(len(ann_ticker_list)))
 logging.debug("The List of tickers extracted from Master Tacklist " + str(master_ticker_list))
@@ -93,7 +93,10 @@ for ticker_raw in master_ticker_list:
   if ticker not in ann_ticker_list:
     logging.debug ("Did not find " + str(ticker) + " in Ann List")
     only_in_master_list.append(ticker)
+logging.info("Found : " + str(len(only_in_master_list)) + " tickers only in Master Tracklist")
+logging.debug("Found these tickers only in Master Tracklist" + str(only_in_master_list))
 
+logging.info("")
 logging.info("Looping through Ann Tracklist Tickers to see if they are found in Master Tracklist")
 for ticker_raw in ann_ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
@@ -103,8 +106,7 @@ for ticker_raw in ann_ticker_list:
   if ticker not in master_ticker_list:
     logging.debug ("Did not find " + str(ticker) + " in Master Tracklist List")
     only_in_ann_list.append(ticker)
-
-logging.debug("Found these tickers only in Master Tracklist" + str(only_in_master_list))
+logging.info("Found : " + str(len(only_in_ann_list)) + " tickers only in Ann Tracklist")
 logging.debug("Found these tickers only in Ann Tracklist" + str(only_in_ann_list))
 
 # Till this point we should have two list
