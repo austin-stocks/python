@@ -493,6 +493,12 @@
     ]
   },
 
+  "CTB" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
   "LGIH" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2014", "Stop_Date" :   "06/30/2019"}
@@ -535,6 +541,17 @@
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/22/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "1.4"},
       {"Start_Date" : "06/22/2019", "Stop_Date" :   "07/05/2019", "Adj_Amount" : "-.15"}
+    ]
+  },
+
+
+  "PKI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "06/22/2018", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".3"},
+      {"Start_Date" : "06/22/2017", "Stop_Date" :   "10/05/2017", "Adj_Amount" : "-.3"}
     ]
   },
 
