@@ -1089,6 +1089,18 @@
     ]
   },
 
+  "RUTH" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2012", "Stop_Date" :   "01/05/2013", "Adj_Amount" : ".25"},
+      {"Start_Date" : "09/25/2014", "Stop_Date" :   "07/05/2015", "Adj_Amount" : ".05"},
+      {"Start_Date" : "12/25/2008", "Stop_Date" :   "10/05/2009", "Adj_Amount" : ".6"},
+      {"Start_Date" : "12/25/2006", "Stop_Date" :   "10/05/2007", "Adj_Amount" : "-.06"}
+    ]
+  },
+
   "RCKY" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2017", "Stop_Date" :   "End"}
