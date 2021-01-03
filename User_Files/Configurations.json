@@ -1421,6 +1421,13 @@
     ]
   },
 
+  "CCMP" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2012", "Stop_Date" :   "Next"}
+    ]
+  },
+
   "WLDN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
