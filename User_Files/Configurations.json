@@ -106,7 +106,11 @@
   "UMC" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
-    ]
+    ],
+    "Anchored_Text" : {
+      "upper center": "Company reports in Tiawanese Dollars. CNBC projects in USD \nso CNBC USD needs to be converted to Tiawanese whenever projections are updated"
+
+    }
   },
 
   "UFPI" : {
