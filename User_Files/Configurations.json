@@ -544,7 +544,8 @@
 
   "SMPL" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "05/30/2020", "Stop_Date" :   "End"}
+       {"Start_Date" : "05/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "11/30/2020", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "11/25/2019", "Stop_Date" :   "09/05/2020", "Adj_Amount" : ".04"}
