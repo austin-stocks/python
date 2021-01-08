@@ -31,6 +31,17 @@
     ]
   },
 
+  "ECOM" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "17.64"}
+    ]
+  },
+  "FORM" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "46.16"}
+    ]
+  },
+
   "HOLX" : {
     "Buy_Sell" : [
        {"Buy_Date" : "08/04/2020","Buy_Price_str" :  "$71.87"},
