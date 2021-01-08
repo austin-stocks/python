@@ -3929,8 +3929,7 @@
 
   "MUR" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "12/30/2017", "Stop_Date" :   "Next"},
-       {"Start_Date" : "5/30/2020", "Stop_Date" :   "End"}
+       {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "09/25/2019", "Stop_Date" :   "07/05/2020", "Adj_Amount" : "-1.5"}
@@ -4887,7 +4886,8 @@
 
   "MU" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "02/28/2017", "Stop_Date" :   "05/30/2019"}
+       {"Start_Date" : "02/28/2017", "Stop_Date" :   "Next"},
+       {"Start_Date" : "05/30/2020", "Stop_Date" :   "End"}
     ]
   },
 
