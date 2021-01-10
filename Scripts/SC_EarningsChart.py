@@ -384,24 +384,29 @@ for ticker_raw in ticker_list:
   qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv",delimiter=",")
   logging.debug("The Earnings df is \n" + qtr_eps_df.to_string())
 
-  # If the Actual Quarterly Report Dates exist in the earnings file, read it from there
-  # else read it from the Master Tracklist file...eventually this will all be read from
-  # the earnings file
+  # Read the Actual Quarterly Report Dates from the earnings file
   qtr_eps_report_date_list = []
   if ('Q_Report_Date' in qtr_eps_df.columns):
     qtr_eps_report_date_list = qtr_eps_df.Q_Report_Date.dropna().tolist()
     logging.debug("The Quarterly Report Date List from the earnings file after dropna is " + str(qtr_eps_report_date_list))
-  if (len(qtr_eps_report_date_list) > 0):
-    qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
-    eps_report_date = qtr_eps_report_date_list_dt[0]
-    for i_date in qtr_eps_report_date_list_dt:
-      if (i_date >  dt.date.today()):
-        logging.error("The date " + str(i_date) + " in the Q_Report_Date column is later than today...")
-        logging.error("Please correct and rerun...")
-        sys.exit(1)
   else:
-    eps_report_date = dt.datetime.strptime(str(ticker_master_tracklist_series['Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
-    qtr_eps_report_date_list_dt = [eps_report_date]
+    logging.error("The Quarter report date column (Column Heading : Q_Report_Date) is missing in the Earnings file...")
+    logging.error("Please add and populate that column - it contains the dates when the compnay has reported earnings")
+    logging.error("This column is populated by looking at the dark blue bars on CNBC to find out the quarter report dates")
+    sys.exit(1)
+  if (len(qtr_eps_report_date_list) == 0):
+    logging.error("The Quarter report date column in the Earnings file has no entries. Need atleast one entry...")
+    logging.error("Please add and populate that column - it contains the dates when the company has reported earnings")
+    logging.error("This column is populated by looking at the dark blue bars on CNBC to find out the quarter report dates")
+    sys.exit(1)
+  qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
+  eps_report_date = qtr_eps_report_date_list_dt[0]
+  for i_date in qtr_eps_report_date_list_dt:
+    if (i_date >  dt.date.today()):
+      logging.error("The date " + str(i_date) + " in the Q_Report_Date column is later than today...")
+      logging.error("Please correct and rerun...")
+      sys.exit(1)
+
   logging.debug("The Quarterly Report Date List is " + str(qtr_eps_report_date_list_dt))
   logging.debug("The Last Earning report date is " + str(eps_report_date))
 
