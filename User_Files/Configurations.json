@@ -123,6 +123,16 @@
     ]
   },
 
+  "ETSY" : {
+    "Splits" : {
+      "03/25/2015" : "1:2"
+    },
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
   "SAIA" : {
     "Splits" : {
       "06/13/2013" : "3:2"
