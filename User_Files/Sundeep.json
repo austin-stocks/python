@@ -77,6 +77,76 @@
     ]
   },
 
+  "CHTR" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$635"}
+    ]
+  },
+
+  "CIEN" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$53"}
+    ]
+  },
+
+  "EBIX" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$39"}
+    ]
+  },
+
+  "ECOM" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "$18"}
+    ]
+  },
+
+  "FORM" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "$46"}
+    ]
+  },
+
+  "FBHS" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$87"}
+    ]
+  },
+
+  "FTNT" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$149"}
+    ]
+  },
+
+  "IBP" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$109"}
+    ]
+  },
+
+  "LKQ" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "38"}
+    ]
+  },
+
+  "QRVO" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "184"}
+    ]
+  },
+  "SMPL" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "29"}
+    ]
+  },
+  "SSNC" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "71"}
+    ]
+  },
+
   "QLYS" : {
     "Buy_Sell" : [
        {"Buy_Date" : "08/12/2020","Buy_Price_str" :  "$104"},
@@ -95,7 +165,8 @@
     "Buy_Sell" : [
        {"Buy_Date" : "08/20/2019","Buy_Price_str" :  "$17.50"},
        {"Buy_Date" : "01/28/2020","Buy_Price_str" :  "$24.75\nCompany paid one time payment to get rid\nroyalty payments. It was a GAAP only loss\nShares dropped 30%(intraday) in 3 days"},
-       {"Sell_Date" : "06/10/2020","Sell_Price_str" :  "$33.08"}
+       {"Sell_Date" : "06/10/2020","Sell_Price_str" :  "$33.08"},
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$29"}
     ]
   },
 
