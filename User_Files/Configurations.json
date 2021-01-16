@@ -3402,6 +3402,13 @@
     ]
   },
 
+  "MIK" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "07/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "07/30/2015", "Stop_Date" :   "Next"}
+    ]
+  },
+
   "WCN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2017", "Stop_Date" :   "End"}
