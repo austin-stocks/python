@@ -2703,20 +2703,20 @@ for ticker_raw in ticker_list:
       # Only show the plot if we are making only one chart
       if (chart_type_idx == "Log"):
         if (chart_print_eps_div_numbers_val == 1):
-          fig.savefig(chart_dir + "\\" + chart_type_idx + "\\"  + "Charts_With_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+          fig.savefig(chart_dir + "\\" + chart_type_idx + "\\"  + "Charts_With_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches=0)
         else:
-          fig.savefig(chart_dir + "\\" + chart_type_idx + "\\"  + "Charts_Without_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+          fig.savefig(chart_dir + "\\" + chart_type_idx + "\\"  + "Charts_Without_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches=0)
       else:
         if (linear_chart_type_idx == 'Linear'):
           if (chart_print_eps_div_numbers_val == 1):
-            fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+            fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches=0)
           else:
-            fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+            fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches=0)
         else:
           if (chart_print_eps_div_numbers_val == 1):
-            fig.savefig(chart_dir + "\\" + "Long_Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_Long_Linear_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+            fig.savefig(chart_dir + "\\" + "Long_Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_Long_Linear_" + date_time + ".jpg", dpi=200,bbox_inches=0)
           else:
-            fig.savefig(chart_dir + "\\" + "Long_Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_Long_Linear_" + date_time + ".jpg", dpi=200,bbox_inches='tight')
+            fig.savefig(chart_dir + "\\" + "Long_Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_Long_Linear_" + date_time + ".jpg", dpi=200,bbox_inches=0)
 
       if (len(ticker_list) == 1) and (len(linear_chart_type_list) == 1)  and (len(chart_print_eps_div_numbers_list) == 1):
         plt.show()
