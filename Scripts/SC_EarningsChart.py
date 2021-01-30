@@ -121,7 +121,7 @@ def smooth_list(l):
 # Global variables
 # =============================================================================
 g_var_annotate_actual_qtr_earnings = 1
-g_var_use_aaii_data_to_extend_eps_projections = 0
+g_var_use_aaii_data_to_extend_eps_projections = 1
 
 g_dict_chart_options = {
   # This defined whether the numbers for Annual EPS and Q EPS and Dividend
