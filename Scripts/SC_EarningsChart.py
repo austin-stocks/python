@@ -121,7 +121,7 @@ def smooth_list(l):
 # Global variables
 # =============================================================================
 g_var_annotate_actual_qtr_earnings = 1
-g_var_use_aaii_data_to_extend_eps_projections = 1
+g_var_use_aaii_data_to_extend_eps_projections = 0
 
 g_dict_chart_options = {
   # This defined whether the numbers for Annual EPS and Q EPS and Dividend
@@ -264,10 +264,12 @@ if (plot_nasdaq):
 
 
 # -----------------------------------------------------------------------------
-aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + aaii_analysts_projection_file)
+if (g_var_use_aaii_data_to_extend_eps_projections == 1):
+  aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + aaii_analysts_projection_file)
+  aaii_analysts_projection_df.set_index('Ticker', inplace=True)
+  # logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
+
 calendar_df = pd.read_csv(dir_path + user_dir + "\\" + calendar_file)
-# logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
-aaii_analysts_projection_df.set_index('Ticker', inplace=True)
 col_list = calendar_df.columns.tolist()
 calendar_date_list_raw = []
 for col in col_list:
@@ -483,7 +485,7 @@ for ticker_raw in ticker_list:
     logging.debug(str(ticker) + " is NOT in AAII df. Will skip inserting EPS Projections..")
     continue_aaii_eps_projections_for_this_ticker = 0
 
-  if (continue_aaii_eps_projections_for_this_ticker == 1):
+  if (g_var_use_aaii_data_to_extend_eps_projections == 1) and (continue_aaii_eps_projections_for_this_ticker == 1):
     ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
     logging.debug("The series for " + str(ticker) + " in the AAII Analysts df is " + str(ticker_aaii_analysts_projection_series))
     y_plus0_fiscal_year_end = ticker_aaii_analysts_projection_series['Date--Current fiscal year']
