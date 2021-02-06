@@ -2989,6 +2989,28 @@
     ]
   },
 
+  "ARW" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "06/25/2019", "Stop_Date" :   "04/05/2020", "Adj_Amount" : "1.3"},
+      {"Start_Date" : "12/25/2019", "Stop_Date" :   "04/05/2020", "Adj_Amount" : ".3"}
+    ]
+  },
+
+  "EBAY" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".8"},
+      {"Start_Date" : "12/25/2016", "Stop_Date" :   "10/05/2017", "Adj_Amount" : "-1.2"},
+      {"Start_Date" : "03/25/2014", "Stop_Date" :   "01/05/2015", "Adj_Amount" : ".55"},
+      {"Start_Date" : "03/25/2020", "Stop_Date" :   "01/05/2021", "Adj_Amount" : "-.75"}
+    ]
+  },
+
   "TTC" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2012", "Stop_Date" :   "End"}
