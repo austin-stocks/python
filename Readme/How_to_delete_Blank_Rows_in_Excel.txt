@@ -1,0 +1,10 @@
+After selecting the data range in Excel, continue as follows:
+
+1. Press [F5].
+2. In the resulting Go To dialog box, click Special.
+3. Click the Blanks option and click OK. Doing so selects the blank cells (what you might think of as rows) in the selected range. 
+4. Now you're ready to delete the selected cells. 
+   On the Home tab, click the Delete dropdown in the Cells group and choose Delete Cells. 
+   Excel will display the Delete dialog box, with the Delete Cells Up option selected. 
+   Click OK. Or, press [Ctrl]+-.
+5. Excel will delete the blank cells from the selected data range.
