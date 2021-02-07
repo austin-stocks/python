@@ -2980,6 +2980,12 @@
     ]
   },
 
+  "THO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "07/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
   "TJX" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "10/30/2017", "Stop_Date" :   "End"}
