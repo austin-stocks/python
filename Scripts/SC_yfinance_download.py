@@ -2,6 +2,7 @@
 import yfinance as yf
 
 # https://www.cnbc.com/sector-etfs/
+# https://etfdb.com/etfs/
 
 # sector_etf_df =
 # XLE	Energy Select Sector SPDR Fund
