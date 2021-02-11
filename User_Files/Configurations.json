@@ -149,6 +149,13 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2014", "Stop_Date" :   "Next"},
        {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"}
+    ],
+    "Anchored_Text" : {
+      "center": "Acquired by Tyler Technologies on 9th Feb. 2021"
+
+    },
+    "Plot_Annotate" : [
+      {"Date" :  "02/09/2021", "Text" : "Acquired by Tyler Technologies on 9th Feb. 2021", "Line_Length" : "-100:120"}
     ]
   },
 
