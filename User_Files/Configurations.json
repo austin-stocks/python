@@ -208,6 +208,12 @@
     ]
   },
 
+  "CCL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "08/30/2015", "Stop_Date" :   "End"}
+    ]
+  },
+
   "PAGS" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"}
