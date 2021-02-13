@@ -383,6 +383,13 @@
     ]
   },
 
+  "VIPS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2014", "Stop_Date" :   "Next"}
+    ]
+  },
+
   "VMI" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2015", "Stop_Date" :   "Next"},
@@ -408,8 +415,12 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2018", "Stop_Date" :   "Next"},
        {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
-    ]
+    ],
+    "Anchored_Text" : {
+      "upper center": "Bought by Baring Holdings in Fall 2020"
+    }
   },
+
   "EBF" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "05/30/2017", "Stop_Date" :   "05/30/2019"}
@@ -3272,7 +3283,10 @@
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".1"}
-    ]
+    ],
+    "Anchored_Text" : {
+      "upper center": "Bought by Thoma Bravo in Winter 2020"
+    }
   },
 
   "UAL" : {
