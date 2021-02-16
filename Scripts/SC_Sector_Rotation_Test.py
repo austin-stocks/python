@@ -80,8 +80,8 @@ ticker_list = ['XLB','XLC','XLE','XLF','XLI','XLK', 'XLP','XLRE','XLU','XLV','XL
 
 test_start_date = "06/15/2020"
 test_stop_date = "01/15/2021"
-no_of_days_to_look_back = 90
-rebalance_interval = 30
+no_of_days_to_look_back = 30
+rebalance_interval = 15
 no_of_holdings = 2
 initial_to_invest = 10000
 
