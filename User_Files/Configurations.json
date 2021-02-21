@@ -1822,6 +1822,19 @@
     ]
   },
 
+  "CENT" : {
+    "Splits" : {
+      "10/15/2005" : "3:1"
+    },
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2015", "Stop_Date" :   "Next"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2007", "Stop_Date" :   "10/05/2008", "Adj_Amount" : "1"}
+    ]
+  },
+
   "SLB" : {
     "Splits" : {
       "3/1/2006" : "2:1"
