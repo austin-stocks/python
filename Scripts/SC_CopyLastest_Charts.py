@@ -58,14 +58,15 @@ logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
 # chart_styles_list = ['Linear', 'Long_Linear', 'Log']
-chart_styles_list = ['Linear']
-chart_annotations_list = ['Charts_Without_Numbers', 'Charts_With_Numbers']
-# chart_annotations_list = ['Charts_With_Numbers']
+chart_styles_list = ['Linear', 'Long_Linear']
+# chart_styles_list = ['Linear']
+# chart_annotations_list = ['Charts_Without_Numbers', 'Charts_With_Numbers']
+chart_annotations_list = ['Charts_With_Numbers']
 
 for chart_styles_idx in chart_styles_list:
-  logging.debug("Style of Charts to be copied : " + str(chart_styles_idx))
+  logging.debug("==========> Style of Charts to be copied : " + str(chart_styles_idx) + " <==========")
   for chart_annotations_idx in chart_annotations_list:
-    logging.debug("Chart Annotation Type to be copied : " + str(chart_annotations_idx))
+    logging.info("==========> Style of Charts to be copied : " + str(chart_styles_idx) + " : " + str(chart_annotations_idx) + " <==========")
 
     # if (chart_styles_idx != 'Linear'):cd
     #   continue
@@ -117,6 +118,11 @@ for chart_styles_idx in chart_styles_list:
         logging.info(str(ticker) +  " is not Wheat or Essential...skipping")
         continue
 
+      # sundeep : todo : 2/21/2021 - Find out why we don't create charts for these...
+      if (chart_styles_idx == 'Long_Linear'):
+        if (ticker in ['AAN', 'FOX', 'GCBC', 'NTES', 'TAYD', 'WILC']):
+          continue
+
       # Find the corresponding jpg files from the charts directory list
       # todo : Get the regular expression so that it matches the numbers...so that we don't get
       # any spurious (like AMZN_2019_12_01_thislooksgood.jpg or AMZN_thislooksbac.jpg)
@@ -167,6 +173,10 @@ for chart_styles_idx in chart_styles_list:
         shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Latest.jpg")
       elif (chart_styles_idx == 'Long_Linear'):
         shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Long_Linear_Latest.jpg")
+
+    logging.info("")
+    logging.info("==========> Style of Charts copied : " + str(chart_styles_idx) + " : "  + str(chart_annotations_idx) + " <==========")
+    time.sleep(3)
 
     logging.info("")
     logging.info(".....ALL DONE.....")
