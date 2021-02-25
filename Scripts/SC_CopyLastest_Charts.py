@@ -120,7 +120,7 @@ for chart_styles_idx in chart_styles_list:
 
       # sundeep : todo : 2/21/2021 - Find out why we don't create charts for these...
       if (chart_styles_idx == 'Long_Linear'):
-        if (ticker in ['AAN', 'FOX', 'GCBC', 'NTES', 'TAYD', 'WILC']):
+        if (ticker in ['AAN', 'GCBC', 'NTES', 'TAYD', 'WILC']):
           continue
 
       # Find the corresponding jpg files from the charts directory list
