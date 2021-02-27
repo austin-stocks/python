@@ -2110,6 +2110,13 @@
     ]
   },
 
+
+  "AVTR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
   "RGP" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "11/30/2017", "Stop_Date" :   "End"}
