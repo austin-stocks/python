@@ -2154,7 +2154,10 @@
   "PRAH" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
-    ]
+    ],
+    "Anchored_Text" : {
+      "upper center": "Bought by ICON in Feb 2021"
+    }
   },
 
   "PLUS" : {
