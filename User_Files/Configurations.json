@@ -1442,6 +1442,9 @@
   },
 
   "EDU" : {
+    "Splits" : {
+      "3/12/2021" : "10:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "05/30/2019", "Stop_Date" :   "End"}
     ]
