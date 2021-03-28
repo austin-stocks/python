@@ -31,6 +31,24 @@ $ git remote add origin https://github.com/austin-stocks/Latest_Charts.git
 If you want to clone the directory into a local machine - simply execute this command
 $ git clone  https://github.com/austin-stocks/Latest_Charts.git
 This will create a directory Latest_Charts and put stuff in there 
+(How to know what is the *.git https file for your repository, read on here or
+do a google search 
+"how to clone a git repository from github" and that will take you
+https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository
+
+
+-- Another way (from github) - to find out the *.git file for your repository 
+1. On GitHub, navigate to the main page of the repository.
+2. Above the list of files, click  Code. (This is the green button with a down
+   arrow menu)
+3. Click on it and it will show ways to clone your repository into local.
+4. I use the HTTPS - so copy that thing - for Latest_Charts it is:
+https://github.com/austin-stocks/Latest_Charts.git
+5. Then in git bash type
+git clone https://github.com/austin-stocks/Latest_Charts.git
+and that should create Latest_Charts directory and clone it 
+
+
 ##=============================================================================
 
 -- Set notepad++ as the editor
