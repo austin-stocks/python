@@ -1,5 +1,5 @@
 curr_dir=`pwd`
-dir_name='2020_12_01'
+dir_name='2021_03_28'
 
 echo "The directory name is $dir_name"
 
