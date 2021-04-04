@@ -20,10 +20,6 @@ from SC_Global_functions import aaii_missing_tickers_list
 # Define the directories and the paths
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-chart_dir = "..\\" + "Charts"
-historical_dir = "\\..\\" + "Historical"
-earnings_dir = "\\..\\" + "Earnings"
-dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
 analysis_dir = "\\..\\" + "Analysis"
 aaii_data_dir  = "\\..\\" + "Downloaded_from_AAII_for_Analysis"
@@ -72,7 +68,7 @@ yr_str_list =['Y1', 'Y2','Y3','Y4','Y5','Y6','Y7']
 # This takes around 21 sec
 start = time.process_time()
 # aaii_xls_file = '2020_09_04_AAII_Analysis.xlsx'
-aaii_xls_file = '2020_11_13_AAII_Analysis.xlsx'
+aaii_xls_file = '2021_04_03_AAII_Analysis.xlsx'
 
 aaii_xls = pd.ExcelFile(dir_path + aaii_data_dir + "\\" + aaii_xls_file)
 
@@ -133,13 +129,14 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # Those fields are used to create the respective dataframes :
 # 1. aaii_key_statistics_df --> Contains Key Statistics data
 # 2. aaii_qtr_df            --> Contains Financial qtr data
-# 3. aaii_qtr_df            --> Contains  Financial yr data
-# Part 2 : Those dataframe are merge into existing data from the ticker csv
-# If the corresponding ticker csv does not exist, then one is created
+# 3. aaii_yr_df             --> Contains  Financial yr data
+# Part 2 : Those dataframe are merged into existing data from the ticker csv
+#          from the Analysis directory.
+#          If the corresponding ticker csv does not exist, then one is created
 # #############################################################################
 # ticker_list = ['CSCO','BRC','IBM']
 # ticker_list = ['IBM','AAPL', 'AUDC','MED']
-# ticker_list = ['HRRB']
+# ticker_list = ['IBM']
 
 i_idx = 1
 total_number_of_ticker = len(ticker_list)
@@ -155,7 +152,7 @@ for ticker_raw in ticker_list:
   logging.info("Iteration no : " + str(i_idx) + ", Processing : " + ticker)
   logging.info("========================================================")
 
-  if ((ticker in aaii_missing_tickers_list)) or  (ticker in ["QQQ"]):
+  if ((ticker in aaii_missing_tickers_list)) or (ticker in ["QQQ"]):
     logging.debug(str(ticker) + " is NOT in AAII df or is QQQ (etf). Will skip inserting EPS Projections. Skipping...")
     skipped_tickers_df.loc[ticker, 'Reason'] = "The_ticker_is_not_in_AAII_df_or_is_ETF"
     continue
@@ -196,10 +193,11 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------
 
   # ===========================================================================
-  #                PART 1 - Process the various series that have been read in
-  #                         to prepare the dataframes for Key Statistics,
-  #                         financial qtr and financial yr data
-  # In PART 2 : These dataframes are them merged with the alread existing data
+  #                        PART 1
+  #  Process the various series that have been read in to prepare the dataframes
+  #  for Key Statistics,financial qtr and financial yr data
+  #
+  # In PART 2 : These dataframes are then merged with the alread existing data
   #             in the respective ticker csv file
   # ===========================================================================
   # ---------------------------------------------------------------------------
@@ -370,7 +368,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ===========================================================================
-  #                PART 2 - Read the alreay existing Analysis Data
+  #                PART 2 - Read the already existing Analysis Data
   #                   and merge it with created AAII Analysis Data
   # ===========================================================================
   # todo : Check if the data merges alright
