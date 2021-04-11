@@ -167,12 +167,22 @@ for chart_styles_idx in chart_styles_list:
         logging.info("The lastest file for " + str(ticker) + " is : " + str(ticker_latest_chart_filename))
         logging.info("Copying : " + str(source_dir + ticker_latest_chart_filename))
         logging.info(" to :  " + str(dest_dir + ticker + "_Latest.jpg"))
-      # Copy the chart file - that was the youngest - to the desitnation directory as ticker_Latest.jpg
+        # Copy the chart file - that was the youngest - to the desitnation directory as ticker_Latest.jpg
+        if (chart_styles_idx == 'Linear'):
+          shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Latest.jpg")
+        elif (chart_styles_idx == 'Long_Linear'):
+          shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Long_Linear_Latest.jpg")
+      else:
+        if (chart_styles_idx == 'Linear'):
+          logging.error("")
+          logging.error("***** The was no jpg for ticker " + str(ticker) + " *****")
+          logging.error("***** Please correct and rerun *****")
+          sys.exit(1)
+        elif (chart_styles_idx == 'Long_Linear'):
+          logging.warning("The was no Long Linear jpg for ticker " + str(ticker) + " in the directory " + str(source_dir))
+        elif (chart_styles_idx == 'Log'):
+          logging.warning("The was no Log jpg for ticker " + str(ticker) + " in the directory " + str(source_dir))
 
-      if (chart_styles_idx == 'Linear'):
-        shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Latest.jpg")
-      elif (chart_styles_idx == 'Long_Linear'):
-        shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Long_Linear_Latest.jpg")
 
     logging.info("")
     logging.info("==========> Style of Charts copied : " + str(chart_styles_idx) + " : "  + str(chart_annotations_idx) + " <==========")
