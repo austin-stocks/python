@@ -43,6 +43,12 @@
     ]
   },
 
+  "CTLT" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "04/19/2021","Buy_Price_str" :  "108.40"}
+    ]
+  },
+
   "HOLX" : {
     "Buy_Sell" : [
        {"Buy_Date" : "08/04/2020","Buy_Price_str" :  "$71.87"},
