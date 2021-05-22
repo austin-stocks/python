@@ -89,6 +89,8 @@ charts_last_updated_df.set_index('Ticker', inplace=True)
 eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
 skipped_tickers_df.set_index('Ticker', inplace=True)
 
+
+# last_4_eps_report_dates_list = []
 # gt_1_month_old_historical_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 # gt_1_month_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 # gt_1_qtr_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
@@ -203,6 +205,16 @@ for ticker_raw in ticker_list:
   else:
     earnings_last_reported_df.loc[ticker, 'Where_found'] = 'Master_Tracklist'
     eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+
+  # Sundeep : 05/22/2021 - This works - I am tring to get the last 4 dates when the company reported
+  # I used this to accumlate all the last 4 quarter report dates to find out which are the months that
+  # are most busy and which are the months that are least busy for me from the collection of quaterly earnings perspective
+  # last_4_eps_report_dates_list.append(qtr_eps_report_date_list_dt[0])
+  # last_4_eps_report_dates_list.append(qtr_eps_report_date_list_dt[1])
+  # last_4_eps_report_dates_list.append(qtr_eps_report_date_list_dt[2])
+  # last_4_eps_report_dates_list.append(qtr_eps_report_date_list_dt[3])
+  # logging.debug("The last 4 quarters earnings report date for " + str(ticker) + " are " + str(last_4_eps_report_dates_list[-4:]))
+
   #
   # try:
   #   eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
@@ -278,6 +290,14 @@ for ticker_raw in ticker_list:
   # Update Reasons for some tickers
   # -----------------------------------------------------------------------------
 
+
+# Sundeep : 05/22/2021 - This works - search for eps_report_dates_list above and see comments
+# there to see how was this used
+# logging.debug("The last quarters earnings report date list is " + str(last_4_eps_report_dates_list))
+# logging.debug("The last quarters earnings report date list SORTED is " + str(sorted(last_4_eps_report_dates_list)))
+# last_4_eps_report_dates_list = sorted(last_4_eps_report_dates_list)
+# with open("fout.txt", "w") as fout:
+#   print(*last_4_eps_report_dates_list, sep="\n", file=fout)
 # -----------------------------------------------------------------------------
 # Print all the df to their respective files
 # -----------------------------------------------------------------------------
