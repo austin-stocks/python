@@ -3833,7 +3833,8 @@
 
   "ATHM" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "09/30/2013", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2013", "Stop_Date" :   "End"}
     ],
     "Anchored_Text" : {
       "upper center": "1 share/ADS\nCNBC Reports non-GAAP Diluted"
@@ -3859,6 +3860,12 @@
   "AVGO" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "04/30/2015", "Stop_Date" :   "04/30/2019"}
+    ]
+  },
+
+  "DELL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "07/30/2020", "Stop_Date" :   "End"}
     ]
   },
 
