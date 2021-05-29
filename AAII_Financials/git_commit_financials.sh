@@ -6,15 +6,21 @@ for chrs in $alphabets
 do
   echo "Adding the Yearly files that start with ==> [$chrs]*"
   git add Yearly/[$chrs]*.xlsx -v
+  echo ""
   echo "Adding Quarterly files that start with ==> [$chrs]*"
   git add Quarterly/[$chrs]*.xlsx -v
+  echo ""
 done
 
+echo ""
 for chrs in $alphabets
 do
   echo "Commiting the Yearly files that start with ==> [$chrs]*"
   git commit -m "Updating" Yearly/[$chrs]*.xlsx -v
+  echo ""
   echo "Adding Quarterly files that start with ==> [$chrs]*"
   git commit -m "Updating" Quarterly/[$chrs]*.xlsx -v
+  echo ""
 done
 
+echo "All done"
