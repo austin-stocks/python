@@ -68,7 +68,7 @@ yr_str_list =['Y1', 'Y2','Y3','Y4','Y5','Y6','Y7']
 # This takes around 21 sec
 start = time.process_time()
 # aaii_xls_file = '2020_09_04_AAII_Analysis.xlsx'
-aaii_xls_file = '2021_04_03_AAII_Analysis.xlsx'
+aaii_xls_file = '2021_05_29_AAII_Analysis.xlsx'
 
 aaii_xls = pd.ExcelFile(dir_path + aaii_data_dir + "\\" + aaii_xls_file)
 
@@ -134,9 +134,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 #          from the Analysis directory.
 #          If the corresponding ticker csv does not exist, then one is created
 # #############################################################################
-# ticker_list = ['CSCO','BRC','IBM']
-# ticker_list = ['IBM','AAPL', 'AUDC','MED']
-# ticker_list = ['IBM']
+# ticker_list = ['IBM','BAC','PLUS']
 
 i_idx = 1
 total_number_of_ticker = len(ticker_list)
