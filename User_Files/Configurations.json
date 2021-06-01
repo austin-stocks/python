@@ -3805,6 +3805,15 @@
     ]
   },
 
+  "HALO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2021", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.22"}
+    ]
+  },
+
   "FLT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2012", "Stop_Date" :   "06/30/2019"},
