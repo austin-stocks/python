@@ -1,17 +1,38 @@
-Here are some of the useful links from IBD website
 
+-------------------------------------------------------------------------------
+-- Updated on June 9th, 2021 
+-------------------------------------------------------------------------------
+-- These are some of the links that can be visited daily (atleast weekly and 
+-- can generate good ideas)
+-- These are all reachable from the Research tab on the main page
 
-This is found under Research - Updated daily - it talks about one of the IBD 50 stocks
-www.investors.com/tag/ibd-50-growth-stocks-to-watch/
-
-This is found under Research - Updated daily
+-- Check these daily 
 www.investors.com/tag/ibd-screen-of-the-day/
-
-This is found under Research - Updated daily 
+www.investors.com/tag/ibd-50-growth-stocks-to-watch/
 www.investors.com/category/ibd-stock-of-the-day/
+www.investors.com/tag/rising-relative-strength-rs-rating/
+www.investors.com/tag/stocks-hitting-95-composite-rating/
 
-This is found under Research - Updated Weekly 
+-- Check these weekly 
 www.investors.com/category/research/ibd-stock-analysis/
+www.investors.com/category/research/the-new-america/
+www.investors.com/category/research/ibd-industry-themes/
+www.investors.com/category/research/earnings-preview/
+
+
+-- Update fortnightly 
+www.investors.com/category/research/industry-snapshot/
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+-- From the stock list tab
+-------------------------------------------------------------------------------
+
+-- Check these daily 
+www.investors.com/ibd-data-tables/
+
+-------------------------------------------------------------------------------
+
 
 
 
@@ -136,18 +157,4 @@ Stock Lists Update
 	-- Probably tells about which lists are getting updated - Articles
 	-- Need to read more
 -- ****************************************************************************
-
-
-
--------------------------------------------------------------------------------
-Here are some of the other lists/tables that IBD Publishes
--------------------------------------------------------------------------------
-7. IBD Stock of the day (Under Research Tab - Writeup on the stock of the day)
-	-- You can view past articles 
-	-- Every day, you'll get a quick overview and analysis of a leading 
-	-- stock that may be setting up for a potential breakout or is already 
-	-- in a new buy zone. You'll also get tips on what traits to look 
-	-- for in a winning stock.
-
-
 
