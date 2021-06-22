@@ -37,6 +37,19 @@
        {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "17.64"}
     ]
   },
+
+  "SLGN" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "06/22/2021","Buy_Price_str" :  "41.33"}
+    ]
+  },
+
+  "SWKS" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "06/22/2021","Buy_Price_str" :  "172.17"}
+    ]
+  },
+
   "FORM" : {
     "Buy_Sell" : [
        {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "46.16"}
