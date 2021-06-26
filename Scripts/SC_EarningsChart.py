@@ -502,7 +502,7 @@ for ticker_raw in ticker_list:
   if (g_var_use_aaii_data_to_extend_eps_projections == 1) and (continue_aaii_eps_projections_for_this_ticker == 1):
     y_plus1_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=1)
     y_plus2_fiscal_year_dt = y_plus0_fiscal_year_dt + relativedelta(years=2)
-    logging.debug("Y0 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus0_fiscal_year_end))
+    logging.debug("Y0 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus0_fiscal_year_dt))
     logging.debug("Y1 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus1_fiscal_year_dt))
     logging.debug("Y2 Fiscal Year for  " + str(ticker) + " ends on " + str(y_plus2_fiscal_year_dt))
     y_plus0_fiscal_year_eps_projections = ticker_aaii_analysts_projection_series['EPS Est Y0']
@@ -539,9 +539,18 @@ for ticker_raw in ticker_list:
     elif (-5 <= days_bw_y_plus1_and_latest_qtr_date_in_earnings_file.days <= 5):
       logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y1 fiscal end date : " + str(y_plus1_fiscal_year_dt) + " ...so we can possibly add Y2 fiscal year projections if they are not NaN")
       if ((str(y_plus2_fiscal_year_eps_projections) != 'nan') and (y_plus1_fiscal_year_eps_projections > 0)):
-        logging.debug(str(ticker) + " : Y2 fiscal year eps projections are NOT nan andn Y1 fiscal year eps projections are non-negative. So, will insert one year (Y2)")
+        logging.debug(str(ticker) + " : Y2 fiscal year eps projections are NOT nan and Y1 fiscal year eps projections are non-negative. So, will insert one year (Y2)")
         no_of_years_to_insert_aaii_eps_projections = 1
-        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
+        logging.debug("The latest qtr date in earnings file is " + str(latest_qtr_date_in_earnings_file_dt))
+        logging.debug("The Fiscal Qtr string is " + str(fiscal_qtr_str))
+        # Fixme : Sundeep is here There is a bug in Python, I guess, that when the fiscal_qtr ends in Feb then it starts
+        # Maybe the best way to fix is fix someplace upstairs - then regress it will different fiscal qtr str to make
+        # sure that it works (It currently was failing for KMX)
+        if (fiscal_qtr_str == "BQ-Feb"):
+          logging.debug("Here I am")
+          fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt+ dt.timedelta(days=5),freq=fiscal_qtr_str)
+        else:
+          fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
       else:
         logging.debug(str(ticker) + " : Hmmm...it seems like either Y2 eps projections are Nan OR Y1 eps projections are negative in AAII. In case the Y1 eps is negative, growth math will not work right. Nothing inserted...")
     elif (-5 <= days_bw_y_plus0_and_latest_qtr_date_in_earnings_file.days <= 5):
