@@ -410,7 +410,8 @@
 
   "SLGN" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+       {"Start_Date" : "03/30/2021", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "Next"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/20/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.25"}
@@ -2239,7 +2240,7 @@
 
   "FBHS" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"},
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"},
        {"Start_Date" : "06/30/2013", "Stop_Date" :   "Next"}
     ],
     "Annual_EPS_Adjust" : [
