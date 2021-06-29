@@ -544,7 +544,8 @@ for ticker_raw in ticker_list:
         logging.debug("The latest qtr date in earnings file is " + str(latest_qtr_date_in_earnings_file_dt))
         logging.debug("The Fiscal Qtr string is " + str(fiscal_qtr_str))
         # Fixme : Sundeep is here There is a bug in Python, I guess, that when the fiscal_qtr ends in Feb then it starts
-        # Maybe the best way to fix is fix someplace upstairs - then regress it will different fiscal qtr str to make
+        # Maybe the best way to fix is fix so
+        # meplace upstairs - then regress it will different fiscal qtr str to make
         # sure that it works (It currently was failing for KMX)
         if (fiscal_qtr_str == "BQ-Feb"):
           logging.debug("Here I am")
