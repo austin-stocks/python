@@ -4642,6 +4642,12 @@
     ]
   },
 
+  "INOV" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
   "FIZZ" : {
     "Splits" : {
       "02/22/2021" : "2:1"
@@ -4652,6 +4658,15 @@
     ]
   },
 
+  "MTX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2013", "Stop_Date" :   "Next"},
+       {"Start_Date" : "09/30/2020", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.2"}
+    ]
+  },
   "CPSS" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
