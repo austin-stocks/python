@@ -3153,6 +3153,9 @@
   },
 
   "TTD" : {
+    "Splits" : {
+      "05/10/2021" : "10:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2017", "Stop_Date" :   "End"}
     ]
