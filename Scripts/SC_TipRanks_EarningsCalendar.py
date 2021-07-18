@@ -59,16 +59,19 @@ def process_page(url: str, verbose: bool) -> Optional[tuple]:
       sleep(5)
     try:
       page = get_page(url)
+      print ("Here in trying...")
       # print ("Gotten :\n", page)
       page.html.render(sleep=2)
       # print("Now it has turned to \n", page.text)
     except:
+      print ("Here in except...")
       if verbose:
         print("An error occurred during page loading and processing")
       return None
     row = page.html.find(".rt-tbody .rt-tr", first=True)
     # print ("Now it has turned to \n", row.text)
     if row:
+      print ("Here in row...")
       # There is row data so continue processing
       break
     if page.html.find(
@@ -76,16 +79,21 @@ def process_page(url: str, verbose: bool) -> Optional[tuple]:
       containing="Currently, no data available",
     ):
       # This ticker doesn't provide earnings calendar data so exit rather than try to reload
+      print ("Here in if page.html.find...")
       if verbose:
         print(f"Notice: No earnings calendar available for this stock ticker")
       return None
     if verbose:
       print(f"Sleeping... ({count + 1})")
+    print("Here in sleep and incrementing count...")
     count += 1
   else:
     # Page loading has failed to return the row afer 'max_retries'
+    print("Here in else when page loading has failed...")
     return None
+
   data = row.find(".rt-td")
+  print("Here in extracting data from row for final return...")
   # print ("Now it has turned to \n", data)
   return data[0].text, data[1].text
 # -----------------------------------------------------------------------------
@@ -107,8 +115,7 @@ master_tracklist_df.set_index('Tickers', inplace=True)
 TipRanks_earnings_calendar_df = pd.DataFrame(columns=['Ticker','Earnings_Date'])
 TipRanks_earnings_calendar_df.set_index('Ticker', inplace=True)
 
-
-
+ticker_list=["ACU","AME","AMN","AMP","AQUA","ASGN","AZPN","BLD","BRO","CACI","CBRE","CCK","CCOI","CENT","CHE","CHRW","CNXN","COO","CORE","CPSI","CRWS","CSGS","CTLT","DCO","DELL","EME","ENSG","ESNT","EXP","FAF","FBHS","FN","FORM","G","GDOT","GLDD","GOOG","HCSG","HEI","HWKN","IOSP","IT","JBT","LHCG","LOPE","LSI","LSTR","MANT","MAS","MRCY","MTX","MYRG","NMIH","NSP","NSSC","OMCL","OSIS","OTEX","POWL","RBA","SAIA","SGC","SLGN","SSD","SSNC","SYNH","TAYD","TNET","TRU","TSM","TTEC","UFPI","UFPT","USPH","VRSK","WD","WLDN","WNS"]
 # ticker_list = ["AMT", "IBM"]
 i_int = 0
 for ticker_raw in ticker_list:
