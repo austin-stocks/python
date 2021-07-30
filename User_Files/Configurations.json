@@ -4904,12 +4904,20 @@
   },
 
   "CSGP" : {
+    "Splits" : {
+      "06/15/2021" : "10:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "End"},
        {"Start_Date" : "06/30/2011", "Stop_Date" :   "06/30/2016"}
     ]
   },
 
+  "GE" : {
+    "Splits" : {
+      "07/15/2021" : "1:8"
+    }
+  },
 
   "AMP" : {
     "Earnings_growth_projection_overlay" : [
