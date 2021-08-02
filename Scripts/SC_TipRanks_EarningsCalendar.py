@@ -115,7 +115,7 @@ master_tracklist_df.set_index('Tickers', inplace=True)
 TipRanks_earnings_calendar_df = pd.DataFrame(columns=['Ticker','Earnings_Date'])
 TipRanks_earnings_calendar_df.set_index('Ticker', inplace=True)
 
-ticker_list=["ACU","AME","AMN","AMP","ANSS","APAM","ARW","ASGN","AZPN","BLD","BRO","CACI","CBOE","CBRE","CCOI","CENT","CHE","CHRW","CNXN","COO","CORE","CPSI","CRWS","CSGS","CTLT","EME","ENSG","ESNT","EXP","FBHS","FIX","FN","FORM","GDOT","GLDD","GOOG","HEI","HSIC","HWKN","IOSP","ISBC","IT","JBT","KAI","LHCG","LOPE","LSI","MANT","MAS","MASI","MRCY","MTX","NMIH","NSIT","NSP","NSSC","OMCL","OSIS","OTEX","PFSI","POWL","PRFT","RBA","RGLD","RMD","SAIA","SGC","SLGN","SSD","SSNC","SYNH","TAYD","TCBI","TKR","TNET","TREX","TRU","TSM","TTEC","TTEK","TTGT","UFPT","USPH","VAC","VRSK","WD","WLDN","WLTW","WNS","ZTO"]
+ticker_list=["AAON", "ACU", "ADUS", "AME", "AMN", "ARW", "ASGN", "ASH", "AZPN", "BLD", "CACI", "CASY", "CCOI", "CDW", "CENT", "CMBM", "CNXN", "COO", "CORE", "CPSI", "CRWS", "CSGS", "CTLT", "DKL", "EME", "ENSG", "ESNT", "FBHS", "FIX", "FN", "GDOT", "GLDD", "GOOG", "HEI", "HONE", "HSIC", "IDCC", "INFO", "IOSP", "IT", "JBT", "KAI", "KEX", "LOPE", "LSI", "MANT", "MMS", "MRCY", "MTX", "NMIH", "NSIT", "NSP", "NSSC", "NXST", "OSIS", "OTEX", "PFSI", "POWL", "PRI", "RBA", "RCII", "RGLD", "SGC", "SITE", "SLGN", "SNX", "SSD", "SYNH", "TAYD", "TCBI", "TKR", "TRU", "TSM", "TTEC", "TTEK", "TTGT", "UFPT", "VRSK", "WD", "WLDN", "WNS", "ZTO"]
 # ticker_list = ["AMT", "IBM"]
 i_int = 0
 for ticker_raw in ticker_list:
