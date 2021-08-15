@@ -115,7 +115,7 @@ master_tracklist_df.set_index('Tickers', inplace=True)
 TipRanks_earnings_calendar_df = pd.DataFrame(columns=['Ticker','Earnings_Date'])
 TipRanks_earnings_calendar_df.set_index('Ticker', inplace=True)
 
-ticker_list=["AAON", "ACU", "ADUS", "AME", "AMN", "ARW", "ASGN", "ASH", "AZPN", "BLD", "CACI", "CASY", "CCOI", "CDW", "CENT", "CMBM", "CNXN", "COO", "CORE", "CPSI", "CRWS", "CSGS", "CTLT", "DKL", "EME", "ENSG", "ESNT", "FBHS", "FIX", "FN", "GDOT", "GLDD", "GOOG", "HEI", "HONE", "HSIC", "IDCC", "INFO", "IOSP", "IT", "JBT", "KAI", "KEX", "LOPE", "LSI", "MANT", "MMS", "MRCY", "MTX", "NMIH", "NSIT", "NSP", "NSSC", "NXST", "OSIS", "OTEX", "PFSI", "POWL", "PRI", "RBA", "RCII", "RGLD", "SGC", "SITE", "SLGN", "SNX", "SSD", "SYNH", "TAYD", "TCBI", "TKR", "TRU", "TSM", "TTEC", "TTEK", "TTGT", "UFPT", "VRSK", "WD", "WLDN", "WNS", "ZTO"]
+ticker_list=["AAON", "ACU", "ARW", "ASGN", "AYI", "CASH", "CASY", "CCOI", "CENT", "CNXN", "COR", "CORE", "CRWS", "CSGS", "EME", "ENSG", "ESNT", "FBHS", "FIX", "FN", "GLDD", "GOOG", "HEI", "HELE", "HONE", "IBP", "INFO", "IOSP", "JBSS", "JBT", "KAI", "KEX", "LOPE", "LSI", "MANT", "MMS", "MTX", "NMIH", "NSIT", "NSSC", "NXST", "OSIS", "POWL", "PRI", "RGLD", "SGC", "SITE", "SLGN", "SMPL", "SSD", "TAYD", "TCBI", "TRU", "TSM", "UFPT", "UNF", "WD", "WLDN", "WNS", "ZTO"]
 # ticker_list = ["AMT", "IBM"]
 i_int = 0
 for ticker_raw in ticker_list:
