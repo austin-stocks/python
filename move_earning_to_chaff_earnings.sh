@@ -1,4 +1,4 @@
-files='BIIB BSX'
+files='HWKN'
 
 echo ""
 sleep 2
@@ -6,19 +6,24 @@ echo "Now going through the loop to move the files"
 echo ""
 for ticker in $files
 do
+
   filename="$ticker"_earnings.csv
   echo "Moving $filename"
   mv Earnings/$filename Chaff_earnings/$filename
+
+  ## ------------------------------------------------------
+  ## Now prepare the various string that will be used to pass to git
+  ## ------------------------------------------------------
   tmp_str_0="$tmp_str_0 "Chaff_earnings/$filename
-  tmp_str_1="$tmp_str_1 "Earnings/$filename
   tmp_str_2="$tmp_str_2 "Chaff_earnings/$filename
   tmp_str_2="$tmp_str_2 "Earnings/$filename
   echo "The string to git add is..."
   echo $tmp_str_0
-  ## echo $tmp_str_1
   echo "The string to git commit is..."
   echo $tmp_str_2
   echo ""
+  ## ------------------------------------------------------
+
 done
 
 
