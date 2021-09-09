@@ -4868,6 +4868,7 @@
   "COST" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "02/28/2017", "Stop_Date" :   "05/30/2019"},
+
        {"Start_Date" : "05/28/2012", "Stop_Date" :   "11/30/2016"}
     ]
   },
@@ -4876,6 +4877,18 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "04/30/2018", "Stop_Date" :   "04/30/2019"},
        {"Start_Date" : "10/31/2012", "Stop_Date" :   "10/30/2017"}
+    ]
+  },
+
+  "QFIN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "NIU" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2020", "Stop_Date" :   "End"}
     ]
   },
 
