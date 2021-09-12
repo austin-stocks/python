@@ -130,6 +130,7 @@ for ticker_raw in ticker_list:
 
   # The package function above provides the historical information in the list 'prices'
   # in the order from oldest -> lastest, so, Iterate over the list in reversed order
+  total_historical_rows = len(historical_data[ticker]['prices'])
   for x in reversed(range(1, len(historical_data[ticker]['prices']))):
 
     # Check and warn if the number of columns in date do not match in adjusted close
@@ -139,10 +140,13 @@ for ticker_raw in ticker_list:
     price_list = []
 
     # Get the date in the format that we need
-    # the function returns in the order yyyy-mm-dd and we need in dd/mm/yyyy
     if (type(historical_data[ticker]['prices'][x]['formatted_date']) == type(None)) :
-      print ("The data at index ",x ," is missing for ", ticker)
-      # Need to think about if we need to continue here.
+      print ("ERROR : The date at index ",x ," is missing for ", ticker)
+      # Need to think about if we need to continue here. because if the
+      # date is missing then what is the point in contuining
+      sys.exit(1)
+
+    # the function returns in the order yyyy-mm-dd and we need in dd/mm/yyyy
     date_str = ""
     date_str = historical_data[ticker]['prices'][x]['formatted_date'][5:7]
     date_str = date_str + "/" + historical_data[ticker]['prices'][x]['formatted_date'][8:10]
@@ -165,7 +169,8 @@ for ticker_raw in ticker_list:
           (type(historical_data[ticker]['prices'][x]['volume']) == type(None))):
       # print ("Missing data found\n")
       missing_data_found = 1
-      missing_data_index = x
+      missing_data_index = total_historical_rows-x-1
+      date_str_for_missing_data = date_str
       # text = colored('Warning: Missing data found in Yahoo Download - Either in Price or Volume for date: ' + date_str, 'red', attrs=['reverse', 'blink'])
       # print (text)
 
@@ -179,7 +184,8 @@ for ticker_raw in ticker_list:
   if (missing_data_found == 1):
     # Sundeep is here...need to find out what to report/how to report and then maybe do a missing panda data to
     # populate the entire data
-    text = colored('Warning: Missing data found in Yahoo Download - Either in Price or Volume for ' + ticker + ' at index ' + str(missing_data_index), 'red',attrs=['reverse', 'blink'])
+    text = colored('Warning: Missing data found in Yahoo Download, for date : ' + date_str_for_missing_data +' - Either in Price or Volume for ' + ticker + ' at index ' + str(missing_data_index),
+                   'red',attrs=['reverse', 'blink'])
     print (text)
 
 
