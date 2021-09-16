@@ -38,6 +38,12 @@
     ]
   },
 
+  "VIPS" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "09/15/2021","Buy_Price_str" :  "12.95"}
+    ]
+  },
+
   "SLGN" : {
     "Buy_Sell" : [
        {"Buy_Date" : "06/22/2021","Buy_Price_str" :  "41.33"}
