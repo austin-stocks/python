@@ -395,6 +395,13 @@
     ]
   },
 
+
+  "GRWG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2021", "Stop_Date" :   "End"}
+    ]
+  },
+
   "VIPS" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"},
