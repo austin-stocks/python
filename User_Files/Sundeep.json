@@ -70,7 +70,8 @@
 
   "ISBC" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "04/29/2021","Buy_Price_str" :  "15.03"}
+       {"Buy_Date" : "04/29/2021","Buy_Price_str" :  "15.03"},
+       {"Sell_Date" : "09/30/2021","Sell_Price_str" :  "$15.39"}
     ]
   },
   "HOLX" : {
