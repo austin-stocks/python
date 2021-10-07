@@ -3780,6 +3780,9 @@
   },
 
   "RJF" : {
+    "Splits" : {
+      "09/21/2021" : "3:2"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "Next"},
        {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
