@@ -99,16 +99,12 @@ master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklis
 msgl_dated_df = pd.read_csv(dir_path + msmith_dir + "\\" + str(name_var.get()) + "\\" + msgl_dated_file + ".csv")
 msgl_running_tracking_df = pd.read_excel(dir_path + msmith_dir + "\\" + "MarketSmith_Growth_250_Running.xlsm", sheet_name="Tracking")
 
-# Sundeep : todo print the full path of the MSGL date_str file
+# todo
+# print the full path of the MSGL date_str file in the pring statement
 logging.debug("Master Tracklist \n\n" + master_tracklist_df.to_string())
 logging.debug("\n\nMSGL date_str file : \n\n" + msgl_dated_df.to_string())
 logging.debug("\n\nMSGL Running file : \n\n" + msgl_running_tracking_df.to_string())
-# -----------------------------------------------------------------------------
 
-
-# -----------------------------------------------------------------------------
-# Now iterate through MSmith Additions df to see which tickers are in MasterTracklist
-# -----------------------------------------------------------------------------
 master_ticker_list = master_tracklist_df['Tickers'].tolist()
 msgl_datedfile_ticker_list = msgl_dated_df['Symbol'].tolist()
 msgl_running_ticker_list = msgl_running_tracking_df['Symbol'].tolist()
@@ -118,8 +114,13 @@ logging.debug("Total Number of Tickers extracted from MSmith Running file " + st
 logging.debug("The List of tickers extracted from Master Tacklist " + str(master_ticker_list))
 logging.debug("The List of tickers extracted from MSmith date str file " + str(msgl_datedfile_ticker_list))
 logging.debug("The List of tickers extracted from MSmith Running file " + str(msgl_running_ticker_list))
+# -----------------------------------------------------------------------------
 
 
+# -----------------------------------------------------------------------------
+# Now iterate through msgl_dated file and see which tickers are NOT in msgl_running file
+# Put those tickers in a list
+# -----------------------------------------------------------------------------
 new_in_msgl_datedfile_list = []
 for ticker_raw in msgl_datedfile_ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
@@ -141,30 +142,30 @@ logging.debug("Found : " + str(new_in_msgl_datedfile_list) + " tickers only in M
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# Now prepare the dataframe that has only the new tickers from the msgl_datedfile
+# Now prepare a new dataframe that only has the tickers that are nwely added
+# (found in msgl_dated file and NOT found in msgl_running file)
 # -----------------------------------------------------------------------------
 msgl_dated_df.set_index('Symbol', inplace=True)
 new_in_msgl_datefile_df = msgl_dated_df.loc[new_in_msgl_datedfile_list, :]
 # new_in_msgl_datefile_df.drop('Order', axis=1, inplace=True)
 new_in_msgl_datefile_df.reset_index(inplace=True, drop=False)
 logging.debug("The rows that are new in the dated file :" + new_in_msgl_datefile_df.to_string())
-
 # -----------------------------------------------------------------------------
 
-
-
-
-
-# Now get the columns of the two dataframes to line up
-# new_in_msgl_datefile_df_again = pd.concat([msgl_running_tracking_df,new_in_msgl_datefile_df], axis=0)
+# -----------------------------------------------------------------------------
+# Now get the columns newly created dataframe with the columns in the msgl_running
+# file. This is needed because sundeep could have deleted/added some columns
+# -----------------------------------------------------------------------------
 cols_msgl_running_tracking_df = msgl_running_tracking_df.columns.tolist()
 cols_new_in_msgl_datefile_df = new_in_msgl_datefile_df.columns.tolist()
 logging.debug("The columns in msgl running file are : " + str(cols_msgl_running_tracking_df))
 logging.debug("The columns in msgl date str file are : " + str(cols_new_in_msgl_datefile_df))
 
+# todo
+# Need to check this scenario
 for col_name in cols_new_in_msgl_datefile_df:
   if col_name not in cols_msgl_running_tracking_df:
-    logging.note("The col name " + str(col_name) + " is in msgl date str file but NOT in msgl running file...Please check and rerun again")
+    logging.error("The col name " + str(col_name) + " is in msgl date str file but NOT in msgl running file...Please check and rerun again")
 
 for col_name in cols_msgl_running_tracking_df:
   if col_name not in  cols_new_in_msgl_datefile_df:
@@ -174,15 +175,31 @@ for col_name in cols_msgl_running_tracking_df:
 logging.debug("The dataframe that has the newly added tickers and same cols as msgl running file is : " + new_in_msgl_datefile_df.to_string())
 new_in_msgl_datefile_df = new_in_msgl_datefile_df[cols_msgl_running_tracking_df]
 logging.debug("The dataframe that has the newly added tickers IN THE SAME order as msgl running file is : " + new_in_msgl_datefile_df.to_string())
+# -----------------------------------------------------------------------------
 
 
+# -----------------------------------------------------------------------------
 # todo
-# compare the symbols to master tracklist and put a yes or no
-# add the date added to the date_str
-# remove the added from the "Do Not track" sheet
-# Check if the symbol in newly added already exists in the running and if it more than a month old,
-# and more it to a differnt dataframe
-# Now print both the dataframes in the log directory
+# 1. compare the symbols in the new dataframe with master tracklist and put a yes or no in the appropriate column (Wheat)
+# 2. add the date_str in the new dataframe in the appropriate column  added to the date_str (Date Added)
+# 3. Read the "Do Not track" sheet from msgl_running and remove the tickers from the newly created dataframe.
+#    This should be done earlier before reaching this step). See above todo
+# 4. Check if the symbol in newly added already exists in the running and if it more than a month old,
+#    and more it to a differnt dataframe (Needs more thinking)
+# 5. Now print both the dataframes in the log directory
+#    In an ideal scenario, the user now just needs to copy and paste the newly created csv into the msgl_running file
+#    and we should be done
+# todo : Scenarios to test
+# 1. Test a scenario where there was no new ticker found in comparing the two msgl
+#    files and see if the script still works - One way to create that scenario is
+#    the cut and paste the newly created csv into the msgl running file and running
+#    the script again. Make sure to make a backup copy of the msgl_running file before
+#    you do it.
+# 2. Test a scenario by adding a "Do Not Track" sheet to msgl_running file and see
+#    if the script is able to ignore the symbols that it found new in the msgl_datedfile
+#    and are present in the "Do Not Track" sheet.
+# -----------------------------------------------------------------------------
+
 sys.exit(1)
 
 
