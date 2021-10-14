@@ -1649,7 +1649,14 @@
 
   "ECOM" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"},
+       {"Start_Date" : "06/30/2021", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "QCOM" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
     ]
   },
 

@@ -68,6 +68,12 @@
     ]
   },
 
+  "QCOM" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "10/14/2021","Buy_Price_str" :  "127.65"}
+    ]
+  },
+
   "ISBC" : {
     "Buy_Sell" : [
        {"Buy_Date" : "04/29/2021","Buy_Price_str" :  "15.03"},
