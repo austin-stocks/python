@@ -3086,9 +3086,16 @@
       "upper center": "CNBC Reports and Projects USD per ADR\nGet USD ADR Earnings from 6K"
     }
   },
+
   "WST" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2012", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "CLFD" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2020", "Stop_Date" :   "End"}
     ]
   },
 
