@@ -968,11 +968,14 @@
   },
 
   "ISRG" : {
+    "Splits" : {
+      "10/10/2021" : "3:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2015", "Stop_Date" :   "06/30/2019"}
     ],
     "Annual_EPS_Adjust" : [
-      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".55"}
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".18"}
     ]
   },
 
@@ -3099,6 +3102,16 @@
     ]
   },
 
+  "TRTN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2020", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.24"},
+      {"Start_Date" : "09/25/2016", "Stop_Date" :   "07/05/2017", "Adj_Amount" : ".24"}
+    ]
+  },
+
   "WWD" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
@@ -3524,7 +3537,8 @@
 
   "ULTA" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "04/30/2014", "Stop_Date" :   "End"}
+       {"Start_Date" : "04/30/2014", "Stop_Date" :   "Next"},
+       {"Start_Date" : "07/30/2021", "Stop_Date" :   "End"}
     ]
   },
 

@@ -74,6 +74,12 @@
     ]
   },
 
+  "ATHM" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "10/20/2021","Buy_Price_str" :  "51.67"}
+    ]
+  },
+
   "ISBC" : {
     "Buy_Sell" : [
        {"Buy_Date" : "04/29/2021","Buy_Price_str" :  "15.03"},
@@ -172,7 +178,8 @@
   "LKQ" : {
     "Buy_Sell" : [
        {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "38"},
-       {"Sell_Date" : "02/12/2021","Sell_Price_str" :  "$37"}
+       {"Sell_Date" : "02/12/2021","Sell_Price_str" :  "$37"},
+       {"Buy_Date" : "10/20/2021","Buy_Price_str" :  "54.88"}
     ]
   },
 
