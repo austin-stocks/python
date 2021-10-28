@@ -115,7 +115,7 @@ master_tracklist_df.set_index('Tickers', inplace=True)
 TipRanks_earnings_calendar_df = pd.DataFrame(columns=['Ticker','Earnings_Date'])
 TipRanks_earnings_calendar_df.set_index('Ticker', inplace=True)
 
-ticker_list=["AAON", "ACU", "ARW", "ASGN", "AYI", "CASH", "CASY", "CCOI", "CENT", "CNXN", "COR", "CORE", "CRWS", "CSGS", "EME", "ENSG", "ESNT", "FBHS", "FIX", "FN", "GLDD", "GOOG", "HEI", "HELE", "HONE", "IBP", "INFO", "IOSP", "JBSS", "JBT", "KAI", "KEX", "LOPE", "LSI", "MANT", "MMS", "MTX", "NMIH", "NSIT", "NSSC", "NXST", "OSIS", "POWL", "PRI", "RGLD", "SGC", "SITE", "SLGN", "SMPL", "SSD", "TAYD", "TCBI", "TRU", "TSM", "UFPT", "UNF", "WD", "WLDN", "WNS", "ZTO"]
+ticker_list=["AAON","ACU","ADUS","AME","AQUA","ASGN","CACI","CARG","CASH","CBOE","CCMP","CCS","CENT","CHE","CNXN","COR","CPSI","CRMT","CSGS","DCO","DKL","ECOM","EME","ENSG","ESNT","EXP","FAF","FBHS","FHI","FIX","FIZZ","FN","FORM","FOXA","FOXF","G","GLDD","GOOG","HEI","HONE","HSIC","HTH","IAA","IBP","IDCC","IIIN","INOV","IOSP","ISBC","JBSS","KAI","KEX","LFUS","LGIH","LOPE","LPLA","LSI","MANT","MAS","MASI","MBUU","MIDD","MMS","MRCY","MSEX","MTX","MYRG","NMIH","NSIT","NSP","NSSC","NTGR","OMCL","OSIS","OTEX","PFGC","PFSI","POWL","PRAA","PRI","PRIM","QLYS","RBA","SCPL","SEM","SGC","SITE","SLGN","SSD","SSNC","STRL","SYNH","TDY","TFX","TKR","TNET","TRU","TSM","TTEC","TTEK","TXRH","TYL","UFPT","USPH","VIVO","VRSK","WING","WLDN","WNS","ZTO","ZUMZ"]
 # ticker_list = ["AMT", "IBM"]
 i_int = 0
 for ticker_raw in ticker_list:
