@@ -164,7 +164,7 @@ logging.debug("The List of tickers extracted from msgl Running file - Exclude Li
 # divide/filter the running_df into two dfs
 # -----------------------------------------------------------------------------
 logging.info("")
-logging.info("Looping through msgl date_str and msgl running file to see which tickers are only present in msgl date_str file")
+logging.info("Looping through msgl date_str (dated : " + str(msgl_date_str_raw) + ") and msgl running file to see which tickers are only present in msgl date_str file")
 new_in_msgl_datefile_list = []
 new_in_msgl_but_in_exclude_list = []
 for ticker_raw in msgl_datefile_ticker_list:
@@ -303,7 +303,7 @@ new_in_msgl_datefile_df = new_in_msgl_datefile_df[cols_msgl_running_tracking_df]
 # -----------------------------------------------------------------------------
 logging.info("")
 logging.info("Now splitting the dataframe for tickers to be potentially added into two dataframes")
-logging.info("One dataframe would ONLY have tickers that need to be added (and are not in exclude list)")
+logging.info("One dataframe would ONLY have tickers that need to be added (ones that are NOT in exclude list)")
 logging.info("Second dataframe would ONLY have tickers that are in the exclude list")
 new_in_msgl_datefile_df.set_index('Symbol', inplace=True)
 new_in_msgl_datefile_and_track_list = [x for x in new_in_msgl_datefile_list if x not in new_in_msgl_but_in_exclude_list]
@@ -321,7 +321,7 @@ logging.debug("The dataframe that ONLY has tickers to be added : " + new_in_msgl
 logging.debug("The dataframe that ONLY has tickers that are excluded : " + new_in_msgl_datefile_and_exclude_df.to_string())
 
 logging.info("")
-logging.info("Printing all the info in log directory")
+logging.info("Printing those dataframes into csv files in log directory")
 new_in_msgl_datefile_and_track_df_csv = msgl_date_str_raw + "_MarketSmith_Growth_250_Newly_Added" + ".csv"
 new_in_msgl_datefile_and_exclude_df_csv = msgl_date_str_raw + "_MarketSmith_Growth_250_Exclude" + ".csv"
 
@@ -331,6 +331,7 @@ new_in_msgl_datefile_and_exclude_df.sort_values(by=['Symbol'], ascending=[True])
 logging.info("Created : " + str(new_in_msgl_datefile_and_track_df_csv))
 logging.info("Created : " + str(new_in_msgl_datefile_and_exclude_df_csv))
 
+logging.info("")
 logging.info("All Done")
 # -----------------------------------------------------------------------------
 
