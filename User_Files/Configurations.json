@@ -1461,6 +1461,9 @@
   "ADSK" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "01/30/2020", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "01/25/2021", "Stop_Date" :   "11/05/2021", "Adj_Amount" : "-.70"}
     ]
   },
 
