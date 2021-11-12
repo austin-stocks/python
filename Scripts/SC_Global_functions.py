@@ -1,9 +1,9 @@
 
 
-aaii_analysts_projection_file = "AAII_Analysts_2021_09_09.csv"
+aaii_analysts_projection_file = "AAII_Analysts_2021_11_12.csv"
 
 aaii_missing_tickers_list = [
-'CBOE','CP','CRZO','GOOG','RACE','NTR','RGP','WCG','FOX','DISCK','BRK-B','KL'
+'CRZO','GOOG','RACE','WCG','FOX','DISCK','BRK-B'
 ]
 
 
