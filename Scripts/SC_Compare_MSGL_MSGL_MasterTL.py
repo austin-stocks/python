@@ -164,9 +164,10 @@ logging.debug("The List of tickers extracted from msgl Running file - Exclude Li
 # divide/filter the running_df into two dfs
 # -----------------------------------------------------------------------------
 logging.info("")
-logging.info("Looping through msgl date_str (dated : " + str(msgl_date_str_raw) + ") and msgl running file to see which tickers are only present in msgl date_str file")
+logging.info("Looping through msgl date_str (dated : " + str(msgl_date_str_raw) + ") across msgl running file")
 new_in_msgl_datefile_list = []
 new_in_msgl_but_in_exclude_list = []
+tickers_in_msgl_datefile_and_msgl_running_file_list = []
 for ticker_raw in msgl_datefile_ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   # logging.debug("Looking for " + str(ticker) + " from Ann Trackist in Master Tracklist")
@@ -177,11 +178,16 @@ for ticker_raw in msgl_datefile_ticker_list:
       new_in_msgl_but_in_exclude_list.append(ticker)
       logging.debug("Did not find " + str(ticker) + " in MSGL Running file, but found it in exclude list")
   else:
-    logging.debug ("Found " + str(ticker) + " in MSGL Running file")
+    # Since the ticker is found in the msgl running df, it cannot be in the exclude list
+    logging.debug ("Found " + str(ticker) + " in MSGL Running file. If this ticker is not in the exclude list, then it can potentially be updated")
+    tickers_in_msgl_datefile_and_msgl_running_file_list.append(ticker)
 
 logging.info("Found : " + str(len(new_in_msgl_datefile_list)) + " new tickers that were not in the msgl running file (and are ONLY present in msgl date_str file)")
 logging.info("Found : " + str(len(new_in_msgl_but_in_exclude_list)) + " tickers out of those that are also in the exclude list (in msgl running file)")
 logging.info("So, only ==> " + str(len(new_in_msgl_datefile_list) - len(new_in_msgl_but_in_exclude_list)) + " <== tickers will be added to msgl running file")
+logging.info("Found : " + str(len(tickers_in_msgl_datefile_and_msgl_running_file_list)) + " tickers that were both in msgl datefile and msgl running file")
+logging.info("The appropriate columns for these " + str(len(tickers_in_msgl_datefile_and_msgl_running_file_list)) + " tickers will be updated with latest information from msgl datefile into the msgl running file")
+logging.info("That way msgl running file will have the latest MS information (for e.g Comp Rating, EPS Rating etc)")
 logging.debug("Found : " + str(new_in_msgl_datefile_list) + " tickers only in msgl date  file")
 logging.debug("Found : " + str(new_in_msgl_but_in_exclude_list) + " tickers only in msgl date file that were also in exclude list")
 logging.info("")
@@ -207,9 +213,12 @@ if ((len(new_in_msgl_datefile_list) == len(new_in_msgl_but_in_exclude_list)) or 
 # -----------------------------------------------------------------------------
 msgl_dated_df.set_index('Symbol', inplace=True)
 new_in_msgl_datefile_df = msgl_dated_df.loc[new_in_msgl_datefile_list, :]
+common_in_msgl_datefile_and_running_df = msgl_dated_df.loc[tickers_in_msgl_datefile_and_msgl_running_file_list, :]
 # new_in_msgl_datefile_df.drop('Order', axis=1, inplace=True)
 new_in_msgl_datefile_df.reset_index(inplace=True, drop=False)
-logging.debug("The rows that are new in the dated file :" + new_in_msgl_datefile_df.to_string())
+common_in_msgl_datefile_and_running_df.reset_index(inplace=True, drop=False)
+logging.debug("The rows that are new in msgl date file :" + new_in_msgl_datefile_df.to_string())
+logging.debug("The rows that are common b/w msgl date and msgl running file :" + common_in_msgl_datefile_and_running_df.to_string())
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -238,14 +247,18 @@ logging.debug("The columns in msgl date str file are : " + str(cols_new_in_msgl_
 for col_name in cols_new_in_msgl_datefile_df:
   if col_name not in cols_msgl_running_tracking_df:
     logging.error("The col name " + str(col_name) + " is in msgl date str file but NOT in msgl running file...Please check and rerun again")
+    logging.error("This should NOT happens as all the columns from the MS downloaded data (in msgl datefile) should be present in the msgl running file")
+    logging.error("Please check/correct and rerun again")
     sys.exit(1)
 for col_name in cols_msgl_running_tracking_df:
   if col_name not in cols_new_in_msgl_datefile_df:
     logging.debug("The column " + str(col_name) + " not found in msgl running file, adding it to msgl date str df")
     new_in_msgl_datefile_df.insert(1,col_name,"#NA#")
+    common_in_msgl_datefile_and_running_df.insert(1,col_name,"#NA#")
 
 logging.debug("The dataframe that has the newly added tickers and same cols as msgl running file is : " + new_in_msgl_datefile_df.to_string())
 new_in_msgl_datefile_df = new_in_msgl_datefile_df[cols_msgl_running_tracking_df]
+common_in_msgl_datefile_and_running_df = common_in_msgl_datefile_and_running_df[cols_msgl_running_tracking_df]
 logging.debug("The dataframe that has the newly added tickers IN THE SAME order as msgl running file is : " + new_in_msgl_datefile_df.to_string())
 # -----------------------------------------------------------------------------
 
@@ -272,6 +285,8 @@ logging.debug("The dataframe that has the newly added tickers IN THE SAME order 
 date_dt = dt.datetime.strptime(msgl_date_str_raw, '%Y_%m_%d').date()
 msgl_date_str_mm_dd_yyyy = dt.datetime.strftime(date_dt, '%m/%d/%Y')
 new_in_msgl_datefile_df['Date Added'] = msgl_date_str_mm_dd_yyyy
+new_in_msgl_datefile_df['Date Updated from MS'] = msgl_date_str_mm_dd_yyyy
+common_in_msgl_datefile_and_running_df['Date Updated from MS'] = msgl_date_str_mm_dd_yyyy
 
 new_in_msgl_datefile_list = new_in_msgl_datefile_df['Symbol'].tolist()
 new_in_msgl_datefile_df.set_index('Symbol', inplace=True)
@@ -289,6 +304,50 @@ for ticker_raw in new_in_msgl_datefile_list:
 logging.info("Out of " + str(len(new_in_msgl_datefile_list)) + " tickers (newly found), " + str(i_int) + " tickers were not in Master Tracklist")
 new_in_msgl_datefile_df.reset_index(inplace=True, drop=False)
 new_in_msgl_datefile_df = new_in_msgl_datefile_df[cols_msgl_running_tracking_df]
+
+
+cols_to_get_from_msgl_running_file = ['Date Added','Date Last Worked ON','ProfiltSpy', 'CNBC','Make Chart','Notes']
+tickers_in_msgl_datefile_and_msgl_running_file_list = common_in_msgl_datefile_and_running_df['Symbol'].tolist()
+common_in_msgl_datefile_and_running_df.set_index('Symbol', inplace=True)
+msgl_running_tracking_df.set_index('Symbol', inplace=True)
+logging.info("")
+logging.info("Looping through (common) tickers found both in msgl datefile and msgl running file to check if they are found in Master Tracklist")
+logging.info("In this same loop, the dataframe that has common tickers b/w the two files will be updated")
+logging.info("with appropriate information - some pieces of information will be picked from msgl datefile (like latest EPS rating etc) and others pieces")
+logging.info("will remain unchanged from msgl running file (like CNBC, Notes etc)")
+logging.info("The following columns will be picked from msgl running file : ")
+logging.info("=====> This list of columns below should be evaluated periodically, esp if Sundeep adds/deletes a col in msgl running file <=====")
+logging.info(str(cols_to_get_from_msgl_running_file))
+logging.info("Other columns will remain the same (they were picked from msgl datefile)")
+i_int = 0
+for ticker_raw in tickers_in_msgl_datefile_and_msgl_running_file_list:
+  ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
+  if ticker not in master_ticker_list:
+    logging.debug ("Did not find " + str(ticker) + " in Master Tracklist List")
+    common_in_msgl_datefile_and_running_df.loc[ticker,'Wheat'] = "No"
+    i_int = i_int+1
+  else:
+    logging.debug ("Found " + str(ticker) + " in Master Tracklist List")
+    common_in_msgl_datefile_and_running_df.loc[ticker,'Wheat'] = "Yes"
+  for cols in cols_to_get_from_msgl_running_file:
+    logging.debug("Copying col : " + str(cols) + ", Value : " + str(msgl_running_tracking_df.loc[ticker,cols]) + ", to common_in_msgl_datefile_and_running_df")
+    common_in_msgl_datefile_and_running_df.loc[ticker, cols] = msgl_running_tracking_df.loc[ticker, cols]
+    if (cols in ['Date Added','Date Last Worked ON']):
+      # logging.debug("The type is " + str(type(msgl_running_tracking_df.loc[ticker, cols])))
+      try:
+        date_dt = msgl_running_tracking_df.loc[ticker, cols].date()
+        logging.debug("The datetime dt is " + str(date_dt))
+        date_str_mm_dd_yyyy = date_dt.strftime('%m/%d/%Y')
+        logging.debug("The datetime string is " + str(date_str_mm_dd_yyyy))
+        common_in_msgl_datefile_and_running_df.loc[ticker,cols] = date_str_mm_dd_yyyy
+      except (AttributeError):
+        logging.debug("Found Date that we either NaN or not in the right format")
+
+logging.info("Out of " + str(len(tickers_in_msgl_datefile_and_msgl_running_file_list)) + " tickers (common to both files), " + str(i_int) + " tickers were not in Master Tracklist")
+logging.info("All tickers appropriate columns were updated though - see the message above about which cols were updated how")
+common_in_msgl_datefile_and_running_df.reset_index(inplace=True, drop=False)
+msgl_running_tracking_df.reset_index(inplace=True, drop=False)
+common_in_msgl_datefile_and_running_df = common_in_msgl_datefile_and_running_df[cols_msgl_running_tracking_df]
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -303,8 +362,10 @@ new_in_msgl_datefile_df = new_in_msgl_datefile_df[cols_msgl_running_tracking_df]
 # -----------------------------------------------------------------------------
 logging.info("")
 logging.info("Now splitting the dataframe for tickers to be potentially added into two dataframes")
-logging.info("One dataframe would ONLY have tickers that need to be added (ones that are NOT in exclude list)")
+logging.info("First dataframe would ONLY have tickers that need to be added (ones that are NOT in exclude list)")
 logging.info("Second dataframe would ONLY have tickers that are in the exclude list")
+logging.info("Third dataframe (which was independently prepared) would ONLY have tickers that are common b/w msgl datefile and msgl running file")
+
 new_in_msgl_datefile_df.set_index('Symbol', inplace=True)
 new_in_msgl_datefile_and_track_list = [x for x in new_in_msgl_datefile_list if x not in new_in_msgl_but_in_exclude_list]
 
@@ -319,17 +380,23 @@ new_in_msgl_datefile_and_exclude_df = new_in_msgl_datefile_and_exclude_df[cols_m
 
 logging.debug("The dataframe that ONLY has tickers to be added : " + new_in_msgl_datefile_and_track_df.to_string())
 logging.debug("The dataframe that ONLY has tickers that are excluded : " + new_in_msgl_datefile_and_exclude_df.to_string())
+logging.debug("The dataframe that has tickers that are common b/w datefile and running file : " + common_in_msgl_datefile_and_running_df.to_string())
+
+
 
 logging.info("")
-logging.info("Printing those dataframes into csv files in log directory")
+logging.info("Printing the various dataframes into csv files in log directory")
 new_in_msgl_datefile_and_track_df_csv = msgl_date_str_raw + "_MarketSmith_Growth_250_Newly_Added" + ".csv"
 new_in_msgl_datefile_and_exclude_df_csv = msgl_date_str_raw + "_MarketSmith_Growth_250_Exclude" + ".csv"
+common_in_msgl_datefile_and_running_df_csv = msgl_date_str_raw + "_MarketSmith_Growth_250_Common" + ".csv"
 
 new_in_msgl_datefile_and_track_df.sort_values(by=['Symbol'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + new_in_msgl_datefile_and_track_df_csv,sep=',', index=False, header=True)
 new_in_msgl_datefile_and_exclude_df.sort_values(by=['Symbol'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + new_in_msgl_datefile_and_exclude_df_csv,sep=',', index=False, header=True)
+common_in_msgl_datefile_and_running_df.sort_values(by=['Symbol'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + common_in_msgl_datefile_and_running_df_csv,sep=',', index=False, header=True)
 
 logging.info("Created : " + str(new_in_msgl_datefile_and_track_df_csv))
 logging.info("Created : " + str(new_in_msgl_datefile_and_exclude_df_csv))
+logging.info("Created : " + str(common_in_msgl_datefile_and_running_df_csv))
 
 logging.info("")
 logging.info("All Done")
