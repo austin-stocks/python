@@ -40,7 +40,8 @@
 
   "VIPS" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "09/15/2021","Buy_Price_str" :  "12.95"}
+       {"Buy_Date" : "09/15/2021","Buy_Price_str" :  "12.95"},
+       {"Buy_Date" : "11/18/2021","Buy_Price_str" :  "10.47"}
     ]
   },
 
@@ -76,7 +77,8 @@
 
   "ATHM" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "10/20/2021","Buy_Price_str" :  "51.67"}
+       {"Buy_Date" : "10/20/2021","Buy_Price_str" :  "51.67"},
+       {"Buy_Date" : "11/18/2021","Buy_Price_str" :  "34.63"}
     ]
   },
 
