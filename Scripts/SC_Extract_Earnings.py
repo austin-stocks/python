@@ -107,14 +107,20 @@ for ticker_raw in ticker_list:
   logging.debug ("\nNow going to remove the dataframe rows that don't have Q EPS AND Projections")
   step1_df.dropna(subset=['Q EPS', 'projection'], how='all', inplace=True)
   logging.debug ("\nDataframe after dropping all the rows with null in (Q EPS AND projection BOTH) columns\n" +step1_df.to_string())
-  # Now we should have a dataframe like this - 
+  # ===========================================================================
+
+  # ===========================================================================
+  # Now we should have a dataframe like this...
+  # ===========================================================================
+  # Now we should have a dataframe like this -
   # Every row should have a date
   # NOT Every row will have Q EPS 
   # Every row should have a projected EPS
   # Not every row will have Q eps because there are (almost always) multiple projectinos for each eap and the original 
-  # stocfile (Ann xlsm) has them veritical. So for e.g in this case for 2020-12-31 the actual/last updated earnings
+  # stocfile (Ann xlsm) has them vertical. So for e.g in this case for 2020-12-31 the actual/last updated earnings
   #  is 1.58 but the projection when they have been updated in the past are in col 3 1.58, 1.59, 1.58, 1.57, 1.58, 1.68 and so on... 
   '''  
+         Date         Q_EPS      Projection
   1     2020-12-31  1.580000    1.580000
   2     2020-12-30       NaN    1.590000
   3     2020-12-29       NaN    1.580000
@@ -134,24 +140,44 @@ for ticker_raw in ticker_list:
   17    2020-12-08       NaN    1.920422
   18    2020-12-07       NaN    1.932654
   19    2020-12-04       NaN    1.969350
+  ...
+  ...
+  ... Previous Quarter date rolls around
+  ...
   65    2020-09-30  1.610000    1.610000
   66    2020-09-29       NaN    1.600000
   '''
   logging.debug ("\nNow we have a dataframe in which : \nEvery row should have a date.\nNot every row will have Q eps.\nEvery row should have a projected EPS")
-  # ===========================================================================
 
-  # ===========================================================================
-  # Extract the lists and write csv file
-  # ===========================================================================
+  # ---------------------------------------------------------------------------
+  # Extract the lists and write csv file (Read the above comment about the
+  # dataframe carefully - this will help in understanding the code below
+  # (Also go through the debug file to for good logical flow of how the dataframe
+  # is printed row by row in the csv file
+  # ---------------------------------------------------------------------------
   csvFile=open('Experiments\\Extracted_Earnings' + "\\" + ticker + "_earnings.csv", 'w+', newline='')
   writer = csv.writer(csvFile, delimiter=',')
   # Put the Header Row in the csv
-  writer.writerow(["Q_Date", "Q_EPS_Diluted","Q_EPS_Projections_Date_0","Q_EPS_Projections_1","Q_EPS_Projections_Date_1","Q_EPS_Projections_2","Q_EPS_Projections_Date_2","Q_EPS_Projections_2","Q_EPS_Projections_Date_2"])
+  csv_header_row_list = ["CNBC_Matches_Reported_EPS","Q_Report_Date", "Q_Date", "Q_EPS_Diluted","Q_EPS_Adjusted","Q_EPS_Projections_Date_0","Q_EPS_Projections_1","Q_EPS_Projections_Date_1","Q_EPS_Projections_2","Q_EPS_Projections_Date_2","Q_EPS_Projections_2","Q_EPS_Projections_Date_2"]
+  writer.writerow(csv_header_row_list)
 
   step1_date_list = [dt.datetime.strptime(date, '%Y-%m-%d').date() for date in step1_df.Date.tolist()]
   # step1_date_list = [dt.datetime.strptime(date, '%Y-%m-%d %H:%M:%S').date() for date in step1_df.Date.tolist()]
   step1_eps_list = step1_df['Q EPS'].tolist()
   step1_projected_eps_list = step1_df['projection'].tolist()
+
+  # Get the positions of various fields from the header_row_list
+  # The positions will be used later to fill the dates/EPS reported/EPS projected numbers/strings
+  # in the approprite column
+  cnbc_matches_pos = csv_header_row_list.index("CNBC_Matches_Reported_EPS")
+  q_report_date_pos = csv_header_row_list.index("Q_Report_Date")
+  q_date_pos = csv_header_row_list.index("Q_Date")
+  q_eps_diluted_pos = csv_header_row_list.index("Q_EPS_Diluted")
+  q_eps_adjusted_pos = csv_header_row_list.index("Q_EPS_Adjusted")
+  q_eps_projections_date_0_pos = csv_header_row_list.index("Q_EPS_Projections_Date_0")
+  q_eps_projections_1_pos = csv_header_row_list.index("Q_EPS_Projections_1")
+  # logging.debug("The position for Q_EPS_Adjusted : " + str(q_eps_adjusted_pos))
+  # logging.debug("The position for Q_EPS_Projections_Date_0 : " + str(q_eps_projections_date_0_pos))
 
   logging.debug ("\nWill now go row by row over the dataframe...Remember that one row generally will have multiple projections")
   row_number = 0
@@ -159,34 +185,64 @@ for ticker_raw in ticker_list:
   for x in step1_date_list:
     step1_eps = step1_eps_list[row_number]
     step1_projected_eps = step1_projected_eps_list[row_number]
+    logging.debug ("")
     logging.debug ("Row Number : " + str(row_number) +  ", Date is : " + str(x) + ", Q EPS is : " + str(step1_eps) + ", Projected EPS is : " + str(step1_projected_eps))
 
+    # -----------------------------------------------------
+    # This is the row that has the Q_EPS non-nan, which means
+    # that this is the first row for a new quarter...so start
+    # writing a fresh csv_line inside this if statement
+    # -----------------------------------------------------
     if (str(step1_eps) != 'nan'):
       logging.debug ("")
-      logging.debug ("Row " + str(row_number) + " has both Q EPS and projections. This means that this the 1st instance of Q EPS...all subsequent rows till we hit another row like this will ONLY have projections")
+      logging.debug ("Row " + str(row_number) + " : has both Q EPS and projections. This means that this row is the 1st instance of Q EPS...")
+      logging.debug ("Row " + str(row_number) + " : All subsequent rows till we hit another row like this row will ONLY have projections")
 
       if (row_number > 0):
-        logging.debug("Since the row number is gt 0 which means that we already processed atleast one itreation of going throught Q EPS and Prjoections so, it is time to print into earnings file")
+        logging.debug("Since the row number is gt 0 which means that we already processed atleast one iteration of going throught Q EPS and Projections...")
+        logging.debug("so it is time to print into earnings file")
         logging.debug("Printing " + str(csv_line))
         writer.writerow(csv_line)
 
+      # this is needed to be initialized to 200 (it can be anything) elements so that
+      # the positional insertion can work properly
       csv_line = []
-      csv_line.insert(0, x.strftime('%m/%d/%Y'))
-      csv_line.insert(1, step1_eps)
-      if (row_number == 0):
-        csv_line.insert(2, yesterday_str)
-      else:
-        csv_line.insert(2, "")
-      csv_line.insert(3, step1_projected_eps)
-      insert_index = 4
-      logging.debug ("CSV Line right now is " + str(csv_line))
+      for i_int in range(200):
+        csv_line.append("")
 
-    # We have finished all the projections
+      csv_line[q_date_pos] = x.strftime('%m/%d/%Y')
+      csv_line[q_eps_diluted_pos] = step1_eps
+      if (row_number == 0):
+        csv_line[cnbc_matches_pos] =  "N"
+        csv_line[q_eps_projections_date_0_pos] = yesterday_str
+      else:
+        csv_line[cnbc_matches_pos] = ""
+        csv_line[q_eps_projections_date_0_pos] = ""
+
+      csv_line[q_eps_adjusted_pos] = ""
+      csv_line[q_report_date_pos] = ""
+      csv_line[q_eps_projections_1_pos] = step1_projected_eps
+      insert_index = q_eps_projections_1_pos+1
+      logging.debug ("CSV Line after processing the row that had reported EPS :\n " + str(csv_line))
+
+    # -----------------------------------------------------
+    # We are processing the row in the dataframe that has
+    # the Q_EPS = nan, which means that this is the row
+    # that just has the EPS projection...
+    # That means that the csv_line has already been started and
+    # we just need to add (concatenate) to the cav_line until
+    # we come across a row_number that has the Q_EPS = not nan
+    # in the df and then write the entire csv_line in the
+    # csv file (that happens in the if statement above
+    # -----------------------------------------------------
     else:
-      csv_line.insert(insert_index, "")
-      csv_line.insert(insert_index+1, step1_projected_eps)
+      logging.debug ("Row " + str(row_number) + " : This is a row where only projections are present")
+      logging.debug ("Row " + str(row_number) + " : So this row will only write to Q_EPS_Projections_x column")
+      csv_line[insert_index] = ""
+      csv_line[insert_index+1] = step1_projected_eps
       insert_index = insert_index+2
-      logging.debug("This is a row where only projections are present for the Q EPS. CSV Line right now is " + str(csv_line))
+      logging.debug("CSV Line after processing the row that only had projected EPS :\n" + str(csv_line))
+
     row_number = row_number+1
 
 print ("ALL Done")
