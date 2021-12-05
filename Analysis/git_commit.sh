@@ -14,7 +14,7 @@ alphabets_subloop='A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'
 for chrs in $alphabets 
 do 
   echo "Adding the files that start with [$chrs]*"
-  if [ $chrs = "A" ]
+  if [ $chrs = "A" ] || [ $chrs = "C" ]  
   then
     echo "Doing $chrs...Will loop through subloop"
     for chrs_subloop in $alphabets_subloop
@@ -39,8 +39,8 @@ do
   echo ""
   echo "Commiting the files that start with [$chrs]*"
   echo ""
-  sleep 2
-  if [ $chrs = "A" ]
+  ## sleep 2
+  if [ $chrs = "A" ] || [ $chrs = "C" ]  
   then
     echo "Doing $chrs...Will loop through subloop"
     for chrs_subloop in $alphabets_subloop
