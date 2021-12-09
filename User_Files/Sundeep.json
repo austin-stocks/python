@@ -75,6 +75,12 @@
     ]
   },
 
+  "OLED" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "12/07/2021","Buy_Price_str" :  "155.36"}
+    ]
+  },
+
   "ATHM" : {
     "Buy_Sell" : [
        {"Buy_Date" : "10/20/2021","Buy_Price_str" :  "51.67"},
