@@ -4417,6 +4417,15 @@
     ]
   },
 
+  "THRM" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "11/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".2"}
+    ]
+  },
+
   "LECO" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "End"}
