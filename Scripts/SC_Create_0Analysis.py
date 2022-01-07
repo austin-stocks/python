@@ -132,7 +132,7 @@ g_var_copy_ticker_plot_2_watchlist_dir_en = 1
 # -----------------------------------------------------------------------------
 # Set the various dirs and read the AAII file
 # -----------------------------------------------------------------------------
-master_tracklist_file = "Master_Tracklist.xlsx"
+master_tracklist_file = "Master_Tracklist.xlsm"
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"

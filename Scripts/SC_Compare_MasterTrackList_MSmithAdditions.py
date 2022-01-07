@@ -83,7 +83,7 @@ root.mainloop()
 # ---------------------------------------------------------
 
 
-master_tracklist_file = "Master_Tracklist.xlsx"
+master_tracklist_file = "Master_Tracklist.xlsm"
 msmith_addtions_file = str(name_var.get()) + "_Additions"
 logging.info ("Reading Master Tracklist and MSmith Additions file : " + master_tracklist_file  + ", and : " + msmith_addtions_file )
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")

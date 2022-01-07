@@ -18,7 +18,7 @@ chart_dir = "\\..\\" + "Charts"
 charts_latest_dir = "\\..\\" + "Latest_Charts"
 log_dir = "\\..\\" + "Logs"
 
-master_tracklist_file = "Master_Tracklist.xlsx"
+master_tracklist_file = "Master_Tracklist.xlsm"
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
 master_tracklist_df.sort_values('Tickers', inplace=True)
 ticker_list_unclean = master_tracklist_df['Tickers'].tolist()

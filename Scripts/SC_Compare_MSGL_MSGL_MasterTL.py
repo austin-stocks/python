@@ -125,7 +125,7 @@ root.mainloop()
 # Print out the various files paths and read them into respective dateaframes
 # -----------------------------------------------------------------------------
 msgl_date_str_raw = str(name_var.get())
-master_tracklist_file = "Master_Tracklist.xlsx"
+master_tracklist_file = "Master_Tracklist.xlsm"
 msgl_dated_file = str(name_var.get()) + "_MarketSmith_Growth_250"
 logging.info ("Reading Master Tracklist : " + master_tracklist_file)
 logging.info ("Reading msg date_str file : " + dir_path + msmith_dir + "\\" + str(name_var.get()) + "\\" + msgl_dated_file)

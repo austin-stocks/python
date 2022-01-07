@@ -47,7 +47,7 @@ logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 # Set the various dirs and read both the Tracklists
 # -----------------------------------------------------------------------------
-master_tracklist_file = "Master_Tracklist.xlsx"
+master_tracklist_file = "Master_Tracklist.xlsm"
 tracklist_file_ann = "Tracklist_from_Ann.xlsm"
 
 logging.info ("Reading Master Tracklist and Ann Tracklist files")

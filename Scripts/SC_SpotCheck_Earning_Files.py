@@ -26,7 +26,7 @@ log_dir = "\\..\\" + "Logs"
 earnings_dir = "\\..\\" + "Earnings"
 historical_dir = "\\..\\" + "Historical"
 aaii_analysts_projection_file = "AAII_Analysts.csv"
-master_tracklist_file = "Master_Tracklist.xlsx"
+master_tracklist_file = "Master_Tracklist.xlsm"
 configuration_file = "Configurations.csv"
 calendar_file = "Calendar.csv"
 

@@ -197,7 +197,7 @@ logging.disable(logging.NOTSET)
 
 tracklist_file = "Tracklist.csv"
 schiller_pe_monthly_file = "Schiller_PE_by_Month.csv"
-master_tracklist_file = "Master_Tracklist.xlsx"
+master_tracklist_file = "Master_Tracklist.xlsm"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
 configuration_json = "Configurations.json"
