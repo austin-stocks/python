@@ -88,3 +88,27 @@ for tmp_dict in earnings_in_week_dict_list:
 now_datetime_str = now.strftime("%Y_%m_%d")
 yahoo_earnings_calendar_logfile = "yahoo_earnings_calendar_" + now_datetime_str + ".csv"
 yahoo_earnings_calendar_df.sort_values(by=['Earnings_Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + yahoo_earnings_calendar_logfile,sep=',', index=True, header=True)
+
+# Try to get the earnings calendar in the format that would work just plug and play for Tracklist
+yahoo_earnings_calendar_df.reset_index(inplace=True)
+grouped_by_series = yahoo_earnings_calendar_df.groupby(["Earnings_Date"])["Ticker"].agg(lambda x: ' '.join(x))
+logging.debug("The Earnings Calendar with grouped_by \n" + grouped_by_series.to_string())
+# Now convert that series into dataframe
+grouped_by_df = pd.DataFrame({'Earnings_Date':grouped_by_series.index, 'Ticker':grouped_by_series.values})
+logging.debug("The Earnings Calendar with grouped_by \n" + grouped_by_df.to_string())
+
+# I could not find a pythonic way of doing this, so doing it with a loop
+pivoted_df = pd.DataFrame()
+
+i = 0
+for index, row in grouped_by_df.iterrows():
+    logging.debug("Row " + row['Earnings_Date'] + ", Value " + row['Ticker'])
+    tickers_split_list = row['Ticker'].split()
+    pivoted_df[row['Earnings_Date']] = row['Ticker']
+    for ticker in sorted(tickers_split_list,key=str):
+     logging.debug("Row " + row['Earnings_Date'] + ", Ticker " + ticker)
+
+    i = i+1
+
+logging.debug("The Earnings Calendar with index as Earnings_Date looks like \n" + pivoted_df.to_string())
+
