@@ -1063,7 +1063,8 @@
 
   "IIVI" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "03/30/2013", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "03/30/2013", "Stop_Date" :   "06/30/2019"},
+       {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "06/25/2018", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".06"},
@@ -1224,6 +1225,13 @@
     "Anchored_Text" : {
       "upper center": "Prudential Speculator : Jan, 2022. Target $363"
     }
+  },
+
+
+  "ICHR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"}
+    ]
   },
 
   "AN" : {
