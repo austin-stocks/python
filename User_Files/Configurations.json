@@ -1591,6 +1591,9 @@
   },
 
   "NSSC" : {
+    "Splits" : {
+      "1/4/2022" : "2:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2017", "Stop_Date" :   "06/30/2019"}
     ],
