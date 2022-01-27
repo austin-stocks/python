@@ -131,7 +131,8 @@
 
   "CHTR" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$635"}
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$635"},
+       {"Sell_Date" : "01/24/2022","Sell_Price_str" :  "$567"}
     ]
   },
 
@@ -149,7 +150,8 @@
 
   "ECOM" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "$18"}
+       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "$18"},
+       {"Sell_Date" : "01/24/2022","Sell_Price_str" :  "$19.85"}
     ]
   },
 
@@ -161,7 +163,8 @@
 
   "FBHS" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$87"}
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$87"},
+       {"Sell_Date" : "01/24/2022","Sell_Price_str" :  "$92.97"}
     ]
   },
 
@@ -179,7 +182,8 @@
 
   "MITK" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "02/12/2021","Buy_Price_str" :  "$16"}
+       {"Buy_Date" : "02/12/2021","Buy_Price_str" :  "$16"},
+       {"Sell_Date" : "01/24/2022","Sell_Price_str" :  "$14.91"}
     ]
   },
 
@@ -199,7 +203,8 @@
   },
   "SMPL" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "29"}
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "29"},
+       {"Sell_Date" : "01/24/2022","Sell_Price_str" :  "34.38"}
     ]
   },
   "SSNC" : {
