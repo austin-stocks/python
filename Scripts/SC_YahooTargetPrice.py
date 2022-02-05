@@ -1,146 +1,149 @@
 import requests
-import bs4
-import tkinter as tk
-import sys
-
-import urllib.request
 import pandas as pd
-import html5lib
+import os
+import math
+import json
+import sys
+import time
+import socket
+import re
+import datetime as dt
+import numpy as np
+import calendar
+import logging
 
+from dateutil.relativedelta import relativedelta
+from matplotlib.offsetbox import AnchoredText
 
-# -----------------------------------------------------------------------------
-# This works -- yeah yeah
-# -----------------------------------------------------------------------------
-yahoo_quotes_page = 'https://finance.yahoo.com/quote/IBM/'
-req = urllib.request.Request(yahoo_quotes_page, headers={'User-Agent': 'Mozilla/5.0'})
-html = str(urllib.request.urlopen(req).read())
-yahoo_quotes_tables = pd.read_html(html)
+from SC_Global_functions import aaii_analysts_projection_file
+from SC_Global_functions import aaii_missing_tickers_list
 
-print ("The tables are ", yahoo_quotes_tables)
-
-for df_idx in yahoo_quotes_tables:
-  print ("The idx is ", df_idx, " and the heading is ", df_idx.columns.values)
-
-
-# earnings_history_df = yahoo_quotes_tables[2]
-# print ("The earnings estimates is ", type(earnings_history_df))
-
-print ("\n\n\n\n")
-cnbc_quote_page = 'https://apps.cnbc.com/view.asp?symbol=IBM&uid=stocks/earnings&view=earnings'
-req = urllib.request.Request(cnbc_quote_page, headers={'User-Agent': 'Mozilla/5.0'})
-html = str(urllib.request.urlopen(req).read())
-cnbc_quote_page = pd.read_html(html)
-
-print ("The tables are ", cnbc_quote_page)
-
-
-import requests
-
-url = "https://apps.cnbc.com/view.asp?symbol=IBM&uid=stocks/earnings&view=earnings"
-
-file_name = "Data.csv"
-u = requests.get(url)
-
-# file_size = int(u.headers['content-length'])
-# print "Downloading: %s Bytes: %s", % (file_name, file_size)
-
-with open(file_name, 'wb') as f:
-    for chunk in u.iter_content(chunk_size=1024):
-        if chunk: # filter out keep-alive new chunks
-            f.write(chunk)
-            f.flush()
-f.close()
-
-
-sys.exit(1)
-# -----------------------------------------------------------------------------
-
-
-# Ask user for the stock ticker of interest
-stock_ticker = input('Enter stock ticker: ')
-# stock_ticker = 'IBM'
-
-# Concatenate the url with the stock ticker and apply upper() to automatically uppercase user input
-link = 'https://finance.yahoo.com/quote/'+ stock_ticker.upper() + '/history?p=' + stock_ticker.upper()
-print(link)
-
-# Use pandas read_html() function to read HTL tables into a list of DataFrames objects
-df_list = pd.read_html(link)[0].head()
-
-print(df_list)
-
-
-sys.exit(1)
+from SC_logger import my_print as my_print
 
 
 
 
-EPS_Actual = []
-EPS_Estimate = []
-price = []
+dir_path = os.getcwd()
+user_dir = "\\..\\" + "User_Files"
+chart_dir = "..\\" + "Charts"
+historical_dir = "\\..\\" + "Historical"
+earnings_dir = "\\..\\" + "Earnings"
+dividend_dir = "\\..\\" + "Dividend"
+log_dir = "\\..\\" + "Logs"
 
-window = tk.Tk()
-title = tk.Label(text="Target Price Calculator ", fg="purple", width=40, height=1)
+# ---------------------------------------------------------------------------
+# Set Logging
+# critical, error, warning, info, debug
+# set up logging to file - see previous section for more details
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename=dir_path + log_dir + "\\" + 'SC_YahooTargetPrice_debug.txt',
+                    filemode='w')
+# define a Handler which writes INFO messages or higher to the sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+# set a format which is simpler for console use
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+# tell the handler to use this format
+console.setFormatter(formatter)
+# add the handler to the root logger
+logging.getLogger('').addHandler(console)
 
-first_label = tk.Label(text="Enter Stock Ticker: ", fg="purple", width=40, height=3)
-tickers = tk.Entry()
-Results = tk.Label(text="Target Price: ", fg="purple")
-
-title.pack()
-first_label.pack()
-tickers.pack()
-Results.pack()
-
-
-def GO():
-  for i in tickers:
-    try:
-      r = requests.get("https://finance.yahoo.com/quote/" + i + "/analysis?p=" + i).text
-      soup = bs4.BeautifulSoup(r, "lxml")
-      EPS = soup.findAll("td", class_="Ta(end)")
-
-      EPS = EPS[48].get_text()
-      EPS_Actual.append(EPS)
-
-      EST = soup.findAll("td", class_="Ta(end)")
-
-      EST = EST[60].get_text()
-      EPS_Estimate.append(EST)
-
-      Price = soup.find("span", class_="Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)")
-      price.append(Price.get_text())
-    except:
-      tk.Label(window, text="Unable to find {} ".format(i), width=50, height=5, fg="red").pack()
-      window.update()
-
-  for actual, estimate, PRICE, tick in zip(EPS_Actual, EPS_Estimate, price, tickers):
-    if actual != 'N/A':
-      actual = float(actual)
-    if estimate != 'N/A':
-      estimate = float(estimate)
-    if PRICE != 'N/A':
-      PRICE = float(PRICE)
-    try:
-      target = (PRICE * ((PRICE * actual) / (PRICE * estimate)))
-
-      tk.Label(window, text="The target price for {} is {}".format(tick, target), width=40, height=5, fg="green").pack()
-      window.update()
+# Disnable and enable global level logging
+logging.disable(sys.maxsize)
+logging.disable(logging.NOTSET)
+# ---------------------------------------------------------------------------
 
 
-    except:
-      tk.Label(window, text="Unable to find {} ".format(tick), width=50, height=5, fg="red").pack()
-      window.update()
+tracklist_file = "Tracklist.csv"
+tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
+price_targets_json_dict_filename = "Price_Targets.json"
+
+with open(dir_path + user_dir + "\\" + price_targets_json_dict_filename) as json_file:
+  price_targets_json_dict = json.load(json_file)
+
+tracklist_df = pd.read_csv(tracklist_file_full_path)
+ticker_list_unclean = tracklist_df['Tickers'].tolist()
+ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+
+targets = []
+for ticker_raw in ticker_list:
+  ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
+  # logging.debug("Updating Target Price for : " + str(ticker))
+
+  # https://github.com/arete89/Analyst_Target_Price
+  lhs_url = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/'
+  rhs_url = '?formatted=true&crumb=swg7qs5y9UP&lang=en-US&region=US&' \
+            'modules=upgradeDowngradeHistory,recommendationTrend,' \
+            'financialData,earningsHistory,earningsTrend,industryTrend&' \
+            'corsDomain=finance.yahoo.com'
+
+  # Change region for those who want non-US stocks
+  headers = {
+      'User-Agent': ''}
+  # Add your own user agent address - Just google it on your browser.
+  url = lhs_url + ticker + rhs_url
+  r = requests.get(url, headers=headers)
+  result = r.json()['quoteSummary']['result'][0]
+  target = result['financialData']['targetMeanPrice']['fmt']
+  # If you want the median version, then replace 'targetMeanPrice' with 'targetMedianPrice'
+  targets.append(target)
+  logging.info(str(ticker) + " has price target of : " + str(target))
+
+  now = dt.datetime.now()
+  date_time = now.strftime("%m/%d/%Y")
+  logging.debug("Today's date is : " + str(date_time))
+
+  # sundeep is here : Probably better to extract all the things in a dictionary
+  # for the ticker and then deal with the ticker to add / substract and then finally
+  # replace old dictionary in the json file with the newly manipulated dictionary
+  ticker_dict = price_targets_json_dict[ticker]
+  print ("The type is ", type(ticker_dict))
+  logging.debug("Here is what I have for the ticker" + str(ticker_dict))
+  # Now delete the ticker_dict from the original json dict
+  del price_targets_json_dict[ticker]
+  logging.debug("The is what is left of the original json dict" + str(price_targets_json_dict))
+  ticker_dict["Price_Target"].append({"Date": "XXXX", "Target": "YYYY"})
+  logging.debug("Here is what I have for the ticker" + str(ticker_dict))
+  price_targets_json_dict[ticker] = ticker_dict
+  logging.debug("Here is now to original dict now looks" + str(price_targets_json_dict))
+
+  sys.exit(1)
+  # Check if the ticker already exists in the json file
+  if (ticker not in price_targets_json_dict.keys()):
+    logging.info("Did not find " + str(ticker) + " in the price target json...Will create an entry for it")
+    # How to add this
+    # price_targets_json_dict[ticker]["Price_Target"] += [date_time, target]
+  else:
+    price_target_list = price_targets_json_dict[ticker]["Price_Target"]
+    logging.debug("Price Target Date list is: " + str(price_target_list))
+    for i_int in range(len(price_target_list)):
+      logging.debug("Date : " + str(price_targets_json_dict[ticker]["Price_Target"][i_int]["Date"]) + ", Price Target : " + str(price_targets_json_dict[ticker]["Price_Target"][i_int]["Target"]))
+    price_targets_json_dict[ticker]["Price_Target"].append({"Date" : date_time, "Target" : target})
+
+  price_targets_json_dict_sorted = sorted(price_targets_json_dict[ticker]["Price_Target"], key= lambda i:i["Date"])
+  price_target_list = price_targets_json_dict_sorted[ticker]["Price_Target"]
+  logging.debug("Price Target Date list is: " + str(price_target_list))
+  # for i_int in range(len(price_target_list)):
+  #   logging.debug("Date : " + str(price_targets_json_dict[ticker]["Price_Target"][i_int]["Date"]) + ", Price Target : " + str(price_targets_json_dict[ticker]["Price_Target"][i_int]["Target"]))
+
+  # Now dump the json in a json file
+  json_out = json.dumps(price_targets_json_dict, indent = 2)
+  logging.debug("The final json output looks like " + str(json_out))
+  with open ('out.json', 'w') as f:
+    json.dump(price_targets_json_dict_sorted,f, indent=2)
+
+    # price_target_list = price_targets_json_dict[ticker]
+    # logging.debug(str(ticker) + " has this history of price targets" + str(price_target_list))
+    # # Sundeep is here - We can go over the list datewise, but that is not needed actuall
+    # # We can add to price_target_list with the current date and price target.
+    # # Once we have added that to the list - we need to some how add it to the json and
+    # # and then write that in the json file
 
 
-def SUBMIT():
-  global tickers
-  tickers = tickers.get()
-  tickers = [tickers]
-  print(tickers)
-  GO()
-
-
-button = tk.Button(text="Find ", fg="purple", command=SUBMIT, width=25)
-button.pack()
-
-window.mainloop()
+# dataframe = pd.DataFrame(list(zip(tickers, targets)), columns=['Company', 'Mean Target Price'])
+# dataframe = dataframe.set_index('Company')
+# dataframe.to_csv('Target_Price.csv')
+# # to_excel in order to save it as a .xlsx file
+# print(dataframe)
