@@ -35,6 +35,15 @@
     ]
   },
 
+  "AAP" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "Next"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.44"}
+    ]
+  },
   "PRI" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2012", "Stop_Date" :   "Next"},
@@ -2237,6 +2246,16 @@
     ]
   },
 
+  "AVY" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2019", "Stop_Date" :   "01/05/2020", "Adj_Amount" : ".8"},
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".4"}
+    ]
+  },
+
   "NBHC" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
@@ -2902,6 +2921,12 @@
   "JAZZ" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2012", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "AZO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "08/30/2018", "Stop_Date" :   "End"}
     ]
   },
 
@@ -4085,8 +4110,6 @@
     ]
   },
 
-
-
   "ASGN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2011", "Stop_Date" :   "06/30/2019"},
@@ -4096,17 +4119,21 @@
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.15"}
     ]
   },
+
   "APH" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2016", "Stop_Date" :   "Next"}
     ],
     "Annual_EPS_Adjust" : [
-      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".3"}
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".15"}
     ]
   },
+
   "AOS" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "03/30/2013", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2013", "Stop_Date" :   "Next"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".12"},
