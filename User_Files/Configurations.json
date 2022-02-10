@@ -206,6 +206,8 @@
 
   "CCK" : {
     "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/20/2021", "Stop_Date" :   "01/05/2022", "Adj_Amount" : "1.5"},
+      {"Start_Date" : "09/20/2021", "Stop_Date" :   "10/05/2022", "Adj_Amount" : ".5"},
       {"Start_Date" : "12/20/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".3"},
       {"Start_Date" : "09/20/2015", "Stop_Date" :   "10/05/2015", "Adj_Amount" : ".13"},
       {"Start_Date" : "09/20/2014", "Stop_Date" :   "10/05/2014", "Adj_Amount" : "-.13"},
@@ -1657,6 +1659,17 @@
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2016", "Stop_Date" :   "10/05/2017", "Adj_Amount" : "-.1"},
       {"Start_Date" : "12/25/2019", "Stop_Date" :   "10/05/2020", "Adj_Amount" : ".13"}
+    ]
+  },
+
+  "WTW" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2021", "Stop_Date" :   "09/05/2021", "Adj_Amount" : "-1.5"},
+      {"Start_Date" : "09/25/2021", "Stop_Date" :   "01/05/2022", "Adj_Amount" : "-3"},
+      {"Start_Date" : "12/25/2021", "Stop_Date" :   "01/05/2022", "Adj_Amount" : "-3"}
     ]
   },
 
@@ -3153,6 +3166,9 @@
   },
 
   "EXTR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2021", "Stop_Date" :   "End"}
+    ],
     "Anchored_Text" : {
       "upper center": "01/08/2022:\nGot it from IBD - Find out why earnings \nhave been negative even in good Years\nKeep Reading about it"
     }
