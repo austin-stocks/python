@@ -66,7 +66,11 @@ chart_annotations_list = ['Charts_With_Numbers']
 for chart_styles_idx in chart_styles_list:
   logging.debug("==========> Style of Charts to be copied : " + str(chart_styles_idx) + " <==========")
   for chart_annotations_idx in chart_annotations_list:
-    logging.info("==========> Style of Charts to be copied : " + str(chart_styles_idx) + " : " + str(chart_annotations_idx) + " <==========")
+    logging.info("")
+    logging.info("=======================================================================")
+    logging.info("==========> Will copy : " + str(chart_styles_idx) + " : " + str(chart_annotations_idx) + " <==========")
+    chart_style_annotation_str = chart_styles_idx + "_" + chart_annotations_idx
+    time.sleep(3)
 
     # if (chart_styles_idx != 'Linear'):cd
     #   continue
@@ -87,7 +91,7 @@ for chart_styles_idx in chart_styles_list:
     # remove the files from the chart_latest_dir
     # jpg_file_list = [filename for filename in all_chart_files_list if 'jpg' in filename]
     jpg_file_list = glob.glob(dest_dir + "*.jpg" )
-    logging.info("The Chart file in the Destination (Latest Chart) directory \n" + str(dest_dir) + " are :\n" + str(jpg_file_list))
+    logging.debug("The Chart file in the Destination (Latest Chart) directory \n" + str(dest_dir) + " are :\n" + str(jpg_file_list))
 
     for filePath in jpg_file_list:
       try:
@@ -99,7 +103,6 @@ for chart_styles_idx in chart_styles_list:
         logging.error( "Please resolve this issue before proceeding...Exiting now")
         logging.error("================================================================================")
         sys.exit(1)
-    time.sleep(3)
     # -----------------------------------------------------------------------------
 
     # -----------------------------------------------------------------------------
@@ -108,7 +111,7 @@ for chart_styles_idx in chart_styles_list:
     for ticker_raw in ticker_list:
       ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
       logging.debug("")
-      logging.info("Processing : " + str(ticker))
+      logging.debug("Processing : " + str(ticker))
       # if ticker in ["CCI", , "CY", "EXPE", "FLS", "GCBC","GOOG","HURC","KMI","KMX","PNFP","QQQ","RCMT","TMO","TMUS","TTWO",,"WLTW"]:
       if ticker in ["QQQ"]:
         logging.debug("File for " + str(ticker) + " does not exist in earnings directory. Skipping...")
@@ -164,9 +167,9 @@ for chart_styles_idx in chart_styles_list:
         elif (chart_styles_idx == 'Long_Linear'):
           ticker_latest_chart_filename = ticker + "_Long_Linear_" + ticker_latest_chart + ".jpg"
 
-        logging.info("The lastest file for " + str(ticker) + " is : " + str(ticker_latest_chart_filename))
-        logging.info("Copying : " + str(source_dir + ticker_latest_chart_filename))
-        logging.info(" to :  " + str(dest_dir + ticker + "_Latest.jpg"))
+        logging.info("The latest " + str(chart_style_annotation_str) + " file for " + str(ticker) + " is : " + str(ticker_latest_chart_filename))
+        logging.debug("Copying : " + str(source_dir + ticker_latest_chart_filename))
+        logging.debug(" to :  " + str(dest_dir + ticker + "_Latest.jpg"))
         # Copy the chart file - that was the youngest - to the desitnation directory as ticker_Latest.jpg
         if (chart_styles_idx == 'Linear'):
           shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Latest.jpg")
@@ -185,8 +188,9 @@ for chart_styles_idx in chart_styles_list:
 
 
     logging.info("")
-    logging.info("==========> Style of Charts copied : " + str(chart_styles_idx) + " : "  + str(chart_annotations_idx) + " <==========")
+    logging.info("==========> DONE COPYNG : " + str(chart_styles_idx) + " : "  + str(chart_annotations_idx) + " <==========")
+    logging.info("=======================================================================")
     time.sleep(3)
+  logging.info("")
 
-    logging.info("")
-    logging.info(".....ALL DONE.....")
+logging.info(".....ALL DONE.....")
