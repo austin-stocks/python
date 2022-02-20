@@ -191,7 +191,8 @@
     "Buy_Sell" : [
        {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "38"},
        {"Sell_Date" : "02/12/2021","Sell_Price_str" :  "$37"},
-       {"Buy_Date" : "10/20/2021","Buy_Price_str" :  "54.88"}
+       {"Buy_Date" : "10/20/2021","Buy_Price_str" :  "54.88"},
+       {"Sell_Date" : "12/20/2021","Sell_Price_str" :  "54.52"}
     ]
   },
 

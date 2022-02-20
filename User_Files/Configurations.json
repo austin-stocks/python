@@ -400,7 +400,8 @@
 
   "YETI" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+       {"Start_Date" : "06/30/2021", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "Next"}
     ]
   },
 
