@@ -233,7 +233,8 @@
 
   "PAGS" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "03/30/2018", "Stop_Date" :   "End"}
+       {"Start_Date" : "03/30/2021", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2018", "Stop_Date" :   "Next"}
     ],
     "Anchored_Text" : {
       "upper left": "Using ADJUSTED EARNINGS TO PLOT",
@@ -538,7 +539,8 @@
 
   "GWW" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "09/30/2017", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "09/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2017", "Stop_Date" :   "Next"}
     ]
   },
 
@@ -603,7 +605,8 @@
 
   "GNRC" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "06/30/2016", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "06/30/2021", "Stop_Date" :   "End"},
+       {"Start_Date" : "06/30/2016", "Stop_Date" :   "Next"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2011", "Stop_Date" :   "10/05/2012", "Adj_Amount" : "-.85"}
@@ -738,7 +741,16 @@
        {"Start_Date" : "11/30/2017", "Stop_Date" :   "07/30/2019"}
     ],
     "Annual_EPS_Adjust" : [
-      {"Start_Date" : "02/22/2018", "Stop_Date" :   "12/05/2018", "Adj_Amount" : "-.6"}
+      {"Start_Date" : "02/22/2018", "Stop_Date" :   "12/05/2018", "Adj_Amount" : "-.3"}
+    ]
+  },
+
+  "NKE" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "05/30/2015", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "02/22/2018", "Stop_Date" :   "12/05/2018", "Adj_Amount" : ".3"}
     ]
   },
 
@@ -755,9 +767,27 @@
        {"Start_Date" : "06/30/2012", "Stop_Date" :   "Next"}
     ]
   },
+
   "ZTO" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "PWR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "09/25/2015", "Stop_Date" :   "07/05/2016", "Adj_Amount" : "-.15"},
+      {"Start_Date" : "12/25/2013", "Stop_Date" :   "10/05/2014", "Adj_Amount" : "-.07"}
+    ]
+  },
+
+  "PSA" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "12/30/2014", "Stop_Date" :   "Next"}
     ]
   },
 
@@ -1087,7 +1117,8 @@
 
   "IEX" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "06/30/2017", "Stop_Date" :   "06/30/2019"}
+       {"Start_Date" : "12/30/2020", "Stop_Date" :   "End"},
+       {"Start_Date" : "06/30/2017", "Stop_Date" :   "Next"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2012", "Stop_Date" :   "10/05/2013", "Adj_Amount" : ".5"}
@@ -1988,6 +2019,15 @@
     },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2012", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "LOW" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "01/30/2020", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "1/25/2019", "Stop_Date" :   "11/05/2019", "Adj_Amount" : ".4"}
     ]
   },
 
@@ -4033,6 +4073,10 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2012", "Stop_Date" :   "06/30/2019"},
        {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "07/05/2018", "Adj_Amount" : "-.3"},
+      {"Start_Date" : "12/25/2015", "Stop_Date" :   "10/05/2016", "Adj_Amount" : ".1"}
     ]
   },
 
@@ -4480,10 +4524,12 @@
 
   "ICE" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "12/30/2012", "Stop_Date" :   "End"}
+       {"Start_Date" : "03/30/2021", "Stop_Date" :   "End"},
+       {"Start_Date" : "12/30/2012", "Stop_Date" :   "Next"}
     ],
     "Annual_EPS_Adjust" : [
-      {"Start_Date" : "12/25/2013", "Stop_Date" :   "10/05/2014", "Adj_Amount" : "1"}
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.3"},
+      {"Start_Date" : "12/25/2013", "Stop_Date" :   "10/05/2014", "Adj_Amount" : ".2"}
     ]
   },
 
@@ -5079,6 +5125,12 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2017", "Stop_Date" :   "06/30/2019"},
        {"Start_Date" : "12/30/2015", "Stop_Date" :   "06/30/2019"}
+    ]
+  },
+
+  "DHR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"}
     ]
   },
 
