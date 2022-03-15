@@ -1,5 +1,5 @@
 curr_dir=`pwd`
-dir_name='2021_12_01'
+dir_name='2022_03_12'
 
 echo "The directory name is $dir_name"
 sleep 2
@@ -7,6 +7,7 @@ sleep 2
 echo "Now commiting files in 'Financials - Quarterly'"
 cd $curr_dir/$dir_name/'Financials - Quarterly'
 git commit -m "Adding Financials Quarterly" *.xlsm --verbose
+
 
 echo ""
 echo "=============================="
