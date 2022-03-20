@@ -81,6 +81,8 @@ eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date','Reason'
 charts_last_updated_df  = pd.DataFrame(columns=['Ticker','Date'])
 eps_report_newer_than_eps_projection_df = pd.DataFrame(columns=['Ticker','Actual_EPS_Report','EPS_Projections_Last_Updated'])
 skipped_tickers_df = pd.DataFrame(columns=['Ticker','Quality_of_Stock','Reason'])
+eps_report_by_month_df = pd.DataFrame(columns=['Month', 'Count'])
+month_sort_order_list = []
 
 historical_last_updated_df.set_index('Ticker', inplace=True)
 earnings_last_reported_df.set_index('Ticker', inplace=True)
@@ -88,9 +90,14 @@ eps_projections_last_updated_df.set_index('Ticker', inplace=True)
 charts_last_updated_df.set_index('Ticker', inplace=True)
 eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
 skipped_tickers_df.set_index('Ticker', inplace=True)
+eps_report_by_month_df.set_index('Month',inplace=True)
 
+for i_idx in range(12):
+  month_name = dt.datetime.strptime(str(i_idx+1), "%m").strftime("%b")
+  eps_report_by_month_df.loc[month_name,'Count'] = 0
+  month_sort_order_list.append(month_name)
 
-# last_4_eps_report_dates_list = []
+logging.debug("Month sort order list " + str(month_sort_order_list))
 # gt_1_month_old_historical_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 # gt_1_month_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 # gt_1_qtr_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
@@ -104,7 +111,7 @@ skipped_tickers_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
 # Loop through all the tickers
 # -----------------------------------------------------------------------------
-# ticker_list = ['AUDC', 'MED']
+# ticker_list = ['PLUS','AUDC', 'MED', 'IBM']
 i_int = 1
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
@@ -206,14 +213,18 @@ for ticker_raw in ticker_list:
     earnings_last_reported_df.loc[ticker, 'Where_found'] = 'Master_Tracklist'
     eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
 
-  # Sundeep : 05/22/2021 - This works - I am tring to get the last 4 dates when the company reported
-  # I used this to accumlate all the last 4 quarter report dates to find out which are the months that
-  # are most busy and which are the months that are least busy for me from the collection of quaterly earnings perspective
-  # last_4_eps_report_dates_list.append(qtr_eps_report_date_list_dt[0])
-  # last_4_eps_report_dates_list.append(qtr_eps_report_date_list_dt[1])
-  # last_4_eps_report_dates_list.append(qtr_eps_report_date_list_dt[2])
-  # last_4_eps_report_dates_list.append(qtr_eps_report_date_list_dt[3])
-  # logging.debug("The last 4 quarters earnings report date for " + str(ticker) + " are " + str(last_4_eps_report_dates_list[-4:]))
+  # Get the last 4 dates when the company reported earnings
+  # Used to accumulate the last 4 quarter report dates across all tickers
+  # to find out which are the months that most quarterly earnings are
+  # reported and which months are least busy
+  if (len(qtr_eps_report_date_list_dt) > 3):
+    # Get the last 4 qtr earnings date and convert the month
+    for i_idx in range(4):
+      month = qtr_eps_report_date_list_dt[i_idx].strftime('%b')
+      logging.debug("Earnings date " + str(qtr_eps_report_date_list_dt[i_idx]) + ", Earnings Month " + str(month))
+      tmp_count = eps_report_by_month_df['Count'].loc[month]
+      eps_report_by_month_df.loc[month,'Count'] = tmp_count + 1
+      logging.debug("Previous earnings Count for " + str(month) + " : " + str(tmp_count) + ", Updated to : " + str(eps_report_by_month_df['Count'].loc[month]))
 
   #
   # try:
@@ -291,13 +302,6 @@ for ticker_raw in ticker_list:
   # -----------------------------------------------------------------------------
 
 
-# Sundeep : 05/22/2021 - This works - search for eps_report_dates_list above and see comments
-# there to see how was this used
-# logging.debug("The last quarters earnings report date list is " + str(last_4_eps_report_dates_list))
-# logging.debug("The last quarters earnings report date list SORTED is " + str(sorted(last_4_eps_report_dates_list)))
-# last_4_eps_report_dates_list = sorted(last_4_eps_report_dates_list)
-# with open("fout.txt", "w") as fout:
-#   print(*last_4_eps_report_dates_list, sep="\n", file=fout)
 # -----------------------------------------------------------------------------
 # Print all the df to their respective files
 # -----------------------------------------------------------------------------
@@ -308,21 +312,26 @@ historical_last_updated_logfile = "historical_last_updated.txt"
 earnings_last_reported_logfile = "earnings_last_reported.txt"
 eps_projections_last_updated_logfile = "eps_projections_last_updated.txt"
 charts_last_updated_logfile = "charts_last_updated.txt"
-eps_report_newer_than_eps_projection_logfile = "eps_report_newer_than_eps_projection.txt"
 skipped_tickers_logfile="skipped_tickers_Sort_misc.txt"
+eps_report_newer_than_eps_projection_logfile = "eps_report_newer_than_eps_projection.txt"
+eps_report_by_month_logfile = "eps_report_by_month.txt"
 
 historical_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + historical_last_updated_logfile,sep=' ', index=True, header=False)
 earnings_last_reported_df.sort_values(by=['Where_found','Reason','Date','Ticker'], ascending=[True,True,True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
 eps_projections_last_updated_df.sort_values(by=['Date','Ticker','Reason'], ascending=[True,True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
 charts_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + charts_last_updated_logfile,sep=' ', index=True, header=False)
-eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=True)
 skipped_tickers_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + skipped_tickers_logfile,sep=' ', index=True, header=True)
+eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=True)
+eps_report_by_month_df.to_csv(dir_path + log_dir + "\\" + eps_report_by_month_logfile,sep=' ', index=True, header=True)
+
 logging.info("Created : " + str(historical_last_updated_logfile) + " <-- Sorted by date - based on the last Price date in their respective historical file")
 logging.info("Created : " + str(earnings_last_reported_logfile) + " <-- Sorted by date - based on when their Last Earnings Date in their respective Earnings file")
 logging.info("Created : " + str(eps_projections_last_updated_logfile) + " <-- Sorted by date - based on when the Earnings Projections were updated in their respective Earnings file")
 logging.info("Created : " + str(charts_last_updated_logfile) + " <-- Sorted by date - based on when the Chart was creates in the Charts directory")
 logging.info("Created : " + str(skipped_tickers_logfile) + " <-- Sorted by Ticker - Lists all the tickers that were skipped along with a reason")
 logging.info("Created : " + str(eps_report_newer_than_eps_projection_logfile) + " <-- THIS FILE SHOULD BE EMPTY. It is a BAD thing if this file is not emptly. The file has the tickers for which the earnings projections are newer than the reported earnings date")
+logging.info("Created : " + str(eps_report_by_month_logfile) + " <-- Sorted by Month - Lists number of qtr earnings reports by month...Can use to help manage your workload")
+
 if (len(eps_report_newer_than_eps_projection_df.index) > 0):
   logging.error("")
   logging.error("*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+")
