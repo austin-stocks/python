@@ -86,7 +86,7 @@ for tmp_dict in earnings_in_week_dict_list:
       yahoo_earnings_calendar_df.loc[ticker] = earnings_date_str
 
 now_datetime_str = now.strftime("%Y_%m_%d")
-yahoo_earnings_calendar_logfile = "yahoo_earnings_calendar_" + now_datetime_str + ".csv"
+yahoo_earnings_calendar_logfile = "yahoo_earnings_calendar_automatic" + now_datetime_str + ".csv"
 yahoo_earnings_calendar_df.sort_values(by=['Earnings_Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + yahoo_earnings_calendar_logfile,sep=',', index=True, header=True)
 
 # Try to get the earnings calendar in the format that would work just plug and play for Tracklist
