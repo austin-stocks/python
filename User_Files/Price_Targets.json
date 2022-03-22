@@ -34,24 +34,108 @@
   "QRVO": {
     "Price_Target": [
       {
-        "Date": "12/30/2011",
-        "Target": "500"
-      },
-      {
-        "Date": "12/30/2020",
-        "Target": "700"
-      },
-      {
-        "Date": "03/16/2022",
-        "Target": "184.73"
-      },
-      {
         "Date": "03/16/2022",
         "Target": "184.73"
       },
       {
         "Date": "03/21/2022",
         "Target": "183.82"
+      }
+    ]
+  },
+  "CSCO": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "63.91"
+      }
+    ]
+  },
+  "DHR": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "341.55"
+      }
+    ]
+  },
+  "ENSG": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "97.00"
+      }
+    ]
+  },
+  "F": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "21.23"
+      }
+    ]
+  },
+  "FLT": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "294.86"
+      }
+    ]
+  },
+  "HONE": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "15.83"
+      }
+    ]
+  },
+  "PAGS": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "36.54"
+      }
+    ]
+  },
+  "RS": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "191.75"
+      }
+    ]
+  },
+  "SYNH": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "103.88"
+      }
+    ]
+  },
+  "THRM": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "89.00"
+      }
+    ]
+  },
+  "WMT": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "165.06"
+      }
+    ]
+  },
+  "YETI": {
+    "Price_Target": [
+      {
+        "Date": "03/22/2022",
+        "Target": "91.82"
       }
     ]
   }

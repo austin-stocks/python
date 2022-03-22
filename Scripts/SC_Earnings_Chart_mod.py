@@ -215,10 +215,12 @@ schiller_pe_monthly_file = "Schiller_PE_by_Month.csv"
 master_tracklist_file = "Master_Tracklist.xlsm"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
-configuration_json = "Configurations.json"
+configuration_json_file = "Configurations.json"
+price_target_json_file = "Price_Targets.json"
 
 calendar_file = "Calendar.csv"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
+
 
 logging.debug("I am " + str(who_am_i) + " and I am running on " + str(my_hostname))
 if (re.search('ann', who_am_i, re.IGNORECASE)):
@@ -248,8 +250,12 @@ schiller_pe_df = pd.read_csv(dir_path + user_dir + "\\" + schiller_pe_monthly_fi
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
 master_tracklist_df.set_index('Tickers', inplace=True)
 
-with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
+with open(dir_path + user_dir + "\\" + configuration_json_file) as json_file:
   config_json = json.load(json_file)
+
+with open(dir_path + user_dir + "\\" + price_target_json_file) as json_file:
+  price_target_json = json.load(json_file)
+
 
 if (os.path.exists(dir_path + user_dir + "\\" + personal_json_file) is True):
   with open(dir_path + user_dir + "\\" + personal_json_file) as json_file:
@@ -865,6 +871,20 @@ for ticker_raw in ticker_list:
   logging.info("Read in the Earnings Data...")
   # ---------------------------------------------------------------------------
 
+  price_target_dict_needs_rename = {}
+  if ticker in price_target_json.keys():
+    price_target_dict_needs_rename = price_target_json[ticker]
+    logging.debug("Price target data for " + str(ticker) + " in Price Target Json : \n" + str(price_target_dict_needs_rename))
+    price_target_dict_list = price_target_dict_needs_rename['Price_Target']
+    logging.debug ("Price Target List is " + str(price_target_dict_list))
+    # 03/21/2022 - Sundeep is here - see how config_json is parsed before proceeding
+    price_target_date_list = [x['Date'] for x in price_target_dict_list]
+    logging.debug ("All the dates in the Price Target Dictionary are " + str(price_target_date_list))
+
+  # for key, value in price_target_dict.items():
+  #   print(key, '->', value)
+
+
   # =============================================================================
   # Handle splits before proceeding as splits can change the qtr_eps
   # =============================================================================
@@ -873,7 +893,7 @@ for ticker_raw in ticker_list:
   split_multiplier = list()
   # print("Tickers in json data: ", config_json.keys())
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + ticker + "does not exist in" + configuration_json + "file")
+    logging.debug("json data for " + ticker + "does not exist in" + configuration_json_file + "file")
   else:
     if ("Splits" in config_json[ticker]):
       # if the length of the keys is > 0
@@ -1145,7 +1165,7 @@ for ticker_raw in ticker_list:
 
   # Read the json file to get the adjustments for the yr eps in lists
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) + " file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + " file")
   else:
     if ("Annual_EPS_Adjust" in config_json[ticker]):
       annual_eps_adjust_json = 1
@@ -1365,7 +1385,7 @@ for ticker_raw in ticker_list:
   # Read the json file to get the adjustments for the upper and lower channels in
   # their respective list
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) + "file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + "file")
   else:
     if ("Upper_Price_Channel_Adj" in config_json[ticker]):
       len_upper_price_channel_adj = len(config_json[ticker]["Upper_Price_Channel_Adj"])
@@ -1389,7 +1409,7 @@ for ticker_raw in ticker_list:
       logging.debug("The Upper Channel Adjust List" + str(upper_price_channel_adj_amount_list))
 
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) + "file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + "file")
   else:
     if ("Lower_Price_Channel_Adj" in config_json[ticker]):
       len_lower_price_channel_adj = len(config_json[ticker]["Lower_Price_Channel_Adj"])
@@ -1509,7 +1529,7 @@ for ticker_raw in ticker_list:
   start_date_for_yr_eps_growth_proj_list = []
   stop_date_for_yr_eps_growth_proj_list = []
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) + " file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + " file")
   else:
     if ("Earnings_growth_projection_overlay" in config_json[ticker]):
       tmp_df = pd.DataFrame(config_json[ticker]["Earnings_growth_projection_overlay"])
@@ -2795,7 +2815,7 @@ for ticker_raw in ticker_list:
       # choose the appropriate plot
       # -----------------------------------------------------------------------------
       if (ticker not in config_json.keys()):
-        logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) + " file")
+        logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + " file")
       else:
         if ("Plot_Annotate" in config_json[ticker]):
           logging.debug("The number of plot annotates requested by the user are " + str(len(config_json[ticker]["Plot_Annotate"])))

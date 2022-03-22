@@ -52,15 +52,15 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # ---------------------------------------------------------------------------
 
-
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
-price_targets_json_dict_filename = "Price_Targets.json"
+tracklist_df = pd.read_csv(tracklist_file_full_path)
 
-with open(dir_path + user_dir + "\\" + price_targets_json_dict_filename) as json_file:
+# Read the already existing json file that has the price targets
+price_targets_json_dict_filename = "Price_Targets.json"
+with open(dir_path + user_dir + "\\" + price_targets_json_dict_filename, 'r') as json_file:
   price_targets_json_dict = json.load(json_file)
 
-tracklist_df = pd.read_csv(tracklist_file_full_path)
 ticker_list_unclean = tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
@@ -69,7 +69,10 @@ for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
   # logging.debug("Updating Target Price for : " + str(ticker))
 
+  # ---------------------------------------------------------------------------
+  # Part of code downloaded from github
   # https://github.com/arete89/Analyst_Target_Price
+  # ---------------------------------------------------------------------------
   lhs_url = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/'
   rhs_url = '?formatted=true&crumb=swg7qs5y9UP&lang=en-US&region=US&' \
             'modules=upgradeDowngradeHistory,recommendationTrend,' \
@@ -86,20 +89,25 @@ for ticker_raw in ticker_list:
   target = result['financialData']['targetMeanPrice']['fmt']
   # If you want the median version, then replace 'targetMeanPrice' with 'targetMedianPrice'
   targets.append(target)
-  logging.info(str(ticker) + " has price target of : " + str(target))
+  logging.info(str(ticker) + ", Price target : " + str(target))
+  # ---------------------------------------------------------------------------
 
   now = dt.datetime.now()
   date_time = now.strftime("%m/%d/%Y")
   logging.debug("Today's date is : " + str(date_time))
 
-  # sundeep is here : Probably better to extract all the things in a dictionary
-  # for the ticker and then deal with the ticker to add / substract and then finally
-  # replace old dictionary in the json file with the newly manipulated dictionary
+  # Extract all the things(data structures) in a (json file) dictionary
+  # for the ticker and then deal with the ticker to add / substract the
+  # price target information.
+  # After adding/substracting is done, replace original dictionary in the
+  # json file with the newly modified dictionary
   ticker_dict = {}
-  logging.debug("The is what is left of the original json dict" + str(price_targets_json_dict))
+  logging.debug("json dict read from the json file : " + str(price_targets_json_dict))
   if (ticker in price_targets_json_dict.keys()):
     ticker_dict = price_targets_json_dict[ticker]
-    logging.debug("Here is what I have for the ticker" + str(ticker_dict))
+    logging.debug("Dictionary corresponding to : " + str(ticker) + " : " + str(ticker_dict))
+    # Remove the ticker dictionary from the big json dictionary. We will add
+    # the dictionary corresponding the the ticker later
     del price_targets_json_dict[ticker]
     ticker_dict["Price_Target"].append({"Date": date_time, "Target": target})
   else:
@@ -107,49 +115,11 @@ for ticker_raw in ticker_list:
     ticker_dict["Price_Target"] = [{"Date": date_time, "Target": target}]
     logging.debug("Here is what I have for the ticker" + str(ticker_dict))
 
+  # Now add the ticker dictionary back into big json dictionary
   price_targets_json_dict[ticker] = ticker_dict
-  logging.debug("Here is now to original dict now looks" + str(price_targets_json_dict))
+  price_targets_json_dict_beautify = json.dumps(price_targets_json_dict, indent=2)
+  logging.debug("Here is now to original dict now looks" + str(price_targets_json_dict_beautify))
 
-  # price_targets_json_dict_sorted = sorted(price_targets_json_dict[ticker]["Price_Target"], key= lambda i:i["Date"])
-with open('out.json', 'w') as f:
-  json.dump(price_targets_json_dict, f, indent=2)
+  with open(dir_path + user_dir + "\\" + price_targets_json_dict_filename, 'w') as f:
+    json.dump(price_targets_json_dict, f, indent=2)
 
-#
-#   sys.exit(1)
-#   # Check if the ticker already exists in the json file
-#   if (ticker not in price_targets_json_dict.keys()):
-#     logging.info("Did not find " + str(ticker) + " in the price target json...Will create an entry for it")
-#     # How to add this
-#     # price_targets_json_dict[ticker]["Price_Target"] += [date_time, target]
-#   else:
-#     price_target_list = price_targets_json_dict[ticker]["Price_Target"]
-#     logging.debug("Price Target Date list is: " + str(price_target_list))
-#     for i_int in range(len(price_target_list)):
-#       logging.debug("Date : " + str(price_targets_json_dict[ticker]["Price_Target"][i_int]["Date"]) + ", Price Target : " + str(price_targets_json_dict[ticker]["Price_Target"][i_int]["Target"]))
-#     price_targets_json_dict[ticker]["Price_Target"].append({"Date" : date_time, "Target" : target})
-#
-#   price_targets_json_dict_sorted = sorted(price_targets_json_dict[ticker]["Price_Target"], key= lambda i:i["Date"])
-#   price_target_list = price_targets_json_dict_sorted[ticker]["Price_Target"]
-#   logging.debug("Price Target Date list is: " + str(price_target_list))
-#   # for i_int in range(len(price_target_list)):
-#   #   logging.debug("Date : " + str(price_targets_json_dict[ticker]["Price_Target"][i_int]["Date"]) + ", Price Target : " + str(price_targets_json_dict[ticker]["Price_Target"][i_int]["Target"]))
-#
-#   # Now dump the json in a json file
-#   json_out = json.dumps(price_targets_json_dict, indent = 2)
-#   logging.debug("The final json output looks like " + str(json_out))
-#   with open ('out.json', 'w') as f:
-#     json.dump(price_targets_json_dict_sorted,f, indent=2)
-#
-#     # price_target_list = price_targets_json_dict[ticker]
-#     # logging.debug(str(ticker) + " has this history of price targets" + str(price_target_list))
-#     # # Sundeep is here - We can go over the list datewise, but that is not needed actuall
-#     # # We can add to price_target_list with the current date and price target.
-#     # # Once we have added that to the list - we need to some how add it to the json and
-#     # # and then write that in the json file
-#
-#
-# # dataframe = pd.DataFrame(list(zip(tickers, targets)), columns=['Company', 'Mean Target Price'])
-# # dataframe = dataframe.set_index('Company')
-# # dataframe.to_csv('Target_Price.csv')
-# # # to_excel in order to save it as a .xlsx file
-# # print(dataframe)
