@@ -67,7 +67,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 targets = []
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
-  # logging.debug("Updating Target Price for : " + str(ticker))
+  logging.info(str(ticker) + " : Fetching Target Price")
 
   # ---------------------------------------------------------------------------
   # Part of code downloaded from github
@@ -86,10 +86,14 @@ for ticker_raw in ticker_list:
   url = lhs_url + ticker + rhs_url
   r = requests.get(url, headers=headers)
   result = r.json()['quoteSummary']['result'][0]
-  target = result['financialData']['targetMeanPrice']['fmt']
+  try:
+    target = result['financialData']['targetMeanPrice']['fmt']
+  except KeyError:
+    logging.error(str(ticker) + " : Error fetching the target price...skipping ")
+    continue
   # If you want the median version, then replace 'targetMeanPrice' with 'targetMedianPrice'
   targets.append(target)
-  logging.info(str(ticker) + ", Price target : " + str(target))
+  logging.info(str(ticker) + " : Price target : " + str(target))
   # ---------------------------------------------------------------------------
 
   now = dt.datetime.now()
