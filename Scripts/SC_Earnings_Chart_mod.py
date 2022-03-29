@@ -871,18 +871,85 @@ for ticker_raw in ticker_list:
   logging.info("Read in the Earnings Data...")
   # ---------------------------------------------------------------------------
 
+  # ---------------------------------------------------------------------------
+  # Price Target section
+  # ---------------------------------------------------------------------------
   price_target_dict_needs_rename = {}
+  price_target_date_list_dt = []
+  price_target_amount_list = []
+  pt_print_str = ""
   if ticker in price_target_json.keys():
     price_target_dict_needs_rename = price_target_json[ticker]
-    logging.debug("Price target data for " + str(ticker) + " in Price Target Json : \n" + str(price_target_dict_needs_rename))
-    price_target_dict_list = price_target_dict_needs_rename['Price_Target']
-    logging.debug ("Price Target List is " + str(price_target_dict_list))
-    # 03/21/2022 - Sundeep is here - see how config_json is parsed before proceeding
-    price_target_date_list = [x['Date'] for x in price_target_dict_list]
-    logging.debug ("All the dates in the Price Target Dictionary are " + str(price_target_date_list))
+    logging.debug("Price target data for " + str(ticker) + " in Price Target Json : \n" + str(price_target_json[ticker]['Price_Target']))
+    len_price_target = len(price_target_json[ticker]["Price_Target"])
+    for i in range(len_price_target):
+      i_price_target_date = price_target_json[ticker]["Price_Target"][i]["Date"]
+      i_price_target_amount = price_target_json[ticker]["Price_Target"][i]["Target"]
+      try:
+        price_target_date_list_dt.append(dt.datetime.strptime(i_price_target_date, "%m/%d/%Y").date())
+        price_target_amount_list.append(float(i_price_target_amount))
+      except (ValueError):
+        logging.error(
+          "\n***** Error : Either the Dates or the Price Target Amount are not in proper format for Price_Target in Price Target json file.\n"
+          "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
+          "***** Error : Found somewhere in :" + str(i_price_target_date) + ", " + str(i_price_target_amount))
+        sys.exit(1)
 
-  # for key, value in price_target_dict.items():
-  #   print(key, '->', value)
+    # -----------------------------------------------------
+    # Check for duplicate dates and ask the user to fix
+    # duplicate dates - This should be rare, and if it happens
+    # then the user needs to clean the json file
+    # -----------------------------------------------------
+    logging.debug("The price Target datelist is : " + str(price_target_date_list_dt))
+    if (len(price_target_date_list_dt) != len(set(price_target_date_list_dt))):
+      logging.error ("There are some duplicate dates in the Price_Target in Price Target json file...Please correct and rerun")
+      sys.exit(1)
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # Convert the date and the target amount arrays to np arrays
+    # Then sort the date array - that will give us the index of
+    # the sorted array. Then sort the target amount array with
+    # the same indexes so they are sorted "in sync"
+    # -----------------------------------------------------
+    price_target_date_list_dt_np = np.array(price_target_date_list_dt)
+    price_target_amount_list_np = np.array(price_target_amount_list)
+    price_target_date_list_sorted_idx = np.flip(np.array(price_target_date_list_dt).argsort())
+    logging.debug("The SORTED PT datelist index : " + str(price_target_date_list_sorted_idx))
+
+    price_target_date_list_sorted_dt = price_target_date_list_dt_np[price_target_date_list_sorted_idx]
+    price_target_amount_list_sorted = price_target_amount_list_np[price_target_date_list_sorted_idx]
+    logging.debug("The SORTED PT datelist  : " + str(price_target_date_list_sorted_dt))
+    logging.debug("The SORTED PT amount    : " + str(price_target_amount_list_sorted))
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # Prepare a string that will be put on the chart
+    # -----------------------------------------------------
+    # For now only display the latest 4 price targets, when can get
+    # sophisticated as we see more price targets. For that we have
+    # to do some splicing of the date_list to find the difference
+    # in the various dates available and then do the math - so
+    # in a year I may update the chart 12 times (approximately once a
+    # month, but we may not want to display just the last three entries
+    # of PT, I may want to do back and display last 2 and then going
+    # back and quarter and then going back a year...it is not clear
+    # at this point what would be good do display...so as I mentioned
+    # above, it will evolve
+    no_of_pt_to_display = len(price_target_amount_list_sorted)
+    if no_of_pt_to_display > 4:
+      no_of_pt_to_display = 4
+
+    for i_idx in range(no_of_pt_to_display):
+      logging.debug("Index " + str(i_idx) + ", Date  " + str(price_target_date_list_sorted_dt[i_idx]) + ", value " + str(price_target_amount_list_sorted[i_idx]))
+      pt_print_str = pt_print_str + str(price_target_date_list_sorted_dt[i_idx]) + ", PT : " + str(price_target_amount_list_sorted[i_idx])
+      if i_idx != no_of_pt_to_display-1:
+        pt_print_str = pt_print_str + "\n"
+    logging.debug("The PT string is " + str(pt_print_str))
+  # ---------------------------------------------------------------------------
+
+
+
 
 
   # =============================================================================
@@ -2202,9 +2269,10 @@ for ticker_raw in ticker_list:
       plt.text(x=0.03, y=0.915, s=ticker_company_name + "(" + ticker + ")", fontsize=18, fontweight='bold', ha="left", transform=fig.transFigure)
       plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry, fontsize=11, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
       plt.text(x=0.03, y=0.866, s=chart_update_date_str, fontsize=9, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
-      # plt.text(x=0.4, y=0.915, s=adjusted_eps_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-      main_plt.text(x=.45, y=.95, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
-      main_plt.text(x=.615, y=.865, s=price_eps_growth_str_textbox, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
+      # main_plt.text(x=.45, y=.95, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
+      main_plt.text(x=.28, y=.98, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
+      main_plt.text(x=.526, y=.942, s=pt_print_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
+      main_plt.text(x=.653, y=.865, s=price_eps_growth_str_textbox, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
 
       # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
       # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
