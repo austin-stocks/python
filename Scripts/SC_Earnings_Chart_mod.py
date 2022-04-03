@@ -14,6 +14,7 @@ import matplotlib.dates as mdates
 import calendar
 import logging
 
+from collections import Counter
 from dateutil.relativedelta import relativedelta
 from matplotlib.offsetbox import AnchoredText
 
@@ -902,7 +903,9 @@ for ticker_raw in ticker_list:
     # -----------------------------------------------------
     logging.debug("The price Target datelist is : " + str(price_target_date_list_dt))
     if (len(price_target_date_list_dt) != len(set(price_target_date_list_dt))):
+      duplicate_items_list = [k for k,v in Counter(price_target_date_list_dt).items() if v>1]
       logging.error ("There are some duplicate dates in the Price_Target in Price Target json file...Please correct and rerun")
+      logging.error ("Duplicates : " + str(duplicate_items_list))
       sys.exit(1)
     # -----------------------------------------------------
 

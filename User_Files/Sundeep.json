@@ -71,7 +71,8 @@
 
   "QCOM" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "10/14/2021","Buy_Price_str" :  "127.65"}
+       {"Buy_Date" : "10/14/2021","Buy_Price_str" :  "127.65"},
+       {"Buy_Date" : "4/1/2022","Buy_Price_str" :  "144.61"}
     ]
   },
 
@@ -119,7 +120,8 @@
   "MU" : {
     "Buy_Sell" : [
        {"Buy_Date" : "12/19/2019","Buy_Price_str" :  "$54.5"},
-       {"Sell_Date" : "09/21/2020","Sell_Price_str" :  "$49"}
+       {"Sell_Date" : "09/21/2020","Sell_Price_str" :  "$49"},
+       {"Buy_Date" : "4/1/2022","Buy_Price_str" :  "$74.66"}
     ]
   },
 
