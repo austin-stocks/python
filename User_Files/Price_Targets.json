@@ -1246,5 +1246,141 @@
         "Target": "100.78"
       }
     ]
+  },
+  "FMC": {
+    "Price_Target": [
+      {
+        "Date": "04/06/2022",
+        "Target": "132.76"
+      }
+    ]
+  },
+  "IMXI": {
+    "Price_Target": [
+      {
+        "Date": "04/07/2022",
+        "Target": "22.70"
+      }
+    ]
+  },
+  "NVT": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "43.00"
+      }
+    ]
+  },
+  "LUV": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "52.98"
+      }
+    ]
+  },
+  "MA": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "431.13"
+      }
+    ]
+  },
+  "MITK": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "25.75"
+      }
+    ]
+  },
+  "MKTX": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "370.91"
+      }
+    ]
+  },
+  "MMC": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "171.77"
+      }
+    ]
+  },
+  "NDAQ": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "212.13"
+      }
+    ]
+  },
+  "OSIS": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "120.50"
+      }
+    ]
+  },
+  "PGR": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "106.77"
+      }
+    ]
+  },
+  "PTC": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "150.27"
+      }
+    ]
+  },
+  "RJF": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "139.13"
+      }
+    ]
+  },
+  "TER": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "139.52"
+      }
+    ]
+  },
+  "TSLA": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "978.19"
+      }
+    ]
+  },
+  "TSM": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "152.21"
+      }
+    ]
+  },
+  "TXN": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "197.79"
+      }
+    ]
   }
 }
