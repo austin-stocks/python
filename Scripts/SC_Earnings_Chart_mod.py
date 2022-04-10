@@ -885,7 +885,7 @@ for ticker_raw in ticker_list:
     len_price_target = len(price_target_json[ticker]["Price_Target"])
     for i in range(len_price_target):
       i_price_target_date = price_target_json[ticker]["Price_Target"][i]["Date"]
-      i_price_target_amount = price_target_json[ticker]["Price_Target"][i]["Target"]
+      i_price_target_amount = price_target_json[ticker]["Price_Target"][i]["Target"].replace(',','')
       try:
         price_target_date_list_dt.append(dt.datetime.strptime(i_price_target_date, "%m/%d/%Y").date())
         price_target_amount_list.append(float(i_price_target_amount))
@@ -893,7 +893,7 @@ for ticker_raw in ticker_list:
         logging.error(
           "\n***** Error : Either the Dates or the Price Target Amount are not in proper format for Price_Target in Price Target json file.\n"
           "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
-          "***** Error : Found somewhere in :" + str(i_price_target_date) + ", " + str(i_price_target_amount))
+          "***** Error : Found somewhere in : Date : " + str(i_price_target_date) + ", Price Target : " + str(i_price_target_amount))
         sys.exit(1)
 
     # -----------------------------------------------------
