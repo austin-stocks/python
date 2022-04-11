@@ -1702,5 +1702,173 @@
         "Target": "262.05"
       }
     ]
+  },
+  "AMD": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "150.75"
+      }
+    ]
+  },
+  "APAM": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "43.25"
+      }
+    ]
+  },
+  "AQUA": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "48.30"
+      }
+    ]
+  },
+  "ATEN": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "19.67"
+      }
+    ]
+  },
+  "ATKR": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "128.00"
+      }
+    ]
+  },
+  "BAH": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "91.90"
+      }
+    ]
+  },
+  "CACC": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "471.50"
+      }
+    ]
+  },
+  "CAT": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "235.00"
+      }
+    ]
+  },
+  "CHD": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "98.85"
+      }
+    ]
+  },
+  "CHTR": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "716.60"
+      }
+    ]
+  },
+  "CP": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "83.13"
+      }
+    ]
+  },
+  "CRUS": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "107.92"
+      }
+    ]
+  },
+  "CSGS": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "67.00"
+      }
+    ]
+  },
+  "CTLT": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "146.00"
+      }
+    ]
+  },
+  "EA": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "164.54"
+      }
+    ]
+  },
+  "EMN": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "137.68"
+      }
+    ]
+  },
+  "ENTG": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "164.75"
+      }
+    ]
+  },
+  "EVC": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "13.50"
+      }
+    ]
+  },
+  "FN": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "120.00"
+      }
+    ]
+  },
+  "GM": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "71.27"
+      }
+    ]
+  },
+  "STM": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "62.50"
+      }
+    ]
   }
 }
