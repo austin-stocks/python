@@ -1870,5 +1870,245 @@
         "Target": "62.50"
       }
     ]
+  },
+  "ABBV": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "157.62"
+      }
+    ]
+  },
+  "ALGN": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "628.00"
+      }
+    ]
+  },
+  "ALL": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "142.15"
+      }
+    ]
+  },
+  "AME": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "162.49"
+      }
+    ]
+  },
+  "AMZN": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "4,072.11"
+      }
+    ]
+  },
+  "AON": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "319.55"
+      }
+    ]
+  },
+  "ARW": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "141.14"
+      }
+    ]
+  },
+  "AVTR": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "43.67"
+      }
+    ]
+  },
+  "BERY": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "79.08"
+      }
+    ]
+  },
+  "CCMP": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "188.86"
+      }
+    ]
+  },
+  "CENT": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "60.33"
+      }
+    ]
+  },
+  "CHKP": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "137.16"
+      }
+    ]
+  },
+  "CHRW": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "104.81"
+      }
+    ]
+  },
+  "CI": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "263.00"
+      }
+    ]
+  },
+  "CLX": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "139.80"
+      }
+    ]
+  },
+  "DECK": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "439.00"
+      }
+    ]
+  },
+  "DHI": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "115.33"
+      }
+    ]
+  },
+  "EL": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "356.86"
+      }
+    ]
+  },
+  "FB": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "324.59"
+      }
+    ]
+  },
+  "FBHS": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "108.53"
+      }
+    ]
+  },
+  "FORM": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "49.71"
+      }
+    ]
+  },
+  "FTNT": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "359.77"
+      }
+    ]
+  },
+  "HOLX": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "85.09"
+      }
+    ]
+  },
+  "HUM": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "14,438.90"
+      }
+    ]
+  },
+  "IDXX": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "682.43"
+      }
+    ]
+  },
+  "KLIC": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "84.00"
+      }
+    ]
+  },
+  "LFUS": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "312.00"
+      }
+    ]
+  },
+  "LPLA": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "226.45"
+      }
+    ]
+  },
+  "MMS": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "105.00"
+      }
+    ]
+  },
+  "MRCY": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "61.38"
+      }
+    ]
   }
 }
