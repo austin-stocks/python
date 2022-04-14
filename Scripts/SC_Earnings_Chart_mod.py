@@ -940,8 +940,8 @@ for ticker_raw in ticker_list:
     # at this point what would be good do display...so as I mentioned
     # above, it will evolve
     no_of_pt_to_display = len(price_target_amount_list_sorted)
-    if no_of_pt_to_display > 4:
-      no_of_pt_to_display = 4
+    if no_of_pt_to_display > 7:
+      no_of_pt_to_display = 7
 
     for i_idx in range(no_of_pt_to_display):
       logging.debug("Index " + str(i_idx) + ", Date  " + str(price_target_date_list_sorted_dt[i_idx]) + ", value " + str(price_target_amount_list_sorted[i_idx]))
@@ -2274,7 +2274,7 @@ for ticker_raw in ticker_list:
       plt.text(x=0.03, y=0.866, s=chart_update_date_str, fontsize=9, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
       # main_plt.text(x=.45, y=.95, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
       main_plt.text(x=.28, y=.98, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
-      main_plt.text(x=.526, y=.942, s=pt_print_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
+      main_plt.text(x=.526, y=.8655, s=pt_print_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
       main_plt.text(x=.653, y=.865, s=price_eps_growth_str_textbox, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
 
       # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
