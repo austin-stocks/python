@@ -1015,14 +1015,6 @@
       }
     ]
   },
-  "ISRG": {
-    "Price_Target": [
-      {
-        "Date": "04/03/2022",
-        "Target": "336.42"
-      }
-    ]
-  },
   "KMB": {
     "Price_Target": [
       {
@@ -2692,6 +2684,370 @@
       {
         "Date": "04/16/2022",
         "Target": "43.00"
+      }
+    ]
+  },
+  "MELI": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "1,611.66"
+      }
+    ]
+  },
+  "ACU": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "49.50"
+      }
+    ]
+  },
+  "CYBR": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "199.95"
+      }
+    ]
+  },
+  "ISRG": {
+    "Price_Target": [
+      {
+        "Date": "04/03/2022",
+        "Target": "336.42"
+      },
+      {
+        "Date": "04/17/2022",
+        "Target": "339.29"
+      }
+    ]
+  },
+  "LH": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "334.00"
+      }
+    ]
+  },
+  "MSI": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "269.89"
+      }
+    ]
+  },
+  "NSSC": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "25.90"
+      }
+    ]
+  },
+  "ORLY": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "769.71"
+      }
+    ]
+  },
+  "PAYC": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "430.82"
+      }
+    ]
+  },
+  "PFE": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "60.47"
+      }
+    ]
+  },
+  "PFGC": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "63.93"
+      }
+    ]
+  },
+  "POWL": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "27.00"
+      }
+    ]
+  },
+  "SPGI": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "479.33"
+      }
+    ]
+  },
+  "SSD": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "143.75"
+      }
+    ]
+  },
+  "TRMB": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "93.88"
+      }
+    ]
+  },
+  "TTWO": {
+    "Price_Target": [
+      {
+        "Date": "04/17/2022",
+        "Target": "205.85"
+      }
+    ]
+  },
+  "AAP": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "257.59"
+      }
+    ]
+  },
+  "ABG": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "245.00"
+      }
+    ]
+  },
+  "AKAM": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "135.47"
+      }
+    ]
+  },
+  "AMAT": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "166.93"
+      }
+    ]
+  },
+  "ANET": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "151.18"
+      }
+    ]
+  },
+  "ARES": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "97.60"
+      }
+    ]
+  },
+  "CORT": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "27.17"
+      }
+    ]
+  },
+  "CPRT": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "168.75"
+      }
+    ]
+  },
+  "CPSI": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "37.88"
+      }
+    ]
+  },
+  "CRL": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "389.83"
+      }
+    ]
+  },
+  "CRMT": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "118.00"
+      }
+    ]
+  },
+  "EQIX": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "832.95"
+      }
+    ]
+  },
+  "ESNT": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "57.22"
+      }
+    ]
+  },
+  "ET": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "14.59"
+      }
+    ]
+  },
+  "FIS": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "137.97"
+      }
+    ]
+  },
+  "G": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "52.73"
+      }
+    ]
+  },
+  "GLDD": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "17.52"
+      }
+    ]
+  },
+  "HII": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "232.60"
+      }
+    ]
+  },
+  "HSIC": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "90.82"
+      }
+    ]
+  },
+  "HUN": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "46.44"
+      }
+    ]
+  },
+  "IAA": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "54.63"
+      }
+    ]
+  },
+  "ILMN": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "413.17"
+      }
+    ]
+  },
+  "IOSP": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "117.50"
+      }
+    ]
+  },
+  "KAI": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "225.33"
+      }
+    ]
+  },
+  "LDOS": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "117.80"
+      }
+    ]
+  },
+  "LGIH": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "137.00"
+      }
+    ]
+  },
+  "LOPE": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "95.20"
+      }
+    ]
+  },
+  "LSCC": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "77.00"
+      }
+    ]
+  },
+  "MASI": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "199.00"
       }
     ]
   }

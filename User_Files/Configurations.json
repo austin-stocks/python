@@ -4629,6 +4629,11 @@
     ]
   },
 
+  "MELI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2021", "Stop_Date" :   "End"}
+    ]
+  },
   "LKFN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2015", "Stop_Date" :   "End"}

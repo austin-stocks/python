@@ -67,7 +67,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 targets = []
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
-  logging.info(str(ticker) + " : Fetching Target Price")
+  logging.debug(str(ticker) + " : Fetching Target Price")
 
   # ---------------------------------------------------------------------------
   # Part of code downloaded from github
