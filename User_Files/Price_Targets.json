@@ -1,16 +1,4 @@
 {
-  "JBL": {
-    "Price_Target": [
-      {
-        "Date": "03/16/2022",
-        "Target": "78.25"
-      },
-      {
-        "Date": "03/16/2022",
-        "Target": "78.25"
-      }
-    ]
-  },
   "SMTC": {
     "Price_Target": [
       {
@@ -735,14 +723,6 @@
       }
     ]
   },
-  "SNBR": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "62.25"
-      }
-    ]
-  },
   "SRE": {
     "Price_Target": [
       {
@@ -815,14 +795,6 @@
       }
     ]
   },
-  "ABT": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "142.88"
-      }
-    ]
-  },
   "ADM": {
     "Price_Target": [
       {
@@ -836,14 +808,6 @@
       {
         "Date": "04/01/2022",
         "Target": "352.00"
-      }
-    ]
-  },
-  "ANTM": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "496.90"
       }
     ]
   },
@@ -983,22 +947,6 @@
       }
     ]
   },
-  "IBM": {
-    "Price_Target": [
-      {
-        "Date": "12/30/2011",
-        "Target": "100"
-      },
-      {
-        "Date": "12/30/2020",
-        "Target": "200"
-      },
-      {
-        "Date": "04/03/2022",
-        "Target": "143.47"
-      }
-    ]
-  },
   "IIIN": {
     "Price_Target": [
       {
@@ -1023,22 +971,6 @@
       }
     ]
   },
-  "KMI": {
-    "Price_Target": [
-      {
-        "Date": "04/03/2022",
-        "Target": "19.57"
-      }
-    ]
-  },
-  "LRCX": {
-    "Price_Target": [
-      {
-        "Date": "04/03/2022",
-        "Target": "720.58"
-      }
-    ]
-  },
   "LSTR": {
     "Price_Target": [
       {
@@ -1060,14 +992,6 @@
       {
         "Date": "04/03/2022",
         "Target": "370.68"
-      }
-    ]
-  },
-  "NFLX": {
-    "Price_Target": [
-      {
-        "Date": "04/03/2022",
-        "Target": "509.50"
       }
     ]
   },
@@ -1159,22 +1083,6 @@
       }
     ]
   },
-  "LMT": {
-    "Price_Target": [
-      {
-        "Date": "04/03/2022",
-        "Target": "458.59"
-      }
-    ]
-  },
-  "TCBI": {
-    "Price_Target": [
-      {
-        "Date": "04/03/2022",
-        "Target": "69.29"
-      }
-    ]
-  },
   "UAL": {
     "Price_Target": [
       {
@@ -1239,27 +1147,11 @@
       }
     ]
   },
-  "MKTX": {
-    "Price_Target": [
-      {
-        "Date": "04/08/2022",
-        "Target": "370.91"
-      }
-    ]
-  },
   "MMC": {
     "Price_Target": [
       {
         "Date": "04/08/2022",
         "Target": "171.77"
-      }
-    ]
-  },
-  "NDAQ": {
-    "Price_Target": [
-      {
-        "Date": "04/08/2022",
-        "Target": "212.13"
       }
     ]
   },
@@ -1300,14 +1192,6 @@
       {
         "Date": "04/08/2022",
         "Target": "139.52"
-      }
-    ]
-  },
-  "TSLA": {
-    "Price_Target": [
-      {
-        "Date": "04/08/2022",
-        "Target": "978.19"
       }
     ]
   },
@@ -3048,6 +2932,410 @@
       {
         "Date": "04/20/2022",
         "Target": "199.00"
+      }
+    ]
+  },
+  "IBM": {
+    "Price_Target": [
+      {
+        "Date": "12/30/2011",
+        "Target": "100"
+      },
+      {
+        "Date": "12/30/2020",
+        "Target": "200"
+      },
+      {
+        "Date": "04/03/2022",
+        "Target": "143.47"
+      },
+      {
+        "Date": "04/20/2022",
+        "Target": "143.26"
+      }
+    ]
+  },
+  "LMT": {
+    "Price_Target": [
+      {
+        "Date": "04/03/2022",
+        "Target": "458.59"
+      },
+      {
+        "Date": "04/20/2022",
+        "Target": "466.65"
+      }
+    ]
+  },
+  "NFLX": {
+    "Price_Target": [
+      {
+        "Date": "04/03/2022",
+        "Target": "509.50"
+      },
+      {
+        "Date": "04/20/2022",
+        "Target": "493.92"
+      }
+    ]
+  },
+  "MCO": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "381.89"
+      }
+    ]
+  },
+  "MGA": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "107.20"
+      }
+    ]
+  },
+  "MLM": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "454.10"
+      }
+    ]
+  },
+  "MPWR": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "562.22"
+      }
+    ]
+  },
+  "NMIH": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "32.44"
+      }
+    ]
+  },
+  "NSIT": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "120.33"
+      }
+    ]
+  },
+  "NSP": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "119.00"
+      }
+    ]
+  },
+  "NVDA": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "332.50"
+      }
+    ]
+  },
+  "OMCL": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "179.90"
+      }
+    ]
+  },
+  "PRI": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "166.33"
+      }
+    ]
+  },
+  "QLYS": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "143.00"
+      }
+    ]
+  },
+  "RGLD": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "145.08"
+      }
+    ]
+  },
+  "SEDG": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "348.08"
+      }
+    ]
+  },
+  "SNPS": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "394.80"
+      }
+    ]
+  },
+  "TRTN": {
+    "Price_Target": [
+      {
+        "Date": "04/20/2022",
+        "Target": "75.75"
+      }
+    ]
+  },
+  "AAON": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "71.00"
+      }
+    ]
+  },
+  "DG": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "249.91"
+      }
+    ]
+  },
+  "EBIX": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "113.88"
+      }
+    ]
+  },
+  "EBS": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "57.00"
+      }
+    ]
+  },
+  "JBL": {
+    "Price_Target": [
+      {
+        "Date": "03/16/2022",
+        "Target": "78.25"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "82.17"
+      }
+    ]
+  },
+  "LEN": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "116.44"
+      }
+    ]
+  },
+  "LOW": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "274.07"
+      }
+    ]
+  },
+  "MRVL": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "96.64"
+      }
+    ]
+  },
+  "PLTR": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "15.35"
+      }
+    ]
+  },
+  "TTD": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "95.17"
+      }
+    ]
+  },
+  "TTGT": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "107.25"
+      }
+    ]
+  },
+  "TYL": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "527.30"
+      }
+    ]
+  },
+  "ZBRA": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "554.50"
+      }
+    ]
+  },
+  "ZTS": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "245.42"
+      }
+    ]
+  },
+  "ABT": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "142.88"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "142.06"
+      }
+    ]
+  },
+  "ANTM": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "496.90"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "519.05"
+      }
+    ]
+  },
+  "HCSG": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "18.92"
+      }
+    ]
+  },
+  "KMI": {
+    "Price_Target": [
+      {
+        "Date": "04/03/2022",
+        "Target": "19.57"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "19.89"
+      }
+    ]
+  },
+  "LAD": {
+    "Price_Target": [
+      {
+        "Date": "04/21/2022",
+        "Target": "448.00"
+      }
+    ]
+  },
+  "LRCX": {
+    "Price_Target": [
+      {
+        "Date": "04/03/2022",
+        "Target": "720.58"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "701.62"
+      }
+    ]
+  },
+  "MKTX": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "370.91"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "347.64"
+      }
+    ]
+  },
+  "NDAQ": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "212.13"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "210.07"
+      }
+    ]
+  },
+  "SNBR": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "62.25"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "55.25"
+      }
+    ]
+  },
+  "TCBI": {
+    "Price_Target": [
+      {
+        "Date": "04/03/2022",
+        "Target": "69.29"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "68.85"
+      }
+    ]
+  },
+  "TSLA": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "978.19"
+      },
+      {
+        "Date": "04/21/2022",
+        "Target": "953.51"
       }
     ]
   }
