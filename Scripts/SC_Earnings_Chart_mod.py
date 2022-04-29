@@ -1901,7 +1901,7 @@ for ticker_raw in ticker_list:
                 "If it does not match, then that means that the future projected earnings are likely to be adjusted by the company...It is your job to find out why the current earnings were adjusted")
 
   chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(qtr_eps_projections_date_0) + ", " + str(qtr_eps_projections_date_1)
-  chart_update_date_str += "\nCNBC Earnings match reported Earnings - " + str(cnbc_matches_reported_eps) + " :: Added AAII EPS Projections for : " + str(no_of_years_to_insert_aaii_eps_projections) + " years"
+  chart_update_date_str += "\nCNBC Earnings - " + str(cnbc_matches_reported_eps) + " :: Added AAII EPS Projections for : " + str(no_of_years_to_insert_aaii_eps_projections) + " years"
   if not ((is_ticker_foreign == 'nan') or (len(is_ticker_foreign) == 0)):
     chart_update_date_str += " :: Country - " + is_ticker_foreign
   logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry) + str(chart_update_date_str))
