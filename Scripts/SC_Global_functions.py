@@ -1,6 +1,6 @@
 
 
-aaii_analysts_projection_file = "AAII_Analysts_2022_02_21.csv"
+aaii_analysts_projection_file = "AAII_Analysts_2022_04_28.csv"
 
 aaii_missing_tickers_list = [
 'CRZO','GOOG','RACE','WCG','FOX','DISCK','BRK-B'
