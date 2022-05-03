@@ -55,11 +55,13 @@ for ticker_raw in ticker_list:
   filelist_str = filelist_str + earnings_filename + " "
 
 filelist_str = filelist_str + "\""
-print ("The command to open the excel files from "+ tracklist_file + " : \n", filelist_str)
+print ("The command to open the excel files in "+ tracklist_file + " : \n", filelist_str)
 script_file.write(filelist_str)
 script_file.close()
 
+# text = colored('Hello, World!', 'red', attrs=['reverse', 'blink'])
+
 print ("")
-print ("You can either copy the line above, paste it in Windows Powershell and press enter or open the scripts file")
-print (script_file.name)
-print ("and copy the line (it is the same line as above) from there, paste in the Windows Powershell and press enter ")
+print ("You can either copy the line above, paste it at " + colored("Windows Powershell", 'red', attrs=['blink', 'bold']) + " prompt, press enter OR")
+print ("Open the scripts file : " , script_file.name)
+print ("And copy the line in it (it should be the same line as above), paste at " + colored("Windows Powershell", 'red', attrs=['bold']) + " prompt, press enter ")
