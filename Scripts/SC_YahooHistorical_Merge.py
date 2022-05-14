@@ -4,6 +4,7 @@ import numpy as np
 import os
 import sys
 import logging
+
 # This program reads the
 # 1. Calendar file
 # 2. Yahoo Historical Downloaded file
@@ -17,6 +18,7 @@ user_dir = "\\..\\" + "User_Files"
 tracklist_file = "Tracklist.csv"
 calendar_file = "Calendar.csv"
 configuration_file = "Configurations.csv"
+earnings_dir = "\\..\\" + "Earnings"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 calendar_file_full_path = dir_path + user_dir + "\\" + calendar_file
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
@@ -51,7 +53,7 @@ logging.disable(logging.NOTSET)
 
 
 # There are a few  stocks that change names (RECN -> RGP) and Yahoo stops historical
-# data fro RECN and start for RGP. However RGP only has historical data from the
+# data fro RECN and start for RGP. However, RGP only has historical data from the
 # date the name change became effective. So, in essence, we are left with two
 # pieces of data for RECN(Now RGP). One till the date RECN was RECN and one after
 # RECN became RGP. This scipt needs to stitch those two pieces together.
@@ -86,12 +88,6 @@ for col in col_list:
   logging.debug("The date in col" + str(col) + " are " + str(tmp_list))
   calendar_date_list_raw.extend(tmp_list)
 
-# for date_str in calendar_date_list_raw:
-#   date_dt = dt.datetime.strptime(date_str, '%m/%d/%Y').date()
-#   print("The string is ", date_str, " and the converted is ", date_dt)
-# sys.exit(1)
-# print("The concatenated Calendar list is ", calendar_date_list_raw)
-# calendar_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in calendar_df.iloc[:, 0]]
 calendar_date_list = [dt.datetime.strptime(str(date), '%m/%d/%Y').date() for date in calendar_date_list_raw]
 # print("The Calendar Date list is", calendar_date_list, "\nand it has", len(calendar_date_list), " elements")
 # =============================================================================
@@ -101,7 +97,6 @@ calendar_date_list = [dt.datetime.strptime(str(date), '%m/%d/%Y').date() for dat
 # For each ticker in the ticker list from tracklist
 # Open the Downloaded Yahoo Historical
 # =============================================================================
-
 get_sp_holdings = 0
 if (get_sp_holdings == 1):
   tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + 'SPY_All_Holdings.xlsx', sheet_name="SPY")
@@ -133,6 +128,18 @@ for ticker_raw in ticker_list:
     logging.error("**********     Entry for " + str(ticker).center(10) + " not found in the configurations file     **********")
     logging.error("**********     Please create one and then run the script again                 **********")
     sys.exit(1)
+
+  # ---------------------------------------------------------------------------
+  # Read the earnings file and get the last date for which earnings
+  # projections is available
+  # ---------------------------------------------------------------------------
+  earnings_file = ticker + "_earnings.csv"
+  qtr_eps_df = pd.read_csv(dir_path + earnings_dir + "\\" + earnings_file)
+  ticker_qtr_date_list = qtr_eps_df.Q_Date.dropna().tolist()
+  ticker_qtr_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in ticker_qtr_date_list]
+  ticker_qtr_date = ticker_qtr_date_list_dt[0]
+  logging.debug("The latest date for which earnings projections are available in the earnings file is : " + str(ticker_qtr_date))
+  # ---------------------------------------------------------------------------
 
 
   # ===========================================================================
@@ -176,21 +183,6 @@ for ticker_raw in ticker_list:
     # Now append the two historical df together and then remove the duplicates in date, if they exist
     historical_df = historical_df_tmp.append(older_historical_df, ignore_index=True)
     logging.debug("The historical df after merging two df together is \n" + historical_df.to_string())
-
-  #
-  #   last_older_historical_date_dt = older_historical_date_list_dt[0]
-  #   match_date = min(historical_date_list_dt, key=lambda d: abs(d - last_older_historical_date_dt))
-  #   match_date_index = historical_date_list_dt.index(match_date)
-  #   logging.info("Iteration no : " + str(i_idx) + ", " + str(ticker) + " needs to be merged with " + str(ticker_with_older_historical_data))
-  #   logging.info("Iteration no : " + str(i_idx) + ", " + "Will use " + str(ticker) + " data(new) till " + str(match_date) + " and then " + str(ticker_with_older_historical_data) +  " data(older) onwards to create the historical data")
-  #   logging.info("Iteration no : " + str(i_idx) + ", " + "Please check the historical file or final chart to make sure that merging happened correctly")
-  #   logging.debug("Matched date " + str(match_date) + " at index " + str(match_date_index))
-  #   historical_df_tmp = historical_df.iloc[:match_date_index]
-  #   logging.debug("The historical df after cleaninn up is \n" + historical_df_tmp.to_string())
-  #   # Now append the two historical df together and then remove the duplicates in date, if they exist
-  #   historical_df = historical_df_tmp.append(older_historical_df, ignore_index=True)
-  #   logging.debug("The historical df after merging two df together is \n" + historical_df.to_string())
-  # # sys.exit(1)
 
   # ===========================================================================
   # Insert Moving averages
