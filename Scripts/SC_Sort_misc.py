@@ -7,6 +7,8 @@ import numpy as np
 import logging
 import math
 import re
+import json
+from dateutil.relativedelta import relativedelta
 
 def check_list_elements_with_val(list1, val):
   # traverse in the list
@@ -27,6 +29,8 @@ my_linear_chart_dir = chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers"
 earnings_dir = "\\..\\" + "Earnings"
 historical_dir = "\\..\\" + "Historical"
 master_tracklist_file = "Master_Tracklist.xlsm"
+price_target_json_file = "Price_Targets.json"
+
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
 master_tracklist_df.sort_values('Tickers', inplace=True)
 ticker_list_unclean = master_tracklist_df['Tickers'].tolist()
@@ -80,6 +84,7 @@ earnings_last_reported_df = pd.DataFrame(columns=['Ticker','Date','Where_found',
 eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date','Reason'])
 charts_last_updated_df  = pd.DataFrame(columns=['Ticker','Date'])
 eps_report_newer_than_eps_projection_df = pd.DataFrame(columns=['Ticker','Actual_EPS_Report','EPS_Projections_Last_Updated'])
+price_target_df = pd.DataFrame(columns=['Ticker','PT_Change','Latest_PT','Previous_PT', 'Latest_Date', 'One_Month_Old_Date'])
 skipped_tickers_df = pd.DataFrame(columns=['Ticker','Quality_of_Stock','Reason'])
 eps_report_by_month_df = pd.DataFrame(columns=['Month', 'Count'])
 month_sort_order_list = []
@@ -89,15 +94,20 @@ earnings_last_reported_df.set_index('Ticker', inplace=True)
 eps_projections_last_updated_df.set_index('Ticker', inplace=True)
 charts_last_updated_df.set_index('Ticker', inplace=True)
 eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
+price_target_df.set_index('Ticker', inplace=True)
 skipped_tickers_df.set_index('Ticker', inplace=True)
 eps_report_by_month_df.set_index('Month',inplace=True)
 
+# ---------------------------------------------------------
+# Generate and put the name of the months in a list
+# ---------------------------------------------------------
 for i_idx in range(12):
   month_name = dt.datetime.strptime(str(i_idx+1), "%m").strftime("%b")
   eps_report_by_month_df.loc[month_name,'Count'] = 0
   month_sort_order_list.append(month_name)
-
 logging.debug("Month sort order list " + str(month_sort_order_list))
+# ---------------------------------------------------------
+
 # gt_1_month_old_historical_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 # gt_1_month_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
 # gt_1_qtr_old_eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
@@ -107,6 +117,13 @@ logging.debug("Month sort order list " + str(month_sort_order_list))
 # gt_1_qtr_old_eps_projections_last_updated_df.set_index('Ticker', inplace=True)
 # gt_1_month_charts_last_updated_df.set_index('Ticker', inplace=True)
 # -----------------------------------------------------------------------------
+
+# Read the PT json and the charts directory.
+# No specific reason to read it here...it could have been read before too
+with open(dir_path + user_dir + "\\" + price_target_json_file) as json_file:
+  price_target_json = json.load(json_file)
+all_chart_files_list = os.listdir(dir_path + my_linear_chart_dir + "\\")
+logging.debug("The files in the chart directory are" + str(all_chart_files_list))
 
 # -----------------------------------------------------------------------------
 # Loop through all the tickers
@@ -125,7 +142,6 @@ for ticker_raw in ticker_list:
     skipped_tickers_df.loc[ticker,'Reason'] = "Is_ETF"
     continue
   if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential') and (quality_of_stock != 'Sundeep_List')):
-  # if ((quality_of_stock != 'Wheat')):
     logging.info(str(ticker) + " is not Wheat...skipping")
     skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
     skipped_tickers_df.loc[ticker,'Reason'] = "neither_Wheat_nor_Wheat_Chaff_nor_Essential_nor_Sundeep_List"
@@ -142,10 +158,10 @@ for ticker_raw in ticker_list:
     skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
     skipped_tickers_df.loc[ticker,'Reason'] = '     =====> Need_to_sort_out_mismatch_report_currency_between_CNBC_and_Ann'
     continue
-  if (ticker in ['FOX','TAYD', 'CRVL', 'WILC', 'WINA', 'GCBC']):
-    skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
-    skipped_tickers_df.loc[ticker,'Reason'] = '     =====> No_CNBC_Projections_available._You_should_periodically_check_CNBC'
-    continue
+  # if (ticker in ['FOX','TAYD', 'CRVL', 'WILC', 'WINA', 'GCBC']):
+  #   skipped_tickers_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
+  #   skipped_tickers_df.loc[ticker,'Reason'] = '     =====> No_CNBC_Projections_available._You_should_periodically_check_CNBC'
+  #   continue
 
 
   # ---------------------------------------------------------------------------
@@ -179,10 +195,6 @@ for ticker_raw in ticker_list:
     logging.error("Column Q_EPS_Projections_Date_0 DOES NOT exist in " + str(earnings_file))
     sys.exit(1)
 
-  # date_year = eps_projection_date_0_dt.year
-  # if (date_year < 2019):
-  #   logging.error("==========     Error : Seems like the projected EPS date is older than 2019. Please correct and rerun the script")
-  #   sys.exit(1)
   if (eps_projection_date_0_dt > dt.date.today()):
     logging.error("  The  Q_EPS_Projections_Date_0 date for " + str(ticker) + " is " + str(eps_projection_date_0_dt) + " which is in future... :-(")
     logging.error("  This seems like a typo :-)...Please correct it in Earnings csv file and rerun")
@@ -190,6 +202,10 @@ for ticker_raw in ticker_list:
   eps_projections_last_updated_df.loc[ticker,'Date']= eps_projection_date_0_dt
   eps_projections_last_updated_df.loc[ticker,'Reason']= master_tracklist_df.loc[ticker, 'Reason_Earnings_Projections_NOT_updated']
 
+  # date_year = eps_projection_date_0_dt.year
+  # if (date_year < 2019):
+  #   logging.error("==========     Error : Seems like the projected EPS date is older than 2019. Please correct and rerun the script")
+  #   sys.exit(1)
   # if (eps_projection_date_0_dt < one_month_ago_date):
   #   logging.debug("Projected EPS were last updated on : " + str(eps_projection_date_0_dt) + ", more than a month ago")
   #   gt_1_month_old_eps_projections_last_updated_df.loc[ticker]= eps_projection_date_0_dt
@@ -200,7 +216,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
-  # Get the last earnings report date from earnings file first
+  # Get the last earnings report date from earnings df
   # ---------------------------------------------------------------------------
   eps_actual_report_date = ""
   if ('Q_Report_Date' in qtr_eps_df.columns):
@@ -212,6 +228,22 @@ for ticker_raw in ticker_list:
   else:
     earnings_last_reported_df.loc[ticker, 'Where_found'] = 'Master_Tracklist'
     eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+
+  eps_actual_report_date_dt = dt.datetime.strptime(str(eps_actual_report_date), '%Y-%m-%d').date()
+  if (eps_actual_report_date_dt > dt.date.today()):
+    logging.error("  The Last quarterly earnings date for " + str(ticker) + " is " + str(eps_actual_report_date_dt) + " which is in future... :-(")
+    logging.error("  This seems like a typo :-)...Please correct it in Master Tracklist file and rerun")
+    sys.exit(1)
+  earnings_last_reported_df.loc[ticker,'Date']= eps_actual_report_date_dt
+
+  if (eps_actual_report_date_dt > eps_projection_date_0_dt):
+    logging.error("The Earnings report date : " + str(eps_actual_report_date_dt) + " is newer than the earnings projection date : " + str(eps_projection_date_0_dt))
+    logging.error("I don't understand how you let it happen - The possible reasons could be ")
+    logging.error("1. You forgot to update the Earnings projection on the Earnings report date....Ok. I understand. Plese update the eranings projections now and rerun ")
+    logging.error("2. You mistyped the date (either the earnings report date in master tracklist or more likely in for earnings projections in earning file...I understand. It happens sometimes. Please fix and rerun")
+    logging.error("3. You did not update the Earnings projection on the Earnings report date intentionally....BAD BAD....How can you do that???? ")
+    eps_report_newer_than_eps_projection_df.loc[ticker, 'Actual_EPS_Report'] = eps_actual_report_date_dt
+    eps_report_newer_than_eps_projection_df.loc[ticker, 'EPS_Projections_Last_Updated'] = eps_projection_date_0_dt
 
   # Get the last 4 dates when the company reported earnings
   # Used to accumulate the last 4 quarter report dates across all tickers
@@ -226,47 +258,19 @@ for ticker_raw in ticker_list:
       eps_report_by_month_df.loc[month,'Count'] = tmp_count + 1
       logging.debug("Previous earnings Count for " + str(month) + " : " + str(tmp_count) + ", Updated to : " + str(eps_report_by_month_df['Count'].loc[month]))
 
-  #
-  # try:
-  #   eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
-  # except:
-  #   logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
-  #   logging.error(str(ticker) + " is wheat and does not have a earnings date in the Master Tracklist file. Exiting....")
-  #   logging.error("**********************  ERROR ERROR ERROR ERROR ****************************")
-  #   sys.exit(1)
-
-  eps_actual_report_date_dt = dt.datetime.strptime(str(eps_actual_report_date), '%Y-%m-%d').date()
-  if (eps_actual_report_date_dt > dt.date.today()):
-    logging.error("  The Last quarterly earnings date for " + str(ticker) + " is " + str(eps_actual_report_date_dt) + " which is in future... :-(")
-    logging.error("  This seems like a typo :-)...Please correct it in Master Tracklist file and rerun")
-    sys.exit(1)
   # date_year = eps_actual_report_date_dt.year
   # if (date_year < 2019):
   #   logging.error("==========     Error : The date for " + str(ticker) + " last earnings is older than 2019     ==========")
   #   sys.exit()
-  earnings_last_reported_df.loc[ticker,'Date']= eps_actual_report_date_dt
-
-  if (eps_actual_report_date_dt > eps_projection_date_0_dt):
-    logging.error("The Earnings report date : " + str(eps_actual_report_date_dt) + " is newer than the earnings projection date : " + str(eps_projection_date_0_dt))
-    logging.error("I don't understand how you let it happen - The possible reasons could be ")
-    logging.error("1. You forgot to update the Earnings projection on the Earnings report date....Ok. I understand. Plese update the eranings projections now and rerun ")
-    logging.error("2. You mistyped the date (either the earnings report date in master tracklist or more likely in for earnings projections in earning file...I understand. It happens sometimes. Please fix and rerun")
-    logging.error("3. You did not update the Earnings projection on the Earnings report date intentionally....BAD BAD....How can you do that???? ")
-    eps_report_newer_than_eps_projection_df.loc[ticker, 'Actual_EPS_Report'] = eps_actual_report_date_dt
-    eps_report_newer_than_eps_projection_df.loc[ticker, 'EPS_Projections_Last_Updated'] = eps_projection_date_0_dt
-  # ---------------------------------------------------------------------------
-
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Get all the charts in the charts directory for the ticker and find out the
   # chart file with the latest appended date
   # ---------------------------------------------------------------------------
-  all_chart_files_list = os.listdir(dir_path + my_linear_chart_dir + "\\")
-  logging.debug("The files in the chart directory are" + str(all_chart_files_list))
   my_regex = re.compile(re.escape(ticker) + re.escape("_")  + ".*jpg")
   ticker_chart_files_list = list(filter(my_regex.match, all_chart_files_list)) # Read Note
-  logging.debug("The chart file list : " + str(ticker_chart_files_list))
+  logging.debug("The chart file list for this ticker is : " + str(ticker_chart_files_list))
 
   # For each file split the file name to get the date string.+
   # Then covert the date string to datetime and append it to the list
@@ -297,9 +301,88 @@ for ticker_raw in ticker_list:
   logging.debug("")
   # ---------------------------------------------------------------------------
 
-  # -----------------------------------------------------------------------------
-  # Update Reasons for some tickers
-  # -----------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # Get the price target dict for the ticker
+  # ---------------------------------------------------------------------------
+  price_target_dict_needs_rename = {}
+  price_target_date_list_dt = []
+  price_target_amount_list = []
+  pt_print_str = ""
+  if ticker in price_target_json.keys():
+    price_target_dict_needs_rename = price_target_json[ticker]
+    logging.debug("Price target data for " + str(ticker) + " in Price Target Json : \n" + str(price_target_json[ticker]['Price_Target']))
+    len_price_target = len(price_target_json[ticker]["Price_Target"])
+    for i in range(len_price_target):
+      i_price_target_date = price_target_json[ticker]["Price_Target"][i]["Date"]
+      i_price_target_amount = price_target_json[ticker]["Price_Target"][i]["Target"].replace(',','')
+      try:
+        price_target_date_list_dt.append(dt.datetime.strptime(i_price_target_date, "%m/%d/%Y").date())
+        price_target_amount_list.append(float(i_price_target_amount))
+      except (ValueError):
+        logging.error(
+          "\n***** Error : Either the Dates or the Price Target Amount are not in proper format for Price_Target in Price Target json file.\n"
+          "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
+          "***** Error : Found somewhere in : Date : " + str(i_price_target_date) + ", Price Target : " + str(i_price_target_amount))
+        sys.exit(1)
+
+    # -----------------------------------------------------
+    # Check for duplicate dates and ask the user to fix
+    # duplicate dates - This should be rare, and if it happens
+    # then the user needs to clean the json file
+    # -----------------------------------------------------
+    logging.debug("The price Target datelist is : " + str(price_target_date_list_dt))
+    if (len(price_target_date_list_dt) != len(set(price_target_date_list_dt))):
+      duplicate_items_list = [k for k,v in Counter(price_target_date_list_dt).items() if v>1]
+      logging.error ("There are some duplicate dates in the Price_Target in Price Target json file...Please correct and rerun")
+      logging.error ("Duplicates : " + str(duplicate_items_list))
+      sys.exit(1)
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # Convert the date and the target amount arrays to np arrays
+    # Then sort the date array - that will give us the index of
+    # the sorted array. Then sort the target amount array with
+    # the same indexes so they are sorted "in sync"
+    # -----------------------------------------------------
+    price_target_date_list_dt_np = np.array(price_target_date_list_dt)
+    price_target_amount_list_np = np.array(price_target_amount_list)
+    price_target_date_list_sorted_idx = np.flip(np.array(price_target_date_list_dt).argsort())
+    logging.debug("The SORTED PT datelist index : " + str(price_target_date_list_sorted_idx))
+
+    price_target_date_list_sorted_dt = price_target_date_list_dt_np[price_target_date_list_sorted_idx]
+    price_target_amount_list_sorted = price_target_amount_list_np[price_target_date_list_sorted_idx]
+    logging.debug("The SORTED PT datelist  : " + str(price_target_date_list_sorted_dt))
+    logging.debug("The SORTED PT amount    : " + str(price_target_amount_list_sorted))
+    about_1month_old_pt_date_dt = price_target_date_list_sorted_dt[0] - relativedelta(months=1)
+    # logging.debug ("Latest PT date : " + str(price_target_date_list_sorted_dt[0]) + ", Date one month previous to that : " + str(about_1month_old_pt_date_dt))
+
+    # Now match the one month prior date in the PT datelist
+    # to get the index of that 1 month old date
+    # Use that index to get the PT corresponding for that 1 month old matched date
+    # Lastly compute the %change in the price targets (current vs the one month ago)
+    # Finally - store all those 5 pieces of information in the df
+    if (len(price_target_date_list_sorted_dt) > 1):
+      prev_pt_date_match_dt = min(price_target_date_list_sorted_dt, key=lambda d: abs(d - about_1month_old_pt_date_dt))
+      prev_pt_date_match_dt_index = np.where(price_target_date_list_sorted_dt == prev_pt_date_match_dt)
+      logging.debug ("Latest PT date : " + str(price_target_date_list_sorted_dt[0]) + ", Date one month previous to that : " + str(prev_pt_date_match_dt) + ", at index : " + str(prev_pt_date_match_dt_index))
+      prev_pt_val = price_target_amount_list_sorted[prev_pt_date_match_dt_index]
+      logging.debug ("Latest PT date : " + str(price_target_date_list_sorted_dt[0]) +
+                     ", Date one month previous to that : " + str(prev_pt_date_match_dt) +
+                     ", at index : " + str(prev_pt_date_match_dt_index) +
+                     ", PT at one month previous date : " + str(prev_pt_val))
+    else:
+      prev_pt_date_match_dt = price_target_date_list_sorted_dt[0]
+      prev_pt_val = price_target_amount_list_sorted[0]
+
+    price_target_df.loc[ticker, 'Latest_PT'] = price_target_amount_list_sorted[0]
+    price_target_df.loc[ticker, 'Previous_PT'] = prev_pt_val
+    price_target_df.loc[ticker, 'PT_Change'] = ((price_target_amount_list_sorted[0]/prev_pt_val)-1)*100
+    price_target_df.loc[ticker, 'Latest_Date'] = price_target_date_list_sorted_dt[0]
+    price_target_df.loc[ticker, 'One_Month_Old_Date'] = prev_pt_date_match_dt
+  # ---------------------------------------------------------------------------
+
+  # if (i_int > 26):
+  #   break
 
 
 # -----------------------------------------------------------------------------
@@ -315,6 +398,8 @@ charts_last_updated_logfile = "charts_last_updated.txt"
 skipped_tickers_logfile="skipped_tickers_Sort_misc.txt"
 eps_report_newer_than_eps_projection_logfile = "eps_report_newer_than_eps_projection.txt"
 eps_report_by_month_logfile = "eps_report_by_month.txt"
+price_target_logfile="Price_Target_Change.csv"
+
 
 historical_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + historical_last_updated_logfile,sep=' ', index=True, header=False)
 earnings_last_reported_df.sort_values(by=['Where_found','Reason','Date','Ticker'], ascending=[True,True,True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
@@ -323,6 +408,7 @@ charts_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).
 skipped_tickers_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + skipped_tickers_logfile,sep=' ', index=True, header=True)
 eps_report_newer_than_eps_projection_df.sort_values(by='Actual_EPS_Report').to_csv(dir_path + log_dir + "\\" + eps_report_newer_than_eps_projection_logfile,sep=' ', index=True, header=True)
 eps_report_by_month_df.to_csv(dir_path + log_dir + "\\" + eps_report_by_month_logfile,sep=' ', index=True, header=True)
+price_target_df.sort_values(by=['PT_Change'], ascending=[False]).to_csv(dir_path + log_dir + "\\" + price_target_logfile,sep=',', index=True, header=True)
 
 logging.info("Created : " + str(historical_last_updated_logfile) + " <-- Sorted by date - based on the last Price date in their respective historical file")
 logging.info("Created : " + str(earnings_last_reported_logfile) + " <-- Sorted by date - based on when their Last Earnings Date in their respective Earnings file")
@@ -331,6 +417,7 @@ logging.info("Created : " + str(charts_last_updated_logfile) + " <-- Sorted by d
 logging.info("Created : " + str(skipped_tickers_logfile) + " <-- Sorted by Ticker - Lists all the tickers that were skipped along with a reason")
 logging.info("Created : " + str(eps_report_newer_than_eps_projection_logfile) + " <-- THIS FILE SHOULD BE EMPTY. It is a BAD thing if this file is not emptly. The file has the tickers for which the earnings projections are newer than the reported earnings date")
 logging.info("Created : " + str(eps_report_by_month_logfile) + " <-- Sorted by Month - Lists number of qtr earnings reports by month...Can use to help manage your workload")
+logging.info("Created : " + str(price_target_logfile) + " <-- Sorted by PT % Change - Lists tickers sorted by their PT changes (curr PT vs Previous PT) in descending order")
 
 if (len(eps_report_newer_than_eps_projection_df.index) > 0):
   logging.error("")
