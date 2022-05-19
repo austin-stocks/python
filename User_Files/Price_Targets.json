@@ -23,70 +23,6 @@
       }
     ]
   },
-  "ASO": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "58.45"
-      }
-    ]
-  },
-  "LULU": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "427.57"
-      }
-    ]
-  },
-  "MKC": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "95.50"
-      }
-    ]
-  },
-  "MLKN": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "56.80"
-      }
-    ]
-  },
-  "MU": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "112.41"
-      }
-    ]
-  },
-  "RH": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "540.47"
-      }
-    ]
-  },
-  "FIVE": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "220.75"
-      }
-    ]
-  },
-  "UNF": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "206.50"
-      }
-    ]
-  },
   "ISBC": {
     "Price_Target": [
       {
@@ -103,43 +39,11 @@
       }
     ]
   },
-  "AYI": {
-    "Price_Target": [
-      {
-        "Date": "04/10/2022",
-        "Target": "217.00"
-      }
-    ]
-  },
-  "SMPL": {
-    "Price_Target": [
-      {
-        "Date": "04/10/2022",
-        "Target": "45.46"
-      }
-    ]
-  },
   "AZO": {
     "Price_Target": [
       {
         "Date": "04/10/2022",
         "Target": "2,166.56"
-      }
-    ]
-  },
-  "BRK-B": {
-    "Price_Target": [
-      {
-        "Date": "04/10/2022",
-        "Target": "345.50"
-      }
-    ]
-  },
-  "AVGO": {
-    "Price_Target": [
-      {
-        "Date": "04/10/2022",
-        "Target": "685.32"
       }
     ]
   },
@@ -167,14 +71,6 @@
       }
     ]
   },
-  "COO": {
-    "Price_Target": [
-      {
-        "Date": "04/10/2022",
-        "Target": "477.58"
-      }
-    ]
-  },
   "COST": {
     "Price_Target": [
       {
@@ -199,43 +95,11 @@
       }
     ]
   },
-  "TTC": {
-    "Price_Target": [
-      {
-        "Date": "04/10/2022",
-        "Target": "108.00"
-      }
-    ]
-  },
-  "VEEV": {
-    "Price_Target": [
-      {
-        "Date": "04/10/2022",
-        "Target": "262.05"
-      }
-    ]
-  },
   "BAH": {
     "Price_Target": [
       {
         "Date": "04/11/2022",
         "Target": "91.90"
-      }
-    ]
-  },
-  "STM": {
-    "Price_Target": [
-      {
-        "Date": "04/11/2022",
-        "Target": "62.50"
-      }
-    ]
-  },
-  "CHKP": {
-    "Price_Target": [
-      {
-        "Date": "04/12/2022",
-        "Target": "137.16"
       }
     ]
   },
@@ -255,43 +119,11 @@
       }
     ]
   },
-  "CASY": {
-    "Price_Target": [
-      {
-        "Date": "04/14/2022",
-        "Target": "232.90"
-      }
-    ]
-  },
-  "CIEN": {
-    "Price_Target": [
-      {
-        "Date": "04/14/2022",
-        "Target": "79.54"
-      }
-    ]
-  },
-  "FIZZ": {
-    "Price_Target": [
-      {
-        "Date": "04/14/2022",
-        "Target": "38.33"
-      }
-    ]
-  },
   "NIU": {
     "Price_Target": [
       {
         "Date": "04/14/2022",
         "Target": "23.56"
-      }
-    ]
-  },
-  "ORCL": {
-    "Price_Target": [
-      {
-        "Date": "04/14/2022",
-        "Target": "92.17"
       }
     ]
   },
@@ -324,70 +156,6 @@
       {
         "Date": "04/16/2022",
         "Target": "446.06"
-      }
-    ]
-  },
-  "KMX": {
-    "Price_Target": [
-      {
-        "Date": "04/03/2022",
-        "Target": "141.08"
-      },
-      {
-        "Date": "04/16/2022",
-        "Target": "118.46"
-      }
-    ]
-  },
-  "TSM": {
-    "Price_Target": [
-      {
-        "Date": "04/08/2022",
-        "Target": "152.21"
-      },
-      {
-        "Date": "04/16/2022",
-        "Target": "146.10"
-      }
-    ]
-  },
-  "FAST": {
-    "Price_Target": [
-      {
-        "Date": "04/01/2022",
-        "Target": "59.63"
-      },
-      {
-        "Date": "04/16/2022",
-        "Target": "61.88"
-      }
-    ]
-  },
-  "JPM": {
-    "Price_Target": [
-      {
-        "Date": "04/16/2022",
-        "Target": "159.02"
-      }
-    ]
-  },
-  "UNH": {
-    "Price_Target": [
-      {
-        "Date": "04/03/2022",
-        "Target": "530.00"
-      },
-      {
-        "Date": "04/16/2022",
-        "Target": "541.13"
-      }
-    ]
-  },
-  "ZUMZ": {
-    "Price_Target": [
-      {
-        "Date": "04/16/2022",
-        "Target": "43.00"
       }
     ]
   },
@@ -5144,6 +4912,346 @@
       {
         "Date": "05/15/2022",
         "Target": "20.50"
+      }
+    ]
+  },
+  "ASO": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "58.45"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "56.17"
+      }
+    ]
+  },
+  "AVGO": {
+    "Price_Target": [
+      {
+        "Date": "04/10/2022",
+        "Target": "685.32"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "688.56"
+      }
+    ]
+  },
+  "AYI": {
+    "Price_Target": [
+      {
+        "Date": "04/10/2022",
+        "Target": "217.00"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "211.75"
+      }
+    ]
+  },
+  "BRK-B": {
+    "Price_Target": [
+      {
+        "Date": "04/10/2022",
+        "Target": "345.50"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "362.00"
+      }
+    ]
+  },
+  "COO": {
+    "Price_Target": [
+      {
+        "Date": "04/10/2022",
+        "Target": "477.58"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "476.00"
+      }
+    ]
+  },
+  "FIVE": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "220.75"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "217.25"
+      }
+    ]
+  },
+  "LULU": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "427.57"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "431.43"
+      }
+    ]
+  },
+  "MKC": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "95.50"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "98.27"
+      }
+    ]
+  },
+  "MLKN": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "56.80"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "56.80"
+      }
+    ]
+  },
+  "MU": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "112.41"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "110.42"
+      }
+    ]
+  },
+  "RH": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "540.47"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "525.29"
+      }
+    ]
+  },
+  "SMPL": {
+    "Price_Target": [
+      {
+        "Date": "04/10/2022",
+        "Target": "45.46"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "46.00"
+      }
+    ]
+  },
+  "TTC": {
+    "Price_Target": [
+      {
+        "Date": "04/10/2022",
+        "Target": "108.00"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "108.00"
+      }
+    ]
+  },
+  "UNF": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "206.50"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "213.00"
+      }
+    ]
+  },
+  "VEEV": {
+    "Price_Target": [
+      {
+        "Date": "04/10/2022",
+        "Target": "262.05"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "260.56"
+      }
+    ]
+  },
+  "CASY": {
+    "Price_Target": [
+      {
+        "Date": "04/14/2022",
+        "Target": "232.90"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "235.50"
+      }
+    ]
+  },
+  "CHKP": {
+    "Price_Target": [
+      {
+        "Date": "04/12/2022",
+        "Target": "137.16"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "139.71"
+      }
+    ]
+  },
+  "CIEN": {
+    "Price_Target": [
+      {
+        "Date": "04/14/2022",
+        "Target": "79.54"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "77.86"
+      }
+    ]
+  },
+  "FIZZ": {
+    "Price_Target": [
+      {
+        "Date": "04/14/2022",
+        "Target": "38.33"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "38.33"
+      }
+    ]
+  },
+  "ORCL": {
+    "Price_Target": [
+      {
+        "Date": "04/14/2022",
+        "Target": "92.17"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "92.17"
+      }
+    ]
+  },
+  "STM": {
+    "Price_Target": [
+      {
+        "Date": "04/11/2022",
+        "Target": "62.50"
+      },
+      {
+        "Date": "05/16/2022",
+        "Target": "58.13"
+      }
+    ]
+  },
+  "FAST": {
+    "Price_Target": [
+      {
+        "Date": "04/01/2022",
+        "Target": "59.63"
+      },
+      {
+        "Date": "04/16/2022",
+        "Target": "61.88"
+      },
+      {
+        "Date": "05/19/2022",
+        "Target": "61.88"
+      }
+    ]
+  },
+  "JPM": {
+    "Price_Target": [
+      {
+        "Date": "04/16/2022",
+        "Target": "159.02"
+      },
+      {
+        "Date": "05/19/2022",
+        "Target": "156.73"
+      }
+    ]
+  },
+  "KMX": {
+    "Price_Target": [
+      {
+        "Date": "04/03/2022",
+        "Target": "141.08"
+      },
+      {
+        "Date": "04/16/2022",
+        "Target": "118.46"
+      },
+      {
+        "Date": "05/19/2022",
+        "Target": "114.21"
+      }
+    ]
+  },
+  "TSM": {
+    "Price_Target": [
+      {
+        "Date": "04/08/2022",
+        "Target": "152.21"
+      },
+      {
+        "Date": "04/16/2022",
+        "Target": "146.10"
+      },
+      {
+        "Date": "05/19/2022",
+        "Target": "145.39"
+      }
+    ]
+  },
+  "UNH": {
+    "Price_Target": [
+      {
+        "Date": "04/03/2022",
+        "Target": "530.00"
+      },
+      {
+        "Date": "04/16/2022",
+        "Target": "541.13"
+      },
+      {
+        "Date": "05/19/2022",
+        "Target": "568.52"
+      }
+    ]
+  },
+  "ZUMZ": {
+    "Price_Target": [
+      {
+        "Date": "04/16/2022",
+        "Target": "43.00"
+      },
+      {
+        "Date": "05/19/2022",
+        "Target": "43.00"
       }
     ]
   }
