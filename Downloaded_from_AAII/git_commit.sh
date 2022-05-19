@@ -1,7 +1,9 @@
 curr_dir=`pwd`
-dir_name='2022_03_12'
+dir_name='2022_05_16'
 
-echo "The directory name is $dir_name"
+echo "The directory name : $dir_name"
+aaii_datafilename="${dir_name}_AAII_DATA.xlsm"
+echo "AAII Datafile name : $aaii_datafilename"
 sleep 2
 
 echo "Now commiting files in 'Financials - Quarterly'"
@@ -27,6 +29,7 @@ echo "Now commiting files in 'Analysis'"
 cd $curr_dir/$dir_name/'Analysis'
 git commit -m "Adding Analysis" *.xlsm --verbose
 
-
+git add $curr_dir/$dir_name/$aaii_datafilename
+git commit -m "Adding AAII Datafile" $curr_dir/$dir_name/$aaii_datafilename
 
 
