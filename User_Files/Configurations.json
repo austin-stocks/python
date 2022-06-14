@@ -4836,7 +4836,7 @@
     ]
   },
 
-  "BLL" : {
+  "BALL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2017", "Stop_Date" :   "End"}
     ],
