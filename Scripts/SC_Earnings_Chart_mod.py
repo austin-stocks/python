@@ -475,17 +475,16 @@ for ticker_raw in ticker_list:
   # column (they are the white diamond dates)
   # Now this is not necessary to be done - but if I don't do it, the I have to
   # put the CNBC projections in both Q_EPS_Diluted and Q_EPS_Adjusted.
-  # But the next piece of code will prevent me from collecting the future
-  # projected earnings in two columns. This code just copies over the white
-  # diamond CNBC projections from the Q_EPS_Adjusted column to Q_EPS_Diluted
-  # column. I am not 100% sure on how this is going to be useful, but it is
+  # This code just copies over the white diamond (future than the current Q report date)
+  # CNBC projections from the Q_EPS_Adjusted column to Q_EPS_Diluted column.
+  # I am not 100% sure on how this is going to be useful, but it is
   # one of the things that may become useful later on...
   # -------------------------------------------------------------------------
   # check if Q_EPS_Adjusted column exists in the qtr_ep_df
   qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
-  qtr_eps_date_list = qtr_eps_df['Q_Date'].tolist()
-  logging.debug("The Q_Date list " + str(qtr_eps_date_list))
+  # qtr_eps_date_list = qtr_eps_df['Q_Date'].tolist()
   try:
+    logging.debug("The Q_Date list " + str(qtr_eps_df.Q_Date.tolist()))
     qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Q_Date.tolist()]
   except (TypeError):
     logging.error("**********                                ERROR                               **********")
@@ -494,13 +493,51 @@ for ticker_raw in ticker_list:
     logging.error("**********  Please correct the Earnings file 'Date' column and run again      **********")
     sys.exit(1)
 
-  # find the qtr date and the index closest to the date of last reported earnings
+  # ---------------------------------------------------------------------------
+  # Find the Q_Date and it's index closest to the date of last reported earnings
+  # and if there is no reported earnings filled corresponding to that index (no
+  # earnings filled in Q_EPS_Diluted column), then flag an error...this means
+  # that the Q_Report_Date had a date filled in but, likely, I forgot to fill
+  # in the actual earnings corresponding the report date in the Q_EPS_Diluted
+  # column (kids called me or something happened and then I forgot :-))
+  # ---------------------------------------------------------------------------
   eps_date_list_eps_report_date_match, eps_date_list_eps_report_date_index = qtr_date_and_index_matching_eps_report_date(qtr_eps_date_list, eps_report_date)
   if (math.isnan(qtr_eps_df.loc[eps_date_list_eps_report_date_index,['Q_EPS_Diluted']])):
-    logging.error("Lastest Diluted earnings in Q_EPS_Diluted column, corresponding to Lastest Earnings date : " + str(eps_report_date) + ", is not filled in the earning file")
+    logging.error("Latest Diluted earnings in Q_EPS_Diluted column, corresponding to Lastest Earnings date : " + str(eps_report_date) + ", is not filled in the earning file")
     logging.error("Likely you put the earnings release date in the Q_Report_Date column but forgot (or distracted) to enter the actual earnings in Q_EPS_Diluted column")
     logging.error("Please fill it out and rerun")
     sys.exit()
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # Check if there is case where I forgot to update the Q_Report_Date but recorded
+  # the actual earnings in Q_EPS_Diluted column that the company reported.
+  # In other words, the code finds something in Q_EPS_Diluted col but nothing corresponding
+  # to that in the Q_Report_Date column.
+  # It generally means that either I forgot or got distracted while updating the earnings
+  # file with reported earning date...It is a simple problem to solve.
+  # Just go the Edgar or CNBC and find out the actual reporting date and fill in
+  # NOTE : This code only (and should) check for the rows that are later than the
+  # last reported earnings date found in the earning file. In other words, if the
+  # code found 06/15/2022 as the last reported date in Q_Report_Date then will check
+  # only Q_EPS_Diluted rows that are newer (above) that row. Otherwise, if we check
+  # the whole earnings file for missing Q_Report_Date for earnings, then there
+  # are MANY MANY rows for which the Q_Report_Date is not present (all the
+  # older earnings for which the CBNC date is not available)
+  # ---------------------------------------------------------------------------
+  logging.debug("The Q_Date index that matches to last reported earning date is : " + str(eps_date_list_eps_report_date_index))
+  for i_int in range(eps_date_list_eps_report_date_index):
+    # logging.debug("Index : " + str(i_int) + ", : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string() + ", : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string())
+    if (math.isnan(qtr_eps_df.loc[i_int,['Q_EPS_Diluted']])):
+      logging.debug("Index : " + str(i_int) + ", : " + qtr_eps_df.loc[i_int, ['Q_Date']].to_string() + ", : " + qtr_eps_df.loc[i_int, ['Q_EPS_Diluted']].to_string())
+    else:
+      logging.error("It seems that : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string() + ", is recorded for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string())
+      logging.error("while there is no corresponding Q_Report_Date populated for those earnings")
+      logging.error("Did you just forget/got distracted to update the earnings file with the report date when the company reported the earnings for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string())
+      logging.error("Please have a look at row : " + str(i_int+2) + " in the earnings file corresponding to column : Q_Report_Date and fill the actual earnings report date")
+      logging.error("Please correct and rerun. Exiting...")
+      sys.exit()
+  # ---------------------------------------------------------------------------
 
   if 'Q_EPS_Adjusted' in qtr_eps_df.columns:
     qtr_eps_adjusted_list = qtr_eps_df.Q_EPS_Adjusted.tolist()
