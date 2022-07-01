@@ -49,14 +49,20 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # =============================================================================
 script_file = open(dir_path + earnings_dir + "\\" + "open_excel.sh", "w")
 filelist_str = "start-process " + "\"" + "C:\Program Files\Microsoft Office\\root\Office16\Excel.EXE" +  "\" \" "
+filelist_str_01 = "start-process " + "\"" + "C:\Program Files\Microsoft Office\Office16\Excel.EXE" +  "\" \" "
+
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   earnings_filename = ticker + "_earnings.csv"
   filelist_str = filelist_str + earnings_filename + " "
+  filelist_str_01 = filelist_str_01 + earnings_filename + " "
 
 filelist_str = filelist_str + "\""
+filelist_str_01 = filelist_str_01 + "\""
 print ("The command to open the excel files in "+ tracklist_file + " : \n", filelist_str)
+print ("The command to open the excel files in "+ tracklist_file + " : \n", filelist_str_01)
 script_file.write(filelist_str)
+script_file.write(filelist_str_01)
 script_file.close()
 
 # text = colored('Hello, World!', 'red', attrs=['reverse', 'blink'])
