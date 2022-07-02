@@ -2356,7 +2356,7 @@ for ticker_raw in ticker_list:
       # main_plt.set_ylabel('Earnings')
       main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
       main_plt.tick_params(axis="y", direction="in", pad=-22)
-      main_plt.set_yscale(chart_type_idx)
+      main_plt.set_yscale(chart_type_idx.lower())
       main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
                                     color="deeppink", marker='.', markersize='10')
 
@@ -2382,7 +2382,7 @@ for ticker_raw in ticker_list:
       # This works - this will move the tick labels inside the plot
       price_plt.tick_params(axis="y", direction="in", pad=-22)
       price_plt.set_ylim(price_lim_lower, price_lim_upper)
-      price_plt.set_yscale(chart_type_idx)
+      price_plt.set_yscale(chart_type_idx.lower())
       price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
                                       label='Adj Close', color="brown", linestyle='-')
       # Get the buy and sells from the personal json file, along with the comments.
@@ -2465,13 +2465,13 @@ for ticker_raw in ticker_list:
       # -----------------------------------------------------------------------------
       # Find the eps points that fall in the plot range
       annual_past_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      annual_past_eps_plt.set_yscale(chart_type_idx)
+      annual_past_eps_plt.set_yscale(chart_type_idx.lower())
       annual_past_eps_plt.set_yticks([])
       annual_past_eps_plt_inst = annual_past_eps_plt.plot(date_list[0:plot_period_int],
                                                           yr_past_eps_expanded_list[0:plot_period_int], label='4 qtrs/4',
                                                           color="black", marker='D', markersize='4')
       annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      annual_projected_eps_plt.set_yscale(chart_type_idx)
+      annual_projected_eps_plt.set_yscale(chart_type_idx.lower())
       annual_projected_eps_plt.set_yticks([])
       annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_period_int],
                                                                     yr_projected_eps_expanded_list[0:plot_period_int],
@@ -2701,14 +2701,14 @@ for ticker_raw in ticker_list:
       # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
       if (chart_type_idx == "Linear"):
         upper_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        upper_channel_plt.set_yscale(chart_type_idx)
+        upper_channel_plt.set_yscale(chart_type_idx.lower())
         upper_channel_plt.set_yticks([])
         upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
                                                         upper_price_channel_list[0:plot_period_int], label='Channel', color="blue",
                                                         linestyle='-')
 
         analyst_adjusted_channel_upper_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        analyst_adjusted_channel_upper_plt.set_yscale(chart_type_idx)
+        analyst_adjusted_channel_upper_plt.set_yscale(chart_type_idx.lower())
         analyst_adjusted_channel_upper_plt.set_yticks([])
         analyst_adjusted_channel_upper_plt_inst = analyst_adjusted_channel_upper_plt.plot(date_list[0:plot_period_int],
                                                                                           analyst_adjusted_channel_upper[
@@ -2716,7 +2716,7 @@ for ticker_raw in ticker_list:
                                                                                           color="blue",
                                                                                           linestyle='-.')
         analyst_adjusted_channel_lower_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        analyst_adjusted_channel_lower_plt.set_yscale(chart_type_idx)
+        analyst_adjusted_channel_lower_plt.set_yscale(chart_type_idx.lower())
         analyst_adjusted_channel_lower_plt.set_yticks([])
         analyst_adjusted_channel_lower_plt_inst = analyst_adjusted_channel_lower_plt.plot(date_list[0:plot_period_int],
                                                                                           analyst_adjusted_channel_lower[
@@ -2732,7 +2732,7 @@ for ticker_raw in ticker_list:
       # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
       if (chart_type_idx == "Linear"):
         lower_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        lower_channel_plt.set_yscale(chart_type_idx)
+        lower_channel_plt.set_yscale(chart_type_idx.lower())
         lower_channel_plt.set_yticks([])
         lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
                                                         lower_price_channel_list[0:plot_period_int],label='Price Channel', color="blue",
