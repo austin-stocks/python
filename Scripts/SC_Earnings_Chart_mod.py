@@ -2568,7 +2568,7 @@ for ticker_raw in ticker_list:
       # -----------------------------------------------------------------------------
       if (pays_dividend == 1):
         dividend_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        dividend_plt.set_yscale(chart_type_idx)
+        dividend_plt.set_yscale(chart_type_idx.lower())
         dividend_plt.set_yticks([])
         dividend_plt_inst = dividend_plt.plot(date_list[0:plot_period_int], dividend_expanded_list[0:plot_period_int],
                                               label='Dividend', color="Saddlebrown", marker='x', markersize='8')
