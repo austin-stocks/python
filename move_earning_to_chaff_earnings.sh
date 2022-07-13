@@ -1,5 +1,5 @@
 ## files='MXIM YNDX'
-files='HWKN'
+files='CCMP'
 
 echo ""
 sleep 2
@@ -33,11 +33,13 @@ sleep 2
 git status
 sleep 5
 echo "Now git adding the moved earnings files to Chaff_earnings"
+echo "git add $tmp_str0"
 git add $tmp_str_0
 sleep 2
 ## git status
 echo "Now git commiting the moved earnings files to Chaff_earnings and deleted earnings files from Earnings"
 git commit -m "More updates" $tmp_str_2
+echo "git commit -m "More updates" $tmp_str_2"
 echo ""
 echo "All done..."
 
