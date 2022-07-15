@@ -1213,6 +1213,9 @@
   },
 
   "FTNT" : {
+    "Splits" : {
+      "6/22/2022" : "5:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"},
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "06/30/2019"}
