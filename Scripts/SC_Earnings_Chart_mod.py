@@ -531,9 +531,9 @@ for ticker_raw in ticker_list:
     if (math.isnan(qtr_eps_df.loc[i_int,['Q_EPS_Diluted']])):
       logging.debug("Index : " + str(i_int) + ", : " + qtr_eps_df.loc[i_int, ['Q_Date']].to_string() + ", : " + qtr_eps_df.loc[i_int, ['Q_EPS_Diluted']].to_string())
     else:
-      logging.error("It seems that : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string() + ", is recorded for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string())
+      logging.error("It seems that : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string() + ", is recorded for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string() + " in row " + str(i_int+2) + " of the earnings file")
       logging.error("while there is no corresponding Q_Report_Date populated for those earnings")
-      logging.error("Did you just forget/got distracted to update the earnings file with the report date when the company reported the earnings for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string())
+      logging.error("Did you just forget/got distracted to update the earnings report date in the earnings file when you recorded company earnings for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string())
       logging.error("Please have a look at row : " + str(i_int+2) + " in the earnings file corresponding to column : Q_Report_Date and fill the actual earnings report date")
       logging.error("Please correct and rerun. Exiting...")
       sys.exit()
