@@ -4275,7 +4275,7 @@
       {"Start_Date" : "09/25/2011", "Stop_Date" :   "07/05/2012", "Adj_Amount" : "-.2"}
     ]
   },
-  "ANTM" : {
+  "ELV" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
     ],
