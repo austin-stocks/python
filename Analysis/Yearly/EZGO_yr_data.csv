@@ -1,11 +1,11 @@
 AAII_YR_DATA,09/30/2021,09/30/2020,09/30/2019,09/30/2018
-Capital_Expenditures,,2.3,3.1,0.0
-Cash_from_Operations,6.3,4.0,-2.7,1.0
-Diluted_EPS,,0.014,0.164,0.048
-Goodwill_Intangibles,0.0,0.0,0.0,0.0
+Capital_Expenditures,6.7,2.3,3.1,0.0
+Cash_from_Operations,-6.3,4.0,-2.7,1.0
+Diluted_EPS,-0.277,0.014,0.164,0.048
+Goodwill_Intangibles,4.5,,,
 LT_Debt,0.0,0.0,0.0,0.0
-Net_Income,,0.1,1.7,0.5
+Net_Income,-3.0,0.1,1.7,0.5
 Revenue,23.4,16.8,5.2,3.2
-Shares_Diluted,10.6,10.6,10.6,
+Shares_Diluted,10.7356,10.6,10.6,10.6
 Total_Assets,42.0,19.8,19.2,13.7
 Total_Liabilities,13.5,10.9,10.9,10.0
