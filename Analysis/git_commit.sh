@@ -19,19 +19,21 @@ aaii_datafilename="${dir_name}_AAII_DATA.xlsm"
 for chrs in $alphabets 
 do 
   echo "Adding the files that start with ==> [$chrs]*"
-  if [ $chrs = "A" ] || [ $chrs = "C" ]  
+  if [ $chrs = "A" ] || [ $chrs = "C" ] || [ $chrs = "S" ]  
   then
     echo "Doing $chrs...Will loop through subloop"
-	# This is to add if the ticker is JUST == A or == C
-	tmp_filename="${chrs}_qtr_data.csv"
+	  # This is to add if the ticker is JUST == A or == C
+	  tmp_filename="${chrs}_qtr_data.csv"
     git  add Quarterly/$tmp_filename -v
-	tmp_filename="${chrs}_yr_data.csv"
+	  tmp_filename="${chrs}_yr_data.csv"
     git  add Yearly/$tmp_filename -v
-	tmp_filename="${chrs}_key_statistics_data.csv"
+	  tmp_filename="${chrs}_key_statistics_data.csv"
     git  add Key_Statistics/$tmp_filename -v 	
     for chrs_subloop in $alphabets_subloop
     do
+      echo ""
       echo "Adding the files that start with ==> [$chrs][$chrs_subloop]"
+      echo ""
       git  add Quarterly/[$chrs][$chrs_subloop]*csv -v
       git  add Yearly/[$chrs][$chrs_subloop]*csv -v
       git  add Key_Statistics/[$chrs][$chrs_subloop]*csv -v
@@ -54,19 +56,21 @@ do
   echo "Commiting the files that start with ==> [$chrs]*"
   echo ""
   ## sleep 2
-  if [ $chrs = "A" ] || [ $chrs = "C" ]  
+  if [ $chrs = "A" ] || [ $chrs = "C" ] || [ $chrs = "S" ]  
   then
     echo "Doing $chrs...Will loop through subloop"
-	# This is to add if the ticker is JUST == A or == C
-	tmp_filename="${chrs}_qtr_data.csv"
+	  # This is to add if the ticker is JUST == A or == C
+	  tmp_filename="${chrs}_qtr_data.csv"
     git  commit -m "More Updates" Quarterly/$tmp_filename -v
-	tmp_filename="${chrs}_yr_data.csv"
+	  tmp_filename="${chrs}_yr_data.csv"
     git  commit -m "More Updates" Yearly/$tmp_filename -v
-	tmp_filename="${chrs}_key_statistics_data.csv"
+	  tmp_filename="${chrs}_key_statistics_data.csv"
     git  commit -m "More Updates" Key_Statistics/$tmp_filename -v 	
     for chrs_subloop in $alphabets_subloop
     do
+      echo ""
       echo "Committing the files that start with ==> [$chrs][$chrs_subloop]"
+      echo ""
       git commit -m "More Updates" Quarterly/[$chrs][$chrs_subloop]*csv -v
       git commit -m "More Updates" Yearly/[$chrs][$chrs_subloop]*csv -v
       git commit -m "More Updates" Key_Statistics/[$chrs][$chrs_subloop]*csv -v

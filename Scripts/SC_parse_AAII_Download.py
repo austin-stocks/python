@@ -68,7 +68,7 @@ yr_str_list =['Y1', 'Y2','Y3','Y4','Y5','Y6','Y7']
 # This takes around 21 sec
 start = time.process_time()
 # aaii_xls_file = '2020_09_04_AAII_Analysis.xlsx'
-aaii_xls_file = '2022_05_20_AAII_Analysis.xlsx'
+aaii_xls_file = '2022_09_05_AAII_Analysis.xlsx'
 
 aaii_xls = pd.ExcelFile(dir_path + aaii_data_dir + "\\" + aaii_xls_file)
 
