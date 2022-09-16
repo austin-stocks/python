@@ -185,7 +185,7 @@ historical_dir = "\\..\\" + "Historical"
 earnings_dir = "\\..\\" + "Earnings"
 dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
-
+aaii_financial_yr_dir = "\\..\\" + "AAII_Financials" + "\\" + "Yearly"
 # ---------------------------------------------------------------------------
 # Set Logging
 # critical, error, warning, info, debug
@@ -314,7 +314,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # #############################################################################
 # #############################################################################
 # #############################################################################
-# ticker_list = ['AAPL', 'AUDC','MED']
+# ticker_list = ['IBM']
 for ticker_raw in ticker_list:
 
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
@@ -328,6 +328,12 @@ for ticker_raw in ticker_list:
   if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential') and (quality_of_stock != 'Sundeep_List')):
     logging.info(str(ticker) + " is not Wheat...skipping")
     continue
+
+  aaii_yr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_yr_dir + "\\" + ticker + "_YR_FIN.xlsx", sheet_name=ticker, skiprows=6, nrows=1,usecols="C:M")
+  logging.debug("The Financial Datafram is \n" + aaii_yr_financial_df.to_string())
+  # sys.exit(1)
+  # Sundeep is here
+
 
   # ---------------------------------------------------------------------------
   # From the Master Tracklist :
