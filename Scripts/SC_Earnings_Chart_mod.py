@@ -329,8 +329,14 @@ for ticker_raw in ticker_list:
     logging.info(str(ticker) + " is not Wheat...skipping")
     continue
 
-  aaii_yr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_yr_dir + "\\" + ticker + "_YR_FIN.xlsx", sheet_name=ticker, skiprows=6, nrows=1,usecols="C:M")
-  logging.debug("The Financial Datafram is \n" + aaii_yr_financial_df.to_string())
+  try:
+    aaii_yr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_yr_dir + "\\" + ticker + "_YR_FIN.xlsx", sheet_name=ticker, skiprows=6, nrows=1,usecols="C:M")
+    logging.debug("The Financial Dataframe is \n" + aaii_yr_financial_df.to_string())
+  except FileNotFoundError:
+    logging.warning("")
+    logging.error("Yearly Financial file for " + str(ticker) + " could not be found...Maybe checked  AAII Financials directory")
+    logging.warning("")
+    # continue
   # sys.exit(1)
   # Sundeep is here
 
