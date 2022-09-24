@@ -14,6 +14,7 @@ import matplotlib.dates as mdates
 import calendar
 import logging
 
+from collections import Counter
 from dateutil.relativedelta import relativedelta
 from matplotlib.offsetbox import AnchoredText
 
@@ -39,6 +40,7 @@ def human_format(num, precision=2, suffixes=['', 'K', 'M', 'B', 'T', 'P']):
   m = sum([abs(num / 1000.0 ** x) >= 1 for x in range(1, len(suffixes))])
   return f'{num / 1000.0 ** m:.{precision}f}{suffixes[m]}'
 
+
 # -----------------------------------------------------------------------------
 # Returns growth between the current and previous number
 # ----------|-----------|------------------------------------------|
@@ -59,19 +61,20 @@ def get_growth(current, previous):
     return "Div#0#"
   elif current == previous:
     return 0
-  elif (previous > 0): # Covers case 1 and 2
+  elif (previous > 0):  # Covers case 1 and 2
     return round(((current - previous) / previous) * 100.0, 2)
   elif (previous < 0) and (current > 0):  # Case 3
     # This has very little meaning but still will give sone indication to
     # the user that the growth has been on positive tragectory
-    return round(((current - previous) / previous) * 100.0, 2)*(-1)
+    return round(((current - previous) / previous) * 100.0, 2) * (-1)
   elif (previous < 0) and (current < 0):  # Case 3
-    if (current > previous): # Case 4a
+    if (current > previous):  # Case 4a
       return "Improving"
-    else: # Case 4a
+    else:  # Case 4a
       return "Deteriorating"
 
   # return float('inf')
+
 
 # -----------------------------------------------------------------------------
 # This function takes in a list that has nan in between numeric values and
@@ -113,9 +116,23 @@ def smooth_list(l):
 
   # print("Modified List is", l_mod)
   return (l_mod)
-
-
 # =============================================================================
+
+def qtr_date_and_index_matching_eps_report_date(qtr_date_list_def,eps_report_date_def):
+  # find the date closest to the date of last reported earnings from the date list
+  qtr_date_matching_eps_report_date_def = min(qtr_date_list_def, key=lambda d: abs(d - eps_report_date_def))
+  qtr_date_matching_eps_report_date_index_def = qtr_date_list_def.index(qtr_date_matching_eps_report_date_def)
+  logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date_def) + " in the Earnings df is : " + str(qtr_date_matching_eps_report_date_def) + " at index " + str(qtr_date_matching_eps_report_date_index_def))
+  # If the date match in the eps_date_list is a date in the future date (that can happen if
+  # the eps_report_date is more than 45 days after the quarter date. In this case we need to
+  # move the match date index back by a quarter (by adding 1 to it - as the index starts
+  # from 0 for the future most date)
+  if ((qtr_date_matching_eps_report_date_def >= dt.date.today()) or (qtr_date_matching_eps_report_date_def >= eps_report_date_def)):
+    qtr_date_matching_eps_report_date_index_def += 1
+    qtr_date_matching_eps_report_date_def = qtr_date_list_def[qtr_date_matching_eps_report_date_index_def]
+    logging.debug("Adjusting the match date to " + str(qtr_date_matching_eps_report_date_def) + " at index " + str(qtr_date_matching_eps_report_date_index_def))
+
+  return (qtr_date_matching_eps_report_date_def,qtr_date_matching_eps_report_date_index_def)
 
 # =============================================================================
 # Global variables
@@ -126,8 +143,8 @@ g_var_use_aaii_data_to_extend_eps_projections = 1
 g_dict_chart_options = {
   # This defined whether the numbers for Annual EPS and Q EPS and Dividend
   # should be printed on the chart
-  'print_eps_and_div_numbers' : 'Yes', # Yes, No, Both - This will create chart two times - one with numbers and one without
-  'Chart_type_options' : ['Log','Linear'],
+  'print_eps_and_div_numbers': 'Yes', # Yes, No, Both - This will create chart two times - one with numbers and one without
+  'Chart_type_options': ['Log', 'Linear'],
   # 'Linear_chart_types' : ['Linear','Long_Linear']
   # 'Linear_chart_types': ['Long_Linear']
   'Linear_chart_types': ['Linear']
@@ -194,16 +211,17 @@ logging.disable(logging.NOTSET)
 # ---------------------------------------------------------------------------
 
 
-
 tracklist_file = "Tracklist.csv"
 schiller_pe_monthly_file = "Schiller_PE_by_Month.csv"
 master_tracklist_file = "Master_Tracklist.xlsm"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 configuration_file = "Configurations.csv"
-configuration_json = "Configurations.json"
+configuration_json_file = "Configurations.json"
+price_target_json_file = "Price_Targets.json"
 
 calendar_file = "Calendar.csv"
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
+
 
 logging.debug("I am " + str(who_am_i) + " and I am running on " + str(my_hostname))
 if (re.search('ann', who_am_i, re.IGNORECASE)):
@@ -217,9 +235,9 @@ elif re.search('alan', who_am_i, re.IGNORECASE):
   user_name = "alan"
   personal_json_file = "Alan.json"
 elif (re.search('sundeep', who_am_i, re.IGNORECASE)) or \
-      re.search('DesktopNew-Optiplex',my_hostname,re.IGNORECASE) or \
-      re.search('LaptopOffice-T480',my_hostname,re.IGNORECASE) or \
-      re.search('LaptopNew-Inspiron-5570', my_hostname, re.IGNORECASE):
+  re.search('DesktopNew-Optiplex', my_hostname, re.IGNORECASE) or \
+  re.search('LaptopOffice-T480', my_hostname, re.IGNORECASE) or \
+  re.search('LaptopNew-Inspiron-5570', my_hostname, re.IGNORECASE):
   logging.debug("Looks like Sundeep is running the script")
   user_name = "sundeep"
   buy_sell_color = "magenta"
@@ -233,8 +251,12 @@ schiller_pe_df = pd.read_csv(dir_path + user_dir + "\\" + schiller_pe_monthly_fi
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
 master_tracklist_df.set_index('Tickers', inplace=True)
 
-with open(dir_path + user_dir + "\\" + configuration_json) as json_file:
+with open(dir_path + user_dir + "\\" + configuration_json_file) as json_file:
   config_json = json.load(json_file)
+
+with open(dir_path + user_dir + "\\" + price_target_json_file) as json_file:
+  price_target_json = json.load(json_file)
+
 
 if (os.path.exists(dir_path + user_dir + "\\" + personal_json_file) is True):
   with open(dir_path + user_dir + "\\" + personal_json_file) as json_file:
@@ -242,7 +264,7 @@ if (os.path.exists(dir_path + user_dir + "\\" + personal_json_file) is True):
 
 # print("The configuration df", config_df)
 schiller_pe_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in schiller_pe_df.Date.tolist()]
-schiller_pe_value_list =  schiller_pe_df.Value.tolist()
+schiller_pe_value_list = schiller_pe_df.Value.tolist()
 logging.debug("The schiller PE df is\n" + schiller_pe_df.to_string())
 logging.debug("The Schiller PE Date list is\n" + str(schiller_pe_date_list))
 logging.debug("The Schiller PE Value list is\n" + str(schiller_pe_value_list))
@@ -295,7 +317,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # ticker_list = ['AAPL', 'AUDC','MED']
 for ticker_raw in ticker_list:
 
-  ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
+  ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
   logging.info("========================================================")
   logging.info("Preparing chart for " + ticker)
   logging.info("========================================================")
@@ -340,7 +362,6 @@ for ticker_raw in ticker_list:
     logging.error("**********     Please create one and then run the script again                 **********")
     sys.exit()
 
-  # Sundeep : Todo This might be duplicate
   if (str(ticker_config_series['Fiscal_Year']) != 'nan'):
     fiscal_yr_str = str(ticker_config_series['Fiscal_Year'])
     if not (all(x.isalpha() for x in fiscal_yr_str)):
@@ -352,8 +373,8 @@ for ticker_raw in ticker_list:
   else:
     fiscal_yr_str = "Dec"
 
-  fiscal_qtr_str  = "BQ-"+fiscal_yr_str
-  fiscal_yr_str = "BA-"+fiscal_yr_str
+  fiscal_qtr_str = "BQ-" + fiscal_yr_str
+  fiscal_yr_str = "BA-" + fiscal_yr_str
   logging.debug("The fiscal Year is " + str(fiscal_yr_str))
   # ---------------------------------------------------------------------------
 
@@ -366,7 +387,6 @@ for ticker_raw in ticker_list:
     logging.error("Error - The chart type field in the configuration file is : \"" + str(chart_type_idx) + "\"")
     logging.error("Only values allowed are Linear or Log. Please correct and rerun")
     sys.exit()
-
 
   # =============================================================================
   # Read the Historical file for the ticker
@@ -384,7 +404,7 @@ for ticker_raw in ticker_list:
   # =============================================================================
   # Read the Earnings file for the ticker
   # =============================================================================
-  qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv",delimiter=",")
+  qtr_eps_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv", delimiter=",")
   logging.debug("The Earnings df is \n" + qtr_eps_df.to_string())
 
   # Read the Actual Quarterly Report Dates from the earnings file
@@ -405,7 +425,7 @@ for ticker_raw in ticker_list:
   qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
   eps_report_date = qtr_eps_report_date_list_dt[0]
   for i_date in qtr_eps_report_date_list_dt:
-    if (i_date >  dt.date.today()):
+    if (i_date > dt.date.today()):
       logging.error("The date " + str(i_date) + " in the Q_Report_Date column is later than today...")
       logging.error("Please correct and rerun...")
       sys.exit(1)
@@ -437,10 +457,122 @@ for ticker_raw in ticker_list:
     sys.exit(1)
   # ---------------------------------------------------------------------------
 
+  # -------------------------------------------------------------------------
+  # 10/26/2021
+  # Sundeep is in the process of adding a column Q_EPS_Adjusted to all the
+  # earnings file - this will contain whatever earnings are reported on CNBC
+  # (rather than the diluted earnings that I collect anyway). So, in essence
+  # I am going to collect two sets of earnings - one diluted (that I always
+  # have, and (now) additionally adjusted earnings (one that CNBC reports
+  # on their website (NOTE: It is not always called adjusted earnings in the
+  # CNBC report, but the earnings file will call it adjusted earnings
+  # While sundeep is in the process of collecting the adjusted earnings for
+  # all the stocks, we want to make sure that the current structure of the earnings
+  # file should work.
+  # So - as we continue - if the Q_EPS_Adjusted column is available in the
+  # earnings file, then copy over the latest "x" quarters of adjusted earnings
+  # projections (CNBC projections) from the adjusted column over to the diluted eps
+  # column (they are the white diamond dates)
+  # Now this is not necessary to be done - but if I don't do it, the I have to
+  # put the CNBC projections in both Q_EPS_Diluted and Q_EPS_Adjusted.
+  # This code just copies over the white diamond (future than the current Q report date)
+  # CNBC projections from the Q_EPS_Adjusted column to Q_EPS_Diluted column.
+  # I am not 100% sure on how this is going to be useful, but it is
+  # one of the things that may become useful later on...
+  # -------------------------------------------------------------------------
+  # check if Q_EPS_Adjusted column exists in the qtr_ep_df
+  qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
+  # qtr_eps_date_list = qtr_eps_df['Q_Date'].tolist()
+  try:
+    logging.debug("The Q_Date list " + str(qtr_eps_df.Q_Date.tolist()))
+    qtr_eps_date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_df.Q_Date.tolist()]
+  except (TypeError):
+    logging.error("**********                                ERROR                               **********")
+    logging.error("**********  Some of the entries for Column 'Date' in the Earnings file are    **********")
+    logging.error("**********  either missing (blank) or do not have proper mm/dd/yyyy format.   **********")
+    logging.error("**********  Please correct the Earnings file 'Date' column and run again      **********")
+    sys.exit(1)
+
+  # ---------------------------------------------------------------------------
+  # Find the Q_Date and it's index closest to the date of last reported earnings
+  # and if there is no reported earnings filled corresponding to that index (no
+  # earnings filled in Q_EPS_Diluted column), then flag an error...this means
+  # that the Q_Report_Date had a date filled in but, likely, I forgot to fill
+  # in the actual earnings corresponding the report date in the Q_EPS_Diluted
+  # column (kids called me or something happened and then I forgot :-))
+  # ---------------------------------------------------------------------------
+  eps_date_list_eps_report_date_match, eps_date_list_eps_report_date_index = qtr_date_and_index_matching_eps_report_date(qtr_eps_date_list, eps_report_date)
+  if (math.isnan(qtr_eps_df.loc[eps_date_list_eps_report_date_index,['Q_EPS_Diluted']])):
+    logging.error("Latest Diluted earnings in Q_EPS_Diluted column, corresponding to Lastest Earnings date : " + str(eps_report_date) + ", is not filled in the earning file")
+    logging.error("Likely you put the earnings release date in the Q_Report_Date column but forgot (or distracted) to enter the actual earnings in Q_EPS_Diluted column")
+    logging.error("Please fill it out and rerun")
+    sys.exit()
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # Check if there is case where I forgot to update the Q_Report_Date but recorded
+  # the actual earnings in Q_EPS_Diluted column that the company reported.
+  # In other words, the code finds something in Q_EPS_Diluted col but nothing corresponding
+  # to that in the Q_Report_Date column.
+  # It generally means that either I forgot or got distracted while updating the earnings
+  # file with reported earning date...It is a simple problem to solve.
+  # Just go the Edgar or CNBC and find out the actual reporting date and fill in
+  # NOTE : This code only (and should) check for the rows that are later than the
+  # last reported earnings date found in the earning file. In other words, if the
+  # code found 06/15/2022 as the last reported date in Q_Report_Date then will check
+  # only Q_EPS_Diluted rows that are newer (above) that row. Otherwise, if we check
+  # the whole earnings file for missing Q_Report_Date for earnings, then there
+  # are MANY MANY rows for which the Q_Report_Date is not present (all the
+  # older earnings for which the CBNC date is not available)
+  # ---------------------------------------------------------------------------
+  logging.debug("The Q_Date index that matches to last reported earning date is : " + str(eps_date_list_eps_report_date_index))
+  for i_int in range(eps_date_list_eps_report_date_index):
+    # logging.debug("Index : " + str(i_int) + ", : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string() + ", : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string())
+    if (math.isnan(qtr_eps_df.loc[i_int,['Q_EPS_Diluted']])):
+      logging.debug("Index : " + str(i_int) + ", : " + qtr_eps_df.loc[i_int, ['Q_Date']].to_string() + ", : " + qtr_eps_df.loc[i_int, ['Q_EPS_Diluted']].to_string())
+    else:
+      logging.error("It seems that : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string() + ", is recorded for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string() + " in row " + str(i_int+2) + " of the earnings file")
+      logging.error("while there is no corresponding Q_Report_Date populated for those earnings")
+      logging.error("Did you just forget/got distracted to update the earnings report date in the earnings file when you recorded company earnings for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string())
+      logging.error("Please have a look at row : " + str(i_int+2) + " in the earnings file corresponding to column : Q_Report_Date and fill the actual earnings report date")
+      logging.error("Please correct and rerun. Exiting...")
+      sys.exit()
+  # ---------------------------------------------------------------------------
+
+  if 'Q_EPS_Adjusted' in qtr_eps_df.columns:
+    qtr_eps_adjusted_list = qtr_eps_df.Q_EPS_Adjusted.tolist()
+    logging.info("Found qtr_eps_adjusted column in the earnings file")
+    logging.info("will copy over the (future) earnings projections from q_eps_adjusted column to q_eps_diluted column")
+    logging.debug("The QTR EPS Diluted list is " + str(qtr_eps_list))
+    logging.debug("The QTR EPS Adjusted list is " + str(qtr_eps_adjusted_list))
+
+    # Copy the Q_EPS_Adjusted EPS numbers into Q_EPS_Diluted column starting at index 0
+    # (which is the latest Q_Date (row 2 in the column Q_Date) till we reach the index
+    # that represents the last unreported earnings quarter. So for e.g row 2 in Q_date is 12/30/2022
+    # and the last earnings were reported on 06/30/2021, then copy the Q_EPS_Adjusted from
+    # 12/30/2022, 09/30/2022, 06/30/2022, 03/30/2022, 12/30/2021 and 09/30/2021 rows
+    # into Q_EPS_Diluted. That way the forst few 'nan' in Q_EPS_Diluted will now have the
+    # same value as Q_EPS_Adjusted
+    qtr_eps_df_copy = qtr_eps_df.copy()
+    logging.debug("The qtr earnings df :" + qtr_eps_df.to_string())
+    for i_int in range(eps_date_list_eps_report_date_index):
+      qtr_eps_df.loc[i_int,['Q_EPS_Diluted']] = qtr_eps_df_copy.loc[i_int,['Q_EPS_Adjusted']].values
+
+    qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
+    logging.debug("The qtr earnings df after copying over Q_EPS_Adjusted, till the lastest earnings date,  over to Q_EPS_Diluted :" + qtr_eps_df.to_string())
+    qtr_eps_df_copy = pd.DataFrame()
+  # -------------------------------------------------------------------------
+
+  # -------------------------------------------------------------------------
+  # Check if the latest date in historical df is newer than or equal to the latest
+  # date in the Q_Date - Otherwise the white diamonds (which are based on Q_Date)
+  # will be created for (future) dates that don't exist in historical df and the
+  # script will produce strange charts and/or gives out weired messages
+  # -------------------------------------------------------------------------
   latest_qtr_date_in_earnings_file = qtr_eps_df['Q_Date'].tolist()[0]
   logging.debug("The latest Date in Earnings file is " + str(latest_qtr_date_in_earnings_file))
   latest_qtr_date_in_earnings_file_dt = dt.datetime.strptime(str(latest_qtr_date_in_earnings_file), '%m/%d/%Y').date()
-  if (fiscal_yr_str != str("BA-"+str(latest_qtr_date_in_earnings_file_dt.strftime("%b")))):
+  if (fiscal_yr_str != str("BA-" + str(latest_qtr_date_in_earnings_file_dt.strftime("%b")))):
     logging.error("The fiscal year in config file : *** " + str(fiscal_yr_str) + " *** does not match the month of the latest qtr in the earnings file *** " + str(latest_qtr_date_in_earnings_file_dt.strftime("%b")) + " ***")
     logging.error("Please correct and rerun")
     sys.exit(1)
@@ -456,6 +588,7 @@ for ticker_raw in ticker_list:
     logging.error("********** or you added years in the configurations file but forgot to run the merge script to reflect added year(s) in the historical file **********")
     logging.error("Please correct - by adding a year or two in the configuration file, if your forgot - and then rerun merge script either way before continuing")
     sys.exit(1)
+  # -------------------------------------------------------------------------
 
   # -------------------------------------------------------------------------
   #       *****     Start of AAII insertion of Projected EPS Insertion    *****
@@ -480,14 +613,49 @@ for ticker_raw in ticker_list:
     logging.debug("so that the AAII EPS Projections can be included in the chart")
     continue_aaii_eps_projections_for_this_ticker = 0
 
-  # todo : Make this more robust...Check if the ticher information exists in aaii_df live (at run time)
-  # and then skip, rather than having a static ignore list
-  if (ticker in aaii_missing_tickers_list):
-    logging.debug(str(ticker) + " is NOT in AAII df. Will skip inserting EPS Projections..")
+  # Check if the ticker is found in the analysts_projection_df and
+  # If found, then read it from there
+  # If not found, then skip putting the future EPS projection in the chart
+  # In both cases also check if the tickers is also found in the missing ticker list, then
+  # If found, then warn/inform the user appropriately and skip putting the future
+  # EPS projections in the chart anyway. The assumption being that there might be a good
+  # reason on why the user put the ticker in the aaii_missing_tickers_list
+  # (e.g projections are way off/seem very wrong, user really does not want EPS
+  # projections in the chart beyond what is in the earnings file etc)
+  try:
+    ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
+    if (ticker in aaii_missing_tickers_list):
+      logging.warning("")
+      logging.warning(str(ticker) + " is listed in aaii_missing_tickers_list in the SC_Global_functions file, but")
+      logging.warning("it is present in the "+ str(aaii_analysts_projection_file) + " file")
+      logging.warning("There better be a good reason to have it in the aaii_missing_tickers_list b/c now the script")
+      logging.warning("is NOT going to pick future EPS projections and put them in the cart and, again, unless")
+      logging.warning("there is a very good reason, you probably do NOT want that")
+      logging.warning("=====> Recommended Action <=====")
+      logging.warning("Unless you have a very good reason for why the ticker was put in the aaii_missing_tickers_list and you want it there, otherwise")
+      logging.warning("Remove the ticker from aaii_missing_tickers_list and rerun the script")
+      logging.warning("I WILL PAUSE THE SCRIPT FOR 5 SECONDS FOR YOU TO THINK...")
+      logging.warning("AND THEN WILL CONTINUE TO PREPARE THE CHART WITHOUT USING THE EPS PROJECTIONS FROM AAII ANALYSTS FILE")
+      logging.warning("")
+      continue_aaii_eps_projections_for_this_ticker = 0
+      time.sleep(5)
+  except:
+    logging.warning("")
+    logging.warning(str(ticker) + " is NOT in AAII Analysts projections df. Will skip inserting future EPS Projections from AAII Analysts data...")
+    logging.warning("Keep an eye out, the ticker may be added by AAII in the future, then the script will insert future EPS projections in the chart")
+    logging.warning("")
+    if (ticker in aaii_missing_tickers_list):
+      logging.info("Also found " + str(ticker) + " in the aaii_missing_tickers_list")
+      logging.info("This is superflous right now as the ticker is not in the AAII analysts file anyway.")
+      logging.info("You can remove the ticker from the aaii_missing_tickers_list and it will have not effect on the chart right now")
+      logging.warning("However (unless there is strong reason not to) it is recommended to remove the ticker from the aaii_missing_tickers_list")
+      logging.warning("because if you don't remove, then the tickers future EPS prjoections will NOt get picked by the script even after it is added by AAII")
+      logging.info("")
+      time.sleep(3)
     continue_aaii_eps_projections_for_this_ticker = 0
 
   if (g_var_use_aaii_data_to_extend_eps_projections == 1) and (continue_aaii_eps_projections_for_this_ticker == 1):
-    ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
+    # ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
     logging.debug("The series for " + str(ticker) + " in the AAII Analysts df is " + str(ticker_aaii_analysts_projection_series))
     y_plus0_fiscal_year_end = ticker_aaii_analysts_projection_series['Date--Current fiscal year']
     if (str(y_plus0_fiscal_year_end) != 'nan'):
@@ -530,11 +698,11 @@ for ticker_raw in ticker_list:
     days_bw_y_plus0_and_latest_qtr_date_in_earnings_file = y_plus0_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
     days_bw_y_plus1_and_latest_qtr_date_in_earnings_file = y_plus1_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
     days_bw_y_plus2_and_latest_qtr_date_in_earnings_file = y_plus2_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
-    logging.debug ("The difference b/w Y0 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus0_and_latest_qtr_date_in_earnings_file.days)  + " days")
-    logging.debug ("The difference b/w Y1 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus1_and_latest_qtr_date_in_earnings_file.days)  + " days")
-    logging.debug ("The difference b/w Y2 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus2_and_latest_qtr_date_in_earnings_file.days)  + " days")
+    logging.debug("The difference b/w Y0 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus0_and_latest_qtr_date_in_earnings_file.days) + " days")
+    logging.debug("The difference b/w Y1 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus1_and_latest_qtr_date_in_earnings_file.days) + " days")
+    logging.debug("The difference b/w Y2 fiscal year date and Latest qtr date is : " + str(days_bw_y_plus2_and_latest_qtr_date_in_earnings_file.days) + " days")
     if (-5 <= days_bw_y_plus2_and_latest_qtr_date_in_earnings_file.days <= 5):
-      logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y2 fiscal end date : " + str(y_plus2_fiscal_year_dt) + " ...so nothing needs to be inserted")
+      logging.warning(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y2 fiscal end date : " + str(y_plus2_fiscal_year_dt) + " ...so nothing needs to be inserted")
       logging.warning(str(ticker) + " : Hmmm...However this should very rare...make sure for " + str(ticker) + "that the latest entry qtr_eps_date and the Y2 fiscal year dates actually match...")
     elif (-5 <= days_bw_y_plus1_and_latest_qtr_date_in_earnings_file.days <= 5):
       logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y1 fiscal end date : " + str(y_plus1_fiscal_year_dt) + " ...so we can possibly add Y2 fiscal year projections if they are not NaN")
@@ -549,25 +717,25 @@ for ticker_raw in ticker_list:
         # sure that it works (It currently was failing for KMX)
         if (fiscal_qtr_str == "BQ-Feb"):
           logging.debug("Here I am")
-          fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt+ dt.timedelta(days=5),freq=fiscal_qtr_str)
+          fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt + dt.timedelta(days=5),                                                      freq=fiscal_qtr_str)
         else:
-          fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
+          fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt, freq=fiscal_qtr_str)
       else:
         logging.debug(str(ticker) + " : Hmmm...it seems like either Y2 eps projections are Nan OR Y1 eps projections are negative in AAII. In case the Y1 eps is negative, growth math will not work right. Nothing inserted...")
     elif (-5 <= days_bw_y_plus0_and_latest_qtr_date_in_earnings_file.days <= 5):
-      logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y0 fiscal end date : " + str(y_plus0_fiscal_year_dt) + " ...so we can possibly add Y1 and Y2 fiscal year projections if they are not NaN" )
+      logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y0 fiscal end date : " + str(y_plus0_fiscal_year_dt) + " ...so we can possibly add Y1 and Y2 fiscal year projections if they are not NaN")
       # Sundeep - This is a shortcut way of ONLY inserting 1 year of EPS Projections when 2 years of projections were available
       # Force y_plus2_fiscal_year_eps_projections = 'nan' here so that only one year fiscal projection can be inserted
       # To revert back to adding upto 2 years of aaii eps projections - just comment the next line
       y_plus2_fiscal_year_eps_projections = 'nan'
       if ((str(y_plus2_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan') and (y_plus1_fiscal_year_eps_projections > 0) and (y_plus0_fiscal_year_eps_projections > 0)):
-        logging.debug (str(ticker) + " : Both Y1 and Y2 fiscal year eps projections are NOT nan and Y1 and Y0 eps numbers are non-negative. So, will insert two years (Y1 and Y2)")
+        logging.debug(str(ticker) + " : Both Y1 and Y2 fiscal year eps projections are NOT nan and Y1 and Y0 eps numbers are non-negative. So, will insert two years (Y1 and Y2)")
         no_of_years_to_insert_aaii_eps_projections = 2
-        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt,freq=fiscal_qtr_str)
+        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt, freq=fiscal_qtr_str)
       elif (str(y_plus1_fiscal_year_eps_projections) != 'nan') and (y_plus0_fiscal_year_eps_projections > 0):
         logging.debug(str(ticker) + " : Y2 fiscal year eps projections is NaN, Y1 fiscal year eps projections is NOT nan and Y0 fiscal year number is non-negative. So, will insert one year (Y1)")
         no_of_years_to_insert_aaii_eps_projections = 1
-        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus1_fiscal_year_dt,freq=fiscal_qtr_str)
+        fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus1_fiscal_year_dt, freq=fiscal_qtr_str)
       else:
         logging.debug(str(ticker) + " : Hmmm...it seems like either both Y1 and Y2 eps projections are nan in AAII or either Y0 or Y1 eps projections are negative. Nothing inserted...")
         logging.debug(str(ticker) + " : Growth math does not work when we start from negative numbers. However, if both Y2 and Y1 earnings projections are NaN, then please check Y1 and Y2 earnings projections in AAII")
@@ -602,39 +770,39 @@ for ticker_raw in ticker_list:
       logging.debug("The modified qtr dates list is\n" + str(fiscal_qtr_dates))
 
       logging.debug("The qtr eps list is " + str(qtr_eps_list))
-      no_of_qtr_to_insert = no_of_years_to_insert_aaii_eps_projections*4
+      no_of_qtr_to_insert = no_of_years_to_insert_aaii_eps_projections * 4
       tmp_eps_list = []
       for i_int in range(no_of_qtr_to_insert):
         tmp_eps_list.append(float('nan'))
       if (no_of_years_to_insert_aaii_eps_projections == 1):
         if (-5 <= days_bw_y_plus0_and_latest_qtr_date_in_earnings_file.days <= 5):
-          growth_factor = y_plus1_fiscal_year_eps_projections/y_plus0_fiscal_year_eps_projections
+          growth_factor = y_plus1_fiscal_year_eps_projections / y_plus0_fiscal_year_eps_projections
           logging.debug(str(ticker) + " : Inserting one year of EPS projections with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor) + " (" + str(y_plus1_fiscal_year_eps_projections) + "/" + str(y_plus0_fiscal_year_eps_projections) + ")")
         else:
-          growth_factor = y_plus2_fiscal_year_eps_projections/y_plus1_fiscal_year_eps_projections
+          growth_factor = y_plus2_fiscal_year_eps_projections / y_plus1_fiscal_year_eps_projections
           logging.debug(str(ticker) + " : Inserting one year of EPS projections with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor) + " (" + str(y_plus2_fiscal_year_eps_projections) + "/" + str(y_plus1_fiscal_year_eps_projections) + ")")
         for i_int in range(no_of_qtr_to_insert):
-          tmp_eps_list[i_int] = qtr_eps_list[3 - i_int]*growth_factor
+          tmp_eps_list[i_int] = qtr_eps_list[3 - i_int] * growth_factor
           logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
       else:
         growth_factor = y_plus1_fiscal_year_eps_projections / y_plus0_fiscal_year_eps_projections
         logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing First part -  with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor) + " (" + str(y_plus1_fiscal_year_eps_projections) + "/" + str(y_plus0_fiscal_year_eps_projections) + ")")
-        for i_int in range(0,4):
+        for i_int in range(0, 4):
           tmp_eps_list[i_int] = qtr_eps_list[3 - i_int] * growth_factor
           logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
-        growth_factor = y_plus2_fiscal_year_eps_projections / y_plus1_fiscal_year_eps_projections
+          growth_factor = y_plus2_fiscal_year_eps_projections / y_plus1_fiscal_year_eps_projections
         logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing Second part -  with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor) + " (" + str(y_plus2_fiscal_year_eps_projections) + "/" + str(y_plus1_fiscal_year_eps_projections) + ")")
-        for i_int in range(4,8):
-          tmp_eps_list[i_int] = tmp_eps_list[i_int-4] * growth_factor
-          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(tmp_eps_list[i_int-4]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
+        for i_int in range(4, 8):
+          tmp_eps_list[i_int] = tmp_eps_list[i_int - 4] * growth_factor
+          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(tmp_eps_list[i_int - 4]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
 
       logging.debug("The tmp_eps_list list of projected eps to be inserted " + str(tmp_eps_list))
       for i_int in range(no_of_qtr_to_insert):
-        logging.debug ("Inserting in qtr_eps_df at index : " + str(-(i_int+1)) + " Q_Date : " + str( fiscal_qtr_dates[i_int]) + " Q_EPS_Diluted : " + str(tmp_eps_list[i_int]))
-        qtr_eps_df.loc[-(i_int+1)]= qtr_eps_df.loc[0]
+        logging.debug("Inserting in qtr_eps_df at index : " + str(-(i_int + 1)) + " Q_Date : " + str(fiscal_qtr_dates[i_int]) + " Q_EPS_Diluted : " + str(tmp_eps_list[i_int]))
+        qtr_eps_df.loc[-(i_int + 1)] = qtr_eps_df.loc[0]
         # qtr_eps_df.loc[-(i_int+1), 'Q_Date'] =  dt.datetime.strptime(fiscal_qtr_dates[i_int], '%m/%d/%Y').date()
-        qtr_eps_df.loc[-(i_int+1), 'Q_Date'] =  fiscal_qtr_dates[i_int]
-        qtr_eps_df.loc[-(i_int+1), 'Q_EPS_Diluted'] = tmp_eps_list[i_int]
+        qtr_eps_df.loc[-(i_int + 1), 'Q_Date'] = fiscal_qtr_dates[i_int]
+        qtr_eps_df.loc[-(i_int + 1), 'Q_EPS_Diluted'] = tmp_eps_list[i_int]
 
       max_qtr_eps_from_insertion = max(tmp_eps_list)
       # -------------------------------------------------------------------------
@@ -661,11 +829,11 @@ for ticker_raw in ticker_list:
       cal_match_date_with_insert_eps_projection_index = calendar_date_list.index(cal_match_date_with_insert_eps_projection)
       logging.debug(str(ticker) + " : The date for which EPS is inserted " + str(latest_date_in_historical_file_dt + relativedelta(years=no_of_years_to_insert_aaii_eps_projections)) + " matched index " + str(cal_match_date_with_insert_eps_projection_index) + " in the calendar df")
 
-      for i_int in range(cal_match_date_with_insert_eps_projection_index,cal_match_date_with_historical_index):
+      for i_int in range(cal_match_date_with_insert_eps_projection_index, cal_match_date_with_historical_index):
         # logging.debug ("Inserting in historical df at index : " + str(-(i_int-cal_match_date_with_insert_eps_projection_index+1)) + " Date : " + str(calendar_date_list[i_int]))
-        historical_df.loc[-(i_int-cal_match_date_with_insert_eps_projection_index+1)]= historical_df.loc[0]
+        historical_df.loc[-(i_int - cal_match_date_with_insert_eps_projection_index + 1)] = historical_df.loc[0]
         # qtr_eps_df.loc[-(i_int+1), 'Q_Date'] =  dt.datetime.strptime(fiscal_qtr_dates[i_int], '%m/%d/%Y').date()
-        historical_df.loc[-(i_int-cal_match_date_with_insert_eps_projection_index+1), 'Date'] =  calendar_date_list[i_int].strftime('%m/%d/%Y')
+        historical_df.loc[-(i_int - cal_match_date_with_insert_eps_projection_index + 1), 'Date'] = calendar_date_list[i_int].strftime('%m/%d/%Y')
 
       logging.debug("Historical Df after inserting future dates for AAII projections is \n" + historical_df.to_string())
       # historical_df['Date'] = historical_df['Date'].astype('datetime64[D]', format="%m/%d/%Y")
@@ -682,7 +850,6 @@ for ticker_raw in ticker_list:
   #       *****     End of AAII insertion of Projected EPS Insertion    *****
   # -------------------------------------------------------------------------
 
-
   ticker_adj_close_list = historical_df.Adj_Close.tolist()
   # date_str_list = historical_df.Date.tolist()
   date_str_list = historical_df['Date'].dropna().tolist()
@@ -690,7 +857,6 @@ for ticker_raw in ticker_list:
   date_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in date_str_list]
   logging.debug("The date list - in datetime - from historical is\n" + str(date_list) + "\nit has " + str(len(date_list)) + " entries")
   logging.info("Read in the Historical Data...")
-
 
   # Remove all rows after the last valid value for row for Column 'Date'
   qtr_eps_df_copy = qtr_eps_df.loc[0:qtr_eps_df.Q_Date.last_valid_index()].copy()
@@ -743,6 +909,89 @@ for ticker_raw in ticker_list:
   logging.info("Read in the Earnings Data...")
   # ---------------------------------------------------------------------------
 
+  # ---------------------------------------------------------------------------
+  # Price Target section
+  # ---------------------------------------------------------------------------
+  price_target_dict_needs_rename = {}
+  price_target_date_list_dt = []
+  price_target_amount_list = []
+  pt_print_str = ""
+  if ticker in price_target_json.keys():
+    price_target_dict_needs_rename = price_target_json[ticker]
+    logging.debug("Price target data for " + str(ticker) + " in Price Target Json : \n" + str(price_target_json[ticker]['Price_Target']))
+    len_price_target = len(price_target_json[ticker]["Price_Target"])
+    for i in range(len_price_target):
+      i_price_target_date = price_target_json[ticker]["Price_Target"][i]["Date"]
+      i_price_target_amount = price_target_json[ticker]["Price_Target"][i]["Target"].replace(',','')
+      try:
+        price_target_date_list_dt.append(dt.datetime.strptime(i_price_target_date, "%m/%d/%Y").date())
+        price_target_amount_list.append(float(i_price_target_amount))
+      except (ValueError):
+        logging.error(
+          "\n***** Error : Either the Dates or the Price Target Amount are not in proper format for Price_Target in Price Target json file.\n"
+          "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
+          "***** Error : Found somewhere in : Date : " + str(i_price_target_date) + ", Price Target : " + str(i_price_target_amount))
+        sys.exit(1)
+
+    # -----------------------------------------------------
+    # Check for duplicate dates and ask the user to fix
+    # duplicate dates - This should be rare, and if it happens
+    # then the user needs to clean the json file
+    # -----------------------------------------------------
+    logging.debug("The price Target datelist is : " + str(price_target_date_list_dt))
+    if (len(price_target_date_list_dt) != len(set(price_target_date_list_dt))):
+      duplicate_items_list = [k for k,v in Counter(price_target_date_list_dt).items() if v>1]
+      logging.error ("There are some duplicate dates in the Price_Target in Price Target json file...Please correct and rerun")
+      logging.error ("Duplicates : " + str(duplicate_items_list))
+      sys.exit(1)
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # Convert the date and the target amount arrays to np arrays
+    # Then sort the date array - that will give us the index of
+    # the sorted array. Then sort the target amount array with
+    # the same indexes so they are sorted "in sync"
+    # -----------------------------------------------------
+    price_target_date_list_dt_np = np.array(price_target_date_list_dt)
+    price_target_amount_list_np = np.array(price_target_amount_list)
+    price_target_date_list_sorted_idx = np.flip(np.array(price_target_date_list_dt).argsort())
+    logging.debug("The SORTED PT datelist index : " + str(price_target_date_list_sorted_idx))
+
+    price_target_date_list_sorted_dt = price_target_date_list_dt_np[price_target_date_list_sorted_idx]
+    price_target_amount_list_sorted = price_target_amount_list_np[price_target_date_list_sorted_idx]
+    logging.debug("The SORTED PT datelist  : " + str(price_target_date_list_sorted_dt))
+    logging.debug("The SORTED PT amount    : " + str(price_target_amount_list_sorted))
+    # -----------------------------------------------------
+
+    # -----------------------------------------------------
+    # Prepare a string that will be put on the chart
+    # -----------------------------------------------------
+    # For now only display the latest 4 price targets, when can get
+    # sophisticated as we see more price targets. For that we have
+    # to do some splicing of the date_list to find the difference
+    # in the various dates available and then do the math - so
+    # in a year I may update the chart 12 times (approximately once a
+    # month, but we may not want to display just the last three entries
+    # of PT, I may want to do back and display last 2 and then going
+    # back and quarter and then going back a year...it is not clear
+    # at this point what would be good do display...so as I mentioned
+    # above, it will evolve
+    no_of_pt_to_display = len(price_target_amount_list_sorted)
+    if no_of_pt_to_display > 7:
+      no_of_pt_to_display = 7
+
+    for i_idx in range(no_of_pt_to_display):
+      logging.debug("Index " + str(i_idx) + ", Date  " + str(price_target_date_list_sorted_dt[i_idx]) + ", value " + str(price_target_amount_list_sorted[i_idx]))
+      pt_print_str = pt_print_str + str(price_target_date_list_sorted_dt[i_idx]) + ", PT : " + str(price_target_amount_list_sorted[i_idx])
+      if i_idx != no_of_pt_to_display-1:
+        pt_print_str = pt_print_str + "\n"
+    logging.debug("The PT string is " + str(pt_print_str))
+  # ---------------------------------------------------------------------------
+
+
+
+
+
   # =============================================================================
   # Handle splits before proceeding as splits can change the qtr_eps
   # =============================================================================
@@ -751,7 +1000,7 @@ for ticker_raw in ticker_list:
   split_multiplier = list()
   # print("Tickers in json data: ", config_json.keys())
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + ticker + "does not exist in" + configuration_json + "file")
+    logging.debug("json data for " + ticker + "does not exist in" + configuration_json_file + "file")
   else:
     if ("Splits" in config_json[ticker]):
       # if the length of the keys is > 0
@@ -771,7 +1020,7 @@ for ticker_raw in ticker_list:
             split_multiplier.append(float(denominator) / float(numerator))
           except (ValueError):
             logging.error("\n***** Error : The split factor: " + str(config_json[ticker]["Splits"][i_key]) + "for split date :" + str(i_key) +
-                  "does not seem to have right format [x:y]...please check *****")
+                          "does not seem to have right format [x:y]...please check *****")
             sys.exit(1)
         for i in range(len(split_dates)):
           qtr_eps_list_mod = qtr_eps_list.copy()
@@ -779,10 +1028,10 @@ for ticker_raw in ticker_list:
           for j in range(len(qtr_eps_date_list)):
             if (split_dates[i] > qtr_eps_date_list[j]):
               qtr_eps_list_mod[j] = round(qtr_eps_list[j] * split_multiplier[i], 4)
-              logging.debug("Earnings date " + str(qtr_eps_date_list[j]) +  " is older than split date. " +
-                            "Changed " + str(qtr_eps_list[j]) + " to "  + str(qtr_eps_list_mod[j]))
+              logging.debug("Earnings date " + str(qtr_eps_date_list[j]) + " is older than split date. " +
+                            "Changed " + str(qtr_eps_list[j]) + " to " + str(qtr_eps_list_mod[j]))
           qtr_eps_list = qtr_eps_list_mod.copy()
-        logging.info("Processed Splits for date(s) : " + str(split_dates) + ",  Mulitplier ratio(s) : "  + str(split_multiplier) )
+        logging.info("Processed Splits for date(s) : " + str(split_dates) + ",  Mulitplier ratio(s) : " + str(split_multiplier))
       else:
         logging.debug("\"Splits\" exits but seems empty for " + ticker)
     else:
@@ -819,7 +1068,7 @@ for ticker_raw in ticker_list:
   if 'Q_EPS_Projections_Date_1' in qtr_eps_df.columns:
     # Get the value from row0 of that column
     try:
-      qtr_eps_projections_date_1 = dt.datetime.strptime(qtr_eps_df.iloc[0]['Q_EPS_Projections_Date_1'], '%m/%d/%Y').date()
+      qtr_eps_projections_date_1 = dt.datetime.strptime(qtr_eps_df.iloc[0]['Q_EPS_Projections_Date_1'],'%m/%d/%Y').date()
     except:
       qtr_eps_projections_date_1 = 'NA'
 
@@ -857,25 +1106,27 @@ for ticker_raw in ticker_list:
     sys.exit()
 
   # Check if the eps projections list has atleat "x" years of data
-  eps_date_list_eps_report_date_match = min(qtr_eps_date_list, key=lambda d: abs(d - eps_report_date))
-  eps_date_list_eps_report_date_index = qtr_eps_date_list.index(eps_date_list_eps_report_date_match)
-  logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Earnings df is : " + str(eps_date_list_eps_report_date_match) + " at index " + str(eps_date_list_eps_report_date_index))
-  # If the date match in the eps_date_list is a date in the future date (that can happen if
-  # the eps_report_date is more than 45 days after the quarter date. In this case we need to
-  # move the match date index back by a quarter (by adding 1 to it - as the index starts
-  # from 0 for the futuremost date)
-  if ((eps_date_list_eps_report_date_match >= dt.date.today()) or (eps_date_list_eps_report_date_match >= eps_report_date)):
-    eps_date_list_eps_report_date_index += 1
-    eps_date_list_eps_report_date_match = qtr_eps_date_list[eps_date_list_eps_report_date_index]
-    logging.debug("Adjusting the match date to " + str(eps_date_list_eps_report_date_match) + " at index " + str(eps_date_list_eps_report_date_index))
-  historical_date_list_eps_report_date_match = min(date_list, key=lambda d: abs(d - eps_date_list_eps_report_date_match))
+  # eps_date_list_eps_report_date_match = min(qtr_eps_date_list, key=lambda d: abs(d - eps_report_date))
+  # eps_date_list_eps_report_date_index = qtr_eps_date_list.index(eps_date_list_eps_report_date_match)
+  # logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Earnings df is : " + str(eps_date_list_eps_report_date_match) + " at index " + str(eps_date_list_eps_report_date_index))
+  # # If the date match in the eps_date_list is a date in the future date (that can happen if
+  # # the eps_report_date is more than 45 days after the quarter date. In this case we need to
+  # # move the match date index back by a quarter (by adding 1 to it - as the index starts
+  # # from 0 for the futuremost date)
+  # if ((eps_date_list_eps_report_date_match >= dt.date.today()) or (eps_date_list_eps_report_date_match >= eps_report_date)):
+  #   eps_date_list_eps_report_date_index += 1
+  #   eps_date_list_eps_report_date_match = qtr_eps_date_list[eps_date_list_eps_report_date_index]
+  #   logging.debug("Adjusting the match date to " + str(eps_date_list_eps_report_date_match) + " at index " + str(eps_date_list_eps_report_date_index))
+  eps_date_list_eps_report_date_match, eps_date_list_eps_report_date_index = qtr_date_and_index_matching_eps_report_date(qtr_eps_date_list, eps_report_date)
+
+  historical_date_list_eps_report_date_match = min(date_list,key=lambda d: abs(d - eps_date_list_eps_report_date_match))
   last_black_diamond_index = date_list.index(historical_date_list_eps_report_date_match)
   logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Historical df is : " + str(historical_date_list_eps_report_date_match) + " at index " + str(last_black_diamond_index))
 
   # Now we know the last quarter earning date index
   years_of_analyst_eps_to_analyze = 2
   # Delete all entries from eps projection list that are older than the date we need for our calculations
-  del qtr_eps_projections_list[eps_date_list_eps_report_date_index+years_of_analyst_eps_to_analyze*4:]
+  del qtr_eps_projections_list[eps_date_list_eps_report_date_index + years_of_analyst_eps_to_analyze * 4:]
   logging.debug("Will keep (" + str(years_of_analyst_eps_to_analyze) + ") years of Analysts Projections to Analyze")
   logging.debug("The Shortened Earnings Projections list for qtr_eps is\n" + str(qtr_eps_projections_list) + "\nand the number of elements are " + str(len(qtr_eps_projections_list)))
   if (sum(math.isnan(x) for x in qtr_eps_projections_list) > 0):
@@ -891,33 +1142,33 @@ for ticker_raw in ticker_list:
   # projected earning and store it in a vairiation list
   logging.debug("Now calculating EPS variation b/w actual and Analysts projections")
   # Initialize the variation list to all 0s first
-  eps_projections_variation_list = [0 for i in range(eps_date_list_eps_report_date_index+years_of_analyst_eps_to_analyze*4)]
-  for i_int in range(eps_date_list_eps_report_date_index,eps_date_list_eps_report_date_index+years_of_analyst_eps_to_analyze*4):
-    variation = (qtr_eps_list[i_int] - qtr_eps_projections_list[i_int])/qtr_eps_projections_list[i_int]*100
+  eps_projections_variation_list = [0 for i in range(eps_date_list_eps_report_date_index + years_of_analyst_eps_to_analyze * 4)]
+  for i_int in range(eps_date_list_eps_report_date_index, eps_date_list_eps_report_date_index + years_of_analyst_eps_to_analyze * 4):
+    variation = (qtr_eps_list[i_int] - qtr_eps_projections_list[i_int]) / qtr_eps_projections_list[i_int] * 100
     logging.debug("Report Date : " + str(qtr_eps_date_list[i_int]) + " Actual QTR EPS : " + str(qtr_eps_list[i_int]) + " Projected QTR EPS : " + str(qtr_eps_projections_list[i_int]) + " Variation : " + str(variation) + " percent")
     eps_projections_variation_list[i_int] = variation
 
   logging.debug("The EPS Variations list raw is : " + str(eps_projections_variation_list))
   # Now smooth out the variation list and create a accuracy list from it
   analyst_eps_projections_accuracy_list = [1 for i in range(len(qtr_eps_date_list))]
-  for i_int in range (years_of_analyst_eps_to_analyze):
+  for i_int in range(years_of_analyst_eps_to_analyze):
     # for each quarter in the year - get the variation and divide by 4 to average out the variations
     # We will treat this as a varition for all the quarters in the year and then assign this to
     # all the quarters below
-    smoothed_variation = (eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int*4 + 0] + \
-                          eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int*4 + 1] + \
-                          eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int*4 + 2] + \
-                          eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int*4 + 3])/4
-    smoothed_analyst_accuracy = 1 + smoothed_variation/100
-    logging.debug("For year " + str(i_int+1) + " smoothed variation is : " + str(smoothed_variation) + " Smoothed analyst accuracy is : " + str(smoothed_analyst_accuracy))
+    smoothed_variation = (eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int * 4 + 0] + \
+                          eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int * 4 + 1] + \
+                          eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int * 4 + 2] + \
+                          eps_projections_variation_list[eps_date_list_eps_report_date_index + i_int * 4 + 3]) / 4
+    smoothed_analyst_accuracy = 1 + smoothed_variation / 100
+    logging.debug("For year " + str(i_int + 1) + " smoothed variation is : " + str(smoothed_variation) + " Smoothed analyst accuracy is : " + str(smoothed_analyst_accuracy))
     # If this is the (latest) first year then store all the indecies upto the first year with
     # the cacluated accuracy. This is the number that will be used to make the future accuracy channel
     if (i_int == 0):
-      for j_int in range (eps_date_list_eps_report_date_index):
+      for j_int in range(eps_date_list_eps_report_date_index):
         analyst_eps_projections_accuracy_list[j_int] = smoothed_analyst_accuracy
 
     for j_int in range(4):
-      analyst_eps_projections_accuracy_list[eps_date_list_eps_report_date_index + i_int*4 + j_int] = smoothed_analyst_accuracy
+      analyst_eps_projections_accuracy_list[eps_date_list_eps_report_date_index + i_int * 4 + j_int] = smoothed_analyst_accuracy
 
   logging.debug("The Analyst EPS Projections accuracy List is " + str(analyst_eps_projections_accuracy_list))
 
@@ -943,7 +1194,7 @@ for ticker_raw in ticker_list:
     # print("Looking for ", qtr_eps_date)
     match_date = min(date_list, key=lambda d: abs(d - qtr_eps_date))
     logging.debug("The matching date in historical datelist for QTR EPS Date: " + str(qtr_eps_date) + " is " + str(match_date) + " at index " +
-          str(date_list.index(match_date)) +  " and the QTR EPS is " +  str(qtr_eps_list[curr_index]))
+                  str(date_list.index(match_date)) + " and the QTR EPS is " + str(qtr_eps_list[curr_index]))
     qtr_eps_expanded_list[date_list.index(match_date)] = qtr_eps_list[curr_index]
   logging.debug("The expanded qtr eps list is " + str(qtr_eps_expanded_list) + "\nand the number of elements are" + str(len(qtr_eps_expanded_list)))
   logging.info("Prepared the Expanded Q EPS List")
@@ -995,16 +1246,16 @@ for ticker_raw in ticker_list:
   yr_eps_list = list()
   while (i_int < (len(qtr_eps_list) - 3)):
     yr_average_eps = (qtr_eps_list[i_int] + \
-                          qtr_eps_list[i_int + 1] + \
-                          qtr_eps_list[i_int + 2] + \
-                          qtr_eps_list[i_int + 3]) / 4
+                      qtr_eps_list[i_int + 1] + \
+                      qtr_eps_list[i_int + 2] + \
+                      qtr_eps_list[i_int + 3]) / 4
 
     logging.debug("Iteration # " + str(i_int).ljust(2) + ", Date : " + str(yr_eps_date_list[i_int]) + " : Quartely EPS(es) : Annual EPS " + \
-          str(qtr_eps_list[i_int]) + " " + \
-          str(qtr_eps_list[i_int + 1]) + " " + \
-          str(qtr_eps_list[i_int + 2]) + " " + \
-          str(qtr_eps_list[i_int + 3]) +  " : " +\
-          str(yr_average_eps))
+                  str(qtr_eps_list[i_int]) + " " + \
+                  str(qtr_eps_list[i_int + 1]) + " " + \
+                  str(qtr_eps_list[i_int + 2]) + " " + \
+                  str(qtr_eps_list[i_int + 3]) + " : " + \
+                  str(yr_average_eps))
     yr_eps_list.append(yr_average_eps)
     i_int += 1
   logging.debug("Annual EPS List " + str(yr_eps_list) + "\nand the number of elements are " + str(len(yr_eps_list)))
@@ -1021,7 +1272,7 @@ for ticker_raw in ticker_list:
 
   # Read the json file to get the adjustments for the yr eps in lists
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) + " file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + " file")
   else:
     if ("Annual_EPS_Adjust" in config_json[ticker]):
       annual_eps_adjust_json = 1
@@ -1169,7 +1420,7 @@ for ticker_raw in ticker_list:
       curr_index = yr_eps_adj_slice_date_list.index(yr_eps_adj_slice_date)
       # logging.debug("Looking for " + str(yr_eps_adj_slice_date))
       match_date = min(date_list, key=lambda d: abs(d - yr_eps_adj_slice_date))
-      logging.debug("The matching date for Adjusted YR EPS date " + str(yr_eps_adj_slice_date) +  " is " +
+      logging.debug("The matching date for Adjusted YR EPS date " + str(yr_eps_adj_slice_date) + " is " +
                     str(match_date) + " in historical datelist at index " + str(date_list.index(match_date)) +
                     " and the Adjusted YR EPS is " + str(yr_eps_adj_slice_list[curr_index]))
       yr_eps_adj_slice_expanded_list[date_list.index(match_date)] = yr_eps_adj_slice_list[curr_index]
@@ -1188,7 +1439,6 @@ for ticker_raw in ticker_list:
   #                                columns=['Date', 'Q EPS', 'Annual EPS'])
   # print ("The Earnings DF is ", earnings_df)
   # =============================================================================
-
 
   # =============================================================================
   # Create the price channels using the yr eps sdj list
@@ -1213,7 +1463,7 @@ for ticker_raw in ticker_list:
     lower_price_channel_separation = float(ticker_config_series[chart_type_idx + '_Lower_Price_Channel'])
     lower_price_channel_list_unsmooth = [float(eps) - lower_price_channel_separation for eps in yr_eps_adj_expanded_list]
 
-  logging.debug("The upper channel unsmooth list is : " +  str(upper_price_channel_list_unsmooth))
+  logging.debug("The upper channel unsmooth list is : " + str(upper_price_channel_list_unsmooth))
   logging.debug("The lower channel unsmooth list is : " + str(lower_price_channel_list_unsmooth))
   upper_price_channel_list = smooth_list(upper_price_channel_list_unsmooth)
   lower_price_channel_list = smooth_list(lower_price_channel_list_unsmooth)
@@ -1242,7 +1492,7 @@ for ticker_raw in ticker_list:
   # Read the json file to get the adjustments for the upper and lower channels in
   # their respective list
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) +  "file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + "file")
   else:
     if ("Upper_Price_Channel_Adj" in config_json[ticker]):
       len_upper_price_channel_adj = len(config_json[ticker]["Upper_Price_Channel_Adj"])
@@ -1266,7 +1516,7 @@ for ticker_raw in ticker_list:
       logging.debug("The Upper Channel Adjust List" + str(upper_price_channel_adj_amount_list))
 
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) +  "file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + "file")
   else:
     if ("Lower_Price_Channel_Adj" in config_json[ticker]):
       len_lower_price_channel_adj = len(config_json[ticker]["Lower_Price_Channel_Adj"])
@@ -1338,27 +1588,27 @@ for ticker_raw in ticker_list:
   # del analyst_channel_adjust_index_list[:2]
 
   chunk_size = (analyst_eps_projections_accuracy_list[0] - 1) / 4
-  for i_tmp in range(len(analyst_channel_adjust_index_list)-1):
+  for i_tmp in range(len(analyst_channel_adjust_index_list) - 1):
     start_adjust_index = analyst_channel_adjust_index_list[i_tmp]
-    stop_adjust_index =analyst_channel_adjust_index_list[i_tmp+1]
+    stop_adjust_index = analyst_channel_adjust_index_list[i_tmp + 1]
     if (i_tmp >= 4):
-      upper_channel_start_value = upper_price_channel_list[start_adjust_index]*(1 + chunk_size*4)
-      upper_channel_stop_value  = upper_price_channel_list[stop_adjust_index] *(1 + chunk_size*4)
-      lower_channel_start_value = lower_price_channel_list[start_adjust_index]*(1 + chunk_size*4)
-      lower_channel_stop_value  = lower_price_channel_list[stop_adjust_index] *(1 + chunk_size*4)
+      upper_channel_start_value = upper_price_channel_list[start_adjust_index] * (1 + chunk_size * 4)
+      upper_channel_stop_value = upper_price_channel_list[stop_adjust_index] * (1 + chunk_size * 4)
+      lower_channel_start_value = lower_price_channel_list[start_adjust_index] * (1 + chunk_size * 4)
+      lower_channel_stop_value = lower_price_channel_list[stop_adjust_index] * (1 + chunk_size * 4)
     else:
-      upper_channel_start_value = upper_price_channel_list[start_adjust_index]*(1 + chunk_size*i_tmp)
-      upper_channel_stop_value  = upper_price_channel_list[stop_adjust_index] *(1 + chunk_size*(i_tmp+1))
+      upper_channel_start_value = upper_price_channel_list[start_adjust_index] * (1 + chunk_size * i_tmp)
+      upper_channel_stop_value = upper_price_channel_list[stop_adjust_index] * (1 + chunk_size * (i_tmp + 1))
       lower_channel_start_value = lower_price_channel_list[start_adjust_index] * (1 + chunk_size * i_tmp)
       lower_channel_stop_value = lower_price_channel_list[stop_adjust_index] * (1 + chunk_size * (i_tmp + 1))
     logging.debug("Starting to work on analyst channel at index " + str(i_tmp) + " with Start adjust index " + str(start_adjust_index) + " and stop adjust index " + str(stop_adjust_index))
-    upper_channel_mini_step = (upper_channel_stop_value - upper_channel_start_value)/(start_adjust_index - stop_adjust_index)
-    lower_channel_mini_step = (lower_channel_stop_value - lower_channel_start_value)/(start_adjust_index - stop_adjust_index)
+    upper_channel_mini_step = (upper_channel_stop_value - upper_channel_start_value) / (start_adjust_index - stop_adjust_index)
+    lower_channel_mini_step = (lower_channel_stop_value - lower_channel_start_value) / (start_adjust_index - stop_adjust_index)
     logging.debug("The start value of upper channel is : " + str(upper_channel_start_value) + " and the stop value of upper channel is : " + str(upper_channel_stop_value) + " with mini step : " + str(upper_channel_mini_step))
     logging.debug("The start value of lower channel is : " + str(lower_channel_start_value) + " and the stop value of lower channel is : " + str(lower_channel_stop_value) + " with mini step : " + str(lower_channel_mini_step))
-    for j_tmp in range(start_adjust_index,stop_adjust_index,-1):
-      analyst_adjusted_channel_upper[j_tmp] = upper_channel_start_value + upper_channel_mini_step*(start_adjust_index-j_tmp)
-      analyst_adjusted_channel_lower[j_tmp] = lower_channel_start_value + lower_channel_mini_step*(start_adjust_index-j_tmp)
+    for j_tmp in range(start_adjust_index, stop_adjust_index, -1):
+      analyst_adjusted_channel_upper[j_tmp] = upper_channel_start_value + upper_channel_mini_step * (start_adjust_index - j_tmp)
+      analyst_adjusted_channel_lower[j_tmp] = lower_channel_start_value + lower_channel_mini_step * (start_adjust_index - j_tmp)
       logging.debug("The loop index is " + str(j_tmp) + " and the adjusted upper channel value is : " + str(analyst_adjusted_channel_upper[j_tmp]))
       logging.debug("The loop index is " + str(j_tmp) + " and the adjusted lower channel value is : " + str(analyst_adjusted_channel_lower[j_tmp]))
 
@@ -1386,7 +1636,7 @@ for ticker_raw in ticker_list:
   start_date_for_yr_eps_growth_proj_list = []
   stop_date_for_yr_eps_growth_proj_list = []
   if (ticker not in config_json.keys()):
-    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json) + " file")
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + " file")
   else:
     if ("Earnings_growth_projection_overlay" in config_json[ticker]):
       tmp_df = pd.DataFrame(config_json[ticker]["Earnings_growth_projection_overlay"])
@@ -1403,12 +1653,12 @@ for ticker_raw in ticker_list:
       # tmp_df.set_index('Start_Date', inplace=True)
       number_of_growth_proj_overlays = len(tmp_df.index)
       logging.debug("The Sorted (by start date) Earnings growth overlay dataframe - with an added column is \n" + tmp_df.to_string() +
-                    "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
+        "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
 
       stop_date_list = tmp_df.Stop_Date.tolist()
       start_date_list = tmp_df.Start_Date.tolist()
       logging.debug("The Stop_Date extracted from Earning growth overlay is" + str(stop_date_list))
-      
+
       # Now find if there are any "Next" in the stop date 
       # If there are then"Next" gets replaced by the next row start date 
       # (remember that the dataframe is already sorted ascending with the 
@@ -1423,9 +1673,9 @@ for ticker_raw in ticker_list:
       # Check if the last row of the dateframe Stop_Date is set to Next - then error out as there is no
       # Next date available corresponding the the last row of the dateframe (remember that the dataframe is
       # already sorted)
-      if (tmp_df.loc[number_of_growth_proj_overlays-1, 'Stop_Date'] == "Next"):
+      if (tmp_df.loc[number_of_growth_proj_overlays - 1, 'Stop_Date'] == "Next"):
         logging.error("")
-        logging.error("The Stop_Date, corresponding the the Start_Date : " + str(tmp_df.loc[number_of_growth_proj_overlays-1, 'Start_Date']))
+        logging.error("The Stop_Date, corresponding the the Start_Date : " + str(tmp_df.loc[number_of_growth_proj_overlays - 1, 'Start_Date']))
         logging.error("in the Earnings_growth_projection_overlay is set as \"Next\"")
         logging.error("This cannot be supported as there is no next date available after that date...")
         logging.error("Please correct in Configuration.json file and rerun...Exiting")
@@ -1436,16 +1686,15 @@ for ticker_raw in ticker_list:
         # So now need to replace it with the loop
         for i_idx in range(number_of_growth_proj_overlays):
           if (stop_date_list[i_idx] == "Next"):
-            tmp_df.loc[i_idx, 'Stop_Date'] = tmp_df.loc[i_idx+1, 'Start_Date']
+            tmp_df.loc[i_idx, 'Stop_Date'] = tmp_df.loc[i_idx + 1, 'Start_Date']
 
       # Replace the "End" and "Next" in the stop dates with the appropriate value
       # "End" gets replaced by the end date (which it at index 0) that the historical date list has
       # (So the overlay will extent all the way to the right of the chart)
       tmp_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
 
-
       logging.debug("The Earning growth overlay dataframe now populated with real dates and sorted is \n" + tmp_df.to_string() +
-                    "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
+        "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
       # This works : Finally put those start and stop dates as datetimes in their own lists
       # start_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
       #                                           tmp_df.Start_Date.tolist()]
@@ -1551,7 +1800,7 @@ for ticker_raw in ticker_list:
     ticker_curr_price = next(x for x in ticker_adj_close_list if not math.isnan(x))
     ticker_curr_date = date_list[ticker_adj_close_list.index(ticker_curr_price)]
     # Now round the ticker_curr_price to 2 decimal places
-    round(ticker_curr_price,2)
+    round(ticker_curr_price, 2)
 
     # Based on the latest date from the ticker, get the latest past date for yr_eps.
     # In other words, if the current ticker date is - say 07/17/2019 - then get the latest
@@ -1571,25 +1820,24 @@ for ticker_raw in ticker_list:
       logging.debug("The match date for yr eps is newer than the current date. Will use yr eps from one quarter ago")
       yr_eps_curr_date = min(yr_eps_date_list, key=lambda d: abs(d - (ticker_curr_date - dt.timedelta(days=60))))
 
-    yr_eps_curr = round(yr_eps_list[yr_eps_date_list.index(yr_eps_curr_date)],2)
+    yr_eps_curr = round(yr_eps_list[yr_eps_date_list.index(yr_eps_curr_date)], 2)
 
-    yr_eps_next_q_date  = min(yr_eps_date_list, key=lambda d: abs(d - ticker_curr_date))
-    logging.debug ("The date for next quarter is " + str(yr_eps_next_q_date))
+    yr_eps_next_q_date = min(yr_eps_date_list, key=lambda d: abs(d - ticker_curr_date))
+    logging.debug("The date for next quarter is " + str(yr_eps_next_q_date))
     if (yr_eps_next_q_date <= dt.date.today()):
-      logging.debug ("The match date for next quarter eps is older than the current date. Will use date from one quarter ahead")
+      logging.debug("The match date for next quarter eps is older than the current date. Will use date from one quarter ahead")
       yr_eps_next_q_date = min(yr_eps_date_list, key=lambda d: abs(d - (ticker_curr_date + dt.timedelta(days=60))))
 
     yr_eps_next_yr_date = min(yr_eps_date_list, key=lambda d: abs(d - (yr_eps_next_q_date + dt.timedelta(days=273))))
-    yr_eps_next_q = round(yr_eps_list[yr_eps_date_list.index(yr_eps_next_q_date)],2)
-    yr_eps_next_yr = round(yr_eps_list[yr_eps_date_list.index(yr_eps_next_yr_date)],2)
-    logging.debug ("The date for next quarter is " + str(yr_eps_next_q_date) + " and the projected eps is " + str(yr_eps_next_q))
-    logging.debug ("The date for next year is " + str(yr_eps_next_yr_date) + " and the projected eps is " + str(yr_eps_next_yr))
-
+    yr_eps_next_q = round(yr_eps_list[yr_eps_date_list.index(yr_eps_next_q_date)], 2)
+    yr_eps_next_yr = round(yr_eps_list[yr_eps_date_list.index(yr_eps_next_yr_date)], 2)
+    logging.debug("The date for next quarter is " + str(yr_eps_next_q_date) + " and the projected eps is " + str(yr_eps_next_q))
+    logging.debug("The date for next year is " + str(yr_eps_next_yr_date) + " and the projected eps is " + str(yr_eps_next_yr))
 
     # Get dates 1, 3 and 5 yr ago - based on curr eps date
     ticker_1_yr_ago_date_raw = yr_eps_curr_date - dt.timedelta(days=365)
-    ticker_3_yr_ago_date_raw = yr_eps_curr_date - dt.timedelta(days=3*365)
-    ticker_5_yr_ago_date_raw = yr_eps_curr_date - dt.timedelta(days=5*365)
+    ticker_3_yr_ago_date_raw = yr_eps_curr_date - dt.timedelta(days=3 * 365)
+    ticker_5_yr_ago_date_raw = yr_eps_curr_date - dt.timedelta(days=5 * 365)
 
     # Match the raw dates to get the closest dates 1, 3 and 5 yr ago for eps
     ticker_1_yr_ago_date_for_eps = min(yr_eps_date_list, key=lambda d: abs(d - ticker_1_yr_ago_date_raw))
@@ -1605,21 +1853,21 @@ for ticker_raw in ticker_list:
 
     # Note that the price that we get here is the 1, 3 and 5 yr ago price for date from the curr eps
     # date (and not the current price date)
-    ticker_1_yr_ago_price = round(ticker_adj_close_list[date_list.index(ticker_1_yr_ago_date_for_price)],2)
-    ticker_3_yr_ago_price = round(ticker_adj_close_list[date_list.index(ticker_3_yr_ago_date_for_price)],2)
-    ticker_5_yr_ago_price = round(ticker_adj_close_list[date_list.index(ticker_5_yr_ago_date_for_price)],2)
+    ticker_1_yr_ago_price = round(ticker_adj_close_list[date_list.index(ticker_1_yr_ago_date_for_price)], 2)
+    ticker_3_yr_ago_price = round(ticker_adj_close_list[date_list.index(ticker_3_yr_ago_date_for_price)], 2)
+    ticker_5_yr_ago_price = round(ticker_adj_close_list[date_list.index(ticker_5_yr_ago_date_for_price)], 2)
 
-    yr_eps_1_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_1_yr_ago_date_for_eps)],2)
-    yr_eps_3_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_3_yr_ago_date_for_eps)],2)
-    yr_eps_5_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_5_yr_ago_date_for_eps)],2)
+    yr_eps_1_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_1_yr_ago_date_for_eps)], 2)
+    yr_eps_3_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_3_yr_ago_date_for_eps)], 2)
+    yr_eps_5_yr_ago = round(yr_eps_list[yr_eps_date_list.index(ticker_5_yr_ago_date_for_eps)], 2)
 
-    logging.debug("The Last     price for ticker is " + str(ticker_curr_price) +     " on date " + str(ticker_curr_date) +               " with earnings at " + str(yr_eps_curr) +     " is at index" + str(date_list.index(ticker_curr_date)))
+    logging.debug("The Last     price for ticker is " + str(ticker_curr_price) + " on date " + str(ticker_curr_date) + " with earnings at " + str(yr_eps_curr) + " is at index" + str(date_list.index(ticker_curr_date)))
     logging.debug("The 1 Yr ago price for ticker is " + str(ticker_1_yr_ago_price) + " on date " + str(ticker_1_yr_ago_date_for_price) + " with earnings at " + str(yr_eps_1_yr_ago) + " is at index" + str(date_list.index(ticker_1_yr_ago_date_for_price)))
     logging.debug("The 3 Yr ago price for ticker is " + str(ticker_3_yr_ago_price) + " on date " + str(ticker_3_yr_ago_date_for_price) + " with earnings at " + str(yr_eps_3_yr_ago) + " is at index" + str(date_list.index(ticker_3_yr_ago_date_for_price)))
     logging.debug("The 5 Yr ago price for ticker is " + str(ticker_5_yr_ago_price) + " on date " + str(ticker_5_yr_ago_date_for_price) + " with earnings at " + str(yr_eps_5_yr_ago) + " is at index" + str(date_list.index(ticker_5_yr_ago_date_for_price)))
 
-    eps_growth_next_yr  = get_growth(yr_eps_next_yr, yr_eps_curr)
-    eps_growth_next_q   = get_growth(yr_eps_next_q, yr_eps_curr)
+    eps_growth_next_yr = get_growth(yr_eps_next_yr, yr_eps_curr)
+    eps_growth_next_q = get_growth(yr_eps_next_q, yr_eps_curr)
     eps_growth_1_yr_ago = get_growth(yr_eps_curr, yr_eps_1_yr_ago)
     eps_growth_3_yr_ago = get_growth(yr_eps_curr, yr_eps_3_yr_ago)
     eps_growth_5_yr_ago = get_growth(yr_eps_curr, yr_eps_5_yr_ago)
@@ -1628,35 +1876,34 @@ for ticker_raw in ticker_list:
     price_growth_3_yr = get_growth(ticker_curr_price, ticker_3_yr_ago_price)
     price_growth_5_yr = get_growth(ticker_curr_price, ticker_5_yr_ago_price)
 
-    price_eps_growth_str_textbox = "     Date".ljust(20," ") + "|  Earnings".ljust(20," ") + ("| Price(" + str(ticker_curr_date) + ")").ljust(16," ")
-    price_eps_growth_str_textbox +=  ("\nNext yr- " + str(yr_eps_next_yr_date)).ljust(21," ")
-    price_eps_growth_str_textbox += ("| "+str(yr_eps_next_yr)+ "("+str(eps_growth_next_yr)+"%)").ljust(20," ")
+    price_eps_growth_str_textbox = "     Date".ljust(20, " ") + "|  Earnings".ljust(20, " ") + ("| Price(" + str(ticker_curr_date) + ")").ljust(16, " ")
+    price_eps_growth_str_textbox += ("\nNext yr- " + str(yr_eps_next_yr_date)).ljust(21, " ")
+    price_eps_growth_str_textbox += ("| " + str(yr_eps_next_yr) + "(" + str(eps_growth_next_yr) + "%)").ljust(20, " ")
     price_eps_growth_str_textbox += ("| ").ljust(20)
 
-    price_eps_growth_str_textbox +=  ("\nNext q - " + str(yr_eps_next_q_date)).ljust(21," ")
-    price_eps_growth_str_textbox += ("| "+str(yr_eps_next_q)+ "("+str(eps_growth_next_q)+"%)").ljust(20, )
+    price_eps_growth_str_textbox += ("\nNext q - " + str(yr_eps_next_q_date)).ljust(21, " ")
+    price_eps_growth_str_textbox += ("| " + str(yr_eps_next_q) + "(" + str(eps_growth_next_q) + "%)").ljust(20, )
     price_eps_growth_str_textbox += ("| ").ljust(20)
 
-    price_eps_growth_str_textbox +=  ("\nCurr   - " + str(ticker_curr_date)).ljust(21," ")
-    price_eps_growth_str_textbox += ("| "+str(yr_eps_curr)).ljust(20," ")
-    price_eps_growth_str_textbox += ("| "+str(ticker_curr_price)).ljust(20," ")
+    price_eps_growth_str_textbox += ("\nCurr   - " + str(ticker_curr_date)).ljust(21, " ")
+    price_eps_growth_str_textbox += ("| " + str(yr_eps_curr)).ljust(20, " ")
+    price_eps_growth_str_textbox += ("| " + str(ticker_curr_price)).ljust(20, " ")
 
-    price_eps_growth_str_textbox +=  ("\n1 Yr   - " + str(ticker_1_yr_ago_date_for_eps)).ljust(21," ")
-    price_eps_growth_str_textbox += ("| "+str(yr_eps_1_yr_ago)+"("+str(eps_growth_1_yr_ago)+"%)").ljust(20)
-    price_eps_growth_str_textbox += ("| "+str(ticker_1_yr_ago_price)+"("+str(price_growth_1_yr)+"%)").ljust(20)
+    price_eps_growth_str_textbox += ("\n1 Yr   - " + str(ticker_1_yr_ago_date_for_eps)).ljust(21, " ")
+    price_eps_growth_str_textbox += ("| " + str(yr_eps_1_yr_ago) + "(" + str(eps_growth_1_yr_ago) + "%)").ljust(20)
+    price_eps_growth_str_textbox += ("| " + str(ticker_1_yr_ago_price) + "(" + str(price_growth_1_yr) + "%)").ljust(20)
 
-    price_eps_growth_str_textbox +=  ("\n3 Yr   - " + str(ticker_3_yr_ago_date_for_eps)).ljust(21," ")
-    price_eps_growth_str_textbox += ("| "+str(yr_eps_3_yr_ago)+"("+str(eps_growth_3_yr_ago)+"%)").ljust(20)
-    price_eps_growth_str_textbox += ("| "+str(ticker_3_yr_ago_price)+"("+str(price_growth_3_yr)+"%)").ljust(20)
+    price_eps_growth_str_textbox += ("\n3 Yr   - " + str(ticker_3_yr_ago_date_for_eps)).ljust(21, " ")
+    price_eps_growth_str_textbox += ("| " + str(yr_eps_3_yr_ago) + "(" + str(eps_growth_3_yr_ago) + "%)").ljust(20)
+    price_eps_growth_str_textbox += ("| " + str(ticker_3_yr_ago_price) + "(" + str(price_growth_3_yr) + "%)").ljust(20)
 
-    price_eps_growth_str_textbox +=  ("\n5 Yr   - " + str(ticker_5_yr_ago_date_for_eps)).ljust(21," ")
-    price_eps_growth_str_textbox += ("| "+str(yr_eps_5_yr_ago)+"("+str(eps_growth_5_yr_ago)+"%)").ljust(20)
-    price_eps_growth_str_textbox += ("| "+str(ticker_5_yr_ago_price)+"("+str(price_growth_5_yr)+"%)").ljust(20)
+    price_eps_growth_str_textbox += ("\n5 Yr   - " + str(ticker_5_yr_ago_date_for_eps)).ljust(21, " ")
+    price_eps_growth_str_textbox += ("| " + str(yr_eps_5_yr_ago) + "(" + str(eps_growth_5_yr_ago) + "%)").ljust(20)
+    price_eps_growth_str_textbox += ("| " + str(ticker_5_yr_ago_price) + "(" + str(price_growth_5_yr) + "%)").ljust(20)
 
     logging.debug("\n" + str(price_eps_growth_str_textbox))
     logging.info("Prepared the Earnings growth Text box")
   # ---------------------------------------------------------------------------
-
 
   # ---------------------------------------------------------------------------
   # Get the company info for company name, sector and industry
@@ -1691,18 +1938,17 @@ for ticker_raw in ticker_list:
                 "If it does not match, then that means that the future projected earnings are likely to be adjusted by the company...It is your job to find out why the current earnings were adjusted")
 
   chart_update_date_str = "Earnings Reported - " + str(eps_report_date) + " :: Earnings Projections Last Updated - " + str(qtr_eps_projections_date_0) + ", " + str(qtr_eps_projections_date_1)
-  chart_update_date_str += "\nCNBC Earnings match reported Earnings - " + str(cnbc_matches_reported_eps) + " :: Added AAII EPS Projections for : " + str(no_of_years_to_insert_aaii_eps_projections) + " years"
+  chart_update_date_str += "\nCNBC Earnings - " + str(cnbc_matches_reported_eps) + " :: Added AAII EPS Projections for : " + str(no_of_years_to_insert_aaii_eps_projections) + " years"
   if not ((is_ticker_foreign == 'nan') or (len(is_ticker_foreign) == 0)):
-    chart_update_date_str +=  " :: Country - " + is_ticker_foreign
+    chart_update_date_str += " :: Country - " + is_ticker_foreign
   logging.debug(str(ticker_company_name) + str(ticker_sector) + str(ticker_industry) + str(chart_update_date_str))
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
   # Calculated the Analysts accuracy
   # ---------------------------------------------------------------------------
-  adjusted_eps_str = "Analysts Accuracy : " + str(format(analyst_eps_projections_accuracy_list[0]*100,'^8.3f')) + "%"
+  adjusted_eps_str = "Analysts Accuracy : " + str(format(analyst_eps_projections_accuracy_list[0] * 100, '^8.3f')) + "%"
   # ---------------------------------------------------------------------------
-
 
   # ---------------------------------------------------------------------------
   # Read in the various _lim_upper and _lim_lower from config file
@@ -1715,13 +1961,13 @@ for ticker_raw in ticker_list:
     price_lim_lower = ticker_config_series[chart_type_idx + '_Price_Scale_Low']
     logging.debug("Price_Scale_Low from Config file is " + str(price_lim_lower))
 
-  if math.isnan(ticker_config_series[chart_type_idx +'_Price_Scale_High']):
+  if math.isnan(ticker_config_series[chart_type_idx + '_Price_Scale_High']):
     # ticker_adj_close_list_nonan = [x for x in ticker_adj_close_list if math.isnan(x) is False]
     logging.error("Price_Scale_High - is not set in the configurations file")
     logging.error("Please correct and rerun")
     sys.exit(1)
   else:
-    price_lim_upper = ticker_config_series[chart_type_idx+'_Price_Scale_High']
+    price_lim_upper = ticker_config_series[chart_type_idx + '_Price_Scale_High']
     logging.debug("Price_Scale_High from Config file is " + str(price_lim_upper))
 
   if math.isnan(ticker_config_series[chart_type_idx + '_Earnings_Scale_High']):
@@ -1791,7 +2037,7 @@ for ticker_raw in ticker_list:
     # Find out how many years need to be plotted. If the historical data is available
     # for lesser time, then adjust the period to the length of the data_list
     # -----------------------------------------------------------------------------
-    if (math.isnan(ticker_config_series[chart_type_idx+'_Chart_Duration_Years'])):
+    if (math.isnan(ticker_config_series[chart_type_idx + '_Chart_Duration_Years'])):
       logging.error("The Chart_Duration_Years for " + str(chart_type_idx) + " is not defined in the config file. Please correct and rerun")
       sys.exit(1)
     plot_period_int = 252 * (int(ticker_config_series[chart_type_idx + '_Chart_Duration_Years']) + no_of_years_to_insert_aaii_eps_projections)
@@ -1799,12 +2045,12 @@ for ticker_raw in ticker_list:
       plot_period_int = plot_period_int + 252 * 15
 
     if (len(date_list) < plot_period_int):
-      plot_period_int = len(date_list) -1
+      plot_period_int = len(date_list) - 1
       logging.debug("Since the Historical Data (Length of the date list) is not available for all\
       the years that user is asking to plot for, so adjusting the plot for " +
-      str(float(plot_period_int/252)) + " years (or " + str(plot_period_int) +  " days)")
+                    str(float(plot_period_int / 252)) + " years (or " + str(plot_period_int) + " days)")
     else:
-      logging.debug ("Will plot for " + str(int(plot_period_int/252)) + " years")
+      logging.debug("Will plot for " + str(int(plot_period_int / 252)) + " years")
     # ---------------------------------------------------------
 
     # Get the index factor to pin/anchor/align the index and the price of the stock
@@ -1825,11 +2071,11 @@ for ticker_raw in ticker_list:
     # ---------------------------------------------------------------------------
     avearge_schiller_pe = 15
     # Divide the schiller PE values by average_schiller_pe to normalize it
-    schiller_pe_normalized_list = [float(schiller_pe/avearge_schiller_pe) for schiller_pe in schiller_pe_value_list]
+    schiller_pe_normalized_list = [float(schiller_pe / avearge_schiller_pe) for schiller_pe in schiller_pe_value_list]
 
     schiller_pe_value_expanded_list = []
     schiller_pe_normalized_expanded_list = []
-    oldest_date_in_date_list = date_list[len(date_list)-1]
+    oldest_date_in_date_list = date_list[len(date_list) - 1]
     logging.debug("Oldest Date in Historical Date List is" + str(oldest_date_in_date_list))
     for i in range(len(date_list)):
       schiller_pe_value_expanded_list.append(float('nan'))
@@ -1841,7 +2087,7 @@ for ticker_raw in ticker_list:
         # print("Looking for ", qtr_eps_date)
         match_date = min(date_list, key=lambda d: abs(d - schiller_pe_date))
         logging.debug("The matching date for Schiller PE Date : " + str(schiller_pe_date) + " in historical datelist is " +
-                      str(match_date) + " at index " + str(date_list.index(match_date)) + " and the Schiller PE is " + str(schiller_pe_normalized_list[curr_index]))
+          str(match_date) + " at index " + str(date_list.index(match_date)) + " and the Schiller PE is " + str(schiller_pe_normalized_list[curr_index]))
         schiller_pe_value_expanded_list[date_list.index(match_date)] = schiller_pe_value_list[curr_index]
         schiller_pe_normalized_expanded_list[date_list.index(match_date)] = schiller_pe_normalized_list[curr_index]
     # print("The expanded Schiller PE list is ", schiller_pe_normalized_expanded_list, "\nand the number of elements are",len(schiller_pe_normalized_expanded_list))
@@ -1854,19 +2100,19 @@ for ticker_raw in ticker_list:
     schiller_pe_normalized_list_smooth = smooth_list(schiller_pe_normalized_expanded_list)
     yr_eps_adj_expanded_list_smooth = smooth_list(yr_eps_adj_expanded_list)
 
-    ann_constant = (4 * qtr_eps_lim_upper)/price_lim_upper
-    logging.debug ("Earning Limit upper" + str(qtr_eps_lim_upper))
-    logging.debug ("Price Limit upper" + str(price_lim_upper))
-    logging.debug ("Ann Constant" + str(ann_constant))
+    ann_constant = (4 * qtr_eps_lim_upper) / price_lim_upper
+    logging.debug("Earning Limit upper" + str(qtr_eps_lim_upper))
+    logging.debug("Price Limit upper" + str(price_lim_upper))
+    logging.debug("Ann Constant" + str(ann_constant))
     # time.sleep(3)
-    schiller_ann_requested_red_line_list_0 = [a*b for a,b in zip(schiller_pe_value_list_smooth,yr_eps_adj_expanded_list_smooth)]
+    schiller_ann_requested_red_line_list_0 = [a * b for a, b in zip(schiller_pe_value_list_smooth, yr_eps_adj_expanded_list_smooth)]
     schiller_ann_requested_red_line_list_3 = [i * ann_constant for i in schiller_ann_requested_red_line_list_0]
     # schiller_ann_requested_red_line_list_1 = [i * 4 for i in schiller_ann_requested_red_line_list_0]
     # schiller_ann_requested_red_line_list_2 = [i * qtr_eps_lim_upper for i in schiller_ann_requested_red_line_list_1]
     # schiller_ann_requested_red_line_list_3 = [i / price_lim_upper for i in schiller_ann_requested_red_line_list_2]
     # Now multiply the schiller expanded list with the yr eps expanded list
-    schiller_pe_times_yr_eps_list = [a*b for a,b in zip(schiller_pe_normalized_list_smooth,yr_eps_adj_expanded_list_smooth)]
-    logging.debug ("The smooth Schiller Normalized PE list mulitplied by YR EPS list is " + str(schiller_pe_times_yr_eps_list))
+    schiller_pe_times_yr_eps_list = [a * b for a, b in zip(schiller_pe_normalized_list_smooth, yr_eps_adj_expanded_list_smooth)]
+    logging.debug("The smooth Schiller Normalized PE list mulitplied by YR EPS list is " + str(schiller_pe_times_yr_eps_list))
     # ---------------------------------------------------------------------------
 
     # ---------------------------------------------------------------------------
@@ -1924,13 +2170,13 @@ for ticker_raw in ticker_list:
     # Get the candlestick_df from historical_df - candlesticks_df has all the data
     # past the first date when the prices are available.
     candlestick_df = historical_df.loc[ticker_adj_close_list.index(ticker_curr_price):]
-    candlestick_df.columns =  historical_columns_list
+    candlestick_df.columns = historical_columns_list
     logging.debug("Candlestick Dataframe is " + candlestick_df.to_string())
 
     date_str_list_candles = candlestick_df.Date.tolist()
     # Change the Date to mdates
     dates_2_mdates = [mdates.date2num(dt.datetime.strptime(d, '%m/%d/%Y').date()) for d in date_str_list_candles]
-    candlestick_df.insert(loc=1,column='MDate', value=dates_2_mdates)
+    candlestick_df.insert(loc=1, column='MDate', value=dates_2_mdates)
     logging.debug("Candlestick Dataframe after chanings the Dates to mdates is \n" + candlestick_df.to_string())
     MA_Price_200_list = candlestick_df.MA_Price_200_day.tolist()
     MA_Price_50_list = candlestick_df.MA_Price_50_day.tolist()
@@ -1942,20 +2188,20 @@ for ticker_raw in ticker_list:
     quotes = [tuple(x) for x in candlestick_df[['MDate', 'Open', 'High', 'Low', 'Close']].values]
     date_list_candles = candlestick_df.MDate.tolist()
     volume = candlestick_df.Volume.tolist()
-    logging.debug ("The type of quotes is " + str(quotes))
-    logging.debug ("The type of volume is " + str(volume))
+    logging.debug("The type of quotes is " + str(quotes))
+    logging.debug("The type of volume is " + str(volume))
 
     # Set the bar color for volume bars by comparing the current close with the previous close
     price_close_list = candlestick_df.Close.tolist()
     bar_color_list = ['darksalmon'] * len(price_close_list)
-    for i_idx in range(len(price_close_list)-1):
+    for i_idx in range(len(price_close_list) - 1):
       bar_color_list[i_idx] = 'darksalmon'
       # logging.debug("Comparing " + str(price_close_list[i_idx]) + " with " + str(price_close_list[i_idx+1]) + " to detemine the color of the candle")
-      if (price_close_list[i_idx] > price_close_list[i_idx+1]):
+      if (price_close_list[i_idx] > price_close_list[i_idx + 1]):
         # logging.debug("Changing the color of the candle for  " + str(date_list_candles[i_idx]))
         bar_color_list[i_idx] = 'mediumseagreen'
 
-    logging.debug ("The bar color list is " + str(bar_color_list))
+    logging.debug("The bar color list is " + str(bar_color_list))
     logging.info("Prepared the Data for Candlesticks and the Moving Averages")
 
     # ---------------------------------------------------------
@@ -1965,36 +2211,36 @@ for ticker_raw in ticker_list:
     ticker_volume_max = max(volume[0:candle_chart_duration])
     ticker_volume_max_no_of_digits = len(str(abs(int(ticker_volume_max))))
     ticker_volume_max_first_digit = int(str(ticker_volume_max)[:1])
-    logging.debug ("The max volume is " + str(ticker_volume_max) + " and the number of digits are " + str(ticker_volume_max_no_of_digits) + " and the first digit is " + str(ticker_volume_max_first_digit))
+    logging.debug("The max volume is " + str(ticker_volume_max) + " and the number of digits are " + str(ticker_volume_max_no_of_digits) + " and the first digit is " + str(ticker_volume_max_first_digit))
     if (ticker_volume_max_first_digit == 1):
-      ticker_volume_upper_limit = 2 * math.pow(10,ticker_volume_max_no_of_digits-1)
+      ticker_volume_upper_limit = 2 * math.pow(10, ticker_volume_max_no_of_digits - 1)
     elif (ticker_volume_max_first_digit == 2):
-      ticker_volume_upper_limit = 4 * math.pow(10,ticker_volume_max_no_of_digits-1)
+      ticker_volume_upper_limit = 4 * math.pow(10, ticker_volume_max_no_of_digits - 1)
     elif (2 < ticker_volume_max_first_digit <= 4):
       ticker_volume_upper_limit = 5 * math.pow(10, ticker_volume_max_no_of_digits - 1)
     elif (5 < ticker_volume_max_first_digit <= 7):
       ticker_volume_upper_limit = 8 * math.pow(10, ticker_volume_max_no_of_digits - 1)
     else:
-      ticker_volume_upper_limit = 10 * math.pow(10,ticker_volume_max_no_of_digits-1)
+      ticker_volume_upper_limit = 10 * math.pow(10, ticker_volume_max_no_of_digits - 1)
 
-    logging.debug ("The upper limit for volume is " + str(ticker_volume_upper_limit))
+    logging.debug("The upper limit for volume is " + str(ticker_volume_upper_limit))
     ticker_volume_ytick_list = []
     ticker_volume_yticklabels_list = []
-    for i_idx in range(0,5,1):
-      ticker_volume_ytick_list.append(i_idx*(ticker_volume_upper_limit/4))
-      ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx],precision=1))
+    for i_idx in range(0, 5, 1):
+      ticker_volume_ytick_list.append(i_idx * (ticker_volume_upper_limit / 4))
+      ticker_volume_yticklabels_list.append(human_format(ticker_volume_ytick_list[i_idx], precision=1))
       logging.debug("Index " + str(i_idx) + " Tick Label " + str(ticker_volume_ytick_list[i_idx]) + " Tick label Text " + str(ticker_volume_yticklabels_list[i_idx]))
 
     # Get the Sundays in the date range to act as grid in the candle and volume plots
-    candle_sunday_dates = pd.date_range(date_str_list_candles[candle_chart_duration], date_str_list_candles[0], freq='W-SUN')
-    logging.debug ("The Sunday dates are\n" + str(candle_sunday_dates))
+    candle_sunday_dates = pd.date_range(date_str_list_candles[candle_chart_duration], date_str_list_candles[0],freq='W-SUN')
+    logging.debug("The Sunday dates are\n" + str(candle_sunday_dates))
 
     candle_sunday_dates_str = []
     for x in candle_sunday_dates:
       logging.debug("The original Sunday Date is :" + str(x))
       candle_sunday_dates_str.append(x.date().strftime('%m/%d/%Y'))
 
-    logging.debug ("The modified Sunday dates are\n" + str(candle_sunday_dates_str))
+    logging.debug("The modified Sunday dates are\n" + str(candle_sunday_dates_str))
     logging.info("Prepared the Data for Volume Bars")
     # ---------------------------------------------------------------------------
 
@@ -2003,7 +2249,7 @@ for ticker_raw in ticker_list:
       logging.debug("User Specified that the script should make two sets of charts")
       logging.debug("One     Set with EPS and Dividend Numbers Printed on the chart")
       logging.debug("Another Set with EPS and Dividend Numbers NOT printed on the chart")
-      chart_print_eps_div_numbers_list = [1,0]
+      chart_print_eps_div_numbers_list = [1, 0]
     elif (g_dict_chart_options['print_eps_and_div_numbers'] == "Yes"):
       logging.debug("User Specified that the script should print the EPS and dividend numbers on the chart")
       logging.debug("So, the script will prepare ONE chart  per ticker WITH the EPS and Dividend numbers on the chart")
@@ -2017,7 +2263,6 @@ for ticker_raw in ticker_list:
       logging.error("printing the EPS and Dividend numbers of the chart")
       logging.error("Please correctly specify in g_dict_chart_options->print_eps_and_div_numbers and rerun")
       sys.exit(1)
-
 
     # #############################################################################
     # #############################################################################
@@ -2044,11 +2289,11 @@ for ticker_raw in ticker_list:
       else:
         logging.debug("Preparing Chart with \"chart_print_eps_div_numbers_val\" set to : " + str(chart_print_eps_div_numbers_val))
 
-      fig=plt.figure()
-      main_plt = plt.subplot2grid((5,6), (0,0), colspan=5,rowspan=5)
-      candle_plt = plt.subplot2grid((5,6), (0,5), colspan=1,rowspan=4)
-      volume_plt = plt.subplot2grid((5,6), (4,5), colspan=1,rowspan=1)
-      plt.subplots_adjust(hspace=0,wspace=0)
+      fig = plt.figure()
+      main_plt = plt.subplot2grid((5, 6), (0, 0), colspan=5, rowspan=5)
+      candle_plt = plt.subplot2grid((5, 6), (0, 5), colspan=1, rowspan=4)
+      volume_plt = plt.subplot2grid((5, 6), (4, 5), colspan=1, rowspan=1)
+      plt.subplots_adjust(hspace=0, wspace=0)
 
       # fig.set_size_inches(16, 10)  # Length x height
       fig.set_size_inches(14.431, 7.639)  # Length x height
@@ -2061,12 +2306,13 @@ for ticker_raw in ticker_list:
       candle_plt.set_facecolor("aliceblue")
       volume_plt.set_facecolor("honeydew")
 
-      plt.text(x=0.03, y=0.915, s=ticker_company_name + "("  +ticker +")", fontsize=18,fontweight='bold',ha="left", transform=fig.transFigure)
-      plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry , fontsize=11, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-      plt.text(x=0.03, y=0.866, s=chart_update_date_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-      # plt.text(x=0.4, y=0.915, s=adjusted_eps_str , fontsize=9, fontweight='bold',fontstyle='italic',ha="left", transform=fig.transFigure)
-      main_plt.text(x=.45,y=.95,s=adjusted_eps_str, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
-      main_plt.text(x=.615,y=.865,s=price_eps_growth_str_textbox, fontsize=9,family='monospace',transform=fig.transFigure,bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+      plt.text(x=0.03, y=0.915, s=ticker_company_name + "(" + ticker + ")", fontsize=18, fontweight='bold', ha="left", transform=fig.transFigure)
+      plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry, fontsize=11, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
+      plt.text(x=0.03, y=0.866, s=chart_update_date_str, fontsize=9, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
+      # main_plt.text(x=.45, y=.95, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
+      main_plt.text(x=.28, y=.98, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
+      main_plt.text(x=.526, y=.8655, s=pt_print_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
+      main_plt.text(x=.653, y=.865, s=price_eps_growth_str_textbox, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
 
       # fig.suptitle(r'{\fontsize{30pt}{3em}\selectfont{}{Mean WRFv3.5 LHF\n}{\fontsize{18pt}{3em}\selectfont{}(September 16 - October 30, 2012)}')
       # fig.suptitle(ticker_company_name + "("  +ticker +")" + "\n" + ticker_sector + "  " + ticker_industry, fontsize=18,x=0.22,y=.95)
@@ -2096,11 +2342,11 @@ for ticker_raw in ticker_list:
       if (pays_dividend == 1):
         dividend_plt = main_plt.twinx()
 
-      logging.debug("Type of fig " + str(type(fig)) +  \
-            "\nType of main_plt " + str(type(main_plt)) + \
-            "\nType of price_plt: " + str(type(price_plt)) + \
-            "\nType of yr_eps_plt: " + str(type(annual_past_eps_plt)) + \
-            "\nType of upper_channel_plt: " + str(type(upper_channel_plt)))
+      logging.debug("Type of fig " + str(type(fig)) + \
+                    "\nType of main_plt " + str(type(main_plt)) + \
+                    "\nType of price_plt: " + str(type(price_plt)) + \
+                    "\nType of yr_eps_plt: " + str(type(annual_past_eps_plt)) + \
+                    "\nType of upper_channel_plt: " + str(type(upper_channel_plt)))
       # -----------------------------------------------------------------------------
       # Main Plot - This is the Q EPS vs Date
       # -----------------------------------------------------------------------------
@@ -2109,22 +2355,22 @@ for ticker_raw in ticker_list:
       # main_plt.set_xlabel('Date')
       # main_plt.set_ylabel('Earnings')
       main_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      main_plt.tick_params(axis="y",direction="in", pad=-22)
-      main_plt.set_yscale(chart_type_idx)
+      main_plt.tick_params(axis="y", direction="in", pad=-22)
+      main_plt.set_yscale(chart_type_idx.lower())
       main_plt_inst = main_plt.plot(date_list[0:plot_period_int], qtr_eps_expanded_list[0:plot_period_int], label='Q EPS',
-                                    color="deeppink", marker='.',markersize='10')
+                                    color="deeppink", marker='.', markersize='10')
 
       # Print out the last reported Q_EPS on the chart
-        # check if the date is in the plot range
-      logging.debug ("The last black diamond is at index" + str(eps_date_list_eps_report_date_index) +  "and the date is" + str(eps_date_list_eps_report_date_match) + "and the repored Q EPS is " + str(qtr_eps_list[eps_date_list_eps_report_date_index]))
+      # check if the date is in the plot range
+      logging.debug("The last black diamond is at index" + str(eps_date_list_eps_report_date_index) + "and the date is" + str(eps_date_list_eps_report_date_match) + "and the repored Q EPS is " + str(qtr_eps_list[eps_date_list_eps_report_date_index]))
       # check if the date is in the plot range
       if (chart_print_eps_div_numbers_val == 1):
         for i in range(5):
-          if (date_list[plot_period_int] <= qtr_eps_date_list[eps_date_list_eps_report_date_index+i] <= date_list[0]):
-            if (qtr_eps_lim_lower <= qtr_eps_list[eps_date_list_eps_report_date_index+i] <= qtr_eps_lim_upper):
-              x = float("{0:.2f}".format(qtr_eps_list[eps_date_list_eps_report_date_index+i]))
-              main_plt.text(qtr_eps_date_list[eps_date_list_eps_report_date_index+i], qtr_eps_list[eps_date_list_eps_report_date_index+i], x, color='Purple',fontsize='small', fontstyle='italic',fontweight=1000,
-                            bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=0.1),horizontalalignment='center',verticalalignment='bottom')
+          if (date_list[plot_period_int] <= qtr_eps_date_list[eps_date_list_eps_report_date_index + i] <= date_list[0]):
+            if (qtr_eps_lim_lower <= qtr_eps_list[eps_date_list_eps_report_date_index + i] <= qtr_eps_lim_upper):
+              x = float("{0:.2f}".format(qtr_eps_list[eps_date_list_eps_report_date_index + i]))
+              main_plt.text(qtr_eps_date_list[eps_date_list_eps_report_date_index + i], qtr_eps_list[eps_date_list_eps_report_date_index + i], x, color='Purple', fontsize='small',fontstyle='italic', fontweight=1000,
+                            bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=0.1),horizontalalignment='center', verticalalignment='bottom')
       logging.info("Printed the QTR EPS number on the chart (For the Last 4 reported quarters)")
       # -----------------------------------------------------------------------------
 
@@ -2134,9 +2380,9 @@ for ticker_raw in ticker_list:
       # Now printing price on the right side of the candle plot
       # price_plt.set_ylabel('Price', color='k')
       # This works - this will move the tick labels inside the plot
-      price_plt.tick_params(axis="y",direction="in", pad=-22)
+      price_plt.tick_params(axis="y", direction="in", pad=-22)
       price_plt.set_ylim(price_lim_lower, price_lim_upper)
-      price_plt.set_yscale(chart_type_idx)
+      price_plt.set_yscale(chart_type_idx.lower())
       price_plt_inst = price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
                                       label='Adj Close', color="brown", linestyle='-')
       # Get the buy and sells from the personal json file, along with the comments.
@@ -2159,27 +2405,27 @@ for ticker_raw in ticker_list:
             if ("Buy_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
               buy_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Buy_Price_str"]
               price_plt.annotate(buy_price_str, xy=(date_list[date_list.index(buy_match_date)], ticker_adj_close_list[date_list.index(buy_match_date)]),
-                                 xytext = (-15,-30), textcoords='offset points',ha='left',fontweight='bold',
-                                 bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5',alpha=.25))
+                                 xytext=(-15, -30), textcoords='offset points', ha='left', fontweight='bold',
+                                 bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5', alpha=.25))
           if ("Sell_Date" in personal_json[ticker]["Buy_Sell"][i_idx]):
             sell_date_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Date"]
             sell_date_datetime = dt.datetime.strptime(sell_date_str, '%m/%d/%Y').date()
             sell_match_date = min(date_list, key=lambda d: abs(d - sell_date_datetime))
             markers_sell_date.append(date_list.index(sell_match_date))
-            logging.debug("Index " + str(i_idx) +  " Sell Match Date " + str(sell_match_date))
+            logging.debug("Index " + str(i_idx) + " Sell Match Date " + str(sell_match_date))
             if ("Sell_Price_str" in personal_json[ticker]["Buy_Sell"][i_idx]):
               sell_price_str = personal_json[ticker]["Buy_Sell"][i_idx]["Sell_Price_str"]
               price_plt.annotate(sell_price_str, xy=(date_list[date_list.index(sell_match_date)], ticker_adj_close_list[date_list.index(sell_match_date)]),
-                                 xytext = (-15, -30), textcoords = 'offset points', ha = 'left',fontweight='bold',
-                                 bbox = dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5', alpha=.25))
+                                 xytext=(-15, -30), textcoords='offset points', ha='left', fontweight='bold',
+                                 bbox=dict(facecolor='white', edgecolor='black', boxstyle='square,pad=.5', alpha=.25))
 
         # This works : This is outside the for loop because it has the list for markevery
         price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
-                       marker="^",markerfacecolor=buy_sell_color,markeredgewidth=1,markeredgecolor='k',
-                       markersize=13,markevery=markers_buy_date,linestyle='None')
+                       marker="^", markerfacecolor=buy_sell_color, markeredgewidth=1, markeredgecolor='k',
+                       markersize=13, markevery=markers_buy_date, linestyle='None')
         price_plt.plot(date_list[0:plot_period_int], ticker_adj_close_list[0:plot_period_int],
-                       marker="s",markerfacecolor=buy_sell_color,markeredgewidth=1,markeredgecolor='k',
-                       markersize=12,markevery=markers_sell_date, linestyle='None')
+                       marker="s", markerfacecolor=buy_sell_color, markeredgewidth=1, markeredgecolor='k',
+                       markersize=12, markevery=markers_sell_date, linestyle='None')
         logging.info("Inserted Buy and Sell Points on the Chart, if specified")
 
       if (g_var_annotate_actual_qtr_earnings == 1):
@@ -2199,7 +2445,7 @@ for ticker_raw in ticker_list:
                              xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
                              xytext=(0, y_coord), textcoords='offset points',
                              # arrowprops=dict(arrowstyle='->',facecolor='black', headwidth=.2),
-                             arrowprops={'arrowstyle' : '-', 'ls' : 'dashed', 'lw' : '.75', 'color' : 'black'},
+                             arrowprops={'arrowstyle': '-', 'ls': 'dashed', 'lw': '.75', 'color': 'black'},
                              bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
           i_idx += 1
       # -----------------------------------------------------------------------------
@@ -2219,13 +2465,13 @@ for ticker_raw in ticker_list:
       # -----------------------------------------------------------------------------
       # Find the eps points that fall in the plot range
       annual_past_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      annual_past_eps_plt.set_yscale(chart_type_idx)
+      annual_past_eps_plt.set_yscale(chart_type_idx.lower())
       annual_past_eps_plt.set_yticks([])
       annual_past_eps_plt_inst = annual_past_eps_plt.plot(date_list[0:plot_period_int],
                                                           yr_past_eps_expanded_list[0:plot_period_int], label='4 qtrs/4',
                                                           color="black", marker='D', markersize='4')
       annual_projected_eps_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-      annual_projected_eps_plt.set_yscale(chart_type_idx)
+      annual_projected_eps_plt.set_yscale(chart_type_idx.lower())
       annual_projected_eps_plt.set_yticks([])
       annual_projected_eps_plt_inst = annual_projected_eps_plt.plot(date_list[0:plot_period_int],
                                                                     yr_projected_eps_expanded_list[0:plot_period_int],
@@ -2234,11 +2480,10 @@ for ticker_raw in ticker_list:
       # todo : maybe change this to only have the value printed out at the year ends
       if (chart_print_eps_div_numbers_val == 1):
         for i in range(len(yr_eps_date_list)):
-          logging.debug("The Date is " + str(yr_eps_date_list[i]) +  " Corresponding EPS " + str(yr_eps_list[i]))
+          logging.debug("The Date is " + str(yr_eps_date_list[i]) + " Corresponding EPS " + str(yr_eps_list[i]))
           # check if the date is in the plot range
           if (date_list[plot_period_int] <= yr_eps_date_list[i] <= date_list[0]):
             if (qtr_eps_lim_lower <= yr_eps_list[i] <= qtr_eps_lim_upper):
-
               # This works - This will only print out the yr_eps numbers at fiscal year end - This is desired by Ann
               # I am just commeting it out for now as I want to see all yr_eps numbers for all the quarters
               # Only put the numbers for fiscal year
@@ -2263,16 +2508,16 @@ for ticker_raw in ticker_list:
         annual_eps_adjusted_slice_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
         annual_eps_adjusted_slice_plt.set_yticks([])
         annual_eps_adjusted_slice_plt_inst = annual_eps_adjusted_slice_plt.plot(date_list[0:plot_period_int],
-                                                            yr_eps_adj_slice_expanded_list[0:plot_period_int], label='4 qtrs/4',
-                                                            color="gold", marker='D', markersize='4')
+                                                                                yr_eps_adj_slice_expanded_list[0:plot_period_int], label='4 qtrs/4',
+                                                                                color="gold", marker='D', markersize='4')
         if (chart_print_eps_div_numbers_val == 1):
           for i in range(len(yr_eps_adj_slice_date_list)):
-            logging.debug("The Date is " + str(yr_eps_adj_slice_date_list[i]) +  " Corresponding EPS " + str(yr_eps_adj_slice_list[i]))
+            logging.debug("The Date is " + str(yr_eps_adj_slice_date_list[i]) + " Corresponding EPS " + str(yr_eps_adj_slice_list[i]))
             # check if the date is in the plot range
             if (date_list[plot_period_int] <= yr_eps_adj_slice_date_list[i] <= date_list[0]):
               if (qtr_eps_lim_lower <= yr_eps_adj_slice_list[i] <= qtr_eps_lim_upper):
                 x = float("{0:.2f}".format(yr_eps_adj_slice_list[i]))
-                main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11, horizontalalignment='center',
+                main_plt.text(yr_eps_adj_slice_date_list[i], yr_eps_adj_slice_list[i], x, fontsize=11,horizontalalignment='center',
                               verticalalignment='bottom')
         logging.info("Printed the Adjusted YR EPS numbers on the chart (For Golden Diamonds)")
       # -----------------------------------------------------------------------------
@@ -2323,7 +2568,7 @@ for ticker_raw in ticker_list:
       # -----------------------------------------------------------------------------
       if (pays_dividend == 1):
         dividend_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        dividend_plt.set_yscale(chart_type_idx)
+        dividend_plt.set_yscale(chart_type_idx.lower())
         dividend_plt.set_yticks([])
         dividend_plt_inst = dividend_plt.plot(date_list[0:plot_period_int], dividend_expanded_list[0:plot_period_int],
                                               label='Dividend', color="Saddlebrown", marker='x', markersize='8')
@@ -2332,7 +2577,7 @@ for ticker_raw in ticker_list:
             if (date_list[plot_period_int] <= dividend_date_list[i] <= date_list[0]):
               if (qtr_eps_lim_lower <= dividend_list[i] <= qtr_eps_lim_upper):
                 x = float("{0:.2f}".format(dividend_list[i]))
-                main_plt.text(dividend_date_list[i], dividend_list_multiplied[i], x, fontsize=6, horizontalalignment='center',
+                main_plt.text(dividend_date_list[i], dividend_list_multiplied[i], x, fontsize=6,horizontalalignment='center',
                               verticalalignment='bottom')
         logging.info("Printed the Dividend numbers on the chart")
       # -----------------------------------------------------------------------------
@@ -2456,26 +2701,26 @@ for ticker_raw in ticker_list:
       # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
       if (chart_type_idx == "Linear"):
         upper_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        upper_channel_plt.set_yscale(chart_type_idx)
+        upper_channel_plt.set_yscale(chart_type_idx.lower())
         upper_channel_plt.set_yticks([])
         upper_channel_plt_inst = upper_channel_plt.plot(date_list[0:plot_period_int],
                                                         upper_price_channel_list[0:plot_period_int], label='Channel', color="blue",
                                                         linestyle='-')
 
         analyst_adjusted_channel_upper_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        analyst_adjusted_channel_upper_plt.set_yscale(chart_type_idx)
+        analyst_adjusted_channel_upper_plt.set_yscale(chart_type_idx.lower())
         analyst_adjusted_channel_upper_plt.set_yticks([])
         analyst_adjusted_channel_upper_plt_inst = analyst_adjusted_channel_upper_plt.plot(date_list[0:plot_period_int],
                                                                                           analyst_adjusted_channel_upper[
-                                                                                          0:plot_period_int], label='Channel',
+                                                                                          0:plot_period_int],label='Channel',
                                                                                           color="blue",
                                                                                           linestyle='-.')
         analyst_adjusted_channel_lower_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        analyst_adjusted_channel_lower_plt.set_yscale(chart_type_idx)
+        analyst_adjusted_channel_lower_plt.set_yscale(chart_type_idx.lower())
         analyst_adjusted_channel_lower_plt.set_yticks([])
         analyst_adjusted_channel_lower_plt_inst = analyst_adjusted_channel_lower_plt.plot(date_list[0:plot_period_int],
                                                                                           analyst_adjusted_channel_lower[
-                                                                                          0:plot_period_int], label='Channel',
+                                                                                          0:plot_period_int],label='Channel',
                                                                                           color="blue",
                                                                                           linestyle='-.')
       # -----------------------------------------------------------------------------
@@ -2487,10 +2732,10 @@ for ticker_raw in ticker_list:
       # upper_channel_plt.spines["right"].set_position(("axes", 1.2))
       if (chart_type_idx == "Linear"):
         lower_channel_plt.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
-        lower_channel_plt.set_yscale(chart_type_idx)
+        lower_channel_plt.set_yscale(chart_type_idx.lower())
         lower_channel_plt.set_yticks([])
         lower_channel_plt_inst = lower_channel_plt.plot(date_list[0:plot_period_int],
-                                                        lower_price_channel_list[0:plot_period_int], label='Price Channel', color="blue",
+                                                        lower_price_channel_list[0:plot_period_int],label='Price Channel', color="blue",
                                                         linestyle='-')
       # -----------------------------------------------------------------------------
 
@@ -2508,15 +2753,14 @@ for ticker_raw in ticker_list:
       # can be helpful in that situation. Note that this creates difference in the color of the volume bars and candles but
       # if the user knows what is going on then it is not that bad
       candle_plt_inst = candlestick_ohlc(candle_plt, quotes[0:candle_chart_duration], width=1, colorup='mediumseagreen', colordown='darksalmon')
-      candle_plt_MA200_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_200_list[0:candle_chart_duration],linewidth=.5, color = 'black', label = 'SMA200')
-      candle_plt_MA50_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_50_list[0:candle_chart_duration], linewidth=.5,color = 'blue', label = 'SMA50')
-      candle_plt_MA20_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_20_list[0:candle_chart_duration],linewidth=.5, color = 'green', label = 'SMA20')
-      candle_plt_MA10_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration],MA_Price_10_list[0:candle_chart_duration],linewidth=.5, color = 'deeppink', label = 'SMA10')
+      candle_plt_MA200_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration], MA_Price_200_list[0:candle_chart_duration], linewidth=.5, color='black', label='SMA200')
+      candle_plt_MA50_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration], MA_Price_50_list[0:candle_chart_duration], linewidth=.5, color='blue', label='SMA50')
+      candle_plt_MA20_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration], MA_Price_20_list[0:candle_chart_duration], linewidth=.5, color='green', label='SMA20')
+      candle_plt_MA10_inst = candle_plt.plot(date_list_candles[0:candle_chart_duration], MA_Price_10_list[0:candle_chart_duration], linewidth=.5, color='deeppink', label='SMA10')
       volume_plt_inst = volume_plt.bar(date_list_candles[0:candle_chart_duration], volume[0:candle_chart_duration], width=1, color=bar_color_list[0:candle_chart_duration])
       volume_plt_MA = volume_plt.twinx()
-      volume_plt_MA_inst = volume_plt_MA.plot(date_list_candles[0:candle_chart_duration],MA_volume_50_list[0:candle_chart_duration], color = 'blue', label = 'SMA10')
+      volume_plt_MA_inst = volume_plt_MA.plot(date_list_candles[0:candle_chart_duration],MA_volume_50_list[0:candle_chart_duration], color='blue', label='SMA10')
       # -----------------------------------------------------------------------------
-
 
       # -----------------------------------------------------------------------------
       # Set the gridlines for all plots
@@ -2569,7 +2813,7 @@ for ticker_raw in ticker_list:
       # candle_plt.set_xticks([])
       candle_plt.set_xticks(candle_sunday_dates, minor=False)
       candle_plt.grid(True)
-      candle_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
+      candle_plt.grid(True, axis='x', which='major', linestyle='--', color='lightgray')
       # This works - To turn individual grid axis off or on
       # candle_plt.grid(False,axis='y')
       # candle_plt.set_ylabel('Price', color='k')
@@ -2578,7 +2822,7 @@ for ticker_raw in ticker_list:
 
       volume_plt.set_xticks(candle_sunday_dates, minor=False)
       volume_plt.grid(True)
-      volume_plt.grid(True,axis='x',which='major', linestyle='--', color='lightgray')
+      volume_plt.grid(True, axis='x', which='major', linestyle='--', color='lightgray')
       # volume_plt.set_xticklabels(candle_sunday_dates_str,rotation=90, fontsize=7, color='k', minor=False)
       volume_plt.set_xticklabels([])
       volume_plt.set_ylim(0, ticker_volume_upper_limit)
@@ -2590,8 +2834,8 @@ for ticker_raw in ticker_list:
       # volume_plt_MA.set_xticks([])
       volume_plt_MA.set_yticks([])
       volume_plt_MA.text(date_list_candles[0], MA_volume_50_list[0], human_format(MA_volume_50_list[0]),
-                         fontsize=7,color='blue',fontweight='bold',
-                         bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0,alpha=1))
+                         fontsize=7, color='blue', fontweight='bold',
+                         bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
       plt.setp(plt.gca().get_xticklabels(), rotation=90)
       # -----------------------------------------------------------------------------
 
@@ -2653,7 +2897,7 @@ for ticker_raw in ticker_list:
         for i in range(number_of_anchored_texts):
           if (i == 0):
             location = 9
-            my_text = "Ann Constant is: " +  str(round(ann_constant,4))
+            my_text = "Ann Constant is: " + str(round(ann_constant, 4))
           elif (i == 1):
             location = 6
             my_text = "Test for Box number 2"
@@ -2679,7 +2923,7 @@ for ticker_raw in ticker_list:
       # choose the appropriate plot
       # -----------------------------------------------------------------------------
       if (ticker not in config_json.keys()):
-        logging.debug("json data for " + str(ticker) +  " does not exist in " + str(configuration_json) +  " file")
+        logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + " file")
       else:
         if ("Plot_Annotate" in config_json[ticker]):
           logging.debug("The number of plot annotates requested by the user are " + str(len(config_json[ticker]["Plot_Annotate"])))
@@ -2687,16 +2931,16 @@ for ticker_raw in ticker_list:
             date_to_annotate = config_json[ticker]["Plot_Annotate"][i_idx]["Date"]
             date_to_annotate_datetime = dt.datetime.strptime(date_to_annotate, '%m/%d/%Y').date()
             annotate_text = config_json[ticker]["Plot_Annotate"][i_idx]["Text"]
-            (x_coord,y_coord) =  config_json[ticker]["Plot_Annotate"][i_idx]["Line_Length"].split(":")
+            (x_coord, y_coord) = config_json[ticker]["Plot_Annotate"][i_idx]["Line_Length"].split(":")
 
             match_date = min(date_list, key=lambda d: abs(d - date_to_annotate_datetime))
             logging.debug("The matching date is " + str(match_date) + " at index " + str(date_list.index(match_date)) +
                           " and the price is " + str(ticker_adj_close_list[date_list.index(match_date)]))
             price_plt.annotate(annotate_text,
-                               xy=(date_list[date_list.index(match_date)], ticker_adj_close_list[date_list.index(match_date)]),
-                               xytext=(int(x_coord), int(y_coord)), textcoords='offset points', arrowprops=dict(facecolor='black', width=.25),
+                               xy=(date_list[date_list.index(match_date)],ticker_adj_close_list[date_list.index(match_date)]),
+                               xytext=(int(x_coord), int(y_coord)), textcoords='offset points',arrowprops=dict(facecolor='black', width=.25),
                                bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=1'))
-                               # arrowprops=dict(facecolor='black', width=1))
+            # arrowprops=dict(facecolor='black', width=1))
 
       # -----------------------------------------------------------------------------
 
@@ -2716,26 +2960,26 @@ for ticker_raw in ticker_list:
       # Only show the plot if we are making only one chart
       if (chart_type_idx == "Log"):
         if (chart_print_eps_div_numbers_val == 1):
-          fig.savefig(chart_dir + "\\" + chart_type_idx + "\\"  + "Charts_With_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches=0)
+          fig.savefig(chart_dir + "\\" + chart_type_idx + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg",dpi=200, bbox_inches=0)
         else:
-          fig.savefig(chart_dir + "\\" + chart_type_idx + "\\"  + "Charts_Without_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg", dpi=200,bbox_inches=0)
+          fig.savefig(chart_dir + "\\" + chart_type_idx + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_Log_" + date_time + ".jpg",dpi=200, bbox_inches=0)
       else:
         if (linear_chart_type_idx == 'Linear'):
           if (chart_print_eps_div_numbers_val == 1):
-            fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches=0)
+            fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_" + date_time + ".jpg",dpi=200, bbox_inches=0)
           else:
-            fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_" + date_time + ".jpg", dpi=200,bbox_inches=0)
+            fig.savefig(chart_dir + "\\" + "Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_" + date_time + ".jpg",dpi=200, bbox_inches=0)
         else:
           if (chart_print_eps_div_numbers_val == 1):
-            fig.savefig(chart_dir + "\\" + "Long_Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_Long_Linear_" + date_time + ".jpg", dpi=200,bbox_inches=0)
+            fig.savefig(chart_dir + "\\" + "Long_Linear" + "\\" + "Charts_With_Numbers" + "\\" + ticker + "_Long_Linear_" + date_time + ".jpg",dpi=200, bbox_inches=0)
           else:
-            fig.savefig(chart_dir + "\\" + "Long_Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_Long_Linear_" + date_time + ".jpg", dpi=200,bbox_inches=0)
+            fig.savefig(chart_dir + "\\" + "Long_Linear" + "\\" + "Charts_Without_Numbers" + "\\" + ticker + "_Long_Linear_" + date_time + ".jpg",dpi=200, bbox_inches=0)
 
-      if (len(ticker_list) == 1) and (len(linear_chart_type_list) == 1)  and (len(chart_print_eps_div_numbers_list) == 1):
+      if (len(ticker_list) == 1) and (len(linear_chart_type_list) == 1) and (len(chart_print_eps_div_numbers_list) == 1):
         plt.show()
       else:
         plt.close(fig)
 
   logging.info("All Done")
-      # -----------------------------------------------------------------------------
+  # -----------------------------------------------------------------------------
 
