@@ -2021,7 +2021,7 @@ for ticker_raw in ticker_list:
         # postiive eps nearby and use than number....not sure what the right solution is
         # right now
         yr_eps_start_val = -yr_eps_start_val
-        logging.debug("The starting yr eps is : " + str(yr_eps_start_val) + ", whichi is negative, inverting it)
+        logging.debug("The starting yr eps is : " + str(yr_eps_start_val) + ", which is negative, inverting it")
 
       qtr_sales_start_val = aaii_qtr_sales_list[start_qtr_for_sales_overlay_index]
       # todo : what to do if the starting bv is negative or nan or 0
@@ -3021,6 +3021,11 @@ for ticker_raw in ticker_list:
           qtr_sales_plt_0_inst_0 = qtr_sales_plt_0.plot(date_list[0:plot_period_int],
                                                           qtr_sales_expanded_list[i_idx][0:plot_period_int],
                                                           label='Q 2.5%', color="Green", linestyle='-', linewidth=7, alpha=0.4)
+          # x = float("{0:.2f}".format(qtr_sales_expanded_list[i_idx][plot_period_int]))
+          # main_plt.text(date_list[plot_period_int], qtr_sales_expanded_list[i_idx][plot_period_int], x, fontsize=6,
+          #               horizontalalignment='center', verticalalignment='bottom')
+
+
           qtr_bv_plt_0 = main_plt.twinx()
           qtr_bv_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
           qtr_bv_plt_0.set_yticks([])

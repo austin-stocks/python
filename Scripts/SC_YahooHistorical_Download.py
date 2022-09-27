@@ -8,10 +8,12 @@ import openpyxl
 import os
 import xlrd
 import time
-
+import sys
 import pandas as pd
 from yahoofinancials import YahooFinancials
 from termcolor import colored, cprint
+from dateutil.relativedelta import relativedelta
+
 # ##############################################################################
 
 # =============================================================================
@@ -20,20 +22,11 @@ from termcolor import colored, cprint
 # =============================================================================
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
+earnings_dir = "\\..\\" + "Earnings"
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 yahoo_hist_out_dir = dir_path + "\\..\\Download\\YahooHistorical"
-
-start_date = '1900-01-01'
-# end_date_raw = str(datetime.datetime.now().year) + \
-#        "-" + str(datetime.datetime.now().month) + \
-#        "-" + str(datetime.datetime.now().day)
-end_date_raw = datetime.datetime.today() + datetime.timedelta(days=1)
-end_date = end_date_raw.strftime('%Y-%m-%d')
-# end_date = '2015-08-15'
-print ("Start Date set to: ", start_date, ", End Date set to: ", end_date)
 # =============================================================================
-
 
 # ##############################################################################
 # The following block of code:
@@ -44,27 +37,6 @@ print ("Start Date set to: ", start_date, ", End Date set to: ", end_date)
 # 4. Put the rest of the tickers in rest_list
 # 5. Concatenate both the lists into ticker_list
 # ##############################################################################
-
-'''
-# This works. I am removing this so that we can use a csv version of Tracklist file
-df = pd.DataFrame()
-df = pd.read_excel(tracklist_file_full_path, sheet_name="alphabetical", usecols="B")
-print ("Read the Tracklist")
-# print (df)
-
-# The first row is the colunmn head in Dataframe
-first_row = df.columns.values.tolist()
-print ("First row is ", first_row)
-
-rest_list = [item for sublist in df[first_row].values for item in sublist]
-print ("Flat list is ",rest_list)
-
-# Now push that name into ticker_list
-ticker_list = []
-ticker_list = first_row+rest_list
-print ("Ticker List is ", ticker_list)
-print ('The number of ticker in the list are ', len(ticker_list))
-'''
 
 get_sp_holdings = 0
 get_qqq_holdings = 0
@@ -82,7 +54,6 @@ elif (get_ibd50_holdings == 1):
   ticker_list_unclean = tracklist_df['Symbol'].tolist()
   ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 else:
-  # Read the trracklist and convert the read tickers into a list
   tracklist_df = pd.read_csv(tracklist_file_full_path)
   # print ("The Tracklist df is", tracklist_df)
   ticker_list_unclean = tracklist_df['Tickers'].tolist()
@@ -97,8 +68,14 @@ else:
 # 2. Extract the relevant data in the format that we want
 # 2. Write that data in csv
 # =============================================================================
+# Start date is now defined by the earliest date from the earnings file
+end_date_raw = datetime.datetime.today() + datetime.timedelta(days=1)
+end_date = end_date_raw.strftime('%Y-%m-%d')
+print("End Date set to: ", end_date)
+
 i = 1
 for ticker_raw in ticker_list:
+
   # time.sleep(1)
   missing_data_found = 0
   missing_data_index = ""
@@ -110,7 +87,45 @@ for ticker_raw in ticker_list:
   elif (ticker == "BF.B"):
     ticker = "BF-B"
 
-  print("Iteration no : ", i , " ", ticker)
+  # ---------------------------------------------------------------------------
+  # In order to limit the size of the Historical download only get the
+  # historical date that is slightly older than the earliest earnings date
+  # available in the earnings file. Othewise, the size of the historical download
+  # balloon up and this not only increase the size of the historical download
+  # csv but it take more machine time to run this script and the historical_merge
+  # script as both of them iterate through all the rows of downloaded data.
+  #
+  # For now I am setting the start date to be
+  # 1 years before the earliest date availabe in the earnings file
+  # I just choose 1 years mostly as random, I could have choosen 2 year or 5 years
+  # The only reason that I choose two years that the Yahoo Historical merge script
+  # calculates 250 day moving average and so in order for that to work probably needs
+  # 1 more year of historical date, if available, beyond the last earnings date
+  # ---------------------------------------------------------------------------
+  start_date = '01/01/1900'
+  try:
+    earnings_df = pd.read_csv(dir_path + "\\" + earnings_dir + "\\" + ticker + "_earnings.csv", delimiter=",")
+    start_date = earnings_df['Q_Date'].tolist()[-1]
+  except FileNotFoundError:
+    print("")
+    print("WARNING ***** WARNING ***** WARNING ***** WARNING *****")
+    print("The earnings file for ticker : ", ticker, ", could not be located")
+    print("However please check why earnings file could not be located, unless you are doing")
+    print("this on purpose (like trying to download all SPY holdings etc")
+    print("For now, I will use the default start date : ", start_date)
+    print("WARNING ***** WARNING ***** WARNING ***** WARNING *****")
+    print("")
+
+  # print("The Earliest date found in Earnings file " , start_date)
+  # Convert the string to datetime, substract 1 year
+  start_date_dt = datetime.datetime.strptime(start_date, "%m/%d/%Y") - relativedelta(years=1)
+  # and then convert datetime to string.
+  # There should be a simpler way to convert from str to datetime to str but anyway...
+  start_date = start_date_dt.strftime('%Y-%m-%d')
+  # ---------------------------------------------------------------------------
+
+  # left justify / left align
+  print("Iteration no : ", f"{i : <3}", " :  ", f"{ticker : <6}", " : Start Date ", f"{start_date : <10}")
   yahoo_financials=YahooFinancials(ticker)
   try:
     # The type of data that is returned by the package is <dict>
@@ -141,7 +156,7 @@ for ticker_raw in ticker_list:
 
     # Get the date in the format that we need
     if (type(historical_data[ticker]['prices'][x]['formatted_date']) == type(None)) :
-      print ("ERROR : The date at index ",x ," is missing for ", ticker)
+      print("ERROR : The date at index ", x ," is missing for ", ticker)
       # Need to think about if we need to continue here. because if the
       # date is missing then what is the point in contuining
       sys.exit(1)
@@ -219,7 +234,7 @@ for ticker_raw in ticker_list:
   #         }
   #     ],
 
-print("Done")
+print("All  Done...")
 # ##############################################################################
 
 
