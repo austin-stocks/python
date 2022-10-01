@@ -19,6 +19,8 @@ import xlsxwriter
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
 log_dir = "\\..\\" + "Logs"
+chaff_earnings_dir = "\\..\\" + "Chaff_Earnings"
+ls_earnings_filename = "ls_earnings_file.sh"
 # ---------------------------------------------------------------------------
 # Set Logging
 # critical, error, warning, info, debug
@@ -144,13 +146,54 @@ for ticker_raw in only_in_ann_list:
   only_in_ann_df.loc[ticker,'Quality_of_Stock'] = quality_of_stock
   only_in_ann_df.loc[ticker,'Owned_By'] = owned_by
 
-# print those dateframes in a file
 logging.info("\n")
-logging.info("Printing all the info in log directory")
+logging.info("Printing all tickers found ONLY in Ann Tracklist to, " + str(ls_earnings_filename) + ", in chaff_earnings dir")
+logging.info("You can just execute that script")
+logging.info(" cd /c/Sundeep/Stocks_Automation/chaff_earnings")
+logging.info("./ls_earnings_file.sh")
+logging.info("to find which tickers Sundeep had tracked in the past...")
+logging.info("Those earnings file are available in chaff earnings directory to decide whether ")
+logging.info("to move those earnings file to earnings directory and update and use them or")
+logging.info("extract earnings from Ann stock xlsm file...")
+logging.info("Note : There would be many earnings file that would not be found in chaff earnings")
+logging.info("     : directory. Those would be brand new stocks that Sundeep has not tracked before")
+logging.info("     : For them, Sundeep would need to extract earnings from Ann stock xlsm")
+with open(dir_path + chaff_earnings_dir + "\\" + ls_earnings_filename, 'w') as f:
+  f.write("## -------------------------------------------------------------------------------\n")
+  f.write("## This script is used to find out if the earnings file exist in this directory   \n")
+  f.write("##                                                                                \n")
+  f.write("## The script is automatically created by SC_compare_Tracklists.py script         \n")
+  f.write("## and contains the list of files that were found in Ann Trackist but not in      \n")
+  f.write("## Sundeep Master Tracklist. So, this script can be use to see if those tickers   \n")
+  f.write("## that Ann is tracking but Sundeep is not, are in the chaff earnings directory.  \n")
+  f.write("## (which means that Sundeep had tracked them sometime in the past)               \n")
+  f.write("##                                                                                \n")
+  f.write("## If Sundeep desires then the chaff earnings file can be moved, relatively       \n")
+  f.write("## easily, to earnings directory to start tracking them.                          \n")
+  f.write("##                                                                                \n")
+  f.write("## That decision Sundeep can make after looking at Ann chart for the ticker and   \n")
+  f.write("## then looking at the state of chaff earnings file.                              \n")
+  f.write("##                                                                                \n")
+  f.write("## Sometimes it would be more practical to just take Ann xlsm file for that       \n")
+  f.write("## ticker and extract the earning data out of it instead.                         \n")
+  f.write("## This can happen b/c the chaff earnings file might have gotten too old          \n")
+  f.write("## and / or Sundeep might have changed to formatting of earnings file so much     \n")
+  f.write("## that it would be less work instead to just extract earnings from Ann xlsm file \n")
+  f.write("## and use that as earnings file moving forward.                                  \n")
+  f.write("## -------------------------------------------------------------------------------\n")
+  for line in list(only_in_ann_df.index.values):
+    f.write("ls " + line + "_earnings.csv\n")
+
+# print those dateframes in a file
+logging.info("")
+logging.info("Now Printing the info in log directory")
 only_in_master_tracklist_logfile = "Tickers_only_in_Master_Trackelist.txt"
 only_in_ann_tracklist_logfile = "Tickers_only_in_Ann_Trackelist.txt"
-only_in_master_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + only_in_master_tracklist_logfile,sep=' ', index=True, header=False)
+only_in_master_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir
+                                                                      + "\\" + only_in_master_tracklist_logfile,sep=' ', index=True, header=False)
 only_in_ann_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + only_in_ann_tracklist_logfile,sep=' ', index=True, header=False)
+logging.info("Put tickers that were found only in Master Tracklist in : " + str(only_in_master_tracklist_logfile))
+logging.info("Put tickers that were found only in Ann's  Tracklist in : " + str(only_in_ann_tracklist_logfile))
 # =============================================================================
 
 logging.info("All Done")

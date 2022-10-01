@@ -88,19 +88,37 @@ for ticker_raw in ticker_list:
     ticker = "BF-B"
 
   # ---------------------------------------------------------------------------
-  # In order to limit the size of the Historical download only get the
+  # Sundeep : 09/27/2022 -
+  # In order to limit the size of the Historical download, only get the
   # historical date that is slightly older than the earliest earnings date
-  # available in the earnings file. Othewise, the size of the historical download
-  # balloon up and this not only increase the size of the historical download
-  # csv but it take more machine time to run this script and the historical_merge
-  # script as both of them iterate through all the rows of downloaded data.
+  # available in the earnings file. Otherwise, the size of the historical download
+  # balloons up and this not only increase the size of the historical download
+  # csv, but it takes more machine time to run this script and the historical_merge
+  # script as both of them iterate through all the rows (one-by-one) of downloaded data.
   #
-  # For now I am setting the start date to be
-  # 1 years before the earliest date availabe in the earnings file
-  # I just choose 1 years mostly as random, I could have choosen 2 year or 5 years
+  # For now, I am setting the start date to be
+  # 1 years before the earliest date available in the earnings file
+  # I just choose 1 years mostly as random, I could have chosen 2 year or 5 years
   # The only reason that I choose two years that the Yahoo Historical merge script
   # calculates 250 day moving average and so in order for that to work probably needs
   # 1 more year of historical date, if available, beyond the last earnings date
+  #
+  # Now in a few years the size of the historical data will start becoming an
+  # issue again - especially for tickers that are old (IBM, WMT etc). In that
+  # case there can be a few choices to get the size manageable :
+  # 1. Rewrite this and the historical_merge script so that they are not doing
+  #    row-by-row reading and writing of the historical data. That can cut down
+  #    on the machine time, but not the size of the data but maybe that is good
+  #    enough
+  # 2. Across the suite of scripts (historical download, historical merge
+  #    and earnings chart python, limit the scripts to use only 40 years
+  #    (or 35 or 20) years of earnings data and also only download 40 years
+  #    (or 35 or 20) years of historical data.
+  #    If a longer chart is needed (like log chart), then the scripts can
+  #    have a if statement that will download the more than 40 (or 35 or 20)
+  #    years of both historical data and NOT curtail the earning data at the
+  #    sametime.
+  # We will decide on how to solve that problem, once we get there...
   # ---------------------------------------------------------------------------
   start_date = '01/01/1900'
   try:
@@ -117,7 +135,7 @@ for ticker_raw in ticker_list:
     print("")
 
   # print("The Earliest date found in Earnings file " , start_date)
-  # Convert the string to datetime, substract 1 year
+  # Convert the string to datetime, subtract 1 year
   start_date_dt = datetime.datetime.strptime(start_date, "%m/%d/%Y") - relativedelta(years=1)
   # and then convert datetime to string.
   # There should be a simpler way to convert from str to datetime to str but anyway...
@@ -125,7 +143,7 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # left justify / left align
-  print("Iteration no : ", f"{i : <3}", " :  ", f"{ticker : <6}", " : Start Date ", f"{start_date : <10}")
+  print("Iteration no : ", f"{i : <3}", " : ", f"{ticker : <6}", " : Start Date ", f"{start_date : <10}")
   yahoo_financials=YahooFinancials(ticker)
   try:
     # The type of data that is returned by the package is <dict>

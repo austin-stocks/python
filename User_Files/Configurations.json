@@ -1783,6 +1783,9 @@
   },
 
   "NDAQ" : {
+    "Splits" : {
+      "08/29/2022" : "3:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2013", "Stop_Date" :   "6/30/2019"}
     ],
