@@ -296,8 +296,9 @@ for ticker_raw in ticker_list:
 
   logging.debug("Will use the Calendar date list from index : " + str(calendar_future_date_index) + " to index : " + str(cal_match_date_with_historical_index))
   calendar_date_list_mod = calendar_date_list[calendar_future_date_index:cal_match_date_with_historical_index]
-  logging.info("Iteration no : " + str(i_idx) + ", Ticker : " + str(ticker) + " : Fiscal Year ends in " + str(fiscal_year_ends) + " : Merging Historical Data with Calendar until the future date : " + str(calendar_date_list[calendar_future_date_index]))
-  logging.debug("The modified Calendar list is " + str(calendar_date_list_mod) + " and it has \n" + str(len(calendar_date_list_mod)) +  " elements")
+  logging.info("Iteration : " + f"{str(i_idx) : <3}" + ", Ticker : " + f"{str(ticker) : <6}" + " : Fiscal Yr end : " + str(fiscal_year_ends) \
+            + ", Creating Historical Data from : " + f"{str(historical_df['Date'].tolist()[-1]) : <10}" + " -> " + f"{str(calendar_date_list_mod[-1]) : <10}" + " -> " + f"{str(calendar_date_list_mod[0]) : <10}")
+  logging.debug("The modified Calendar list is " + str(calendar_date_list_mod) + " and it has \n" + str(len(calendar_date_list_mod)) + " elements")
   # END : SECTION 2:
   # ===========================================================================
 
