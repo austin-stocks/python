@@ -65,6 +65,7 @@ ticker_list_unclean = tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
 targets = []
+i_idx = 1
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
   logging.debug(str(ticker) + " : Fetching Target Price")
@@ -93,7 +94,8 @@ for ticker_raw in ticker_list:
     continue
   # If you want the median version, then replace 'targetMeanPrice' with 'targetMedianPrice'
   targets.append(target)
-  logging.info(str(ticker) + " : Price target : " + str(target))
+  # logging.info(str(ticker) + " : Price target : " + str(target))
+  logging.info("Iteration : " + f"{str(i_idx) : <3}" + ", Ticker : " + f"{str(ticker) : <6}" + " : Price Target : " + f"{str(target) : <10}")
   # ---------------------------------------------------------------------------
 
   now = dt.datetime.now()
@@ -127,3 +129,4 @@ for ticker_raw in ticker_list:
   with open(dir_path + user_dir + "\\" + price_targets_json_dict_filename, 'w') as f:
     json.dump(price_targets_json_dict, f, indent=2)
 
+  i_idx = i_idx+1
