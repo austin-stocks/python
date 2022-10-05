@@ -1,4 +1,4 @@
-
+import pandas as pd
 
 aaii_analysts_projection_file = "AAII_Analysts_2022_07_29.csv"
 
@@ -19,3 +19,8 @@ aaii_qtr_or_yr_report_dates_too_far_apart = ['RETC',
                                              'AJRD',  # yr  dates are 397 days apart
                                              'AKOM',  # yr  dates are 275 days apart
                                              'AFIB']  # qtr datea are 275 days apart
+
+sundeep_to_aaii_ticker_translate = pd.DataFrame(
+  {'Ticker': ['GOOG', 'BRK-B'],
+   'aaii_tracking_ticker': ['GOOGL', 'BRK.A']}
+)

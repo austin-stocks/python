@@ -19,8 +19,9 @@ from collections import Counter
 from dateutil.relativedelta import relativedelta
 from matplotlib.offsetbox import AnchoredText
 
-from SC_Global_functions import aaii_analysts_projection_file
-from SC_Global_functions import aaii_missing_tickers_list
+from sc_gbl_funcs import aaii_analysts_projection_file
+from sc_gbl_funcs import aaii_missing_tickers_list
+import sc_gbl_funcs as sc_gbl_funcs
 
 from SC_logger import my_print as my_print
 from yahoofinancials import YahooFinancials
@@ -187,6 +188,7 @@ earnings_dir = "\\..\\" + "Earnings"
 dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
 aaii_financial_qtr_dir = "\\..\\" + "AAII_Financials" + "\\" + "Quarterly"
+sc_gbl_funcs.sundeep_to_aaii_ticker_translate.set_index('Ticker', inplace=True)
 # ---------------------------------------------------------------------------
 # Set Logging
 # critical, error, warning, info, debug
@@ -627,7 +629,7 @@ for ticker_raw in ticker_list:
     ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
     if (ticker in aaii_missing_tickers_list):
       logging.warning("")
-      logging.warning(str(ticker) + " is listed in aaii_missing_tickers_list in the SC_Global_functions file, but")
+      logging.warning(str(ticker) + " is listed in aaii_missing_tickers_list in the sc_gbl_funcs file, but")
       logging.warning("it is present in the "+ str(aaii_analysts_projection_file) + " file")
       logging.warning("There better be a good reason to have it in the aaii_missing_tickers_list b/c now the script")
       logging.warning("is NOT going to pick future EPS projections and put them in the cart and, again, unless")
@@ -1802,8 +1804,9 @@ for ticker_raw in ticker_list:
   # Read the parse the AAII ticker financials file
   # ---------------------------------------------------------------------------
   aaii_ticker = ticker
-  if (ticker == "BRK-B"):
-    aaii_ticker = "BRK.A"
+  if (ticker in sc_gbl_funcs.sundeep_to_aaii_ticker_translate.index):
+    aaii_ticker = sc_gbl_funcs.sundeep_to_aaii_ticker_translate.loc[ticker,'aaii_tracking_ticker']
+  logging.debug("AAII ticker is  : " + str(aaii_ticker))
 
   aaii_qtr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_qtr_dir + "\\" + aaii_ticker + "_QTR_FIN.xlsx", sheet_name=aaii_ticker, skiprows=6, usecols="C:AZ")
   logging.debug("The Financial Dataframe is \n" + aaii_qtr_financial_df.to_string())
