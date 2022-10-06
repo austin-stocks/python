@@ -20,7 +20,7 @@ aaii_qtr_or_yr_report_dates_too_far_apart = ['RETC',
                                              'AKOM',  # yr  dates are 275 days apart
                                              'AFIB']  # qtr datea are 275 days apart
 
-sundeep_to_aaii_ticker_translate = pd.DataFrame(
+master_to_aaii_ticker_xlate = pd.DataFrame(
   {'Ticker': ['GOOG', 'BRK-B'],
    'aaii_tracking_ticker': ['GOOGL', 'BRK.A']}
 )

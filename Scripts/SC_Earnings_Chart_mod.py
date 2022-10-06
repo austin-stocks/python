@@ -19,9 +19,7 @@ from collections import Counter
 from dateutil.relativedelta import relativedelta
 from matplotlib.offsetbox import AnchoredText
 
-from sc_gbl_funcs import aaii_analysts_projection_file
-from sc_gbl_funcs import aaii_missing_tickers_list
-import sc_gbl_funcs as sc_gbl_funcs
+import SC_Global_functions as sc_funcs
 
 from SC_logger import my_print as my_print
 from yahoofinancials import YahooFinancials
@@ -188,7 +186,7 @@ earnings_dir = "\\..\\" + "Earnings"
 dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
 aaii_financial_qtr_dir = "\\..\\" + "AAII_Financials" + "\\" + "Quarterly"
-sc_gbl_funcs.sundeep_to_aaii_ticker_translate.set_index('Ticker', inplace=True)
+sc_funcs.master_to_aaii_ticker_xlate.set_index('Ticker', inplace=True)
 # ---------------------------------------------------------------------------
 # Set Logging
 # critical, error, warning, info, debug
@@ -291,7 +289,7 @@ if (plot_nasdaq):
 
 # -----------------------------------------------------------------------------
 if (g_var_use_aaii_data_to_extend_eps_projections == 1):
-  aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + aaii_analysts_projection_file)
+  aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + sc_funcs.aaii_analysts_projection_file)
   aaii_analysts_projection_df.set_index('Ticker', inplace=True)
   # logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
 
@@ -596,7 +594,7 @@ for ticker_raw in ticker_list:
   # -------------------------------------------------------------------------
   #       *****     Start of AAII insertion of Projected EPS Insertion    *****
   # -------------------------------------------------------------------------
-  logging.info("The AAII Analysts file used is : " + str(aaii_analysts_projection_file))
+  logging.info("The AAII Analysts file used is : " + str(sc_funcs.aaii_analysts_projection_file))
   # Find the fiscal years y0, y1 and y2 and their respective projections
   no_of_years_to_insert_aaii_eps_projections = 0
   continue_aaii_eps_projections_for_this_ticker = 1
@@ -627,10 +625,10 @@ for ticker_raw in ticker_list:
   # projections in the chart beyond what is in the earnings file etc)
   try:
     ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
-    if (ticker in aaii_missing_tickers_list):
+    if (ticker in sc_funcs.aaii_missing_tickers_list):
       logging.warning("")
-      logging.warning(str(ticker) + " is listed in aaii_missing_tickers_list in the sc_gbl_funcs file, but")
-      logging.warning("it is present in the "+ str(aaii_analysts_projection_file) + " file")
+      logging.warning(str(ticker) + " is listed in aaii_missing_tickers_list in the sc_funcs file, but")
+      logging.warning("it is present in the "+ str(sc_funcs.aaii_analysts_projection_file) + " file")
       logging.warning("There better be a good reason to have it in the aaii_missing_tickers_list b/c now the script")
       logging.warning("is NOT going to pick future EPS projections and put them in the cart and, again, unless")
       logging.warning("there is a very good reason, you probably do NOT want that")
@@ -647,7 +645,7 @@ for ticker_raw in ticker_list:
     logging.warning(str(ticker) + " is NOT in AAII Analysts projections df. Will skip inserting future EPS Projections from AAII Analysts data...")
     logging.warning("Keep an eye out, the ticker may be added by AAII in the future, then the script will insert future EPS projections in the chart")
     logging.warning("")
-    if (ticker in aaii_missing_tickers_list):
+    if (ticker in sc_funcs.aaii_missing_tickers_list):
       logging.info("Also found " + str(ticker) + " in the aaii_missing_tickers_list")
       logging.info("This is superflous right now as the ticker is not in the AAII analysts file anyway.")
       logging.info("You can remove the ticker from the aaii_missing_tickers_list and it will have not effect on the chart right now")
@@ -1804,8 +1802,8 @@ for ticker_raw in ticker_list:
   # Read the parse the AAII ticker financials file
   # ---------------------------------------------------------------------------
   aaii_ticker = ticker
-  if (ticker in sc_gbl_funcs.sundeep_to_aaii_ticker_translate.index):
-    aaii_ticker = sc_gbl_funcs.sundeep_to_aaii_ticker_translate.loc[ticker,'aaii_tracking_ticker']
+  if (ticker in sc_funcs.master_to_aaii_ticker_xlate.index):
+    aaii_ticker = sc_funcs.master_to_aaii_ticker_xlate.loc[ticker,'aaii_tracking_ticker']
   logging.debug("AAII ticker is  : " + str(aaii_ticker))
 
   aaii_qtr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_qtr_dir + "\\" + aaii_ticker + "_QTR_FIN.xlsx", sheet_name=aaii_ticker, skiprows=6, usecols="C:AZ")
