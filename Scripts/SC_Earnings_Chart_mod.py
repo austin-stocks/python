@@ -1809,6 +1809,10 @@ for ticker_raw in ticker_list:
   aaii_qtr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_qtr_dir + "\\" + aaii_ticker + "_QTR_FIN.xlsx", sheet_name=aaii_ticker, skiprows=6, usecols="C:AZ")
   logging.debug("The Financial Dataframe is \n" + aaii_qtr_financial_df.to_string())
 
+  # There is some screw up on how python reads the xlsx file with the first row
+  # So need to set the first row as columns explicitly and then later in the loop
+  # down, ignore the first row while going through the dataframe to extract
+  # sales, BV etc. information
   aaii_qtr_financial_df = aaii_qtr_financial_df.transpose()
   aaii_qtr_financial_df.columns = aaii_qtr_financial_df.iloc[0]
   aaii_qtr_dt_list = []
@@ -1829,8 +1833,13 @@ for ticker_raw in ticker_list:
   logging.debug("")
   logging.debug("AAII QTR Date  List          " + str(aaii_qtr_dt_list))
   logging.debug("Original AAII QTR Sales List " + str(aaii_qtr_sales_list_org))
-  logging.debug("Orignial AAII QTR BV    List " + str(aaii_qtr_bv_list_org))
+  logging.debug("Original AAII QTR BV    List " + str(aaii_qtr_bv_list_org))
 
+  # ---------------------------------------------------------------------------
+  # Average out the 4 qtrs of sales and BV numbers to make a, relatively
+  # smooth, annual number. This is akin to creating black diamonds from
+  # quarterly pink dots
+  # ---------------------------------------------------------------------------
   logging.debug("")
   i_int = 0
   aaii_qtr_sales_list = list()
@@ -1867,8 +1876,13 @@ for ticker_raw in ticker_list:
     aaii_qtr_bv_list.append(average_bv)
     i_int += 1
 
-  # Now delete the last 3 elements from the aaii qtr dt list as the qtr sales and bv values
-  # have 3 less entries as they have been averaged out (just the yr_eps is created out of qtr_eps)
+  # At this point, we have 3 list, aaii qtr date list, and smoothed out sales and BV
+  # list. Note that the smoothed out sales and BV list has 3 fewer entries than the
+  # date list.
+
+  # Now delete the last 3 elements from the aaii qtr dt list as the qtr sales
+  # and bv values have 3 less entries as they have been yearly smoothed out
+  # (just list the yr_eps is created out of qtr_eps)
   del aaii_qtr_dt_list[len(aaii_qtr_dt_list) - 3:]
   # Reverse the lists so that they are ordered from oldest date to newest date
   aaii_qtr_dt_list.reverse()
@@ -1883,14 +1897,15 @@ for ticker_raw in ticker_list:
   logging.debug("Orignial AAII QTR BV    List " + str(aaii_qtr_bv_list_org))
   logging.debug("AAII QTR BV    List          " + str(aaii_qtr_bv_list))
   # At this point, we have read the AAII ticker financials file and have created
-  # various lists that we need to plot the sales and BV
+  # 3 lists that have same number of entries and have been reversed (oldest
+  # date as element 0 and newest element as element N and so on
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
-  # Create the Sales growth (or decline) lines from config json file
+  # Read the json to get the information for when Sundeep want to start the
+  # sales and BV overlays
   # ---------------------------------------------------------------------------
-  # Read the json to get the information for the earnings projection overlays
-  # At the end of this - we should have
+  # At the end of this - we will have
   # 1. The number of overlays that need to be made in the chart
   # 2. A list that contains the start dates for each of the overlays and
   # 3. A corresponding list that contains the stop dates for each of the overlay
@@ -1903,14 +1918,12 @@ for ticker_raw in ticker_list:
     if ("QTR_Sales_BV_FCF_Overlay" in config_json[ticker]):
       qtr_sales_bv_fcf_overlay_df = pd.DataFrame(config_json[ticker]["QTR_Sales_BV_FCF_Overlay"])
     else:
-      # Define a small dataframe that has, by default, 10 years to plot
-      # todo : This breaks the code later on - Try it on something that does not have the
-      # Overlay thingy in the json file and you will know what fails.
-      if (len(aaii_qtr_dt_list) >= 40):
-        start_qtr_tmp = aaii_qtr_dt_list[-1]-40
-      else:
-        qtr_sales_bv_fcf_overlay_df = pd.DataFrame([{'Start_Date' : 'First', 'Stop_Date' : 'End'}])
-        logging.debug("YR_Sales_BV_FCF_Overlay not found in config json, created default dates for overlaying sales and bv")
+      # Define a small dataframe that has, by default, 'First' and 'Start'
+      # for overlays so that the overlay will start with the first (oldest
+      # date (which is AAII qtr date -3)) and stop with the latest qtr for
+      # which AAII data is available
+      qtr_sales_bv_fcf_overlay_df = pd.DataFrame([{'Start_Date' : 'First', 'Stop_Date' : 'End'}])
+      logging.debug("YR_Sales_BV_FCF_Overlay not found in config json, created default dates for overlaying sales and bv")
 
     entries_in_qtr_sales_bv_fcf_overlay_df = len(qtr_sales_bv_fcf_overlay_df.index)
     logging.debug("The YR Sales, BV and FCV overlay converted to dataframe is \n" + qtr_sales_bv_fcf_overlay_df.to_string() +
@@ -1921,8 +1934,12 @@ for ticker_raw in ticker_list:
     # Replace 'First' with the first date that is available for sales in the aaii datafame
     qtr_sales_bv_fcf_overlay_df.Start_Date.replace(to_replace='First', value=dt.datetime.strftime(aaii_qtr_dt_list[0], format='%m/%d/%Y'), inplace=True)
 
-    # Conver the start Dates to datetime, add it as a separate column, and then
-    # sort the dataframe based on that datetime column and reindex the dateframe
+    # Convert the start Dates to datetime, add it as a separate column,
+    # and then sort the dataframe based on that datetime column and
+    # reindex the dataframe. This gives us the dataframe sorted by
+    # 'Start_Date' from newest to oldest, irrespective on how Sundeep
+    # put it in the config file :-). Seriously, this is needed in the
+    # next step for replacing any 'Next' in the Stop_Date
     qtr_sales_bv_fcf_overlay_df['Start_Date_datetime'] = pd.to_datetime(qtr_sales_bv_fcf_overlay_df['Start_Date'], format='%m/%d/%Y')
     qtr_sales_bv_fcf_overlay_df.sort_values('Start_Date_datetime', inplace=True)
     qtr_sales_bv_fcf_overlay_df.reset_index(inplace=True, drop=True)
@@ -1935,7 +1952,7 @@ for ticker_raw in ticker_list:
     logging.debug("The Stop_Date extracted from Earning growth overlay is" + str(stop_date_list))
 
     # Now find if there are any "Next" in the stop date
-    # If there are then "Next" gets replaced by the next row start date
+    # If there are, then "Next" gets replaced by the next row start date
     # (remember that the dataframe is already sorted ascending with the
     # start dates - so in essence the current row earning projection overlay
     # will stop at the next start date
@@ -1945,9 +1962,10 @@ for ticker_raw in ticker_list:
         next_in_stop_date_list_cnt = next_in_stop_date_list_cnt + 1
 
     logging.debug("The number of \"Next\" found in the Earnings_growth_projection_overlay : " + str(next_in_stop_date_list_cnt))
-    # Check if the last row of the dateframe Stop_Date is set to Next - then error out as there is no
-    # Next date available corresponding the the last row of the dateframe (remember that the dataframe is
-    # already sorted)
+    # Check if the last row of the dateframe Stop_Date is set to
+    # Next - then error out as there is no Next date available
+    # corresponding the the last row of the dateframe (remember
+    # that the dataframe is already sorted)
     if (qtr_sales_bv_fcf_overlay_df.loc[entries_in_qtr_sales_bv_fcf_overlay_df - 1, 'Stop_Date'] == "Next"):
       logging.error("")
       logging.error("The Stop_Date, corresponding the the Start_Date : " + str(qtr_sales_bv_fcf_overlay_df.loc[entries_in_qtr_sales_bv_fcf_overlay_df - 1, 'Start_Date']))
@@ -1968,17 +1986,19 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
-  # Now start processing the start and stop dates (without the "Next" and "End"
-  # to create the lists that will be plotted later
+  # Now start processing each row in the dataframe for start and stop dates
+  # (without the "Next" and "End") to create the list(s) that will be plotted
+  # later. The number of lists created will be equal to the number of rows
+  # in the dataframe
   # ---------------------------------------------------------------------------
   if (entries_in_qtr_sales_bv_fcf_overlay_df > 0):
-    # Create a list of lists equal to the number of rows of the dataframe - which is the same as
-    # the number of overlays that are specified in the json file)
+    # Create a list of lists equal to the number of rows of the
+    # dataframe - which is the same as the number of overlays
+    # that are specified in the json file
     qtr_sales_expanded_list = [[] for _ in range(entries_in_qtr_sales_bv_fcf_overlay_df)]
     qtr_bv_expanded_list = [[] for _ in range(entries_in_qtr_sales_bv_fcf_overlay_df)]
 
     for i_idx, row in qtr_sales_bv_fcf_overlay_df.iterrows():
-      # This works : Get the Start_Date and Stop_Date columns in a list
       logging.debug("Processing Row number " + str(i_idx) + " : \n" + str(row) + ", from the dataframe\n")
       # logging.debug("The type of Start_Date is : " + str(type(row['Start_Date'])))
       # logging.debug("The type of Stop_Date is : " + str(type(row['Stop_Date'])))
