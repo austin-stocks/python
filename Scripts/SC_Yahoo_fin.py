@@ -102,11 +102,9 @@ i_int = 0
 for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   i_int += 1
-  # logging.info("\nIteration : " + str(i_int) + " Processing : " + str(ticker))
-  # print("\nIteration : " + str(i_int) + " Processing : " + str(ticker))
-  if ticker in ["ASML", "TSM"]:
-    logging.info("Iteration : " + str(i_int) + " =====> Skipping <===== : " + str(ticker) + " As Yahoo generally does not have an earnings date for it")
-    continue
+  # if ticker in ["ASML", "TSM"]:
+  #   logging.info("Iteration : " + f"{str(i_int) : <3}" + " =====> Skipping <===== : " + f"{str(ticker) : <6}" + " As Yahoo generally does not have an earnings date for it")
+  #   continue
   try:
     earnings_date_dt = si.get_next_earnings_date(ticker)
   except (IndexError):
@@ -116,8 +114,7 @@ for ticker_raw in ticker_list:
     continue
 
   earnings_date_str = earnings_date_dt.strftime('%m/%d/%Y')
-  logging.info("Iteration : " + str(i_int) + " Processed : " + str(ticker) + " Earnings Date : " + str(earnings_date_str))
-  # print("Iteration : ", i_int ," Processed : ", ticker ," Earnings Date : ", earnings_date_str)
+  logging.info("Iteration : " + f"{str(i_int) : <3}" + " Processed : " + f"{str(ticker) : <6}" + " Earnings Date : " + f"{str(earnings_date_str) : <10}")
   yahoo_earnings_calendar_df.loc[ticker] = [earnings_date_str]
 
   now = dt.datetime.now()
