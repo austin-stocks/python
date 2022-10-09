@@ -104,6 +104,9 @@ for ticker_raw in ticker_list:
   i_int += 1
   # logging.info("\nIteration : " + str(i_int) + " Processing : " + str(ticker))
   # print("\nIteration : " + str(i_int) + " Processing : " + str(ticker))
+  if ticker in ["ASML", "TSM"]:
+    logging.info("Iteration : " + str(i_int) + " =====> Skipping <===== : " + str(ticker) + " As Yahoo generally does not have an earnings date for it")
+    continue
   try:
     earnings_date_dt = si.get_next_earnings_date(ticker)
   except (IndexError):
