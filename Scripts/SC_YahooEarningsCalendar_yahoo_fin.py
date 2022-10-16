@@ -117,7 +117,7 @@ for ticker_raw in ticker_list:
   logging.info("Iteration : " + f"{str(i_int) : <3}" + " Processed : " + f"{str(ticker) : <6}" + " Earnings Date : " + f"{str(earnings_date_str) : <10}")
   yahoo_earnings_calendar_df.loc[ticker] = [earnings_date_str]
 
-  now = dt.datetime.now()
-  date_time = now.strftime("%Y_%m_%d")
-  yahoo_earnings_calendar_logfile = "yahoo_fin_earnings_calendar_" + date_time + ".csv"
-  yahoo_earnings_calendar_df.sort_values(by=['Earnings_Date', 'Ticker'], ascending=[True, True]).to_csv(dir_path + log_dir + "\\" + yahoo_earnings_calendar_logfile, sep=',', index=True, header=True)
+now = dt.datetime.now()
+date_time = now.strftime("%Y_%m_%d")
+yahoo_earnings_calendar_logfile = "yahoo_fin_earnings_calendar_" + date_time + ".csv"
+yahoo_earnings_calendar_df.sort_values(by=['Earnings_Date', 'Ticker'], ascending=[True, True]).to_csv(dir_path + log_dir + "\\" + yahoo_earnings_calendar_logfile, sep=',', index=True, header=True)
