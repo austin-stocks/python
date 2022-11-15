@@ -17,6 +17,8 @@ do
       git add Quarterly/[$chrs][$chrs_subloop]*.xlsx -v
       echo ""
     done
+	# Sometimes you have the file like A.xlsx
+    git add Quarterly/$chrs.xlsx -v
   else
     echo "Adding the Yearly files that start with ==> [$chrs]*"
     git add Yearly/[$chrs]*.xlsx -v
@@ -45,6 +47,8 @@ do
       git commit -m "Updating" ../AAII_Financials/Quarterly/[$chrs][$chrs_subloop]*.xlsx -v
       echo ""
     done
+	# Sometimes you have the file like A.xlsx
+    git commit -m "Updating" ../AAII_Financials/Quarterly/$chrs.xlsx -v
   else
     echo "Commiting the Yearly files that start with ==> [$chrs]*"
     ## git commit -m "Updating" Yearly/[$chrs]*.xlsx -v
