@@ -5542,6 +5542,9 @@
     ]
   },
   "CPRT" : {
+    "Splits" : {
+      "11/04/2022" : "2:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "04/30/2014", "Stop_Date" :   "04/30/2019"}
     ]
