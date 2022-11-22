@@ -135,6 +135,19 @@
     ]
   },
 
+  "UHAL" : {
+    "Splits" : {
+      "11/14/2022" : "10:1"
+    },
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/20/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.6"}
+    ],
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"},
+       {"Start_Date" : "03/30/2015", "Stop_Date" :   "End"}
+    ]
+  },
+
   "LSI" : {
     "Splits" : {
       "01/28/2021" : "3:2"
