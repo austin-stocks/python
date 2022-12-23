@@ -8,6 +8,7 @@ import time
 import socket
 import re
 import datetime as dt
+from   datetime import date
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -18,8 +19,7 @@ from collections import Counter
 from dateutil.relativedelta import relativedelta
 from matplotlib.offsetbox import AnchoredText
 
-from SC_Global_functions import aaii_analysts_projection_file
-from SC_Global_functions import aaii_missing_tickers_list
+import SC_Global_functions as sc_funcs
 
 from SC_logger import my_print as my_print
 from yahoofinancials import YahooFinancials
@@ -145,9 +145,9 @@ g_dict_chart_options = {
   # should be printed on the chart
   'print_eps_and_div_numbers': 'Yes', # Yes, No, Both - This will create chart two times - one with numbers and one without
   'Chart_type_options': ['Log', 'Linear'],
-  # 'Linear_chart_types' : ['Linear','Long_Linear']
+  'Linear_chart_types' : ['Linear','Long_Linear']
   # 'Linear_chart_types': ['Long_Linear']
-  'Linear_chart_types': ['Linear']
+  # 'Linear_chart_types': ['Linear']
 }
 # =============================================================================
 
@@ -185,7 +185,8 @@ historical_dir = "\\..\\" + "Historical"
 earnings_dir = "\\..\\" + "Earnings"
 dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
-
+aaii_financial_qtr_dir = "\\..\\" + "AAII_Financials" + "\\" + "Quarterly"
+sc_funcs.master_to_aaii_ticker_xlate.set_index('Ticker', inplace=True)
 # ---------------------------------------------------------------------------
 # Set Logging
 # critical, error, warning, info, debug
@@ -288,7 +289,7 @@ if (plot_nasdaq):
 
 # -----------------------------------------------------------------------------
 if (g_var_use_aaii_data_to_extend_eps_projections == 1):
-  aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + aaii_analysts_projection_file)
+  aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + sc_funcs.aaii_analysts_projection_file)
   aaii_analysts_projection_df.set_index('Ticker', inplace=True)
   # logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
 
@@ -314,7 +315,7 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # #############################################################################
 # #############################################################################
 # #############################################################################
-# ticker_list = ['AAPL', 'AUDC','MED']
+# ticker_list = ['IBM']
 for ticker_raw in ticker_list:
 
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
@@ -587,13 +588,13 @@ for ticker_raw in ticker_list:
     logging.error("********** in configurations file, when you added more quarters of earnings in the earnings file                                            **********")
     logging.error("********** or you added years in the configurations file but forgot to run the merge script to reflect added year(s) in the historical file **********")
     logging.error("Please correct - by adding a year or two in the configuration file, if your forgot - and then rerun merge script either way before continuing")
-    sys.exit(1)
+    sys.exit(1)`
   # -------------------------------------------------------------------------
 
   # -------------------------------------------------------------------------
   #       *****     Start of AAII insertion of Projected EPS Insertion    *****
   # -------------------------------------------------------------------------
-  logging.info("The AAII Analysts file used is : " + str(aaii_analysts_projection_file))
+  logging.info("The AAII Analysts file used is : " + str(sc_funcs.aaii_analysts_projection_file))
   # Find the fiscal years y0, y1 and y2 and their respective projections
   no_of_years_to_insert_aaii_eps_projections = 0
   continue_aaii_eps_projections_for_this_ticker = 1
@@ -624,10 +625,10 @@ for ticker_raw in ticker_list:
   # projections in the chart beyond what is in the earnings file etc)
   try:
     ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
-    if (ticker in aaii_missing_tickers_list):
+    if (ticker in sc_funcs.aaii_missing_tickers_list):
       logging.warning("")
-      logging.warning(str(ticker) + " is listed in aaii_missing_tickers_list in the SC_Global_functions file, but")
-      logging.warning("it is present in the "+ str(aaii_analysts_projection_file) + " file")
+      logging.warning(str(ticker) + " is listed in aaii_missing_tickers_list in the sc_funcs file, but")
+      logging.warning("it is present in the "+ str(sc_funcs.aaii_analysts_projection_file) + " file")
       logging.warning("There better be a good reason to have it in the aaii_missing_tickers_list b/c now the script")
       logging.warning("is NOT going to pick future EPS projections and put them in the cart and, again, unless")
       logging.warning("there is a very good reason, you probably do NOT want that")
@@ -644,7 +645,7 @@ for ticker_raw in ticker_list:
     logging.warning(str(ticker) + " is NOT in AAII Analysts projections df. Will skip inserting future EPS Projections from AAII Analysts data...")
     logging.warning("Keep an eye out, the ticker may be added by AAII in the future, then the script will insert future EPS projections in the chart")
     logging.warning("")
-    if (ticker in aaii_missing_tickers_list):
+    if (ticker in sc_funcs.aaii_missing_tickers_list):
       logging.info("Also found " + str(ticker) + " in the aaii_missing_tickers_list")
       logging.info("This is superflous right now as the ticker is not in the AAII analysts file anyway.")
       logging.info("You can remove the ticker from the aaii_missing_tickers_list and it will have not effect on the chart right now")
@@ -1301,12 +1302,12 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
-  # Now Process the yr_eps_adj_* lists created above  to make the adjustments 
-  # to the yr eps. 
+  # Now Process the yr_eps_adj_* lists created above  to make the adjustments
+  # to the yr eps.
   # We will create a separate list yr_eps_adj_list - this list will be used to
   #   create price channel lines later
-  # The original list - which will be used to create two lists - past and future 
-  #   is used to plot 
+  # The original list - which will be used to create two lists - past and future
+  #   is used to plot
   # ---------------------------------------------------------------------------
   yr_eps_adj_date_list = yr_eps_date_list.copy()
   yr_eps_adj_list = yr_eps_list.copy()
@@ -1330,8 +1331,8 @@ for ticker_raw in ticker_list:
     logging.info("Prepared the Adjusted YR EPS List")
     # ---------------------------------------------------------------------------
     # Create a list that ONLY has the yr_eps that has been adjusted (in other words
-    # the yr_eps values that have been adjusted above - This will be used to plot 
-    # as a separate plot - for easier visualization that the user has adjusted 
+    # the yr_eps values that have been adjusted above - This will be used to plot
+    # as a separate plot - for easier visualization that the user has adjusted
     # yr_eps
     # ---------------------------------------------------------------------------
     yr_eps_adj_slice_list = []
@@ -1351,11 +1352,11 @@ for ticker_raw in ticker_list:
 
   # ---------------------------------------------------------------------------
   # So - in the section above, we have created three yr_eps
-  #   (and their corresponding date) lists - 
-  # 1. The normal yr_eps list that contains all the yr_eps directly calculated from 
+  #   (and their corresponding date) lists -
+  # 1. The normal yr_eps list that contains all the yr_eps directly calculated from
   #   qtr_eps
-  # 2. The yr_eps_adj list that is same as yr_eps_list except that it some of the 
-  #   eps adjusted to what user specified from json file. 
+  # 2. The yr_eps_adj list that is same as yr_eps_list except that it some of the
+  #   eps adjusted to what user specified from json file.
   # 3. The yr_eps_adj_slice_list that ONLY has the yr_eps that was modified based
   #   on the user input from jsom file
   #
@@ -1400,7 +1401,7 @@ for ticker_raw in ticker_list:
   logging.debug("The Normal Expanded Annual EPS List is: " + str(yr_eps_expanded_list))
   logging.info("Prepared the YR EPS Expanded List, YR Past EPS Expanded List (black Diamonds) and YR Projected EPS List (white Diamonds)")
   logging.debug("The white Diamond index list is :" + str(white_diamond_index_list))
-  # We have white_diamond index list here - Note that the index list is in the order of 
+  # We have white_diamond index list here - Note that the index list is in the order of
   # last white diamond (far future) to first while diamond (near future). Append the
   # last black diamond (the latest quarter for eps report date). So now we have the
   # index list that point to the dates - starting from the far white diamond to the
@@ -1639,29 +1640,29 @@ for ticker_raw in ticker_list:
     logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + " file")
   else:
     if ("Earnings_growth_projection_overlay" in config_json[ticker]):
-      tmp_df = pd.DataFrame(config_json[ticker]["Earnings_growth_projection_overlay"])
-      number_of_growth_proj_overlays = len(tmp_df.index)
-      logging.debug("The Earnings growth overlay converted to dataframe is \n" + tmp_df.to_string() +
+      eps_growth_proj_overlay_df = pd.DataFrame(config_json[ticker]["Earnings_growth_projection_overlay"])
+      number_of_growth_proj_overlays = len(eps_growth_proj_overlay_df.index)
+      logging.debug("The Earnings growth overlay converted to dataframe is \n" + eps_growth_proj_overlay_df.to_string() +
                     "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
       # This works : Delete the rows that have Ignore in any column
-      tmp_df.drop(tmp_df[(tmp_df.Start_Date == "Ignore") | (tmp_df.Stop_Date == "Ignore")].index, inplace=True)
+      eps_growth_proj_overlay_df.drop(eps_growth_proj_overlay_df[(eps_growth_proj_overlay_df.Start_Date == "Ignore") | (eps_growth_proj_overlay_df.Stop_Date == "Ignore")].index, inplace=True)
       # Conver the start Dates to datetime, add it as a separate column, and then
       # sort the dataframe based on that datetime column and reindex the dateframe
-      tmp_df['Start_Date_datetime'] = pd.to_datetime(tmp_df['Start_Date'], format='%m/%d/%Y')
-      tmp_df.sort_values('Start_Date_datetime', inplace=True)
-      tmp_df.reset_index(inplace=True, drop=True)
-      # tmp_df.set_index('Start_Date', inplace=True)
-      number_of_growth_proj_overlays = len(tmp_df.index)
-      logging.debug("The Sorted (by start date) Earnings growth overlay dataframe - with an added column is \n" + tmp_df.to_string() +
+      eps_growth_proj_overlay_df['Start_Date_datetime'] = pd.to_datetime(eps_growth_proj_overlay_df['Start_Date'], format='%m/%d/%Y')
+      eps_growth_proj_overlay_df.sort_values('Start_Date_datetime', inplace=True)
+      eps_growth_proj_overlay_df.reset_index(inplace=True, drop=True)
+      # eps_growth_proj_overlay_df.set_index('Start_Date', inplace=True)
+      number_of_growth_proj_overlays = len(eps_growth_proj_overlay_df.index)
+      logging.debug("The Sorted (by start date) Earnings growth overlay dataframe - with an added column is \n" + eps_growth_proj_overlay_df.to_string() +
         "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
 
-      stop_date_list = tmp_df.Stop_Date.tolist()
-      start_date_list = tmp_df.Start_Date.tolist()
+      stop_date_list = eps_growth_proj_overlay_df.Stop_Date.tolist()
+      start_date_list = eps_growth_proj_overlay_df.Start_Date.tolist()
       logging.debug("The Stop_Date extracted from Earning growth overlay is" + str(stop_date_list))
 
-      # Now find if there are any "Next" in the stop date 
-      # If there are then"Next" gets replaced by the next row start date 
-      # (remember that the dataframe is already sorted ascending with the 
+      # Now find if there are any "Next" in the stop date
+      # If there are then"Next" gets replaced by the next row start date
+      # (remember that the dataframe is already sorted ascending with the
       # start dates - so in essence the current row earning projection overlay
       # will stop at the next start date
       next_in_stop_date_list_cnt = 0
@@ -1673,33 +1674,33 @@ for ticker_raw in ticker_list:
       # Check if the last row of the dateframe Stop_Date is set to Next - then error out as there is no
       # Next date available corresponding the the last row of the dateframe (remember that the dataframe is
       # already sorted)
-      if (tmp_df.loc[number_of_growth_proj_overlays - 1, 'Stop_Date'] == "Next"):
+      if (eps_growth_proj_overlay_df.loc[number_of_growth_proj_overlays - 1, 'Stop_Date'] == "Next"):
         logging.error("")
-        logging.error("The Stop_Date, corresponding the the Start_Date : " + str(tmp_df.loc[number_of_growth_proj_overlays - 1, 'Start_Date']))
+        logging.error("The Stop_Date, corresponding the the Start_Date : " + str(eps_growth_proj_overlay_df.loc[number_of_growth_proj_overlays - 1, 'Start_Date']))
         logging.error("in the Earnings_growth_projection_overlay is set as \"Next\"")
         logging.error("This cannot be supported as there is no next date available after that date...")
         logging.error("Please correct in Configuration.json file and rerun...Exiting")
         sys.exit(1)
       elif (next_in_stop_date_list_cnt > 0):
         # This used to work - but does not work now for some reason
-        # tmp_df.Stop_Date.replace(to_replace='Next', value=tmp_df.Start_Date.shift(-1), inplace=True)
+        # eps_growth_proj_overlay_df.Stop_Date.replace(to_replace='Next', value=eps_growth_proj_overlay_df.Start_Date.shift(-1), inplace=True)
         # So now need to replace it with the loop
         for i_idx in range(number_of_growth_proj_overlays):
           if (stop_date_list[i_idx] == "Next"):
-            tmp_df.loc[i_idx, 'Stop_Date'] = tmp_df.loc[i_idx + 1, 'Start_Date']
+            eps_growth_proj_overlay_df.loc[i_idx, 'Stop_Date'] = eps_growth_proj_overlay_df.loc[i_idx + 1, 'Start_Date']
 
       # Replace the "End" and "Next" in the stop dates with the appropriate value
       # "End" gets replaced by the end date (which it at index 0) that the historical date list has
       # (So the overlay will extent all the way to the right of the chart)
-      tmp_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
+      eps_growth_proj_overlay_df.Stop_Date.replace(to_replace='End', value=date_str_list[0], inplace=True)
 
-      logging.debug("The Earning growth overlay dataframe now populated with real dates and sorted is \n" + tmp_df.to_string() +
+      logging.debug("The Earning growth overlay dataframe now populated with real dates and sorted is \n" + eps_growth_proj_overlay_df.to_string() +
         "\nAnd the length of the DateFrame is " + str(number_of_growth_proj_overlays))
       # This works : Finally put those start and stop dates as datetimes in their own lists
       # start_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
-      #                                           tmp_df.Start_Date.tolist()]
+      #                                           eps_growth_proj_overlay_df.Start_Date.tolist()]
       # stop_date_for_yr_eps_growth_proj_list = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in
-      #                                          tmp_df.Stop_Date.tolist()]
+      #                                          eps_growth_proj_overlay_df.Stop_Date.tolist()]
       # print("The Start Date List for EPS Growth Projection is", start_date_for_yr_eps_growth_proj_list)
       # sys.exit(1)
 
@@ -1711,7 +1712,7 @@ for ticker_raw in ticker_list:
     yr_eps_10_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
     yr_eps_20_0_growth_expanded_list = [[] for _ in range(number_of_growth_proj_overlays)]
 
-    for i_idx, row in tmp_df.iterrows():
+    for i_idx, row in eps_growth_proj_overlay_df.iterrows():
       # This works : Get the Start_Date and Stop_Date columns in a list
       start_date_for_yr_eps_growth_proj = dt.datetime.strptime(row['Start_Date'], '%m/%d/%Y').date()
       stop_date_for_yr_eps_growth_proj = dt.datetime.strptime(row['Stop_Date'], '%m/%d/%Y').date()
@@ -1785,6 +1786,339 @@ for ticker_raw in ticker_list:
 
     logging.info("Prepared the Earnings Growth Overlays")
   # =============================================================================
+
+
+
+
+
+
+  # ===========================================================================
+  # SECTION FOR SALES BV OVERLAY
+  # Read the AAII Yearly Financial file
+  # At the end of this section we have the list extracted from AAII financials file
+  # ===========================================================================
+
+  # ---------------------------------------------------------------------------
+  # Read the parse the AAII ticker financials file
+  # ---------------------------------------------------------------------------
+  aaii_ticker = ticker
+  if (ticker in sc_funcs.master_to_aaii_ticker_xlate.index):
+    aaii_ticker = sc_funcs.master_to_aaii_ticker_xlate.loc[ticker,'aaii_tracking_ticker']
+  logging.debug("AAII ticker is  : " + str(aaii_ticker))
+
+  aaii_qtr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_qtr_dir + "\\" + aaii_ticker + "_QTR_FIN.xlsx", sheet_name=aaii_ticker, skiprows=6, usecols="C:AZ")
+  logging.debug("The Financial Dataframe is \n" + aaii_qtr_financial_df.to_string())
+
+  # There is some screw up on how python reads the xlsx file with the first row
+  # So need to set the first row as columns explicitly and then later in the loop
+  # down, ignore the first row while going through the dataframe to extract
+  # sales, BV etc. information
+  aaii_qtr_financial_df = aaii_qtr_financial_df.transpose()
+  aaii_qtr_financial_df.columns = aaii_qtr_financial_df.iloc[0]
+  aaii_qtr_dt_list = []
+  aaii_qtr_sales_list_org = []
+  aaii_qtr_bv_list_org = []
+  i_itr = 0
+  for i, row in aaii_qtr_financial_df.iterrows():
+    if (i_itr > 0):
+      qtr_date_dt = dt.datetime.strptime(str(i), "%Y-%m-%d %H:%M:%S").date()
+      qtr_sales = row['Total Revenue']
+      qtr_bv = row['Total Stockholder Equity']
+      aaii_qtr_dt_list.append(qtr_date_dt)
+      aaii_qtr_sales_list_org.append(qtr_sales)
+      aaii_qtr_bv_list_org.append(qtr_bv)
+      logging.debug("QTR Date : " + str(qtr_date_dt) + ", Sales : " + str(qtr_sales) + ", BV : " + str(qtr_bv))
+    i_itr = i_itr+1
+
+  logging.debug("")
+  logging.debug("AAII QTR Date  List          " + str(aaii_qtr_dt_list))
+  logging.debug("Original AAII QTR Sales List " + str(aaii_qtr_sales_list_org))
+  logging.debug("Original AAII QTR BV    List " + str(aaii_qtr_bv_list_org))
+
+  # ---------------------------------------------------------------------------
+  # Average out the 4 qtrs of sales and BV numbers to make a, relatively
+  # smooth, annual number. This is akin to creating black diamonds from
+  # quarterly pink dots
+  # ---------------------------------------------------------------------------
+  logging.debug("")
+  i_int = 0
+  aaii_qtr_sales_list = list()
+  while (i_int < (len(aaii_qtr_sales_list_org) - 3)):
+    average_sales = (aaii_qtr_sales_list_org[i_int] + \
+                     aaii_qtr_sales_list_org[i_int + 1] + \
+                     aaii_qtr_sales_list_org[i_int + 2] + \
+                     aaii_qtr_sales_list_org[i_int + 3]) / 4
+
+    logging.debug("Iteration # " + str(i_int).ljust(2) + ", Date : " + str(aaii_qtr_dt_list[i_int]) + " : Quartely Sales : Average Yearly Sales : " + \
+                  str(aaii_qtr_sales_list_org[i_int]) + " " + \
+                  str(aaii_qtr_sales_list_org[i_int + 1]) + " " + \
+                  str(aaii_qtr_sales_list_org[i_int + 2]) + " " + \
+                  str(aaii_qtr_sales_list_org[i_int + 3]) + " : " + \
+                  str(average_sales))
+    aaii_qtr_sales_list.append(average_sales)
+    i_int += 1
+
+  logging.debug("")
+  i_int = 0
+  aaii_qtr_bv_list = list()
+  while (i_int < (len(aaii_qtr_bv_list_org) - 3)):
+    average_bv = (aaii_qtr_bv_list_org[i_int] + \
+                  aaii_qtr_bv_list_org[i_int + 1] + \
+                  aaii_qtr_bv_list_org[i_int + 2] + \
+                  aaii_qtr_bv_list_org[i_int + 3]) / 4
+
+    logging.debug("Iteration # " + str(i_int).ljust(2) + ", Date : " + str(aaii_qtr_dt_list[i_int]) + " : Quartely BV : Average Yearly BV : " + \
+                  str(aaii_qtr_bv_list_org[i_int]) + " " + \
+                  str(aaii_qtr_bv_list_org[i_int + 1]) + " " + \
+                  str(aaii_qtr_bv_list_org[i_int + 2]) + " " + \
+                  str(aaii_qtr_bv_list_org[i_int + 3]) + " : " + \
+                  str(average_bv))
+    aaii_qtr_bv_list.append(average_bv)
+    i_int += 1
+
+  # At this point, we have 3 list, aaii qtr date list, and smoothed out sales and BV
+  # list. Note that the smoothed out sales and BV list has 3 fewer entries than the
+  # date list.
+
+  # Now delete the last 3 elements from the aaii qtr dt list as the qtr sales
+  # and bv values have 3 less entries as they have been yearly smoothed out
+  # (just list the yr_eps is created out of qtr_eps)
+  del aaii_qtr_dt_list[len(aaii_qtr_dt_list) - 3:]
+  # Reverse the lists so that they are ordered from oldest date to newest date
+  aaii_qtr_dt_list.reverse()
+  aaii_qtr_sales_list_org.reverse()
+  aaii_qtr_bv_list_org.reverse()
+  aaii_qtr_sales_list.reverse()
+  aaii_qtr_bv_list.reverse()
+  logging.debug("")
+  logging.debug("AAII QTR Date  List          " + str(aaii_qtr_dt_list))
+  logging.debug("Original AAII QTR Sales List " + str(aaii_qtr_sales_list_org))
+  logging.debug("AAII QTR Sales List          " + str(aaii_qtr_sales_list))
+  logging.debug("Orignial AAII QTR BV    List " + str(aaii_qtr_bv_list_org))
+  logging.debug("AAII QTR BV    List          " + str(aaii_qtr_bv_list))
+  # At this point, we have read the AAII ticker financials file and have created
+  # 3 lists that have same number of entries and have been reversed (oldest
+  # date as element 0 and newest element as element N and so on
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # Read the json to get the information for when Sundeep want to start the
+  # sales and BV overlays
+  # ---------------------------------------------------------------------------
+  # At the end of this - we will have
+  # 1. The number of overlays that need to be made in the chart
+  # 2. A list that contains the start dates for each of the overlays and
+  # 3. A corresponding list that contains the stop dates for each of the overlay
+
+  logging.debug("\n\n##########     Now working on Sales, BV and FCF Overlay lines    ##########\n\n")
+  entries_in_qtr_sales_bv_fcf_overlay_df = 0
+  if (ticker not in config_json.keys()):
+    logging.debug("json data for " + str(ticker) + " does not exist in " + str(configuration_json_file) + " file")
+  else:
+    if ("QTR_Sales_BV_FCF_Overlay" in config_json[ticker]):
+      qtr_sales_bv_fcf_overlay_df = pd.DataFrame(config_json[ticker]["QTR_Sales_BV_FCF_Overlay"])
+    else:
+      # Define a small dataframe that has, by default, 'First' and 'Start'
+      # for overlays so that the overlay will start with the first (oldest
+      # date (which is AAII qtr date -3)) and stop with the latest qtr for
+      # which AAII data is available
+      qtr_sales_bv_fcf_overlay_df = pd.DataFrame([{'Start_Date' : 'First', 'Stop_Date' : 'End'}])
+      logging.debug("YR_Sales_BV_FCF_Overlay not found in config json, created default dates for overlaying sales and bv")
+
+    entries_in_qtr_sales_bv_fcf_overlay_df = len(qtr_sales_bv_fcf_overlay_df.index)
+    logging.debug("The YR Sales, BV and FCV overlay converted to dataframe is \n" + qtr_sales_bv_fcf_overlay_df.to_string() +
+                  "\nAnd the length of the DateFrame is " + str(entries_in_qtr_sales_bv_fcf_overlay_df))
+
+    # This works : Delete the rows that have Ignore in any column
+    qtr_sales_bv_fcf_overlay_df.drop(qtr_sales_bv_fcf_overlay_df[(qtr_sales_bv_fcf_overlay_df.Start_Date == "Ignore") | (qtr_sales_bv_fcf_overlay_df.Stop_Date == "Ignore")].index, inplace=True)
+    # Replace 'First' with the first date that is available for sales in the aaii datafame
+    qtr_sales_bv_fcf_overlay_df.Start_Date.replace(to_replace='First', value=dt.datetime.strftime(aaii_qtr_dt_list[0], format='%m/%d/%Y'), inplace=True)
+
+    # Convert the start Dates to datetime, add it as a separate column,
+    # and then sort the dataframe based on that datetime column and
+    # reindex the dataframe. This gives us the dataframe sorted by
+    # 'Start_Date' from newest to oldest, irrespective on how Sundeep
+    # put it in the config file :-). Seriously, this is needed in the
+    # next step for replacing any 'Next' in the Stop_Date
+    qtr_sales_bv_fcf_overlay_df['Start_Date_datetime'] = pd.to_datetime(qtr_sales_bv_fcf_overlay_df['Start_Date'], format='%m/%d/%Y')
+    qtr_sales_bv_fcf_overlay_df.sort_values('Start_Date_datetime', inplace=True)
+    qtr_sales_bv_fcf_overlay_df.reset_index(inplace=True, drop=True)
+    entries_in_qtr_sales_bv_fcf_overlay_df = len(qtr_sales_bv_fcf_overlay_df.index)
+    logging.debug("The Sorted (by start date) Sales, BV and FCF overlay dataframe - with an added column is \n" + qtr_sales_bv_fcf_overlay_df.to_string() +
+      "\nAnd the length of the DateFrame is " + str(entries_in_qtr_sales_bv_fcf_overlay_df))
+
+    stop_date_list = qtr_sales_bv_fcf_overlay_df.Stop_Date.tolist()
+    start_date_list = qtr_sales_bv_fcf_overlay_df.Start_Date.tolist()
+    logging.debug("The Stop_Date extracted from Earning growth overlay is" + str(stop_date_list))
+
+    # Now find if there are any "Next" in the stop date
+    # If there are, then "Next" gets replaced by the next row start date
+    # (remember that the dataframe is already sorted ascending with the
+    # start dates - so in essence the current row earning projection overlay
+    # will stop at the next start date
+    next_in_stop_date_list_cnt = 0
+    for i_idx in range(entries_in_qtr_sales_bv_fcf_overlay_df):
+      if (stop_date_list[i_idx] == "Next"):
+        next_in_stop_date_list_cnt = next_in_stop_date_list_cnt + 1
+
+    logging.debug("The number of \"Next\" found in the Earnings_growth_projection_overlay : " + str(next_in_stop_date_list_cnt))
+    # Check if the last row of the dateframe Stop_Date is set to
+    # Next - then error out as there is no Next date available
+    # corresponding the the last row of the dateframe (remember
+    # that the dataframe is already sorted)
+    if (qtr_sales_bv_fcf_overlay_df.loc[entries_in_qtr_sales_bv_fcf_overlay_df - 1, 'Stop_Date'] == "Next"):
+      logging.error("")
+      logging.error("The Stop_Date, corresponding the the Start_Date : " + str(qtr_sales_bv_fcf_overlay_df.loc[entries_in_qtr_sales_bv_fcf_overlay_df - 1, 'Start_Date']))
+      logging.error("in the Earnings_growth_projection_overlay is set as \"Next\"")
+      logging.error("This cannot be supported as there is no next date available after that date...")
+      logging.error("Please correct in Configuration.json file and rerun...Exiting")
+      sys.exit(1)
+    elif (next_in_stop_date_list_cnt > 0):
+      for i_idx in range(entries_in_qtr_sales_bv_fcf_overlay_df):
+        if (stop_date_list[i_idx] == "Next"):
+          qtr_sales_bv_fcf_overlay_df.loc[i_idx, 'Stop_Date'] = qtr_sales_bv_fcf_overlay_df.loc[i_idx + 1, 'Start_Date']
+
+    # Replace "End" by the end date (which it at index -1)
+    qtr_sales_bv_fcf_overlay_df.Stop_Date.replace(to_replace='End', value=dt.datetime.strftime(aaii_qtr_dt_list[-1], format='%m/%d/%Y'), inplace=True)
+    qtr_sales_bv_fcf_overlay_df['Stop_Date_datetime'] = pd.to_datetime(qtr_sales_bv_fcf_overlay_df['Stop_Date'], format='%m/%d/%Y')
+    logging.debug("The Earning growth overlay dataframe now populated with real dates and sorted is \n" + qtr_sales_bv_fcf_overlay_df.to_string() +
+                "\nAnd the length of the DateFrame is " + str(entries_in_qtr_sales_bv_fcf_overlay_df))
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # Now start processing each row in the dataframe for start and stop dates
+  # (without the "Next" and "End") to create the list(s) that will be plotted
+  # later. The number of lists created will be equal to the number of rows
+  # in the dataframe
+  # ---------------------------------------------------------------------------
+  if (entries_in_qtr_sales_bv_fcf_overlay_df > 0):
+    # Create a list of lists equal to the number of rows of the
+    # dataframe - which is the same as the number of overlays
+    # that are specified in the json file
+    qtr_sales_expanded_list = [[] for _ in range(entries_in_qtr_sales_bv_fcf_overlay_df)]
+    qtr_bv_expanded_list = [[] for _ in range(entries_in_qtr_sales_bv_fcf_overlay_df)]
+
+    for i_idx, row in qtr_sales_bv_fcf_overlay_df.iterrows():
+      logging.debug("Processing Row number " + str(i_idx) + " : \n" + str(row) + ", from the dataframe\n")
+      # logging.debug("The type of Start_Date is : " + str(type(row['Start_Date'])))
+      # logging.debug("The type of Stop_Date is : " + str(type(row['Stop_Date'])))
+      # logging.debug("The type of Start_Date_datetime is : " + str(type(row['Start_Date_datetime'])))
+      # logging.debug("The type of Stop_Date_datetime is : " + str(type(row['Stop_Date_datetime'])))
+      start_qtr_for_sales_overlay_dt = date.fromtimestamp(row['Start_Date_datetime'].timestamp())
+      stop_qtr_for_sales_overlay_dt = date.fromtimestamp(row['Stop_Date_datetime'].timestamp())
+      logging.debug("The Start Date for Sales, BV, FCF Overlay : " + str(start_qtr_for_sales_overlay_dt))
+      logging.debug("The Stop  Date for Sales, BV, FCF Overlay : " + str(stop_qtr_for_sales_overlay_dt))
+
+      tmp_match_date = min(aaii_qtr_dt_list, key=lambda d: abs(d - start_qtr_for_sales_overlay_dt))
+      start_qtr_for_sales_overlay_index = aaii_qtr_dt_list.index(tmp_match_date)
+      logging.debug("The Start Date matches AAII QTR dt list at index : " + str(start_qtr_for_sales_overlay_index))
+      tmp_match_date = min(aaii_qtr_dt_list, key=lambda d: abs(d - stop_qtr_for_sales_overlay_dt))
+      stop_qtr_for_sales_overlay_index = aaii_qtr_dt_list.index(tmp_match_date)
+      logging.debug("The Stop Date matches AAII QTR dt list index : " + str(stop_qtr_for_sales_overlay_index))
+
+      # Match the start and stop dates with the closest dates from yr_eps_date_list to
+      # get the index of the matching dates.
+      growth_proj_start_match_date = min(yr_eps_date_list, key=lambda d: abs(d - start_qtr_for_sales_overlay_dt))
+      growth_proj_start_index = yr_eps_date_list.index(growth_proj_start_match_date)
+      logging.debug("The sales, bv and fcf start date matches yr eps date : " + str(growth_proj_start_match_date) + ", at yr eps date list index : " + str(growth_proj_start_index))
+
+      qtr_sales_list = []
+      qtr_bv_list = []
+      # Create the sales list for same number of entries as yr_eps_date_list
+      for i in range(len(yr_eps_date_list)):
+        qtr_sales_list.append(float('nan'))
+        qtr_bv_list.append(float('nan'))
+
+      # The first entry for the list comes from the yr_eps_list that matched the start date
+      # because the overlay will start from the same black/while diamond
+      # qtr_sales_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+      # qtr_bv_list[growth_proj_start_index] = yr_eps_list[growth_proj_start_index]
+      yr_eps_start_val = yr_eps_list[growth_proj_start_index]
+      if (yr_eps_start_val < 0):
+        # If the starting eps was negtaive, then invert it as it does not matter
+        # what the starting value is. It is just used to normalize the sales and bv
+        # todo : what to do if the starting eps is 0 -- probably prudent to look at
+        # the range of the chart and then decide...or maybe look around to find a
+        # postiive eps nearby and use than number....not sure what the right solution is
+        # right now
+        yr_eps_start_val = -yr_eps_start_val
+        logging.debug("The starting yr eps is : " + str(yr_eps_start_val) + ", which is negative, inverting it")
+
+      qtr_sales_start_val = aaii_qtr_sales_list[start_qtr_for_sales_overlay_index]
+      # todo : what to do if the starting bv is negative or nan or 0
+      qtr_bv_start_val = aaii_qtr_bv_list[start_qtr_for_sales_overlay_index]
+      logging.debug("The starting value for sales is  : " + str(qtr_sales_start_val))
+      logging.debug("The starting value for bv is     : " + str(qtr_bv_start_val))
+      logging.debug("The starting value for YR EPS is : " + str(yr_eps_start_val))
+      logging.debug("")
+      for i in (range((stop_qtr_for_sales_overlay_index-start_qtr_for_sales_overlay_index)+1)):
+        qtr_sales_list_index = growth_proj_start_index - i
+        qtr_sales_change_ratio = aaii_qtr_sales_list[i+start_qtr_for_sales_overlay_index]/qtr_sales_start_val
+        qtr_bv_change_ratio = aaii_qtr_bv_list[i+start_qtr_for_sales_overlay_index]/qtr_bv_start_val
+        logging.debug("")
+        logging.debug("Fetching aaii_list index : " + str(i+start_qtr_for_sales_overlay_index) + \
+                      ", QTR Sales : " + str(aaii_qtr_sales_list[i+start_qtr_for_sales_overlay_index]) + \
+                      ", QTR BV : " + str(aaii_qtr_bv_list[i + start_qtr_for_sales_overlay_index]))
+        qtr_sales_val = yr_eps_start_val*qtr_sales_change_ratio
+        qtr_bv_val = yr_eps_start_val*qtr_bv_change_ratio
+        qtr_sales_list[qtr_sales_list_index] = qtr_sales_val
+        qtr_bv_list[qtr_sales_list_index] = qtr_bv_val
+        logging.debug("The ratio b/w : " + str(aaii_qtr_sales_list[i+start_qtr_for_sales_overlay_index]) + \
+                      ", and staring QTR Sales value : " + str(qtr_sales_start_val) + \
+                      ", is " + str(qtr_sales_change_ratio))
+        logging.debug("Updating qtr_sales_list at index : " + str(qtr_sales_list_index) + ", with yr_eps_start_val*ratio : " + str(qtr_sales_val))
+        logging.debug("The ratio b/w : " + str(aaii_qtr_bv_list[i + start_qtr_for_sales_overlay_index]) + \
+                      ", and staring QTR BV value : " + str(qtr_bv_start_val) + \
+                      ", is " + str(qtr_bv_change_ratio))
+        logging.debug("Updating qtr_bv_list at index : " + str(qtr_sales_list_index) + ", with yr_eps_start_val*ratio : " + str(qtr_bv_val))
+
+      logging.debug("The qtr_sales_list : \n" + str(qtr_sales_list))
+      logging.debug("The bv_sales_list : \n" + str(qtr_bv_list))
+
+      # Now expand the list to all the dates (from historical date list)
+      qtr_sales_expanded_list_unsmooth = []
+      qtr_bv_expanded_list_unsmooth = []
+      for i in range(len(date_list)):
+        qtr_sales_expanded_list_unsmooth.append(float('nan'))
+        qtr_bv_expanded_list_unsmooth.append(float('nan'))
+
+      for yr_eps_date in yr_eps_date_list:
+        curr_index = yr_eps_date_list.index(yr_eps_date)
+        # logging.debug("Looking for " + str(yr_eps_date))
+        match_date = min(date_list, key=lambda d: abs(d - yr_eps_date))
+        logging.debug("The matching date is " + str(match_date) + " at index " + str(date_list.index(match_date)))
+        qtr_sales_expanded_list_unsmooth[date_list.index(match_date)] = qtr_sales_list[curr_index]
+        qtr_bv_expanded_list_unsmooth[date_list.index(match_date)] = qtr_bv_list[curr_index]
+
+      # Populate the list of lists
+      qtr_sales_expanded_list[i_idx] = smooth_list(qtr_sales_expanded_list_unsmooth)
+      qtr_bv_expanded_list[i_idx] = smooth_list(qtr_bv_expanded_list_unsmooth)
+
+    logging.info("Prepared the Sales, BV Overlays")
+  # =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   # ---------------------------------------------------------------------------
   # Find out the growth for 1yr, 3yr and 5yr for eps and price
@@ -2693,6 +3027,61 @@ for ticker_raw in ticker_list:
       # yr_eps_20_0_plt.set_yticks([])
       # yr_eps_20_0_plt_inst = yr_eps_20_0_plt.plot(date_list[0:plot_period_int], yr_eps_20_0_growth_expanded_list[0:plot_period_int], label = 'Q 20%',color="Yellow",linestyle = '-', linewidth=1)
       # -----------------------------------------------------------------------------
+
+      # -----------------------------------------------------------------------------
+      # Price channels
+      # -----------------------------------------------------------------------------
+      for i_idx in range(entries_in_qtr_sales_bv_fcf_overlay_df):
+
+
+        # This is a hack for now
+        if (i_idx == 0):
+          qtr_sales_plt_0 = main_plt.twinx()
+          qtr_sales_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+          qtr_sales_plt_0.set_yticks([])
+          qtr_sales_plt_0_inst_0 = qtr_sales_plt_0.plot(date_list[0:plot_period_int],
+                                                          qtr_sales_expanded_list[i_idx][0:plot_period_int],
+                                                          label='Q 2.5%', color="Green", linestyle='-', linewidth=7, alpha=0.4)
+          # x = float("{0:.2f}".format(qtr_sales_expanded_list[i_idx][plot_period_int]))
+          # main_plt.text(date_list[plot_period_int], qtr_sales_expanded_list[i_idx][plot_period_int], x, fontsize=6,
+          #               horizontalalignment='center', verticalalignment='bottom')
+
+
+          qtr_bv_plt_0 = main_plt.twinx()
+          qtr_bv_plt_0.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+          qtr_bv_plt_0.set_yticks([])
+          qtr_bv_plt_0 = qtr_bv_plt_0.plot(date_list[0:plot_period_int],
+                                                          qtr_bv_expanded_list[i_idx][0:plot_period_int],
+                                                          label='Q 5.0%', color="Brown", linestyle='-', linewidth=7, alpha=0.3)
+        elif (i_idx == 1):
+          qtr_sales_plt_1 = main_plt.twinx()
+          qtr_sales_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+          qtr_sales_plt_1.set_yticks([])
+          qtr_sales_plt_1 = qtr_sales_plt_1.plot(date_list[0:plot_period_int],
+                                                          qtr_sales_expanded_list[i_idx][0:plot_period_int],
+                                                          label='Q 2.5%', color="Green", linestyle='-', linewidth=7, alpha=0.4)
+          qtr_bv_plt_1 = main_plt.twinx()
+          qtr_bv_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+          qtr_bv_plt_1.set_yticks([])
+          qtr_bv_plt_1 = qtr_bv_plt_1.plot(date_list[0:plot_period_int],
+                                                          qtr_bv_expanded_list[i_idx][0:plot_period_int],
+                                                          label='Q 5.0%', color="Brown", linestyle='-', linewidth=7, alpha=0.3)
+        elif (i_idx == 2):
+          qtr_sales_plt_1 = main_plt.twinx()
+          qtr_sales_plt_1.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+          qtr_sales_plt_1.set_yticks([])
+          qtr_sales_plt_1 = qtr_sales_plt_1.plot(date_list[0:plot_period_int],
+                                                          qtr_sales_expanded_list[i_idx][0:plot_period_int],
+                                                          label='Q 2.5%', color="Green", linestyle='-', linewidth=7, alpha=0.4)
+          qtr_bv_plt_2 = main_plt.twinx()
+          qtr_bv_plt_2.set_ylim(qtr_eps_lim_lower, qtr_eps_lim_upper)
+          qtr_bv_plt_2.set_yticks([])
+          qtr_bv_plt_2 = qtr_bv_plt_2.plot(date_list[0:plot_period_int],
+                                                          qtr_bv_expanded_list[i_idx][0:plot_period_int],
+                                                          label='Q 5.0%', color="Brown", linestyle='-', linewidth=7, alpha=0.3)
+      # -----------------------------------------------------------------------------
+
+
 
       # -----------------------------------------------------------------------------
       # Upper Price Channel Plot
