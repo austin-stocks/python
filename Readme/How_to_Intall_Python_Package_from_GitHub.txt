@@ -7,7 +7,18 @@ from github - I am not sure how that works but it works)
 	It opens in the directory c:\Users\Owner         (on Desktop)
 	(Again - not sure why Anaconda prompt opens in that directory but it opens)
 
-2. Run the following command:
+2. If you want to find out what is the version of the package that you currently have
+   installed, then run the following
+     pip show yahoo-fin OR (better)
+     conda list yahoo-fin 
+   This will tell the version of just that package that is installed. 
+
+   If you want to get the complete list, then you can run either
+   pip list OR
+   conda list 
+   and then just scroll up to see what is the version of the package that is installed
+  
+3. If you wan to install a package, then run the following command:
 	python -m pip install yahoo-historical
 
 3. This installs the package in 
@@ -18,7 +29,7 @@ from github - I am not sure how that works but it works)
 	
 
 4. This installed package is then visible in pycharm - 
-	File -> Settings -> Project (Your project name) -> Python interpretor 
+	File -> Settings -> Project (Your project name) -> Python interpretor  
 	(Mine is set to C:\ProgramData\Anaconda3\python.exe)
 	
 5. In Case you already have a package instailled and you want to go to a different version 
