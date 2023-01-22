@@ -63,7 +63,13 @@ logging.disable(logging.NOTSET)
 # ---------------------------------------------------------
 # Define the date for the charts to get compared - All older charts
 # than this date will be moved to older_charts_dir
-date_1year_ago_dt = dt.datetime.now() - relativedelta(months=12)
+# Sundeep : 01/22/2023 - Now that I am creating Long Liner charts by default
+# the number of charts created have doubled, so we need only last 6 months charts
+# in the Charts directory (and move everything to Older_Charts).
+# Otherwise the size and the number of charts in the charts directory
+# increases to the extent that it becomes cumbersome to manage it.
+# date_1year_ago_dt = dt.datetime.now() - relativedelta(months=12)
+date_6mon_ago_dt = dt.datetime.now() - relativedelta(months=6)
 # ---------------------------------------------------------
 
 chart_styles_list = ['Linear', 'Long_Linear', 'Log']
@@ -145,15 +151,15 @@ for chart_styles_idx in chart_styles_list:
       logging.debug("")
       logging.debug("------------------------------------------")
       logging.debug(str(display_str) + "ALL the chart files are \n" + str(ticker_chart_files_list))
-      logging.debug(str(display_str) + "Iterating through the list to extract date and compare it against : " + str(date_1year_ago_dt))
+      logging.debug(str(display_str) + "Iterating through the list to extract date and compare it against : " + str(date_6mon_ago_dt))
       ticker_chart_to_move_list = []
       logging.debug("------------------------------------------")
       for ticker_chart_filename_with_date_str in ticker_chart_files_list:
         ticker_chart_date_str = (ticker_chart_filename_with_date_str[:-4])[-10:]
         ticker_chart_date_dt = dt.datetime.strptime(ticker_chart_date_str, "%Y_%m_%d")
         logging.debug("The date string for " + str(ticker_chart_filename_with_date_str) + " is " + str(ticker_chart_date_str) + " and the datetime is " + str(ticker_chart_date_dt))
-        if (date_1year_ago_dt >= ticker_chart_date_dt):
-          logging.debug(str(ticker_chart_filename_with_date_str) + " : ***** Found Older Chart : The chart date : " + str(ticker_chart_date_dt) + ", is older than : " + str(date_1year_ago_dt) + ", so it will be moved")
+        if (date_6mon_ago_dt >= ticker_chart_date_dt):
+          logging.debug(str(ticker_chart_filename_with_date_str) + " : ***** Found Older Chart : The chart date : " + str(ticker_chart_date_dt) + ", is older than : " + str(date_6mon_ago_dt) + ", so it will be moved")
           ticker_chart_to_move_list.append(ticker_chart_filename_with_date_str)
       logging.debug("------------------------------------------")
       logging.debug(str(display_str) + "The list of files that will be moved \n" + str(ticker_chart_to_move_list))
@@ -168,7 +174,7 @@ for chart_styles_idx in chart_styles_list:
         dest_file_with_path = dest_dir + ticker_to_move
         logging.info(str(display_str) + "Moving chart file " + str(ticker_to_move))
         logging.debug(str(display_str) + "Moving chart file (Full path names) \n" + source_file_with_path + " to \n" + (dest_file_with_path))
-        shutil.move(source_file_with_path, dest_file_with_path)
+        # shutil.move(source_file_with_path, dest_file_with_path)
         no_of_files_moved =   no_of_files_moved+1
         logging.debug("")
 
