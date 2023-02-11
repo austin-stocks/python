@@ -507,7 +507,8 @@ for ticker_raw in ticker_list:
   eps_date_list_eps_report_date_match, eps_date_list_eps_report_date_index = qtr_date_and_index_matching_eps_report_date(qtr_eps_date_list, eps_report_date)
   if (math.isnan(qtr_eps_df.loc[eps_date_list_eps_report_date_index,['Q_EPS_Diluted']])):
     logging.error("Latest Diluted earnings in Q_EPS_Diluted column, corresponding to Lastest Earnings date : " + str(eps_report_date) + ", is not filled in the earning file")
-    logging.error("Likely you put the earnings release date in the Q_Report_Date column but forgot (or distracted) to enter the actual earnings in Q_EPS_Diluted column")
+    logging.error("Likely you put the earnings release date in the Q_Report_Date column but forgot (or got distracted) to enter the actual earnings in Q_EPS_Diluted column")
+    logging.error("Row : " + str(eps_date_list_eps_report_date_index+2) + " (Date: " + str(eps_report_date) + ")," + " Col : Q_EPS_Diluted")
     logging.error("Please fill it out and rerun")
     sys.exit()
   # ---------------------------------------------------------------------------
