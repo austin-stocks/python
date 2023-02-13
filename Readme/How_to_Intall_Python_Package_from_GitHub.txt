@@ -9,8 +9,8 @@ from github - I am not sure how that works but it works)
 
 2. If you want to find out what is the version of the package that you currently have
    installed, then run the following
-     pip show yahoo-fin OR (better)
-     conda list yahoo-fin 
+     pip show yahoo-fin (This shows more information -- about the author and the website etc)
+     conda list yahoo-fin (precise, if you just want to look at the version)
    This will tell the version of just that package that is installed. 
 
    If you want to get the complete list, then you can run either
