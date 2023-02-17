@@ -80,7 +80,8 @@ one_month_ago_date = today - dt.timedelta(days=15)
 logging.info("Today : " + str(today) +  " One month ago : " +str(one_month_ago_date) + " One qtr ago : " +str(one_qtr_ago_date))
 
 historical_last_updated_df = pd.DataFrame(columns=['Ticker','Date'])
-earnings_last_reported_df = pd.DataFrame(columns=['Ticker','Date','Where_found','Reason'])
+earnings_report_date_1qtr_ago_df = pd.DataFrame(columns=['Ticker','Date','Where_found','Reason'])
+earnings_report_date_4qtr_ago_df = pd.DataFrame(columns=['Ticker','Date','Where_found','Reason'])
 eps_projections_last_updated_df = pd.DataFrame(columns=['Ticker','Date','Reason'])
 charts_last_updated_df  = pd.DataFrame(columns=['Ticker','Date'])
 eps_report_newer_than_eps_projection_df = pd.DataFrame(columns=['Ticker','Actual_EPS_Report','EPS_Projections_Last_Updated'])
@@ -90,7 +91,8 @@ eps_report_by_month_df = pd.DataFrame(columns=['Month', 'Count'])
 month_sort_order_list = []
 
 historical_last_updated_df.set_index('Ticker', inplace=True)
-earnings_last_reported_df.set_index('Ticker', inplace=True)
+earnings_report_date_1qtr_ago_df.set_index('Ticker', inplace=True)
+earnings_report_date_4qtr_ago_df.set_index('Ticker', inplace=True)
 eps_projections_last_updated_df.set_index('Ticker', inplace=True)
 charts_last_updated_df.set_index('Ticker', inplace=True)
 eps_report_newer_than_eps_projection_df.set_index('Ticker', inplace=True)
@@ -218,31 +220,41 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
   # Get the last earnings report date from earnings df
   # ---------------------------------------------------------------------------
-  eps_actual_report_date = ""
+  eps_report_date_1qtr_ago = ""
+  eps_report_date_4qtr_ago = ""
   if ('Q_Report_Date' in qtr_eps_df.columns):
     qtr_eps_report_date_list = qtr_eps_df.Q_Report_Date.dropna().tolist()
     logging.debug("The Quarterly Report Date List from the earnings file after dropna is " + str(qtr_eps_report_date_list))
   if (len(qtr_eps_report_date_list) > 0):
     qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
-    eps_actual_report_date = qtr_eps_report_date_list_dt[0]
+    eps_report_date_1qtr_ago = qtr_eps_report_date_list_dt[0]
+    eps_report_date_4qtr_ago = qtr_eps_report_date_list_dt[3]
   else:
-    earnings_last_reported_df.loc[ticker, 'Where_found'] = 'Master_Tracklist'
-    eps_actual_report_date = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+    earnings_report_date_1qtr_ago_df.loc[ticker, 'Where_found'] = 'Master_Tracklist'
+    earnings_report_date_4qtr_ago_df.loc[ticker, 'Where_found'] = 'Master_Tracklist'
+    eps_report_date_1qtr_ago = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
+    eps_report_date_4qtr_ago = dt.datetime.strptime(str(master_tracklist_df.loc[ticker, 'Last_Earnings_Date']),'%Y-%m-%d %H:%M:%S').date()
 
-  eps_actual_report_date_dt = dt.datetime.strptime(str(eps_actual_report_date), '%Y-%m-%d').date()
-  if (eps_actual_report_date_dt > dt.date.today()):
-    logging.error("  The Last quarterly earnings date for " + str(ticker) + " is " + str(eps_actual_report_date_dt) + " which is in future... :-(")
+  eps_report_date_1qtr_ago_dt = dt.datetime.strptime(str(eps_report_date_1qtr_ago), '%Y-%m-%d').date()
+  eps_report_date_4qtr_ago_dt = dt.datetime.strptime(str(eps_report_date_4qtr_ago), '%Y-%m-%d').date()
+  if (eps_report_date_1qtr_ago_dt > dt.date.today()):
+    logging.error("  The Last quarterly earnings date for " + str(ticker) + " is " + str(eps_report_date_1qtr_ago_dt) + " which is in future... :-(")
     logging.error("  This seems like a typo :-)...Please correct it in Master Tracklist file and rerun")
     sys.exit(1)
-  earnings_last_reported_df.loc[ticker,'Date']= eps_actual_report_date_dt
+  if (eps_report_date_4qtr_ago_dt > dt.date.today()):
+    logging.error("  The Last Year earnings date for " + str(ticker) + " is " + str(eps_report_date_4qtr_ago_dt) + " which is in future... :-(")
+    logging.error("  This seems like a typo :-)...Please correct it in Master Tracklist file and rerun")
+    sys.exit(1)
+  earnings_report_date_1qtr_ago_df.loc[ticker,'Date']= eps_report_date_1qtr_ago_dt
+  earnings_report_date_4qtr_ago_df.loc[ticker,'Date']= eps_report_date_4qtr_ago_dt
 
-  if (eps_actual_report_date_dt > eps_projection_date_0_dt):
-    logging.error("The Earnings report date : " + str(eps_actual_report_date_dt) + " is newer than the earnings projection date : " + str(eps_projection_date_0_dt))
+  if (eps_report_date_1qtr_ago_dt > eps_projection_date_0_dt):
+    logging.error("The Earnings report date : " + str(eps_report_date_1qtr_ago_dt) + " is newer than the earnings projection date : " + str(eps_projection_date_0_dt))
     logging.error("I don't understand how you let it happen - The possible reasons could be ")
     logging.error("1. You forgot to update the Earnings projection on the Earnings report date....Ok. I understand. Plese update the eranings projections now and rerun ")
     logging.error("2. You mistyped the date (either the earnings report date in master tracklist or more likely in for earnings projections in earning file...I understand. It happens sometimes. Please fix and rerun")
     logging.error("3. You did not update the Earnings projection on the Earnings report date intentionally....BAD BAD....How can you do that???? ")
-    eps_report_newer_than_eps_projection_df.loc[ticker, 'Actual_EPS_Report'] = eps_actual_report_date_dt
+    eps_report_newer_than_eps_projection_df.loc[ticker, 'Actual_EPS_Report'] = eps_report_date_1qtr_ago_dt
     eps_report_newer_than_eps_projection_df.loc[ticker, 'EPS_Projections_Last_Updated'] = eps_projection_date_0_dt
 
   # Get the last 4 dates when the company reported earnings
@@ -258,7 +270,7 @@ for ticker_raw in ticker_list:
       eps_report_by_month_df.loc[month,'Count'] = tmp_count + 1
       logging.debug("Previous earnings Count for " + str(month) + " : " + str(tmp_count) + ", Updated to : " + str(eps_report_by_month_df['Count'].loc[month]))
 
-  # date_year = eps_actual_report_date_dt.year
+  # date_year = eps_report_date_1qtr_ago_dt.year
   # if (date_year < 2019):
   #   logging.error("==========     Error : The date for " + str(ticker) + " last earnings is older than 2019     ==========")
   #   sys.exit()
@@ -392,7 +404,8 @@ logging.info("")
 logging.info("Now saving sorted data in " + str(dir_path + log_dir) + " directory")
 logging.info("All the files with sorted data will be available there. Please look there when the script completes")
 historical_last_updated_logfile = "historical_last_updated.txt"
-earnings_last_reported_logfile = "earnings_last_reported.txt"
+earnings_report_date_1qtr_ago_logfile = "earnings_reported_1qtr_ago.txt"
+earnings_report_date_4qtr_ago_logfile = "earnings_reported_4qtr_ago.txt"
 eps_projections_last_updated_logfile = "eps_projections_last_updated.txt"
 charts_last_updated_logfile = "charts_last_updated.txt"
 skipped_tickers_logfile="skipped_tickers_Sort_misc.txt"
@@ -402,7 +415,8 @@ price_target_logfile="Price_Target_Change.csv"
 
 
 historical_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + historical_last_updated_logfile,sep=' ', index=True, header=False)
-earnings_last_reported_df.sort_values(by=['Where_found','Reason','Date','Ticker'], ascending=[True,True,True,True]).to_csv(dir_path + log_dir + "\\" + earnings_last_reported_logfile,sep=' ', index=True, header=False)
+earnings_report_date_1qtr_ago_df.sort_values(by=['Where_found','Reason','Date','Ticker'], ascending=[True,True,True,True]).to_csv(dir_path + log_dir + "\\" + earnings_report_date_1qtr_ago_logfile,sep=' ', index=True, header=False)
+earnings_report_date_4qtr_ago_df.sort_values(by=['Where_found','Reason','Date','Ticker'], ascending=[True,True,True,True]).to_csv(dir_path + log_dir + "\\" + earnings_report_date_4qtr_ago_logfile,sep=' ', index=True, header=False)
 eps_projections_last_updated_df.sort_values(by=['Date','Ticker','Reason'], ascending=[True,True,True]).to_csv(dir_path + log_dir + "\\" + eps_projections_last_updated_logfile,sep=' ', index=True, header=False)
 charts_last_updated_df.sort_values(by=['Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + charts_last_updated_logfile,sep=' ', index=True, header=False)
 skipped_tickers_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + skipped_tickers_logfile,sep=' ', index=True, header=True)
@@ -411,7 +425,8 @@ eps_report_by_month_df.to_csv(dir_path + log_dir + "\\" + eps_report_by_month_lo
 price_target_df.sort_values(by=['PT_Change'], ascending=[False]).to_csv(dir_path + log_dir + "\\" + price_target_logfile,sep=',', index=True, header=True)
 
 logging.info("Created : " + str(historical_last_updated_logfile) + " <-- Sorted by date - based on the last Price date in their respective historical file")
-logging.info("Created : " + str(earnings_last_reported_logfile) + " <-- Sorted by date - based on when their Last Earnings Date in their respective Earnings file")
+logging.info("Created : " + str(earnings_report_date_1qtr_ago_logfile) + " <-- Sorted by date - based on when their Last Quarter Earnings Date in their respective Earnings file")
+logging.info("Created : " + str(earnings_report_date_4qtr_ago_logfile) + " <-- Sorted by date - based on when their Last Year Earnings Date in their respective Earnings file")
 logging.info("Created : " + str(eps_projections_last_updated_logfile) + " <-- Sorted by date - based on when the Earnings Projections were updated in their respective Earnings file")
 logging.info("Created : " + str(charts_last_updated_logfile) + " <-- Sorted by date - based on when the Chart was creates in the Charts directory")
 logging.info("Created : " + str(skipped_tickers_logfile) + " <-- Sorted by Ticker - Lists all the tickers that were skipped along with a reason")
