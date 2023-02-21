@@ -64,6 +64,26 @@ for ticker_raw in ticker_list:
   rhs_url = '?formatted=true&crumb=swg7qs5y9UP&lang=en-US&region=US&' \
             'modules=calendarevents&' \
             'corsDomain=finance.yahoo.com'
+  # ---------------------------------------------------------------------------
+  #                   ########## IMPORTANT STUFF ##########
+  # This link should give you a table of calendar events with whatever Yahoo
+  # thinks is appropriate. There are various other tables (that probably are not
+  # published and not common knowledge outside the programming community that
+  # Yahoo provides and can be used to get the date from Yahoo (some of the
+  # modules/tables are listed above in the rhs_url)
+  #
+  # https://query2.finance.yahoo.com/v10/finance/quoteSummary/IBM?modules=calendarevents
+  #
+  # I will try to get the complete list of modules that Yahoo still supports...maybe
+  # till the time Yahoo continues to support them, they remain my backup
+  #
+  # Here are some that I found - they are hard to come by
+  # https: // query2.finance.yahoo.com / v7 / finance / quote?symbols = NVDA, PLUG, AMD
+  # https: // query1.finance.yahoo.com / v6 / finance / recommendationsbysymbol / PLUG
+  # https: // query1.finance.yahoo.com / v7 / finance / options / IBM
+  #
+  # ---------------------------------------------------------------------------
+
 
   # Change region for those who want non-US stocks
   headers = {

@@ -62,23 +62,22 @@ for ticker_raw in ticker_list:
   # if ticker in ["ASML", "TSM"]:
   #   logging.info("Iteration : " + f"{str(i_int) : <3}" + " =====> Skipping <===== : " + f"{str(ticker) : <6}" + " As Yahoo generally does not have an earnings date for it")
   #   continue
+  ticker_calendar_events = Ticker(ticker).calendar_events
+  logging.debug("The Calendear Events data is : " + str(ticker_calendar_events))
   try:
-    aapl = Ticker('aapl')
-    # aapl.calendar_events
-    # logging.info("The Earnings Calendar data is : " + str(appl.calendar_events))
-    # ticker_calendar_info = Ticker(ticker)
-    # logging.info("The Earnings Calendar data is : " + str(ticker_calendar_info.asset_profile()))
+    earnings_date_str = ticker_calendar_events[ticker]['earnings']['earningsDate'][0]
   except (IndexError):
     logging.error("**********                                ERROR                               **********")
     logging.error("Could not download earnings date for ", ticker)
     yahoo_earnings_calendar_df.loc[ticker] = "#NA#"
     continue
 
-  earnings_date_str = earnings_date_dt.strftime('%m/%d/%Y')
   logging.info("Iteration : " + f"{str(i_int) : <3}" + " Processed : " + f"{str(ticker) : <6}" + " Earnings Date : " + f"{str(earnings_date_str) : <10}")
   yahoo_earnings_calendar_df.loc[ticker] = [earnings_date_str]
+  if i_int == 50:
+    break
 
 now = dt.datetime.now()
 date_time = now.strftime("%Y_%m_%d")
-yahoo_earnings_calendar_logfile = "yahoo_fin_earnings_calendar_" + date_time + ".csv"
+yahoo_earnings_calendar_logfile = "yahooquery_earnings_calendar_" + date_time + ".csv"
 yahoo_earnings_calendar_df.sort_values(by=['Earnings_Date', 'Ticker'], ascending=[True, True]).to_csv(dir_path + log_dir + "\\" + yahoo_earnings_calendar_logfile, sep=',', index=True, header=True)
