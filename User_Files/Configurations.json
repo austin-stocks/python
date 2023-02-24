@@ -2523,6 +2523,7 @@
     ]
   },
 
+
   "FBIN" : {
     "Splits" : {
       "12/12/2022" : "117:100"
@@ -2533,6 +2534,15 @@
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "09/25/2014", "Stop_Date" :   "08/05/2015", "Adj_Amount" : ".1"}
+    ]
+  },
+
+  "PANW" : {
+    "Splits" : {
+      "10/14/2022" : "3:1"
+    },
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
     ]
   },
 
