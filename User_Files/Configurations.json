@@ -1501,6 +1501,7 @@
       {"Start_Date" : "09/25/2013", "Stop_Date" :   "07/05/2014", "Adj_Amount" : "-1.4"}
     ]
   },
+
   "PH" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
@@ -1509,6 +1510,7 @@
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".38"}
     ]
   },
+
   "PCAR" : {
     "Splits" : {
       "2/8/2023" : "3:2"
@@ -1518,6 +1520,12 @@
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "03/25/2016", "Stop_Date" :   "01/05/2017", "Adj_Amount" : ".6"}
+    ]
+  },
+
+  "ARHS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2021", "Stop_Date" :   "End"}
     ]
   },
 
