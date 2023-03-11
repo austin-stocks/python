@@ -191,7 +191,9 @@ sc_funcs.master_to_aaii_ticker_xlate.set_index('Ticker', inplace=True)
 # Set Logging
 # critical, error, warning, info, debug
 # set up logging to file - see previous section for more details
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(# This decides what level of messages get printed in the debug file
+                    # level=logging.DEBUG,
+                    level=logging.INFO,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
                     filename=dir_path + log_dir + "\\" + 'SC_EarningsChart_debug.txt',
@@ -505,7 +507,8 @@ for ticker_raw in ticker_list:
   eps_date_list_eps_report_date_match, eps_date_list_eps_report_date_index = qtr_date_and_index_matching_eps_report_date(qtr_eps_date_list, eps_report_date)
   if (math.isnan(qtr_eps_df.loc[eps_date_list_eps_report_date_index,['Q_EPS_Diluted']])):
     logging.error("Latest Diluted earnings in Q_EPS_Diluted column, corresponding to Lastest Earnings date : " + str(eps_report_date) + ", is not filled in the earning file")
-    logging.error("Likely you put the earnings release date in the Q_Report_Date column but forgot (or distracted) to enter the actual earnings in Q_EPS_Diluted column")
+    logging.error("Likely you put the earnings release date in the Q_Report_Date column but forgot (or got distracted) to enter the actual earnings in Q_EPS_Diluted column")
+    logging.error("Row : " + str(eps_date_list_eps_report_date_index+2) + " (Date: " + str(eps_report_date) + ")," + " Col : Q_EPS_Diluted")
     logging.error("Please fill it out and rerun")
     sys.exit()
   # ---------------------------------------------------------------------------
@@ -588,7 +591,7 @@ for ticker_raw in ticker_list:
     logging.error("********** in configurations file, when you added more quarters of earnings in the earnings file                                            **********")
     logging.error("********** or you added years in the configurations file but forgot to run the merge script to reflect added year(s) in the historical file **********")
     logging.error("Please correct - by adding a year or two in the configuration file, if your forgot - and then rerun merge script either way before continuing")
-    sys.exit(1)`
+    sys.exit(1)
   # -------------------------------------------------------------------------
 
   # -------------------------------------------------------------------------
@@ -1302,12 +1305,12 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
-  # Now Process the yr_eps_adj_* lists created above  to make the adjustments
-  # to the yr eps.
+  # Now Process the yr_eps_adj_* lists created above  to make the adjustments 
+  # to the yr eps. 
   # We will create a separate list yr_eps_adj_list - this list will be used to
   #   create price channel lines later
-  # The original list - which will be used to create two lists - past and future
-  #   is used to plot
+  # The original list - which will be used to create two lists - past and future 
+  #   is used to plot 
   # ---------------------------------------------------------------------------
   yr_eps_adj_date_list = yr_eps_date_list.copy()
   yr_eps_adj_list = yr_eps_list.copy()
@@ -1331,8 +1334,8 @@ for ticker_raw in ticker_list:
     logging.info("Prepared the Adjusted YR EPS List")
     # ---------------------------------------------------------------------------
     # Create a list that ONLY has the yr_eps that has been adjusted (in other words
-    # the yr_eps values that have been adjusted above - This will be used to plot
-    # as a separate plot - for easier visualization that the user has adjusted
+    # the yr_eps values that have been adjusted above - This will be used to plot 
+    # as a separate plot - for easier visualization that the user has adjusted 
     # yr_eps
     # ---------------------------------------------------------------------------
     yr_eps_adj_slice_list = []
@@ -1352,11 +1355,11 @@ for ticker_raw in ticker_list:
 
   # ---------------------------------------------------------------------------
   # So - in the section above, we have created three yr_eps
-  #   (and their corresponding date) lists -
-  # 1. The normal yr_eps list that contains all the yr_eps directly calculated from
+  #   (and their corresponding date) lists - 
+  # 1. The normal yr_eps list that contains all the yr_eps directly calculated from 
   #   qtr_eps
-  # 2. The yr_eps_adj list that is same as yr_eps_list except that it some of the
-  #   eps adjusted to what user specified from json file.
+  # 2. The yr_eps_adj list that is same as yr_eps_list except that it some of the 
+  #   eps adjusted to what user specified from json file. 
   # 3. The yr_eps_adj_slice_list that ONLY has the yr_eps that was modified based
   #   on the user input from jsom file
   #
@@ -1401,7 +1404,7 @@ for ticker_raw in ticker_list:
   logging.debug("The Normal Expanded Annual EPS List is: " + str(yr_eps_expanded_list))
   logging.info("Prepared the YR EPS Expanded List, YR Past EPS Expanded List (black Diamonds) and YR Projected EPS List (white Diamonds)")
   logging.debug("The white Diamond index list is :" + str(white_diamond_index_list))
-  # We have white_diamond index list here - Note that the index list is in the order of
+  # We have white_diamond index list here - Note that the index list is in the order of 
   # last white diamond (far future) to first while diamond (near future). Append the
   # last black diamond (the latest quarter for eps report date). So now we have the
   # index list that point to the dates - starting from the far white diamond to the
@@ -1660,9 +1663,9 @@ for ticker_raw in ticker_list:
       start_date_list = eps_growth_proj_overlay_df.Start_Date.tolist()
       logging.debug("The Stop_Date extracted from Earning growth overlay is" + str(stop_date_list))
 
-      # Now find if there are any "Next" in the stop date
-      # If there are then"Next" gets replaced by the next row start date
-      # (remember that the dataframe is already sorted ascending with the
+      # Now find if there are any "Next" in the stop date 
+      # If there are then"Next" gets replaced by the next row start date 
+      # (remember that the dataframe is already sorted ascending with the 
       # start dates - so in essence the current row earning projection overlay
       # will stop at the next start date
       next_in_stop_date_list_cnt = 0
