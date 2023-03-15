@@ -192,8 +192,8 @@ sc_funcs.master_to_aaii_ticker_xlate.set_index('Ticker', inplace=True)
 # critical, error, warning, info, debug
 # set up logging to file - see previous section for more details
 logging.basicConfig(# This decides what level of messages get printed in the debug file
-                    # level=logging.DEBUG,
-                    level=logging.INFO,
+                    level=logging.DEBUG,
+                    # level=logging.INFO,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
                     filename=dir_path + log_dir + "\\" + 'SC_EarningsChart_debug.txt',
@@ -1790,13 +1790,8 @@ for ticker_raw in ticker_list:
     logging.info("Prepared the Earnings Growth Overlays")
   # =============================================================================
 
-
-
-
-
-
   # ===========================================================================
-  # SECTION FOR SALES BV OVERLAY
+  # SECTION FOR SALES BV OVERLAY : BEGIN
   # Read the AAII Yearly Financial file
   # At the end of this section we have the list extracted from AAII financials file
   # ===========================================================================
@@ -1809,7 +1804,14 @@ for ticker_raw in ticker_list:
     aaii_ticker = sc_funcs.master_to_aaii_ticker_xlate.loc[ticker,'aaii_tracking_ticker']
   logging.debug("AAII ticker is  : " + str(aaii_ticker))
 
-  aaii_qtr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_qtr_dir + "\\" + aaii_ticker + "_QTR_FIN.xlsx", sheet_name=aaii_ticker, skiprows=6, usecols="C:AZ")
+  # 03/11/2023 : The usecols codeline was beginning to give a warning like this
+  # FutureWarning: Defining usecols with out of bounds indices is deprecated and will raise a ParserError in a future version.  #   **kwds,
+  # because sometimes the xlsx file did not have the data in All the columns
+  # until AZ (for e.g it only had data until col AB).
+  # So instead of using usecols, we can ask python to start reading the xlsx
+  # from col C (2 - numerically) until the last col and that works.
+  # aaii_qtr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_qtr_dir + "\\" + aaii_ticker + "_QTR_FIN.xlsx", sheet_name=aaii_ticker, skiprows=6, usecols="C:AZ")
+  aaii_qtr_financial_df = pd.read_excel(dir_path + "\\" + aaii_financial_qtr_dir + "\\" + aaii_ticker + "_QTR_FIN.xlsx", sheet_name=aaii_ticker, skiprows=6).iloc[:,2:]
   logging.debug("The Financial Dataframe is \n" + aaii_qtr_financial_df.to_string())
 
   # There is some screw up on how python reads the xlsx file with the first row
@@ -2098,30 +2100,9 @@ for ticker_raw in ticker_list:
       qtr_bv_expanded_list[i_idx] = smooth_list(qtr_bv_expanded_list_unsmooth)
 
     logging.info("Prepared the Sales, BV Overlays")
+  # ===========================================================================
+  # SECTION FOR SALES BV OVERLAY : END
   # =============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   # ---------------------------------------------------------------------------
   # Find out the growth for 1yr, 3yr and 5yr for eps and price
