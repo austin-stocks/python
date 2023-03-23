@@ -296,6 +296,7 @@ if (g_var_use_aaii_data_to_extend_eps_projections == 1):
   # logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
 
 calendar_df = pd.read_csv(dir_path + user_dir + "\\" + calendar_file)
+# logging.debug("The Calendar df read from Calendar file : \n" + calendar_df.to_string())
 col_list = calendar_df.columns.tolist()
 calendar_date_list_raw = []
 for col in col_list:
@@ -710,7 +711,9 @@ for ticker_raw in ticker_list:
       logging.warning(str(ticker) + " : Hmmm...However this should very rare...make sure for " + str(ticker) + "that the latest entry qtr_eps_date and the Y2 fiscal year dates actually match...")
     elif (-5 <= days_bw_y_plus1_and_latest_qtr_date_in_earnings_file.days <= 5):
       logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y1 fiscal end date : " + str(y_plus1_fiscal_year_dt) + " ...so we can possibly add Y2 fiscal year projections if they are not NaN")
-      if ((str(y_plus2_fiscal_year_eps_projections) != 'nan') and (y_plus1_fiscal_year_eps_projections > 0)):
+      if ((str(y_plus2_fiscal_year_eps_projections) != 'nan') and
+              (y_plus1_fiscal_year_eps_projections > 0) and
+              (y_plus2_fiscal_year_eps_projections/y_plus1_fiscal_year_eps_projections < 10)):
         logging.debug(str(ticker) + " : Y2 fiscal year eps projections are NOT nan and Y1 fiscal year eps projections are non-negative. So, will insert one year (Y2)")
         no_of_years_to_insert_aaii_eps_projections = 1
         logging.debug("The latest qtr date in earnings file is " + str(latest_qtr_date_in_earnings_file_dt))
@@ -725,24 +728,41 @@ for ticker_raw in ticker_list:
         else:
           fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt, freq=fiscal_qtr_str)
       else:
-        logging.debug(str(ticker) + " : Hmmm...it seems like either Y2 eps projections are Nan OR Y1 eps projections are negative in AAII. In case the Y1 eps is negative, growth math will not work right. Nothing inserted...")
+        logging.debug(str(ticker) + " : Hmmm...it seems like either Y2 eps projections are Nan OR "
+                                    " Y1 eps projections are negative in AAII. In case the Y1 eps is negative, growth math will not work right OR "
+                                    " The ratio between y_plus2_eps_projections/y_plus1_eps_projections ("
+                                    + str(y_plus2_fiscal_year_eps_projections) + "\\"
+                                    + str(y_plus1_fiscal_year_eps_projections) + " = " + str(y_plus2_fiscal_year_eps_projections/y_plus1_fiscal_year_eps_projections)
+                                    + ") is greater than 10. Inserting Earnings projections in such a case will blow up the scale of the chart"
+                                    " Because of one of the reasons above (Sundeep should look in the debug file to find out which reason), "
+                                    " no AAII projections will be inserted inserted...")
     elif (-5 <= days_bw_y_plus0_and_latest_qtr_date_in_earnings_file.days <= 5):
       logging.debug(str(ticker) + " : The date for the Latest entry in the Earnings file: " + str(latest_qtr_date_in_earnings_file_dt) + " matches Y0 fiscal end date : " + str(y_plus0_fiscal_year_dt) + " ...so we can possibly add Y1 and Y2 fiscal year projections if they are not NaN")
       # Sundeep - This is a shortcut way of ONLY inserting 1 year of EPS Projections when 2 years of projections were available
       # Force y_plus2_fiscal_year_eps_projections = 'nan' here so that only one year fiscal projection can be inserted
       # To revert back to adding upto 2 years of aaii eps projections - just comment the next line
       y_plus2_fiscal_year_eps_projections = 'nan'
-      if ((str(y_plus2_fiscal_year_eps_projections) != 'nan') and (str(y_plus1_fiscal_year_eps_projections) != 'nan') and (y_plus1_fiscal_year_eps_projections > 0) and (y_plus0_fiscal_year_eps_projections > 0)):
+      if ((str(y_plus2_fiscal_year_eps_projections) != 'nan') and
+          (str(y_plus1_fiscal_year_eps_projections) != 'nan') and
+              (y_plus1_fiscal_year_eps_projections > 0) and
+              (y_plus0_fiscal_year_eps_projections > 0) and
+              (y_plus2_fiscal_year_eps_projections / y_plus1_fiscal_year_eps_projections < 10) and
+              (y_plus1_fiscal_year_eps_projections / y_plus0_fiscal_year_eps_projections < 10)):
         logging.debug(str(ticker) + " : Both Y1 and Y2 fiscal year eps projections are NOT nan and Y1 and Y0 eps numbers are non-negative. So, will insert two years (Y1 and Y2)")
         no_of_years_to_insert_aaii_eps_projections = 2
         fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus2_fiscal_year_dt, freq=fiscal_qtr_str)
-      elif (str(y_plus1_fiscal_year_eps_projections) != 'nan') and (y_plus0_fiscal_year_eps_projections > 0):
+      elif ((str(y_plus1_fiscal_year_eps_projections) != 'nan') and
+               (y_plus0_fiscal_year_eps_projections > 0) and
+               (y_plus1_fiscal_year_eps_projections / y_plus0_fiscal_year_eps_projections < 10)):
         logging.debug(str(ticker) + " : Y2 fiscal year eps projections is NaN, Y1 fiscal year eps projections is NOT nan and Y0 fiscal year number is non-negative. So, will insert one year (Y1)")
         no_of_years_to_insert_aaii_eps_projections = 1
         fiscal_qtr_and_yr_dates_raw = pd.date_range(latest_qtr_date_in_earnings_file_dt, y_plus1_fiscal_year_dt, freq=fiscal_qtr_str)
       else:
         logging.debug(str(ticker) + " : Hmmm...it seems like either both Y1 and Y2 eps projections are nan in AAII or either Y0 or Y1 eps projections are negative. Nothing inserted...")
         logging.debug(str(ticker) + " : Growth math does not work when we start from negative numbers. However, if both Y2 and Y1 earnings projections are NaN, then please check Y1 and Y2 earnings projections in AAII")
+        logging.debug(str(ticker) + " Either that OR one of the ratios b/w y_plus2_eps_projections/y_plus1_eps_projections OR y_plus1_eps_projections/y_plus0_eps_projections")
+        logging.debug(str(ticker) + " is greater than 10. If we try to insert earnings projections when the ration is that high, it messes up the scale of the chart")
+        logging.debug(str(ticker) + " It is better in these cases to NOT insert the projections...Sundeep is thinking")
     else:
       logging.error("The date corresponding to the Latest entry in the Earnings file : " + str(latest_qtr_date_in_earnings_file_dt))
       logging.error("neither matches the Y0 fiscal year end from AAII file : " + str(y_plus0_fiscal_year_dt))
@@ -787,18 +807,19 @@ for ticker_raw in ticker_list:
           logging.debug(str(ticker) + " : Inserting one year of EPS projections with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor) + " (" + str(y_plus2_fiscal_year_eps_projections) + "/" + str(y_plus1_fiscal_year_eps_projections) + ")")
         for i_int in range(no_of_qtr_to_insert):
           tmp_eps_list[i_int] = qtr_eps_list[3 - i_int] * growth_factor
-          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
+          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with growth factor : " + str(tmp_eps_list[i_int]))
       else:
         growth_factor = y_plus1_fiscal_year_eps_projections / y_plus0_fiscal_year_eps_projections
         logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing First part -  with the growth factor for y_plus1 over y_plus0 : " + str(growth_factor) + " (" + str(y_plus1_fiscal_year_eps_projections) + "/" + str(y_plus0_fiscal_year_eps_projections) + ")")
         for i_int in range(0, 4):
           tmp_eps_list[i_int] = qtr_eps_list[3 - i_int] * growth_factor
-          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
-          growth_factor = y_plus2_fiscal_year_eps_projections / y_plus1_fiscal_year_eps_projections
+          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(qtr_eps_list[3 - i_int]) + " Projected Calcuated EPS with growth factor : " + str(tmp_eps_list[i_int]))
+        # Insert y_plus_2 after y_plus_1 has been inserted
+        growth_factor = y_plus2_fiscal_year_eps_projections / y_plus1_fiscal_year_eps_projections
         logging.debug(str(ticker) + " : Inserting two years of EPS projections. Doing Second part -  with the growth factor for y_plus2 over y_plus1 : " + str(growth_factor) + " (" + str(y_plus2_fiscal_year_eps_projections) + "/" + str(y_plus1_fiscal_year_eps_projections) + ")")
         for i_int in range(4, 8):
           tmp_eps_list[i_int] = tmp_eps_list[i_int - 4] * growth_factor
-          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(tmp_eps_list[i_int - 4]) + " Projected Calcuated EPS with grwoth factor : " + str(tmp_eps_list[i_int]))
+          logging.debug("Inserting in tmp_eps_list list at index : " + str(i_int) + " Qtr eps : " + str(tmp_eps_list[i_int - 4]) + " Projected Calcuated EPS with growth factor : " + str(tmp_eps_list[i_int]))
 
       logging.debug("The tmp_eps_list list of projected eps to be inserted " + str(tmp_eps_list))
       for i_int in range(no_of_qtr_to_insert):
