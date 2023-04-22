@@ -57,22 +57,19 @@
     ]
   },
 
-  "FORM" : {
-    "Buy_Sell" : [
-       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "46.16"}
-    ]
-  },
-
   "CTLT" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "04/19/2021","Buy_Price_str" :  "108.40"}
+       {"Buy_Date" : "04/19/2021","Buy_Price_str" :  "108.40"},
+       {"Sell_Date" : "06/13/2022","Buy_Price_str" :  "102.86"}
     ]
   },
 
   "QCOM" : {
     "Buy_Sell" : [
        {"Buy_Date" : "10/14/2021","Buy_Price_str" :  "127.65"},
-       {"Buy_Date" : "4/1/2022","Buy_Price_str" :  "144.61"}
+       {"Buy_Date" : "4/1/2022","Buy_Price_str" :  "144.61"},
+       {"Sell_Date" : "6/13/2022","Buy_Price_str" :  "129.72"},
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "138.17"}
     ]
   },
 
@@ -144,6 +141,48 @@
     ]
   },
 
+  "BAC" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "03/16/2023","Buy_Price_str" :  "$28.93"}
+    ]
+  },
+
+  "F" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$14.53"}
+    ]
+  },
+
+  "GM" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$41.94"}
+    ]
+  },
+
+  "MU" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$63.75"}
+    ]
+  },
+
+  "PANW" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$164.54"}
+    ]
+  },
+
+  "PLTR" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$9.18"}
+    ]
+  },
+
+  "DIS" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$112.94"}
+    ]
+  },
+
   "EBIX" : {
     "Buy_Sell" : [
        {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$39"}
@@ -159,7 +198,8 @@
 
   "FORM" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "$46"}
+       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "$46"},
+       {"Sell_Date" : "7/1/2022","Buy_Price_str" :  "$34.82"}
     ]
   },
 
