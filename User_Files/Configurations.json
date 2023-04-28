@@ -3947,7 +3947,7 @@
 
   "KEYS" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "07/30/2017", "Stop_Date" :   "Next"},
+       {"Start_Date" : "07/30/2022", "Stop_Date" :   "End"},
        {"Start_Date" : "04/30/2020", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
@@ -5495,6 +5495,7 @@
 
   "GE" : {
     "Splits" : {
+      "01/04/2023" : "1281:1000",
       "07/15/2021" : "1:8"
     }
   },
