@@ -171,6 +171,12 @@
     ]
   },
 
+  "ANET" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "05/02/2023","Buy_Price_str" :  "$141.39"}
+    ]
+  },
+
   "PLTR" : {
     "Buy_Sell" : [
        {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$9.18"}
@@ -212,7 +218,15 @@
 
   "FTNT" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$149"}
+       {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "29.80"},
+       {"Sell_Date" : "06/13/2022","Sell_Price_str" :  "$53.99"},
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$54.23"}
+    ]
+  },
+
+  "F" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "14.52"}
     ]
   },
 
