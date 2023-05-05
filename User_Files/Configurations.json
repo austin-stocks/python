@@ -2753,6 +2753,12 @@
     ]
   },
 
+  "PERI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
   "ODFL" : {
     "Splits" : {
       "03/14/2020" : "3:2"
