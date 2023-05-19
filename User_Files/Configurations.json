@@ -1320,7 +1320,10 @@
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "01/25/2018", "Stop_Date" :   "11/05/2018", "Adj_Amount" : ".4"}
-    ]
+    ],
+    "Anchored_Text" : {
+      "upper center": "Former ULTA CEO, Mary Dillon : Now incharge here"
+    }
   },
 
   "FSLR" : {
@@ -4366,6 +4369,31 @@
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.15"}
+    ]
+  },
+
+  "ACLS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.6"}
+    ]
+  },
+
+  "TW" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "SYK" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2021", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2018", "Stop_Date" :   "10/05/2019", "Adj_Amount" : "-.85"},
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".5"}
     ]
   },
 
