@@ -1,0 +1,41 @@
+# User Contributed Scan : 
+# They can be found here
+https://support.stockcharts.com/doku.php?id=scans:library:user_scans
+
+
+## Above the GreenLine scan
+    [type = stock] 
+AND [country = US] 
+AND [Daily SCTR > 90] 
+AND [Daily SMA(20,Daily Volume) > 1000000] 
+AND [Today's Daily Slow Stoch %D(5,1) < 20] 
+AND [EMA(50) > EMA (250)]
+AND [ eps > 0] # added by Sundeep
+
+
+
+## This user defined scan finds stocks with strong relative strength (i.e., high SCTR values) 
+## and increasing, positive momentum (as measured by DecisionPoint's PMO indicator).
+[type = stock]
+  
+  and [ [exchange is NYSE] or [exchange is NASD ]]
+  and [sctr > 90]
+  and [eps > 0] # added by Sundeep
+  and [todays sctr >= yesterdays sctr]
+  and [yesterdays sctr >= 2 days ago sctr]
+  and [2 days ago sctr >= 3 days ago sctr]
+  and [3 days ago sctr >= 4 days ago sctr]
+  
+  and [todays pmo line(35,20,10) > 0]
+  and [todays pmo line(35,20,10) > yesterdays pmo line(35,20,10)]
+  and [yesterdays pmo line(35,20,10) > 2 days ago pmo line(35,20,10)]
+  and [2 days ago pmo line(35,20,10) > 3 days ago pmo line(35,20,10)]
+  and [3 days ago pmo line(35,20,10) > 4 days ago pmo line(35,20,10)]
+  
+  rank by [sctr]
+## 
+
+
+
+For Scan reference
+https://support.stockcharts.com/doku.php?id=scans:reference
