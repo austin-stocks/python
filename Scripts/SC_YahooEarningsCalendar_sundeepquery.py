@@ -82,7 +82,26 @@ for ticker_raw in ticker_list:
   # https: // query1.finance.yahoo.com / v6 / finance / recommendationsbysymbol / PLUG
   # https: // query1.finance.yahoo.com / v7 / finance / options / IBM
   #
-  # ---------------------------------------------------------------------------
+  # -------------------------------------------------------
+  # 6/1/2023 - From SMF mailing list (Nelson Muntz <ccoupe100@gmail.com>)
+  # This is a list of modules available. I believe it's complete.
+  #
+  # 'assetProfile', 'recommendationTrend', 'cashflowStatementHistory',
+  # 'indexTrend', 'defaultKeyStatistics', 'industryTrend', 'quoteType',
+  # 'incomeStatementHistory', 'fundOwnership', 'summaryDetail', 'insiderHolders',
+  # 'calendarEvents', 'upgradeDowngradeHistory', 'price', 'balanceSheetHistory',
+  # 'earningsTrend', 'secFilings', 'institutionOwnership', 'majorHoldersBreakdown',
+  # 'balanceSheetHistoryQuarterly', 'earningsHistory', 'esgScores', 'summaryProfile',
+  # 'netSharePurchaseActivity', 'insiderTransactions', 'sectorTrend',
+  # 'incomeStatementHistoryQuarterly', 'cashflowStatementHistoryQuarterly', 'earnings',
+  # 'pageViews', 'financialData'
+  #
+  # Lot of the fields show up in 'summaryDetail'.
+  # Looks like fields can be combined in query formula by stringing module names together separated by commas. Example:
+  # https: // query2.finance.yahoo.com / v11 / finance / quoteSummary / AAPL?modules = price, defaultKeyStatistics, calenderEvents, summaryDetail
+  # -------------------------------------------------------
+
+# ---------------------------------------------------------------------------
 
 
   # Change region for those who want non-US stocks

@@ -192,8 +192,8 @@ sc_funcs.master_to_aaii_ticker_xlate.set_index('Ticker', inplace=True)
 # critical, error, warning, info, debug
 # set up logging to file - see previous section for more details
 logging.basicConfig(# This decides what level of messages get printed in the debug file
-                    level=logging.DEBUG,
-                    # level=logging.INFO,
+                    # level=logging.DEBUG,
+                    level=logging.INFO,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
                     filename=dir_path + log_dir + "\\" + 'SC_EarningsChart_debug.txt',
