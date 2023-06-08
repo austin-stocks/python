@@ -12,6 +12,36 @@ AND [Today's Daily Slow Stoch %D(5,1) < 20]
 AND [EMA(50) > EMA (250)]
 AND [ eps > 0] # added by Sundeep
 
+## ========================================================
+## From Fransisco - Wall of Blue Scan
+[ [exchange is NYSE] or [exchange is NASDAQ] ]
+and [type = stock]
+and [group is not ETF]
+and [Daily SMA(50,Daily Volume) > 400000]
+and [Volume > SMA(50,Daily Volume)]
+and [Close > 10]
+and [Liquidity > 29,999,999]
+
+// 5 weeks up in a row
+and [Weekly Close > 1 week ago Weekly close]
+and [1 week ago Weekly Close > 2 weeks ago Weekly close]
+and [2 weeks ago Weekly Close > 3 weeks ago Weekly close]
+and [3 weeks ago Weekly Close > 4 weeks ago Weekly close]
+and [4 weeks ago Weekly Close > 5 weeks ago Weekly close]
+
+// Some above avg volume weeks
+and [ [this week Volume > 5 * sma(50, Daily Volume)]
+	or [last week Volume > 5 * last week sma(50, Daily Volume)]
+	or [2 weeks ago weekly Volume > 5 * 2 weeks ago sma(50, Daily Volume)]
+	or [3 weeks ago weekly Volume > 5 * 3 weeks ago sma(50, Daily Volume)]
+	or [4 weeks ago weekly Volume > 5 * 4 weeks ago sma(50, Daily Volume)]
+	or [5 weeks ago weekly Volume > 5 * 5 weeks ago sma(50, Daily Volume)] ]
+
+// Prices just moved above 10 or 50 day SMA
+//and [ [close x SMA(10,close)] or [close x SMA(50,close)]]
+//and [SCTR >90]
+## ========================================================
+
 
 
 ## This user defined scan finds stocks with strong relative strength (i.e., high SCTR values) 
