@@ -3,7 +3,9 @@
 https://support.stockcharts.com/doku.php?id=scans:library:user_scans
 
 
+## ========================================================
 ## Above the GreenLine scan
+## ========================================================
     [type = stock] 
 AND [country = US] 
 AND [Daily SCTR > 90] 
@@ -11,6 +13,23 @@ AND [Daily SMA(20,Daily Volume) > 1000000]
 AND [Today's Daily Slow Stoch %D(5,1) < 20] 
 AND [EMA(50) > EMA (250)]
 AND [ eps > 0] # added by Sundeep
+## ========================================================
+
+## ========================================================
+## Sundeep Playing with Greenline Scan
+## ========================================================
+   [type = stock] 
+AND [country = US] 
+AND [Today's Daily SCTR > 85]
+AND [Daily SMA(20,Daily Volume) > 500000] 
+AND [ [Today's Daily Slow Stoch %D(5,1) < 20] 
+   or [Yesterday's Daily Slow Stoch %D(5,1) < 20] 
+   or [2 days ago Daily Slow Stoch %D(5,1) < 20] 
+   or [3 days ago Daily Slow Stoch %D(5,1) < 20] 
+   or [4 days ago Daily Slow Stoch %D(5,1) < 20] ]
+AND [EMA(50) > EMA (250)]
+AND [ eps > 0] # added by Sundeep
+## ========================================================
 
 ## ========================================================
 ## From Fransisco - Wall of Blue Scan
