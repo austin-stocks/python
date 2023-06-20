@@ -134,6 +134,7 @@ for ticker_raw in ticker_list:
     print("WARNING ***** WARNING ***** WARNING ***** WARNING *****")
     print("")
 
+  # print ("The earnings file is ", earnings_df.to_string())
   # print("The Earliest date found in Earnings file " , start_date)
   # Convert the string to datetime, subtract 1 year
   start_date_dt = datetime.datetime.strptime(start_date, "%m/%d/%Y") - relativedelta(years=1)

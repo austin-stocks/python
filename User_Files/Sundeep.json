@@ -202,6 +202,12 @@
     ]
   },
 
+  "ADBE" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "06/09/2023","Buy_Price_str" :  "$453"}
+    ]
+  },
+
   "FORM" : {
     "Buy_Sell" : [
        {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "$46"},
