@@ -1,8 +1,12 @@
 Scripts/Experiments/
+Analysis_Plots/
+Analysis_Watchlist/
 Logs/
 Logs/Tmp/
 User_Files/TrackList*
 Charts/
-Lastest_Charts/
+Latest_Charts/
+older_charts/
 Historical/
 IBD/MarketSmith/2021_*
+IBD/MarketSmith/2022_*
