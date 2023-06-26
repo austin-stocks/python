@@ -17,6 +17,7 @@ dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
 log_dir = "\\..\\" + "Logs"
 ibd_inds_gp_dir = "\\..\\" + "IBD" + "\\" + "IBD-Industry-Groups"
+ibd_data_tables_dir = "\\..\\" + "IBD" + "\\" + "Data_Tables"
 ibd_inds_gp_file = "Industry-Groups-Running-Rank.xlsx"
 
 # -----------------------------------------------------------------------------
@@ -72,7 +73,11 @@ weekly_dates_list.sort(reverse=True)
 no_of_weeks_to_lookback = 10
 del weekly_dates_list[no_of_weeks_to_lookback:]
 weekly_dates_str_list = [dt.datetime.strftime(date, '%m/%d/%Y') for date in weekly_dates_list]
+latest_weekly_date_str = dt.datetime.strptime(weekly_dates_str_list[0], '%m/%d/%Y').strftime("%Y-%m-%d")
 logging.debug("The dates for which the Ranking will be applied : " + str(weekly_dates_list))
+
+inds_best_rank_8wks_df = pd.DataFrame(columns=['Industry_Group','Rank'])
+inds_best_rank_8wks_df.set_index('Industry_Group', inplace=True)
 
 num_inds_best_rank_sometime_in3wks_out_of_8wks = 0
 num_inds_best_rank_8wks = 0
@@ -116,16 +121,37 @@ for inds_name in inds_gp_list:
       # later to pull out all the tickers (or the best 10% rated tickers
       # from the data tables xlsx
       logging.info(str(inds_name).ljust(30) + ", Current Rank : " + str(rank_week_m0).ljust(5) + str(inds_rank_list[1:8]).ljust(40) + " has the lowest rank in the last 8 weeks")
+      inds_best_rank_8wks_df.loc[inds_name.strip()] = rank_week_m0
 
 logging.info("")
 logging.info("Found " + str(num_inds_best_rank_sometime_in3wks_out_of_8wks).ljust(5) + " industries that had best rank sometime in the last 3 weeks out of last 8 weeks")
 logging.info("Found " + str(num_inds_best_rank_8wks).ljust(5) + " industries that had best rank this week out of last 8 weeks")
 
+inds_best_rank_8wks_logfile="Industries_with_best_ranks_8wks.csv"
+# inds_best_rank_8wks_df.sort_values(by=['Rank'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + inds_best_rank_8wks_logfile,sep=',', index=True, header=True,encoding = "ISO-8859-1")
+inds_best_rank_8wks_df.sort_values(by=['Rank'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + inds_best_rank_8wks_logfile,sep=',', index=True, header=True)
+logging.info("Created : " + str(inds_best_rank_8wks_logfile) + " <-- Sorted by IBD Industry Rank")
+
+
 # TODO : Next step is to read the data tables and find out all the tickers that
 # are in those industry groups and put them in a csv/xlsx and they become
 # the watchlist
+ibd_data_tables_file = latest_weekly_date_str + "-Data_Tables.csv"
+ibd_data_tables_file = "2023-06-23" + "-Data_Tables.csv"
+logging.debug("Opening file " + str(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file))
+# ibd_data_tables_df = pd.read_excel(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file, sheet_name="Stock_list",engine='xlrd')
+ibd_data_tables_df = pd.read_csv(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file,encoding = "ISO-8859-1")
+logging.debug("The Data tables file is : \n" + ibd_data_tables_df.to_string())
+ranks_to_filter_list = inds_best_rank_8wks_df['Rank'].tolist()
+ranks_to_filter_list.sort(reverse=False)
+logging.debug("The ranks to filter out are : " + str(ranks_to_filter_list))
 
+ibd_data_table_extraced_with_8wks_ranks_df = ibd_data_tables_df.loc[ibd_data_tables_df['Industry Group Rank'].isin(ranks_to_filter_list)]
+logging.debug("There are the tickers that are of interest now \n" + ibd_data_table_extraced_with_8wks_ranks_df.to_string())
 
+tickers_in_inds_best_rank_8wks_logfile="Tickers_in_Industries_with_best_ranks_8wks.csv"
+ibd_data_table_extraced_with_8wks_ranks_df.sort_values(by=['Industry Group Rank','Comp. Rating','Symbol'], ascending=[True,False,True]).to_csv(dir_path + log_dir + "\\" + tickers_in_inds_best_rank_8wks_logfile,sep=',', index=True, header=True)
+logging.info("Created : " + str(tickers_in_inds_best_rank_8wks_logfile) + " <-- Sorted by IBD Industry Rank")
 
 
 # Till now we have all the inds gp names in a list and all the dates in a list (as datetime)
