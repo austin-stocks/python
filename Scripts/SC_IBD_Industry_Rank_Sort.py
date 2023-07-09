@@ -116,7 +116,10 @@ no_of_weeks_to_lookback = 10
 del weekly_dates_list[no_of_weeks_to_lookback:]
 weekly_dates_str_list = [dt.datetime.strftime(date, '%m/%d/%Y') for date in weekly_dates_list]
 latest_weekly_date_str = dt.datetime.strptime(weekly_dates_str_list[0], '%m/%d/%Y').strftime("%Y-%m-%d")
-logging.debug("Will eavluate and Rank the Industry Groups for dates : " + str(weekly_dates_list))
+logging.debug("Eavluating Rankings in the Industry Groups for dates : " + str(weekly_dates_list))
+logging.info("")
+logging.info("Eavluating Rankings in the Industry Groups starting at  : " + str(latest_weekly_date_str))
+logging.info("")
 
 # This df will eventually contain the Industry groups that will pass our 
 # criteria. Right now the criteria is that we have decreasing Industry 
@@ -196,6 +199,7 @@ logging.debug("The Latest weekly date extracted from Industry-Group-Running file
 ibd_data_tables_file = latest_weekly_date_str + "-Data_Tables.csv"
 logging.debug("Opening file " + str(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file))
 ibd_data_tables_df = pd.read_csv(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file,encoding = "ISO-8859-1")
+logging.info("Beginning to Process IBD Data Tables file : " + str(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file))
 logging.debug("The Data tables file is : \n" + ibd_data_tables_df.to_string())
 # -------------------------------------------------------------
 
@@ -204,6 +208,9 @@ logging.debug("The Data tables file is : \n" + ibd_data_tables_df.to_string())
 # Clean the data from the Data tables, as some of the columns
 # are read as string and some columns have "," and they are
 # actually floats, while somre are read as strings but are dates
+tmp_int = ibd_data_tables_df['Symbol'].tolist()
+logging.info("Cleaning up the data in the IBD Data Tables file, it has " + str(len(tmp_int)).ljust(6) + " tickers...")
+logging.info("...No entries will be removed, just data format will be made more usable")
 ibd_data_tables_df.reset_index
 ibd_data_tables_df["Price"]                           = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["Price"]]
 ibd_data_tables_df["PE Ratio"]                        = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["PE Ratio"]]
@@ -232,12 +239,18 @@ logging.debug("The ranks to filter (grep) out from the Data tables file are : " 
 ticker_with_best_ind_ranks_in_8wks_df = ibd_data_tables_df.loc[ibd_data_tables_df['Industry Group Rank'].isin(best_rank_in_8wks_filter_list)]
 logging.debug("The extracted rows from Data tables that have best ranks in 8 weeks are")
 logging.debug("These are the tickers that we should be doing furthur research on\n" + ticker_with_best_ind_ranks_in_8wks_df.to_string())
+logging.debug("These are the tickers that we should be doing furthur research on\n" + ticker_with_best_ind_ranks_in_8wks_df.to_string())
+tmp_int = ticker_with_best_ind_ranks_in_8wks_df['Symbol'].tolist()
+logging.info("Captured/Filtered the tickers, from IBD Data Table file, that are in the Industry Groups that have their best ranks in last 8 wks...")
+logging.info("...There are " + str(len(tmp_int)).ljust(6) + " tickers on the list")
+
 # -------------------------------------------------------------
 
 # -------------------------------------------------------------
 # Add the various columns that will be useful while analyzing the
 # list that was geenrated.
 # -------------------------------------------------------------
+logging.info("Inserting various columns and populating them appropriately, like stockcharts, profitspi link etc")
 ticker_with_best_ind_ranks_in_8wks_df.insert(2,"In Master", " ")    # Is Sundeep already tracking?
 ticker_with_best_ind_ranks_in_8wks_df.insert(2,"SChart", " ")    # Stockcharts
 ticker_with_best_ind_ranks_in_8wks_df.insert(2,"TD", " ")  # TD Ameritrade
@@ -257,7 +270,6 @@ ticker_with_best_ind_ranks_in_8wks_df.set_index('Symbol', inplace=True)
 #    and populate the Industry Name column
 # 2. Populate the Price*Volume column
 # 3. Populate the stockcharts link column
-
 for i_index, row in ticker_with_best_ind_ranks_in_8wks_df.iterrows():
   ticker = i_index
   ticker_rank = row['Industry Group Rank']
@@ -304,7 +316,6 @@ desired_column_placement = ["Symbol", "RS Rating","Industry Name",
 
 ticker_with_best_ind_ranks_in_8wks_df.reset_index(inplace=True)
 ticker_with_best_ind_ranks_in_8wks_df = ticker_with_best_ind_ranks_in_8wks_df[desired_column_placement]
-
 # -------------------------------------------------------------
 # Now the df can be futhur filtered based on Sundeep's subjective criterion
 # 1. Filter out based on Price*Volume (any stock that has less than %M
@@ -312,15 +323,31 @@ ticker_with_best_ind_ranks_in_8wks_df = ticker_with_best_ind_ranks_in_8wks_df[de
 # 2. Filter out if the number of funds are less than, say 100
 # 3. Filter out any RS rating of less than 70
 # -------------------------------------------------------------
+logging.info("Thinning down the ticker list furthur based on Sundeep's subjective criterion")
 ticker_with_best_ind_ranks_in_8wks_filtered_df = ticker_with_best_ind_ranks_in_8wks_df.copy()
+
+logging.info("    Price*Voulme              > 5000000")
 ticker_with_best_ind_ranks_in_8wks_filtered_df = ticker_with_best_ind_ranks_in_8wks_filtered_df.loc[ticker_with_best_ind_ranks_in_8wks_df['Price*Volume'] > 5000000]
+tmp_int = ticker_with_best_ind_ranks_in_8wks_filtered_df['Symbol'].tolist()
+logging.info("...There are " + str(len(tmp_int)).ljust(6) + " tickers on the list")
+
+logging.info("    Funds that hold the stock > 100")
 ticker_with_best_ind_ranks_in_8wks_filtered_df = ticker_with_best_ind_ranks_in_8wks_filtered_df.loc[ticker_with_best_ind_ranks_in_8wks_df['# of Funds - last reported qrtr'] > 100]
+tmp_int = ticker_with_best_ind_ranks_in_8wks_filtered_df['Symbol'].tolist()
+logging.info("...There are " + str(len(tmp_int)).ljust(6) + " tickers on the list")
+
+logging.info("    RS Rating                 > 70")
 ticker_with_best_ind_ranks_in_8wks_filtered_df = ticker_with_best_ind_ranks_in_8wks_filtered_df.loc[ticker_with_best_ind_ranks_in_8wks_df['RS Rating'] > 70]
-
-
+tmp_int = ticker_with_best_ind_ranks_in_8wks_filtered_df['Symbol'].tolist()
+logging.info("...There are " + str(len(tmp_int)).ljust(6) + " tickers on the list")
 
 ticker_with_best_ind_ranks_in_8wks_df.set_index('Symbol', inplace=True)
 ticker_with_best_ind_ranks_in_8wks_filtered_df.set_index('Symbol', inplace=True)
+logging.info("")
+logging.info("")
+logging.info("All Done. Now writing the reports in Log directory")
+logging.info("--------------------------------------------------")
+logging.info("")
 # =============================================================================
 
 
