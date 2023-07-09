@@ -137,7 +137,7 @@
 
   "UHAL" : {
     "Splits" : {
-      "11/14/2022" : "10:1"
+      "11/10/2022" : "10:1"
     },
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/20/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.6"}
