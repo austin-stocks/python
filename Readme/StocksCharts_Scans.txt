@@ -32,7 +32,65 @@ AND [ eps > 0] # added by Sundeep
 ## ========================================================
 
 ## ========================================================
-## From Fransisco - Wall of Blue Scan
+## Fransisco - Z-Max Daily Scan
+## Based on daily crossovers of price and volume
+## ========================================================
+[[exchange is NYSE] or [exchange is NASDAQ]]
+and [type = stock]
+and [group is not ETF]
+and [daily sma (50, daily volume) > 400000]
+and [close > 10]
+and [Liquidity > 29,999,999]
+and [ema(10, Close) > ema(21,Close)]
+and [yesterdays ema(10, close) < yesterdays ema(21,close)]
+and [close > .97 * sma(50,Close)]
+and [this week ema(4, weekly close) > this week sma(10, weekly close)]
+## ========================================================
+
+
+## ========================================================
+## Roy Maddox 10-300 screen - 
+## Stocks that are up 10% with volume more than 300% as
+## compared to 50 day sma volume
+## ========================================================
+[[exchange is NYSE] or [exchange is NASDAQ]]
+and [type is stock]
+
+// Added by Sundeep for Liquidity and filter out
+// cheap stocks. This can be played with
+and [DAILY sma(50,DAILY volume) > 400000]
+and [Liquidity > 10,000,000]
+and [Close > 10]
+
+// This is the meat of the scan 
+// This can be played with 
+// 1.05 * yesterday price and 2 * 50 day sma volume
+and [close > 1.1 * yesterday close ]
+and [Volume > 3 * sma(50, daily volume)]
+## ========================================================
+
+
+## ========================================================
+## Fransisco - Z-Max Weekly Scan 
+## Based on weekly crossovers of price and volume
+## ========================================================
+[[exchange is NYSE] or [exchange is NASDAQ]]
+and [type is stock] 
+and [group is not ETF]
+and [Close > 10]
+and [Liquidity > 29,999,999]
+and [DAILY sma(50,DAILY volume) > 400000]
+and [this week ema(4, weekly close) > this week sma(10, weekly close)]
+and [last week ema(4, weekly close) < last week sma(10, weekly close)]
+## This can be changed to, say, 3 instead of 5 times to 50 day 
+## average volume
+and [this week volume > 5 * sma(50, daily volume)]
+## ========================================================
+
+
+## ========================================================
+## Fransisco - Wall of Blue Scan
+## ========================================================
 [ [exchange is NYSE] or [exchange is NASDAQ] ]
 and [type = stock]
 and [group is not ETF]
@@ -60,6 +118,11 @@ and [ [this week Volume > 5 * sma(50, Daily Volume)]
 //and [ [close x SMA(10,close)] or [close x SMA(50,close)]]
 //and [SCTR >90]
 ## ========================================================
+
+
+
+
+
 
 
 
