@@ -60,10 +60,31 @@ for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
   i_int += 1
   # print("Ticker : ", ticker)
-  lhs_url = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/'
-  rhs_url = '?formatted=true&crumb=swg7qs5y9UP&lang=en-US&region=US&' \
-            'modules=calendarevents&' \
-            'corsDomain=finance.yahoo.com'
+
+  # This stopped working on 7/14/2023 - Read below on how sundeep
+  # made it work
+  # lhs_url = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/'
+  # rhs_url = '?formatted=true&crumb=swg7qs5y9UP&lang=en-US&region=US&' \
+  #           'modules=calendarevents&' \
+  #           'corsDomain=finance.yahoo.com'
+
+  # 07/14/2023 - Sundeep way of making it work. First get the crumb
+  # by running it in a brower window and
+  # https://query2.finance.yahoo.com/v1/test/getcrumb
+  # Returned 7R9XcH2zpF7
+  # copy that in the crumb section below. Everything else should work
+  # You may have to play around with version (v6 or v10 etc). You can
+  # copy and paste it in the bowser to make sure it work and then come
+  # back here and make the change, if needed
+
+  # https://query2.finance.yahoo.com/v10/finance/quoteSummary/IBM?modules=calendarevents&crumb=<PUT YOUR CRUMB HERE>
+  #  for e.g.
+  # https://query2.finance.yahoo.com/v6/finance/quoteSummary/IBM?modules=calendarevents&crumb=7R9XcH2zpF7
+  # https://query2.finance.yahoo.com/v10/finance/quoteSummary/IBM?modules=calendarevents&crumb=7R9XcH2zpF7
+
+  lhs_url= 'https://query2.finance.yahoo.com/v6/finance/quoteSummary/'
+  rhs_url = '?modules=calendarevents&crumb=7R9XcH2zpF7'
+
   # ---------------------------------------------------------------------------
   #                   ########## IMPORTANT STUFF ##########
   # This link should give you a table of calendar events with whatever Yahoo

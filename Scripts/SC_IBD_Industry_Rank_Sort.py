@@ -198,9 +198,6 @@ logging.info("Found " + str(inds_best_rank_8wks_cnt).ljust(5) + " industries tha
 logging.debug("The Latest weekly date extracted from Industry-Group-Running file : " + str(latest_weekly_date_str))
 ibd_data_tables_file = latest_weekly_date_str + "-Data_Tables.csv"
 logging.debug("Opening file " + str(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file))
-ibd_data_tables_df = pd.read_csv(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file,encoding = "ISO-8859-1")
-logging.info("Beginning to Process IBD Data Tables file : " + str(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file))
-logging.debug("The Data tables file is : \n" + ibd_data_tables_df.to_string())
 # -------------------------------------------------------------
 
 
@@ -208,9 +205,14 @@ logging.debug("The Data tables file is : \n" + ibd_data_tables_df.to_string())
 # Clean the data from the Data tables, as some of the columns
 # are read as string and some columns have "," and they are
 # actually floats, while somre are read as strings but are dates
+logging.info("")
+logging.info("Starting to Process IBD Data Tables file : " + str(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file))
+ibd_data_tables_df = pd.read_csv(dir_path + ibd_data_tables_dir + "\\" + ibd_data_tables_file,encoding = "ISO-8859-1")
+logging.debug("The Data tables file is : \n" + ibd_data_tables_df.to_string())
+
 tmp_int = ibd_data_tables_df['Symbol'].tolist()
 logging.info("Cleaning up the data in the IBD Data Tables file, it has " + str(len(tmp_int)).ljust(6) + " tickers...")
-logging.info("...No entries will be removed, just data format will be made more usable")
+logging.info("...No entries will be removed, just data format will be made more usable in this step")
 ibd_data_tables_df.reset_index
 ibd_data_tables_df["Price"]                           = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["Price"]]
 ibd_data_tables_df["PE Ratio"]                        = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["PE Ratio"]]
@@ -250,7 +252,7 @@ logging.info("...There are " + str(len(tmp_int)).ljust(6) + " tickers on the lis
 # Add the various columns that will be useful while analyzing the
 # list that was geenrated.
 # -------------------------------------------------------------
-logging.info("Inserting various columns and populating them appropriately, like stockcharts, profitspi link etc")
+logging.info("Inserting additional columns for profitspi, stockcharts and such and populating them appropriately")
 ticker_with_best_ind_ranks_in_8wks_df.insert(2,"In Master", " ")    # Is Sundeep already tracking?
 ticker_with_best_ind_ranks_in_8wks_df.insert(2,"SChart", " ")    # Stockcharts
 ticker_with_best_ind_ranks_in_8wks_df.insert(2,"TD", " ")  # TD Ameritrade
@@ -284,7 +286,7 @@ for i_index, row in ticker_with_best_ind_ranks_in_8wks_df.iterrows():
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'Industry Name'] = "{}".format(*ticker_inds_name)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'Y-Profile'] = 'https://finance.yahoo.com/quote/' + str(ticker)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'SChart'] = 'https://stockcharts.com/h-sc/ui?s='+str(ticker)
-  ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'SPI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=268252&p=' + str(ticker)
+  ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'SPI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=268816&p=' + str(ticker)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'TD'] = 'https://research.tdameritrade.com/grid/public/research/stocks/earnings?period=qtr&section=0&symbol=' + str(ticker)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'CNBC'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=earnings'
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'AAII'] = 'https://www.aaii.com/stock/ticker/' + str(ticker)
@@ -323,6 +325,7 @@ ticker_with_best_ind_ranks_in_8wks_df = ticker_with_best_ind_ranks_in_8wks_df[de
 # 2. Filter out if the number of funds are less than, say 100
 # 3. Filter out any RS rating of less than 70
 # -------------------------------------------------------------
+logging.info("")
 logging.info("Thinning down the ticker list furthur based on Sundeep's subjective criterion")
 ticker_with_best_ind_ranks_in_8wks_filtered_df = ticker_with_best_ind_ranks_in_8wks_df.copy()
 
@@ -345,13 +348,9 @@ ticker_with_best_ind_ranks_in_8wks_df.set_index('Symbol', inplace=True)
 ticker_with_best_ind_ranks_in_8wks_filtered_df.set_index('Symbol', inplace=True)
 logging.info("")
 logging.info("")
-logging.info("All Done. Now writing the reports in Log directory")
+logging.info("All Filtering is done... Now writing the reports in Log directory")
 logging.info("--------------------------------------------------")
-logging.info("")
 # =============================================================================
-
-
-
 
 
 
@@ -360,22 +359,17 @@ logging.info("")
 # =============================================================================
 inds_best_rank_8wks_logfile=latest_weekly_date_str + "-Industries_with_best_ranks_8wks.csv"
 inds_best_rank_8wks_df.sort_values(by=['Rank'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + inds_best_rank_8wks_logfile,sep=',', index=True, header=True)
-logging.info("Created : " + str(inds_best_rank_8wks_logfile) + " <-- Sorted by IBD Industry Rank")
+logging.info("Created : " + str(inds_best_rank_8wks_logfile) + " <-- Just the Industries with best Ranks in the last 8 wks")
 
 tickers_in_best_ranks_in_8wks_logfile= latest_weekly_date_str + "-Tickers_in_Industries_with_best_ranks_8wks.xlsx"
 writer = pd.ExcelWriter(dir_path + log_dir + "\\" + tickers_in_best_ranks_in_8wks_logfile, engine='xlsxwriter')
 ticker_with_best_ind_ranks_in_8wks_df.sort_values(by=['RS Rating','# of Funds - last reported qrtr','Price*Volume'], ascending=[False,False,False]).to_excel(writer)
-logging.info("Created : " + str(tickers_in_best_ranks_in_8wks_logfile) + " <-- Sorted by IBD Industry Rank")
+logging.info("Created : " + str(tickers_in_best_ranks_in_8wks_logfile) + " <-- Tickers in the best ranked Industries in the last 8 weeks, with stockcharts links etc")
 writer.save()
-
 
 tickers_in_best_ranks_in_8wks_filtered_logfile= latest_weekly_date_str + "-Tickers_in_Industries_with_best_ranks_8wks_filtered.xlsx"
 writer = pd.ExcelWriter(dir_path + log_dir + "\\" + tickers_in_best_ranks_in_8wks_filtered_logfile, engine='xlsxwriter')
 ticker_with_best_ind_ranks_in_8wks_filtered_df.sort_values(by=['RS Rating','# of Funds - last reported qrtr','Price*Volume'], ascending=[False,False,False]).to_excel(writer)
-logging.info("Created : " + str(tickers_in_best_ranks_in_8wks_filtered_logfile) + " <-- Sorted by IBD Industry Rank")
+logging.info("Created : " + str(tickers_in_best_ranks_in_8wks_filtered_logfile) + " <-- Tickers in the best ranked Industries in the last 8 weeks, with stockcharts links etc and filtered according to Sundeep's Criterion above")
 writer.save()
-
 # =============================================================================
-
-
-

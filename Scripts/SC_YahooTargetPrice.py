@@ -74,11 +74,32 @@ for ticker_raw in ticker_list:
   # Part of code downloaded from github
   # https://github.com/arete89/Analyst_Target_Price
   # ---------------------------------------------------------------------------
-  lhs_url = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/'
-  rhs_url = '?formatted=true&crumb=swg7qs5y9UP&lang=en-US&region=US&' \
-            'modules=upgradeDowngradeHistory,recommendationTrend,' \
-            'financialData,earningsHistory,earningsTrend,industryTrend&' \
-            'corsDomain=finance.yahoo.com'
+
+
+  # This code used to work, but stopped working on 7/14/2023 - Maybe it will
+  # work again. For now, Sundeep has put in a hack to make it work (maybe not
+  # a hack but another way to make it work)
+  # lhs_url = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/'
+  # rhs_url = '?formatted=true&crumb=swg7qs5y9UP&lang=en-US&region=US&' \
+  #           'modules=upgradeDowngradeHistory,recommendationTrend,' \
+  #           'financialData,earningsHistory,earningsTrend,industryTrend&' \
+  #           'corsDomain=finance.yahoo.com'
+
+  # 07/14/2023 - Sundeep way of making it work. First get the crumb
+  # by running it in a brower window and
+  # https://query2.finance.yahoo.com/v1/test/getcrumb
+  # Returned 7R9XcH2zpF7
+  # copy that in the crumb section below. Everything else should work
+  # You may have to play around with version (v6 or v10 etc). You can
+  # copy and paste it in the bowser to make sure it work and then come
+  # back here and make the change, if needed
+
+ # https://query2.finance.yahoo.com/v10/finance/quoteSummary/IBM?modules=financialData&crumb=<PUT YOUR CRUMB HERE>
+ #  for e.g.
+ # https://query2.finance.yahoo.com/v6/finance/quoteSummary/IBM?modules=financialData&crumb=7R9XcH2zpF7
+ # https://query2.finance.yahoo.com/v10/finance/quoteSummary/IBM?modules=financialData&crumb=7R9XcH2zpF7
+  lhs_url= 'https://query2.finance.yahoo.com/v6/finance/quoteSummary/'
+  rhs_url = '?modules=financialData&crumb=7R9XcH2zpF7'
 
   # Change region for those who want non-US stocks
   headers = {
@@ -86,12 +107,14 @@ for ticker_raw in ticker_list:
   # Add your own user agent address - Just google it on your browser.
   url = lhs_url + ticker + rhs_url
   r = requests.get(url, headers=headers)
+  # logging.info("Got this back : \n" + str(r.json()))
   result = r.json()['quoteSummary']['result'][0]
   try:
     target = result['financialData']['targetMeanPrice']['fmt']
   except KeyError:
     logging.error(str(ticker) + " : Error fetching the target price...skipping ")
     continue
+
   # If you want the median version, then replace 'targetMeanPrice' with 'targetMedianPrice'
   targets.append(target)
   # logging.info(str(ticker) + " : Price target : " + str(target))
