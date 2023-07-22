@@ -118,7 +118,9 @@
     "Buy_Sell" : [
        {"Buy_Date" : "12/19/2019","Buy_Price_str" :  "$54.5"},
        {"Sell_Date" : "09/21/2020","Sell_Price_str" :  "$49"},
-       {"Buy_Date" : "4/1/2022","Buy_Price_str" :  "$74.66"}
+       {"Buy_Date" : "4/1/2022","Buy_Price_str" :  "$74.66"},
+       {"Sell_Date" : "4/28/2022","Sell_Price_str" :  "$70.47"},
+       {"Buy_Date" : "2/2/2023","Buy_Price_str" :  "$63.75"}
     ]
   },
 
@@ -159,11 +161,12 @@
     ]
   },
 
-  "MU" : {
+  "NFLX" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$63.75"}
+       {"Buy_Date" : "07/21/2023","Buy_Price_str" :  "$427.74"}
     ]
   },
+
 
   "PANW" : {
     "Buy_Sell" : [
@@ -205,6 +208,12 @@
   "ADBE" : {
     "Buy_Sell" : [
        {"Buy_Date" : "06/09/2023","Buy_Price_str" :  "$453"}
+    ]
+  },
+
+  "TSLA" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "07/03/2023","Buy_Price_str" :  "$278.65"}
     ]
   },
 
