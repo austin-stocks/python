@@ -119,6 +119,7 @@ def main():
     logging.debug ("The Historical Dataframe is : \n" + historical_df.to_string())
     buysell_dates_df = pd.read_csv(dir_path + Back_Testing_dir + "\\" + ticker + "_BuySell_Dates.csv")
     logging.debug ("The BuySell Dates df is : \n" + buysell_dates_df.to_string())
+    logging.debug("This is a " + str(invest_strategy) + " strategy")
 
     buy_dates_list = buysell_dates_df['Buy'].dropna().tolist()
     sell_dates_list = buysell_dates_df['Sell'].dropna().tolist()
@@ -180,6 +181,8 @@ def main():
 
     buy_dates_list_dt = sorted([dt.datetime.strptime(date, '%m/%d/%Y').date() for date in buy_dates_list])
     sell_dates_list_dt = sorted([dt.datetime.strptime(date, '%m/%d/%Y').date() for date in sell_dates_list])
+    # logging.debug("Sorted Buy  Dates dt : " + str(buy_dates_list_dt))
+    # logging.debug("Sorted Sell Dates dt : " + str(sell_dates_list_dt))
 
     for i_idx, date_dt in enumerate(buy_dates_list_dt):
       if (invest_strategy == "Long") and (date_dt > sell_dates_list_dt[i_idx]) :
@@ -207,18 +210,23 @@ def main():
           logging.error("Please check the BuySell Dates file, rectify and rerun...")
           logging.error("====================")
           logging.error("")
-          sys.exit()
+           sys.exit()
 
-    days_strategy_was_employed = (sell_dates_list_dt[-1] - buy_dates_list_dt[0]).days
-    # logging.debug("Sorted Buy  Dates dt : " + str(buy_dates_list_dt))
-    # logging.debug("Sorted Sell Dates dt : " + str(sell_dates_list_dt))
+    # -----------------------------------------------------
+    # Find the number of days b/w the first buy and last
+    # sell...this tells for how many days the strategy was
+    # employed...vice-versa for Short strategy
+    # -----------------------------------------------------
+    if (invest_strategy == "Long"):
+      days_strategy_was_employed = (sell_dates_list_dt[-1] - buy_dates_list_dt[0]).days
+    else:
+      days_strategy_was_employed = (buy_dates_list_dt[-1] - sell_dates_list_dt[0]).days
+    # -----------------------------------------------------
 
     buy_dates_list = [dt.datetime.strftime(date, '%m/%d/%Y') for date in buy_dates_list_dt]
     sell_dates_list = [dt.datetime.strftime(date, '%m/%d/%Y') for date in sell_dates_list_dt]
     logging.debug("Sorted Buy  Dates : " + str(buy_dates_list))
     logging.debug("Sorted Sell Dates : " + str(sell_dates_list))
-
-    logging.debug("This is a " + str(invest_strategy) + " strategy")
 
     found_first_trade = 0
     no_of_trades = 0
