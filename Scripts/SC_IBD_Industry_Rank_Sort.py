@@ -226,10 +226,10 @@ ibd_data_tables_df["# of Funds - last reported qrtr"] = [float(str(i).replace(",
 ibd_data_tables_df["Vol- 50 Day Avg. (1000s)"]        = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["Vol- 50 Day Avg. (1000s)"]]
 ibd_data_tables_df["Vol. (1000s)"]                    = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["Vol. (1000s)"]]
 ibd_data_tables_df["Vol. % Change"]                   = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["Vol. % Change"]]
-# ibd_data_tables_df['IPO Date']                        = ibd_data_tables_df['IPO Date'].fillna('1900-01-01')
-ibd_data_tables_df['IPO Date']                        = ibd_data_tables_df['IPO Date'].fillna('01/01/1900')
-# ibd_data_tables_df["IPO Date"]                        = [dt.datetime.strptime(str(date), '%Y-%m-%d').date() for date in ibd_data_tables_df["IPO Date"]]
-ibd_data_tables_df["IPO Date"]                        = [dt.datetime.strptime(str(date), '%m/%d/%Y').date() for date in ibd_data_tables_df["IPO Date"]]
+ibd_data_tables_df['IPO Date']                        = ibd_data_tables_df['IPO Date'].fillna('1900-01-01')
+# ibd_data_tables_df['IPO Date']                        = ibd_data_tables_df['IPO Date'].fillna('01/01/1900')
+ibd_data_tables_df["IPO Date"]                        = [dt.datetime.strptime(str(date), '%Y-%m-%d').date() for date in ibd_data_tables_df["IPO Date"]]
+# ibd_data_tables_df["IPO Date"]                        = [dt.datetime.strptime(str(date), '%m/%d/%Y').date() for date in ibd_data_tables_df["IPO Date"]]
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
@@ -288,7 +288,7 @@ for i_index, row in ticker_with_best_ind_ranks_in_8wks_df.iterrows():
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'Industry Name'] = "{}".format(*ticker_inds_name)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'Y-Profile'] = 'https://finance.yahoo.com/quote/' + str(ticker)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'SChart'] = 'https://stockcharts.com/h-sc/ui?s='+str(ticker)
-  ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'SPI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=269175&p=' + str(ticker)
+  ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'SPI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=270427&p=' + str(ticker)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'TD'] = 'https://research.tdameritrade.com/grid/public/research/stocks/earnings?period=qtr&section=0&symbol=' + str(ticker)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'CNBC'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=earnings'
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'AAII'] = 'https://www.aaii.com/stock/ticker/' + str(ticker)
