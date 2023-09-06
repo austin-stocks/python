@@ -109,7 +109,7 @@ def main():
   invest_strategy = "Long"
   # If you want to iterate over this?
   # price_quality_list = ['Best', 'Worst', 'Open', 'Close', 'Average']
-  price_quality = 'Average'
+  price_quality = 'Close'
 
   # ticker_list = ['PLUS','AUDC', 'MED', 'IBM']
   i_int = 1
@@ -124,6 +124,8 @@ def main():
     buy_dates_list = buysell_dates_df['Buy'].dropna().tolist()
     sell_dates_list = buysell_dates_df['Sell'].dropna().tolist()
     latest_date_in_historical_file = historical_df['Date'].tolist()[0]
+    logging.debug(" Buy Dates : " + str(buy_dates_list))
+    logging.debug(" Sell Dates : " + str(sell_dates_list))
 
     # -------------------------------------------------------------------------
     # Sanity Checks
@@ -180,9 +182,9 @@ def main():
       # -------------------------------------------------------------------------
 
     buy_dates_list_dt = sorted([dt.datetime.strptime(date, '%m/%d/%Y').date() for date in buy_dates_list])
+    logging.debug("Sorted Buy  Dates dt : " + str(buy_dates_list_dt))
     sell_dates_list_dt = sorted([dt.datetime.strptime(date, '%m/%d/%Y').date() for date in sell_dates_list])
-    # logging.debug("Sorted Buy  Dates dt : " + str(buy_dates_list_dt))
-    # logging.debug("Sorted Sell Dates dt : " + str(sell_dates_list_dt))
+    logging.debug("Sorted Sell Dates dt : " + str(sell_dates_list_dt))
 
     for i_idx, date_dt in enumerate(buy_dates_list_dt):
       if (invest_strategy == "Long") and (date_dt > sell_dates_list_dt[i_idx]) :
@@ -210,7 +212,7 @@ def main():
           logging.error("Please check the BuySell Dates file, rectify and rerun...")
           logging.error("====================")
           logging.error("")
-           sys.exit()
+          sys.exit()
 
     # -----------------------------------------------------
     # Find the number of days b/w the first buy and last
@@ -253,9 +255,10 @@ def main():
             found_first_trade = 1
             historical_df.at[i_index, 'Port Value'] = portfolio_start_value
             historical_df.at[i_index, 'Buy_and_Hold'] = portfolio_start_value
-            logging.debug("Found (first) buy at :  " + str(historical_date) + ", Buy Price : " + str(buy_price)  +  ", Positioning : " + str(historical_df.at[i_index, 'Positioning']))
+            logging.debug("(First) buy at : " + str(historical_date) + ", Buy Price : " + str(buy_price)  +  ", Positioning : " + str(historical_df.at[i_index, 'Positioning']))
           elif (prev_positioning == "Cash") or (prev_positioning == "Sell"):
             historical_df.at[i_index, 'Port Value'] = prev_port_value
+            logging.debug("Buy at  :  " + str(historical_date) + ", Buy Price : " + str(buy_price) + ", Portfolio Value : " + str(portfolio_value) + ", Positioning : " + str(historical_df.at[i_index, 'Positioning']))
         # -------------------------------------------------
         # First day after buy
         # -------------------------------------------------
@@ -263,6 +266,7 @@ def main():
           historical_df.at[i_index, 'Positioning'] = "Market"
           portfolio_value = historical_df.at[i_index+1, 'Port Value']*(historical_df.at[i_index, 'Adj_Close']/historical_df.at[i_index+1, 'Adj_Close'])
           historical_df.at[i_index, 'Port Value'] = portfolio_value
+          logging.debug("Date  :  " + str(historical_date) + ", Index Value : " + str(historical_df.at[i_index, 'Adj_Close']) + ", Portfolio Value : " + str(portfolio_value) + ", Positioning : " + str(historical_df.at[i_index, 'Positioning']))
         # -------------------------------------------------
         # After buy, now in market and not selling
         # -------------------------------------------------
@@ -270,6 +274,7 @@ def main():
           historical_df.at[i_index, 'Positioning'] = "Market"
           portfolio_value = historical_df.at[i_index+1, 'Port Value']*(historical_df.at[i_index, 'Adj_Close']/historical_df.at[i_index+1, 'Adj_Close'])
           historical_df.at[i_index, 'Port Value'] = portfolio_value
+          logging.debug("Date  :  " + str(historical_date) + ", Index Value : " + str(historical_df.at[i_index, 'Adj_Close']) + ", Portfolio Value : " + str(portfolio_value) + ", Positioning : " + str(historical_df.at[i_index, 'Positioning']))
         # -------------------------------------------------
         # Either bought last day or in the market and selling
         # -------------------------------------------------
@@ -278,6 +283,7 @@ def main():
           historical_df.at[i_index, 'Positioning'] = "Sell"
           portfolio_value = historical_df.at[i_index+1, 'Port Value']*(sell_price/historical_df.at[i_index+1, 'Adj_Close'])
           historical_df.at[i_index, 'Port Value'] = portfolio_value
+          logging.debug("Sell at :  " + str(historical_date) + ", Sell Price : " + str(sell_price) + ", Portfolio Value : " + str(portfolio_value) + ", Positioning : " + str(historical_df.at[i_index, 'Positioning']))
         # -------------------------------------------------
         # First day after sell
         # -------------------------------------------------
@@ -285,6 +291,7 @@ def main():
           historical_df.at[i_index, 'Positioning'] = "Cash"
           portfolio_value = historical_df.at[i_index+1, 'Port Value']
           historical_df.at[i_index, 'Port Value'] = portfolio_value
+          logging.debug("Date  :  " + str(historical_date) + ", Index Value : " + str(historical_df.at[i_index, 'Adj_Close']) + ", Portfolio Value : " + str(portfolio_value) + ", Positioning : " + str(historical_df.at[i_index, 'Positioning']))
         # -------------------------------------------------
         # Now in cash
         # -------------------------------------------------
@@ -292,6 +299,7 @@ def main():
           historical_df.at[i_index, 'Positioning'] = "Cash"
           portfolio_value = historical_df.at[i_index+1, 'Port Value']
           historical_df.at[i_index, 'Port Value'] = portfolio_value
+          logging.debug("Date  :  " + str(historical_date) + ", Index Value : " + str(historical_df.at[i_index, 'Adj_Close']) + ", Portfolio Value : " + str(portfolio_value) + ", Positioning : " + str(historical_df.at[i_index, 'Positioning']))
         # -------------------------------------------------
         # Buy and Hold - Start calculation after first buy
         # -------------------------------------------------

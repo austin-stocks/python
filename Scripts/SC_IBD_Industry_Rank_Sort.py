@@ -288,7 +288,7 @@ for i_index, row in ticker_with_best_ind_ranks_in_8wks_df.iterrows():
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'Industry Name'] = "{}".format(*ticker_inds_name)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'Y-Profile'] = 'https://finance.yahoo.com/quote/' + str(ticker)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'SChart'] = 'https://stockcharts.com/h-sc/ui?s='+str(ticker)
-  ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'SPI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=270427&p=' + str(ticker)
+  ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'SPI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=271131&p=' + str(ticker)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'TD'] = 'https://research.tdameritrade.com/grid/public/research/stocks/earnings?period=qtr&section=0&symbol=' + str(ticker)
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'CNBC'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=earnings'
   ticker_with_best_ind_ranks_in_8wks_df.at[i_index, 'AAII'] = 'https://www.aaii.com/stock/ticker/' + str(ticker)

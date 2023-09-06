@@ -155,11 +155,14 @@ price_change_1d_df = raw_price_df.copy()
 logging.info("Starting to calculate Volume Averages and Price Change...")
 ticker_list_unclean = raw_vol_df.index.tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+i_idx_outer = 1
 for i_ticker, row in raw_vol_df.iterrows():
   logging.debug("Creating Volume Averages for ticker : " + str(i_ticker))
   raw_vol_list = row.tolist()
   logging.debug(str(i_ticker) + " : Volume List : " + str(raw_vol_list))
 
+  if (i_idx_outer%100 == 0 ):
+    logging.info("Processing Row : " + str(i_idx_outer))
   # ---------------------------------------------------------
   # Pretty cool way of getting rolling mean over a list
   # The first entry in the row for each ticker is "COUNT" column
@@ -194,12 +197,14 @@ for i_ticker, row in raw_vol_df.iterrows():
       vol_dma_50d_df.at[i_ticker, col_date_str] = tmp_vol_dma_50d_list[i_idx]
     if i_idx < (len(col_date_list_str)-1):
       price_change_1d_df.at[i_ticker, col_date_str] = (raw_price_df.at[i_ticker,col_date_str]/raw_price_df.at[i_ticker,col_date_str_next])-1
-# -----------------------------------------------------------------------------
 
-logging.debug("The 5dma Vol DF \n" + vol_dma_5d_df.to_string())
-logging.debug("The 21dma Vol DF \n" + vol_dma_21d_df.to_string())
-logging.debug("The 50dma Vol DF \n" + vol_dma_50d_df.to_string())
-logging.debug("The Price Change DF \n" + price_change_1d_df.to_string())
+  i_idx_outer = i_idx_outer+1
+# -----------------------------------------------------------------------------
+# logging.debug("The 5dma Vol DF \n" + vol_dma_5d_df.to_string())
+# logging.debug("The 21dma Vol DF \n" + vol_dma_21d_df.to_string())
+# logging.debug("The 50dma Vol DF \n" + vol_dma_50d_df.to_string())
+# logging.debug("The Price Change DF \n" + price_change_1d_df.to_string())
+logging.info("Done...")
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -216,7 +221,7 @@ file_date_str
 # mollyverse_price_vol_xlsx_copy = date_time + "-Molly-Price-Volume_copy.xlsx"
 mollyverse_price_vol_xlsx = file_date_str + "-Molly-Price-Volume.xlsx"
 mollyverse_price_vol_xlsx_copy = file_date_str + "-Molly-Price-Volume_copy.xlsx"
-logging.info("Writing Volume Averages and Price Change into :")
+logging.info("Now writing Volume Averages and Price Change into :")
 logging.info(str(dir_path + price_vol_dir) + "\\" + str(mollyverse_price_vol_xlsx))
 
 # with pd.ExcelWriter(dir_path + log_dir + "\\" + mollyverse_price_vol_xlsx) as writer:
