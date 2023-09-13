@@ -226,10 +226,10 @@ ibd_data_tables_df["# of Funds - last reported qrtr"] = [float(str(i).replace(",
 ibd_data_tables_df["Vol- 50 Day Avg. (1000s)"]        = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["Vol- 50 Day Avg. (1000s)"]]
 ibd_data_tables_df["Vol. (1000s)"]                    = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["Vol. (1000s)"]]
 ibd_data_tables_df["Vol. % Change"]                   = [float(str(i).replace(",", "")) for i in ibd_data_tables_df["Vol. % Change"]]
-ibd_data_tables_df['IPO Date']                        = ibd_data_tables_df['IPO Date'].fillna('1900-01-01')
-# ibd_data_tables_df['IPO Date']                        = ibd_data_tables_df['IPO Date'].fillna('01/01/1900')
-ibd_data_tables_df["IPO Date"]                        = [dt.datetime.strptime(str(date), '%Y-%m-%d').date() for date in ibd_data_tables_df["IPO Date"]]
-# ibd_data_tables_df["IPO Date"]                        = [dt.datetime.strptime(str(date), '%m/%d/%Y').date() for date in ibd_data_tables_df["IPO Date"]]
+# ibd_data_tables_df['IPO Date']                        = ibd_data_tables_df['IPO Date'].fillna('1900-01-01')
+ibd_data_tables_df['IPO Date']                        = ibd_data_tables_df['IPO Date'].fillna('01/01/1900')
+# ibd_data_tables_df["IPO Date"]                        = [dt.datetime.strptime(str(date), '%Y-%m-%d').date() for date in ibd_data_tables_df["IPO Date"]]
+ibd_data_tables_df["IPO Date"]                        = [dt.datetime.strptime(str(date), '%m/%d/%Y').date() for date in ibd_data_tables_df["IPO Date"]]
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
