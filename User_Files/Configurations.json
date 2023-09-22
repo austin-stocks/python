@@ -1665,6 +1665,9 @@
   },
 
   "AAON" : {
+    "Splits" : {
+      "8/16/2023" : "3:2"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2019", "Stop_Date" :   "End"}
     ]
