@@ -81,7 +81,7 @@ raw_price_df.drop('Date', inplace=True, axis=1)
 raw_price_df.reset_index
 raw_price_df.set_index('SYMBOL', inplace=True)
 raw_price_df.sort_index(ascending=True,inplace=True)
-logging.info("It seems to have : " + str(len(raw_price_df.index.tolist())) + " row and : " + str(len(raw_price_df.columns.tolist())) + " columns")
+logging.info("It seems to have :: rows : " + str(len(raw_price_df.index.tolist())) + ", columns : " + str(len(raw_price_df.columns.tolist())))
 raw_vol_df.reset_index
 raw_vol_df.drop('Date', inplace=True, axis=1)
 raw_vol_df.set_index('SYMBOL', inplace=True)
