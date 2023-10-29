@@ -4848,6 +4848,9 @@
   "JBT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "08/25/2018", "Stop_Date" :   "06/05/2019", "Adj_Amount" : ".15"}
     ]
   },
 

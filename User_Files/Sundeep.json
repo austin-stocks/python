@@ -143,6 +143,18 @@
     ]
   },
 
+  "GOOG" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "07/11/2023","Buy_Price_str" :  "$118.68"}
+    ]
+  },
+
+  "BA" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$212"}
+    ]
+  },
+
   "BAC" : {
     "Buy_Sell" : [
        {"Buy_Date" : "03/16/2023","Buy_Price_str" :  "$28.93"}
