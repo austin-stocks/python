@@ -114,7 +114,7 @@ logging.debug("The Raw Vol DF after dates converted to strings : \n" + raw_vol_d
 # is availabe changes from week to week (Google finance sheet is
 # setup to download last 200 calendar days, which can be anywhere
 # in the range below
-if ((len(col_date_list_str) <= 131) or (len(col_date_list_str) >= 140)):
+if ((len(col_date_list_str) <= 131) or (len(col_date_list_str) >= 142)):
   logging.error("")
   logging.error("=====> There are : " + str(len(col_date_list_str)) + " Dates (Columns), in the Google Finance File <=====")
   logging.error("=====> That number is not b/w 131 and 140 <=====")
