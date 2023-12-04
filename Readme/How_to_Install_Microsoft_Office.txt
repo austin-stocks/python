@@ -1,0 +1,33 @@
+
+
++*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+1. DO NOT PLUG IN THE USB UNLESS YOU HAVE UNINSTALLED OLD OFFICE AND DISABLED ANTIVIRUS
+   AND TURNED WIRELESS OFF (MAYBE NOT REQUIRED, BUT DO IT ANYWAY), OTHERWISE THE COMPUTER 
+   ANTIVIRUS WILL QUARANTIE THE KMS FILE AND THAT IS A BIT OF A HEADACHE
+-*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*
+2. Remove all office from the computer. This will include getting it uninstall from "Unintall" 
+   from Control Panel and also, Microsoft has a unintall tool, that can be downloaded from 
+   their website that will uninstall office completely. 
+   The control Panel does not uninstall the office completely. 
+   Needless to say, you need to restart the computer after you unintall using various methods. 
+   +*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+   **** DISABLE ALL ANTIVIRUS NOW *****
+   ****     TURN OFF WIRELESS     *****
+   +*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+3. Plug in the USB. The USB has folder
+	F:\MICROSOFT Office PRO Plus 2016\MICROSOFT Office PRO Plus 2016 v16.0.4266.1003 RTM + Activator [TechTools.NET]
+4. In that folder - run setup 
+    (If you look at the office folder in that directory, it as setup for 32-bit and 64-bit office
+     I did not run any specific setup, just the setup from the directory above)
+
+5. Once office has been installed, you can run office (say Word or Excel) but it will ask for your email 
+   and tell you that the office licence will expire in 7-10 days. Now is the time to run the KMS file
+
+6. Reboot again (disable wireless and antivius again <== VERY IMPORTANT) and then run "KMSAuto Net" 
+   When you run it, be careful that we use it to activate (it will have a button to 
+   activate office). Note that if the antivirus is NOT turned off, then 
+   it will remove/quartine that file. 
+   I have not yet found a place to recover it once it has been quarentined. 
+   This is one place to get it from:
+   https://github.com/UTFSAE/KMSAuto-Net-2015-v1.3.8-Portable
+   (I did a google search for "KMSAuto Net 2015 v1.3.8 Portable" and found that site)
