@@ -149,6 +149,12 @@
     ]
   },
 
+  "UBER" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "07/03/2023","Buy_Price_str" :  "$44.8"}
+    ]
+  },
+
   "BA" : {
     "Buy_Sell" : [
        {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$212"}

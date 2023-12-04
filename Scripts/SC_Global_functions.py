@@ -1,6 +1,6 @@
 import pandas as pd
 
-aaii_analysts_projection_file = "AAII_Analysts_2023_10_13.csv"
+aaii_analysts_projection_file = "AAII_Analysts_2023_11_29.csv"
 
 aaii_missing_tickers_list = [
 'CRZO','GOOG','RACE','WCG','FOX','DISCK','BRK-B'
