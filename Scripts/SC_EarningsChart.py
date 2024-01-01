@@ -185,7 +185,7 @@ historical_dir = "\\..\\" + "Historical"
 earnings_dir = "\\..\\" + "Earnings"
 dividend_dir = "\\..\\" + "Dividend"
 log_dir = "\\..\\" + "Logs"
-aaii_financial_qtr_dir = "\\..\\" + "AAII_Financials" + "\\" + "Quarterly"
+aaii_financial_qtr_dir = "\\..\\" + "AAII" + "\\" + "AAII_Financials" + "\\" + "Quarterly"
 sc_funcs.master_to_aaii_ticker_xlate.set_index('Ticker', inplace=True)
 # ---------------------------------------------------------------------------
 # Set Logging
