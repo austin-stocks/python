@@ -69,8 +69,8 @@ logging.info("Reading the price volume file : " + str(price_vol_file) + ", and p
 price_vol_xls = pd.ExcelFile(dir_path + price_vol_dir + "\\" + price_vol_file)
 raw_price_df = pd.read_excel(price_vol_xls, 'Price')
 raw_vol_df = pd.read_excel(price_vol_xls, 'Vol')
-logging.debug("The Raw Price DF \n" + raw_price_df.to_string())
-logging.debug("The Raw Vol DF \n" + raw_vol_df.to_string())
+# logging.debug("The Raw Price DF \n" + raw_price_df.to_string())
+# logging.debug("The Raw Vol DF \n" + raw_vol_df.to_string())
 
 # ---------------------------------------------------------
 # Drop the 'Date' column from the df as it is just something
@@ -82,10 +82,39 @@ raw_price_df.reset_index
 raw_price_df.set_index('SYMBOL', inplace=True)
 raw_price_df.sort_index(ascending=True,inplace=True)
 logging.info("It seems to have :: rows : " + str(len(raw_price_df.index.tolist())) + ", columns : " + str(len(raw_price_df.columns.tolist())))
-raw_vol_df.reset_index
 raw_vol_df.drop('Date', inplace=True, axis=1)
+raw_vol_df.reset_index
 raw_vol_df.set_index('SYMBOL', inplace=True)
 raw_vol_df.sort_index(ascending=True,inplace=True)
+
+# ---------------------------------------------------------
+# Do some sanity check to make sure that both the sheets have
+# same number of rows and columns
+# ---------------------------------------------------------
+number_of_rows_in_price_sheet = len(raw_price_df.index.tolist())
+number_of_cols_in_price_sheet = len(raw_price_df.columns.tolist())
+number_of_rows_in_vol_sheet = len(raw_vol_df.index.tolist())
+number_of_cols_in_vol_sheet = len(raw_vol_df.columns.tolist())
+if (number_of_rows_in_price_sheet != number_of_rows_in_vol_sheet):
+  logging.error ("")
+  logging.error ("The number of rows on \"Price\" and \"Vol\" sheets DO NOT match")
+  logging.error ("Price Sheet has   : " + str(number_of_rows_in_price_sheet) + " rows")
+  logging.error ("Volume  Sheet has : " + str(number_of_rows_in_vol_sheet) + " rows")
+  logging.error ("They need to match...did you forget to delete the last few rows in one of the sheet")
+  logging.error ("Please fix and rerun")
+  sys.exit(1)
+
+if (number_of_cols_in_price_sheet != number_of_cols_in_vol_sheet):
+  logging.error ("")
+  logging.error ("The number of columns on \"Price\" and \"Vol\" sheets DO NOT match")
+  logging.error ("Price Sheet has   : " + str(number_of_cols_in_price_sheet) + " columns")
+  logging.error ("Volume  Sheet has : " + str(number_of_cols_in_vol_sheet) + " columns")
+  logging.error ("They need to match...Maybe you just need to delete empty columns in both the sheets")
+  logging.error ("OR maybe there is something wrong with downloaded data, please check the google sheets")
+  logging.error ("Please fix and rerun")
+  sys.exit(1)
+# ---------------------------------------------------------
+
 
 # logging.debug("The Price  DF after dropping the columne \'Date\' and setting the index to SYMBOL\n" + raw_price_df.to_string())
 # logging.debug("The Volume DF after dropping the columne \'Date\' and setting the index to SYMBOL\n" + raw_vol_df.to_string())
