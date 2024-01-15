@@ -8,7 +8,7 @@ import pandas as pd
 
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-log_dir = "\\..\\" + "Logs"
+log_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Logs"
 
 # -----------------------------------------------------------------------------
 # Logging
@@ -36,7 +36,7 @@ console.setFormatter(formatter)
 # add the handler to the root logger
 logging.getLogger('').addHandler(console)
 
-# Disnable and enable global level logging
+# Disable and enable global level logging
 logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
@@ -57,26 +57,76 @@ master_tracklist_df.set_index('Tickers', inplace=True)
 yahoo_earnings_calendar_df = pd.DataFrame(columns=['Ticker','Earnings_Date'])
 yahoo_earnings_calendar_df.set_index('Ticker', inplace=True)
 
-print(yf.__version__)
+skipped_ticker_df = pd.DataFrame(columns=['Ticker','Reason'])
+skipped_ticker_df.set_index('Ticker', inplace=True)
+
+
+print("The version of yfinance is : ", yf.__version__)
+
 i_itr = 1
-# ticker_list = ['aaon', 'asml', 'mu', 'nflx']
+# ticker_list = ['aaon', 'asml', 'mu', 'nflx','tsm']
 for ticker in ticker_list :
 
   ticker = ticker.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
   ticker_yf = yf.Ticker(ticker)
   logging.debug("Iteration : " + str(i_itr) + ", Ticker : " + str(ticker) + ", Earnings Calendar : " + str(ticker_yf.calendar))
-  if ticker_yf.calendar.empty :
+
+  # ticker_attributes = (
+  #   ("major_holders", pd.DataFrame),
+  #   ("institutional_holders", pd.DataFrame),
+  #   ("mutualfund_holders", pd.DataFrame),
+  #   ("insider_transactions", pd.DataFrame),
+  #   ("insider_purchases", pd.DataFrame),
+  #   ("insider_roster_holders", pd.DataFrame),
+  #   ("splits", pd.Series),
+  #   ("actions", pd.DataFrame),
+  #   ("shares", pd.DataFrame),
+  #   ("info", dict),
+  #   ("calendar", dict),
+  #   ("recommendations", Union[pd.DataFrame, dict]),
+  #   ("recommendations_summary", Union[pd.DataFrame, dict]),
+  #   ("upgrades_downgrades", Union[pd.DataFrame, dict]),
+  #   ("earnings", pd.DataFrame),
+  #   ("quarterly_earnings", pd.DataFrame),
+  #   ("quarterly_cashflow", pd.DataFrame),
+  #   ("cashflow", pd.DataFrame),
+  #   ("quarterly_balance_sheet", pd.DataFrame),
+  #   ("balance_sheet", pd.DataFrame),
+  #   ("quarterly_income_stmt", pd.DataFrame),
+  #   ("income_stmt", pd.DataFrame),
+  #   ("analyst_price_target", pd.DataFrame),
+  #   ("revenue_forecasts", pd.DataFrame),
+  #   ("sustainability", pd.DataFrame),
+  #   ("options", tuple),
+  #   ("news", Any),
+  #   ("earnings_trend", pd.DataFrame),
+  #   ("earnings_dates", pd.DataFrame),
+  #   ("earnings_forecasts", pd.DataFrame),
+  # )
+  #
+
+  if not ticker_yf.calendar:
     logging.info("Iteration : " + str(i_itr) + ", Ticker : " + str(ticker) + ", Earnings Calendar Dataframe returned empty...Skipping this ticker")
     i_itr = i_itr + 1
+    skipped_ticker_df.loc[ticker] = "Earnings_dictionary_is_empty"
     continue
 
-  # Get the Earnings Date in a list. It may have multiple entries.
-  # Get entry 0 as that is the earlier one
-  earnings_date_list = ticker_yf.calendar.loc['Earnings Date']
-  logging.debug("The earnnigs date list is : " + str(len(earnings_date_list)))
+  # Get the Earnings Date in a list.
+  # It may have multiple entries. Get entry 0 as that is the earlier one
+  # It may not have any entries (ASML, J, STM, TSM) -
+  #   In that case skip that ticker and go to the next one
+  earnings_date_list = ticker_yf.calendar['Earnings Date']
+  if (len(earnings_date_list) == 0):
+    logging.info("Iteration : " + str(i_itr) + ", Ticker : " + str(ticker) + ", Earnings Date list is zero length...Skipping this ticker")
+    i_itr = i_itr + 1
+    skipped_ticker_df.loc[ticker] = "Earnings_list_len_is_zero"
+    continue
+
+  logging.debug("The earnings date list is : " + str(len(earnings_date_list)))
   earnings_date = earnings_date_list[0]
-  logging.debug("The earnings date datetime is " + str(earnings_date))
-  earnings_date_dt = earnings_date.date()
+  logging.debug("The first entry in earnings date list is " + str(earnings_date) + ", and it is a : " + str(type(earnings_date)))
+  # earnings_date_dt = earnings_date.date()
+  earnings_date_dt = earnings_date
   logging.debug("The earnings date dt is " + str(earnings_date_dt))
   logging.info("Iteration : " + str(i_itr) + ", Ticker : " + str(ticker) + ", Earnings Date : " + str(earnings_date_dt))
   yahoo_earnings_calendar_df.loc[ticker] = [earnings_date_dt]
@@ -86,9 +136,19 @@ for ticker in ticker_list :
   logging.debug("")
   #  --------------------------------------------------------------------------
 
+if (not skipped_ticker_df.empty):
+  logging.info("")
+  logging.info("***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** ")
+  logging.info("***** Earnings date for " + str(len(skipped_ticker_df.index)) + " tickers could not be found *****")
+  logging.info("***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** ")
+  logging.info(skipped_ticker_df.to_string())
+
 # Now Print it in the csv file
 # now = dt.datetime.now()
 # date_time = now.strftime("%Y_%m_%d")
 # yahoo_earnings_calendar_logfile = "yahoo_earnings_calendar_" + date_time + ".csv"
 yahoo_earnings_calendar_logfile = "yahoo_earnings_calendar_yfinance.csv"
 yahoo_earnings_calendar_df.sort_values(by=['Earnings_Date','Ticker'], ascending=[True,True]).to_csv(dir_path + log_dir + "\\" + yahoo_earnings_calendar_logfile,sep=',', index=True, header=True)
+
+skipped_ticker_logfile = "skipped_ticker_yahoo_earnings_calendar_yfinance.csv"
+skipped_ticker_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + skipped_ticker_logfile,sep=',', index=True, header=True)
