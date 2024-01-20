@@ -23,11 +23,11 @@ def check_list_elements_with_val(list1, val):
 # -----------------------------------------------------------------------------
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-log_dir = "\\..\\" + "Logs"
-chart_dir = "\\..\\" + "Charts"
+log_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Logs"
+chart_dir = "\\..\\..\\" + "Charts"
 my_linear_chart_dir = chart_dir + "\\" + "Linear" + "\\" + "Charts_With_Numbers"
 earnings_dir = "\\..\\" + "Earnings"
-historical_dir = "\\..\\" + "Historical"
+historical_dir = "\\..\\..\\" + "Historical"
 master_tracklist_file = "Master_Tracklist.xlsm"
 price_target_json_file = "Price_Targets.json"
 

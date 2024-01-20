@@ -48,7 +48,8 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # Then print that string in the powershell scripts file
 # =============================================================================
 script_file = open(dir_path + earnings_dir + "\\" + "open_excel.sh", "w")
-filelist_str = "start-process " + "\"" + "C:\Program Files\Microsoft Office\\root\Office16\Excel.EXE" +  "\" \" "
+# filelist_str = "start-process " + "\"" + "C:\Program Files\Microsoft Office\\root\Office16\Excel.EXE" +  "\" \" "
+filelist_str = "start-process " + "\"" + "C:\Program Files (x86)\Microsoft Office\\root\Office16\Excel.EXE" + "\" \" "
 filelist_str_01 = "start-process " + "\"" + "C:\Program Files\Microsoft Office\Office16\Excel.EXE" +  "\" \" "
 
 for ticker_raw in ticker_list:

@@ -24,9 +24,12 @@ earnings_dir = "\\..\\" + "Earnings"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 calendar_file_full_path = dir_path + user_dir + "\\" + calendar_file
 configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
-yahoo_hist_in_dir = dir_path + "\\..\\Download\YahooHistorical"
-yahoo_hist_out_dir = dir_path + "\\..\\Historical"
+# yahoo_hist_in_dir = dir_path + "\\..\\Download\YahooHistorical"
+# yahoo_hist_out_dir = dir_path + "\\..\\Historical"
+yahoo_hist_in_dir = dir_path + "\\..\\..\\..\\Automation_Not_in_Git\\YahooHistorical"
+yahoo_hist_out_dir = dir_path + "\\..\\..\\Historical"
 log_dir = "\\..\\" + "Logs"
+log_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Logs"
 # =============================================================================
 
 # ---------------------------------------------------------------------------

@@ -14,9 +14,9 @@ import logging
 # -----------------------------------------------------------------------------
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-chart_dir = "\\..\\" + "Charts"
-charts_latest_dir = "\\..\\" + "Latest_Charts"
-log_dir = "\\..\\" + "Logs"
+chart_dir = "\\..\\..\\" + "Charts"
+charts_latest_dir = "\\..\\..\\" + "Latest_Charts"
+log_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Logs"
 
 master_tracklist_file = "Master_Tracklist.xlsm"
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
