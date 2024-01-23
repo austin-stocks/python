@@ -135,6 +135,7 @@ for ticker_raw in ticker_list:
     print("For now, I will use the default start date : ", start_date)
     print("WARNING ***** WARNING ***** WARNING ***** WARNING *****")
     print("")
+    i=i+1
 
   # print ("The earnings file is ", earnings_df.to_string())
   # print("The Earliest date found in Earnings file " , start_date)
@@ -158,6 +159,8 @@ for ticker_raw in ticker_list:
   except (ValueError):
     print ("Ticker ", ticker , "could not download data from Yahoo Financials")
     continue
+  i=i+1
+
 
   # Reverse the dataframe
   historical_data_reversed = historical_data.reindex(index=historical_data.index[::-1])

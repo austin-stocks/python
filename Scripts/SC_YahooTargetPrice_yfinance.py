@@ -70,7 +70,13 @@ for ticker_raw in ticker_list:
   ticker_yf = yf.Ticker(ticker)
   logging.debug("Iteration : " + str(i_idx) + ", Ticker : " + str(ticker) + ", Ticker info : " + str(ticker_yf.info))
   # If you want the median version, then replace 'targetMeanPrice' with 'targetMedianPrice'
-  target = ticker_yf.info['targetMeanPrice']
+  try:
+    target = ticker_yf.info['targetMeanPrice']
+  except (KeyError):
+    logging.info("Could not find target price for " + str(ticker))
+    logging.info("skipping...")
+    i_idx=i_idx+1
+    continue
   logging.debug ("The target price is : " + str(target) +  " and the type is : " + str(type(target)))
   target_str = str(target)
   logging.info("Iteration : " + f"{str(i_idx) : <3}" + ", Ticker : " + f"{str(ticker) : <6}" + " : Price Target : " + f"{str(target) : <10}")
