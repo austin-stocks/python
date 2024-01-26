@@ -24,6 +24,7 @@ from github - I am not sure how that works but it works)
 3. This installs the package in 
      C:\ProgramData\Anaconda3\Lib\site-packages (For Office Laptop)
      C:\Users\Owner\AppData\Roaming\Python\Python37\site-packages (for Desktop)
+     c:\users\sunde\appdata\roaming\python\python311\site-packages\ (for Papa-Lenovo)
   (Again not sure how this happens, but it happens - you can actually go there  and check)
     You also have a way to see all the installed packages in PyCharm - I will tell how shortly (on the side bar - as External Libs)
 	
