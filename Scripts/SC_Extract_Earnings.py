@@ -23,8 +23,8 @@ from termcolor import colored, cprint
 
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-log_dir = "\\..\\" + "Logs"
-stock_files_dir = "\\Experiments\\" + "Stock_Files"
+log_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Logs"
+stock_files_dir = "..\..\..\Automation_Not_in_Git\\" + "Stock_Files"
 yesterday_dt = dt.datetime.now() - dt.timedelta(days=1)
 yesterday_str = yesterday_dt.strftime("%m/%d/%Y")
 
@@ -70,9 +70,7 @@ for ticker_raw in ticker_list:
   ticker = ticker_raw.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
   logging.info("Getting Earnings for " + str(ticker))
 
-  # todo : Why does this not work here?
-  # earnings_df = pd.read_excel(dir_path + stock_files_dir + "\\" + ticker + '.xlsm', sheet_name="historical")
-  earnings_df = pd.read_excel('C:\Sundeep\Stocks_Automation\Scripts\Experiments\Stocks_Files' + "\\" + ticker + '.xlsm', sheet_name="historical")
+  earnings_df = pd.read_excel(stock_files_dir + '\\' + ticker + '.xlsm', sheet_name='historical')
 
   logging.debug ("\n\nThe Unadultrated Historical Tab (which contains earnings data) from the stock file is \n\n" + earnings_df.to_string())
   logging.debug ("\n\nThe columns in the historical tab are :\n")
@@ -155,7 +153,7 @@ for ticker_raw in ticker_list:
   # (Also go through the debug file to for good logical flow of how the dataframe
   # is printed row by row in the csv file
   # ---------------------------------------------------------------------------
-  csvFile=open('Experiments\\Extracted_Earnings' + "\\" + ticker + "_earnings.csv", 'w+', newline='')
+  csvFile=open("..\..\..\Automation_Not_in_Git" + '\\' + "Extracted_Earnings" + '\\' + ticker + "_earnings.csv", 'w+', newline='')
   writer = csv.writer(csvFile, delimiter=',')
   # Put the Header Row in the csv
   csv_header_row_list = ["CNBC_Matches_Reported_EPS","Q_Report_Date", "Q_Date", "Q_EPS_Diluted","Q_EPS_Adjusted","Q_EPS_Projections_Date_0","Q_EPS_Projections_1","Q_EPS_Projections_Date_1","Q_EPS_Projections_2","Q_EPS_Projections_Date_2","Q_EPS_Projections_2","Q_EPS_Projections_Date_2"]
