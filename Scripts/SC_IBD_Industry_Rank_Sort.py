@@ -21,9 +21,9 @@ def human_format(num, precision=2, suffixes=['', 'K', 'M', 'B', 'T', 'P']):
 # -----------------------------------------------------------------------------
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-log_dir = "\\..\\" + "Logs"
-ibd_inds_gp_dir = "\\..\\" + "IBD" + "\\" + "IBD-Industry-Groups"
-ibd_data_tables_dir = "\\..\\" + "IBD" + "\\" + "Data_Tables"
+log_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Logs"
+ibd_inds_gp_dir = "\\..\\..\\..\\" + "IBD" + "\\" + "IBD-Industry-Groups"
+ibd_data_tables_dir = "\\..\\..\\..\\" + "IBD" + "\\" + "Data_Tables"
 ibd_inds_gp_file = "Industry-Groups-Running-Rank.xlsx"
 master_tracklist_file = "Master_Tracklist.xlsm"
 
@@ -367,11 +367,11 @@ tickers_in_best_ranks_in_8wks_logfile= latest_weekly_date_str + "-Tickers_in_Ind
 writer = pd.ExcelWriter(dir_path + log_dir + "\\" + tickers_in_best_ranks_in_8wks_logfile, engine='xlsxwriter')
 ticker_with_best_ind_ranks_in_8wks_df.sort_values(by=['RS Rating','# of Funds - last reported qrtr','Price*Volume'], ascending=[False,False,False]).to_excel(writer)
 logging.info("Created : " + str(tickers_in_best_ranks_in_8wks_logfile) + " <-- Tickers in the best ranked Industries in the last 8 weeks, with stockcharts links etc")
-writer.save()
+writer.close()
 
 tickers_in_best_ranks_in_8wks_filtered_logfile= latest_weekly_date_str + "-Tickers_in_Industries_with_best_ranks_8wks_filtered.xlsx"
 writer = pd.ExcelWriter(dir_path + log_dir + "\\" + tickers_in_best_ranks_in_8wks_filtered_logfile, engine='xlsxwriter')
 ticker_with_best_ind_ranks_in_8wks_filtered_df.sort_values(by=['RS Rating','# of Funds - last reported qrtr','Price*Volume'], ascending=[False,False,False]).to_excel(writer)
 logging.info("Created : " + str(tickers_in_best_ranks_in_8wks_filtered_logfile) + " <-- Tickers in the best ranked Industries in the last 8 weeks, with stockcharts links etc and filtered according to Sundeep's Criterion above")
-writer.save()
+writer.close()
 # =============================================================================
