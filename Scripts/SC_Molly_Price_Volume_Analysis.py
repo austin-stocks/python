@@ -20,8 +20,8 @@ def human_format(num, precision=2, suffixes=['', 'K', 'M', 'B', 'T', 'P']):
 # -----------------------------------------------------------------------------
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-log_dir = "\\..\\" + "Logs"
-price_vol_dir = "\\..\\" + "IBD" + "\\" + "Meetup_Groups" + "\\" + "Molly_Price_Volume"
+log_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Logs"
+price_vol_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Misc" + "\\" + "Molly_Price_Volume"
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -79,6 +79,7 @@ raw_vol_df = pd.read_excel(price_vol_xls, 'Vol')
 # ---------------------------------------------------------
 raw_price_df.drop('Date', inplace=True, axis=1)
 raw_price_df.reset_index
+# logging.debug("The Price DF \n" + raw_price_df.to_string())
 raw_price_df.set_index('SYMBOL', inplace=True)
 raw_price_df.sort_index(ascending=True,inplace=True)
 logging.info("It seems to have :: rows : " + str(len(raw_price_df.index.tolist())) + ", columns : " + str(len(raw_price_df.columns.tolist())))
