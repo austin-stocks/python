@@ -3962,7 +3962,9 @@
       {"Start_Date" : "03/25/2019", "Stop_Date" :   "10/05/2019", "Adj_Amount" : "-.25"},
       {"Start_Date" : "12/25/2019", "Stop_Date" :   "01/05/2020", "Adj_Amount" : "-1.5"},
       {"Start_Date" : "03/25/2020", "Stop_Date" :   "10/05/2020", "Adj_Amount" : "-1.25"},
-      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.5"}
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.5"},
+      {"Start_Date" : "03/25/2022", "Stop_Date" :   "01/05/2023", "Adj_Amount" : "-4.25"},
+      {"Start_Date" : "12/25/2022", "Stop_Date" :   "10/05/2023", "Adj_Amount" : "-4"}
     ]
   },
 
