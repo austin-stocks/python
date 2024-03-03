@@ -1747,6 +1747,9 @@
   },
 
   "COO" : {
+    "Splits" : {
+      "01/14/2024" : "4:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "01/30/2016", "Stop_Date" :   "End"}
     ],
