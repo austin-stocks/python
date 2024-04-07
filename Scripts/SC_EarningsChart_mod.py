@@ -511,7 +511,8 @@ for ticker_raw in ticker_list:
   # column (kids called me or something happened and then I forgot :-))
   # ---------------------------------------------------------------------------
   eps_date_list_eps_report_date_match, eps_date_list_eps_report_date_index = qtr_date_and_index_matching_eps_report_date(qtr_eps_date_list, eps_report_date)
-  if (math.isnan(qtr_eps_df.loc[eps_date_list_eps_report_date_index,['Q_EPS_Diluted']])):
+  # if (math.isnan(qtr_eps_df.loc[eps_date_list_eps_report_date_index,['Q_EPS_Diluted']])):
+  if (str(qtr_eps_df.iloc[eps_date_list_eps_report_date_index]['Q_EPS_Diluted']) == 'nan'):
     logging.error("Latest Diluted earnings in Q_EPS_Diluted column, corresponding to Lastest Earnings date : " + str(eps_report_date) + ", is not filled in the earning file")
     logging.error("Likely you put the earnings release date in the Q_Report_Date column but forgot (or got distracted) to enter the actual earnings in Q_EPS_Diluted column")
     logging.error("Row : " + str(eps_date_list_eps_report_date_index+2) + " (Date: " + str(eps_report_date) + ")," + " Col : Q_EPS_Diluted")
@@ -538,7 +539,7 @@ for ticker_raw in ticker_list:
   logging.debug("The Q_Date index that matches to last reported earning date is : " + str(eps_date_list_eps_report_date_index))
   for i_int in range(eps_date_list_eps_report_date_index):
     # logging.debug("Index : " + str(i_int) + ", : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string() + ", : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string())
-    if (math.isnan(qtr_eps_df.loc[i_int,['Q_EPS_Diluted']])):
+    if (str(qtr_eps_df.iloc[i_int]['Q_EPS_Diluted']) == 'nan'):
       logging.debug("Index : " + str(i_int) + ", : " + qtr_eps_df.loc[i_int, ['Q_Date']].to_string() + ", : " + qtr_eps_df.loc[i_int, ['Q_EPS_Diluted']].to_string())
     else:
       logging.error("It seems that : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string() + ", is recorded for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string() + " in row " + str(i_int+2) + " of the earnings file")
@@ -2388,7 +2389,7 @@ for ticker_raw in ticker_list:
     if (linear_chart_type_idx == 'Long_Linear'):
       plot_period_int = plot_period_int + 252 * 15
 
-    if (len(date_list) < plot_period_int):
+    if (len(date_list) <= plot_period_int):
       plot_period_int = len(date_list) - 1
       logging.debug("Since the Historical Data (Length of the date list) is not available for all\
       the years that user is asking to plot for, so adjusting the plot for " +
@@ -2413,14 +2414,14 @@ for ticker_raw in ticker_list:
     # ---------------------------------------------------------------------------
     # Create the schiller PE line for the plot
     # ---------------------------------------------------------------------------
-    avearge_schiller_pe = 15
+    average_schiller_pe = 15
     # Divide the schiller PE values by average_schiller_pe to normalize it
-    schiller_pe_normalized_list = [float(schiller_pe / avearge_schiller_pe) for schiller_pe in schiller_pe_value_list]
+    schiller_pe_normalized_list = [float(schiller_pe / average_schiller_pe) for schiller_pe in schiller_pe_value_list]
 
     schiller_pe_value_expanded_list = []
     schiller_pe_normalized_expanded_list = []
     oldest_date_in_date_list = date_list[len(date_list) - 1]
-    logging.debug("Oldest Date in Historical Date List is" + str(oldest_date_in_date_list))
+    logging.debug("Oldest Date in Historical Date List is " + str(oldest_date_in_date_list))
     for i in range(len(date_list)):
       schiller_pe_value_expanded_list.append(float('nan'))
       schiller_pe_normalized_expanded_list.append(float('nan'))
@@ -2456,18 +2457,21 @@ for ticker_raw in ticker_list:
     # schiller_ann_requested_red_line_list_3 = [i / price_lim_upper for i in schiller_ann_requested_red_line_list_2]
     # Now multiply the schiller expanded list with the yr eps expanded list
     schiller_pe_times_yr_eps_list = [a * b for a, b in zip(schiller_pe_normalized_list_smooth, yr_eps_adj_expanded_list_smooth)]
-    logging.debug("The smooth Schiller Normalized PE list mulitplied by YR EPS list is " + str(schiller_pe_times_yr_eps_list))
+    logging.debug("The smooth Schiller Normalized PE list miltiplied by YR EPS list is " + str(schiller_pe_times_yr_eps_list))
     # ---------------------------------------------------------------------------
 
     # ---------------------------------------------------------------------------
-    # Do the calcuations needed to xtick and xtick lables for main plt
+    # Do the calculations needed to xtick and xtick labels for main plt
     # ---------------------------------------------------------------------------
     # This works - Good resource
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
 
-    # It is possible the plot_period_int might have changed becuase of
+    # It is possible the plot_period_int might have changed because of
     # Long_Linear so this needs to be regenerated
+    # logging.debug("The date list is " + str(date_list))
+    # logging.debug("The number of element : " + str(len(date_list)))
+    # logging.debug("The plot period is    : " + str(plot_period_int))
     fiscal_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_yr_str)
     fiscal_qtr_and_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_qtr_str)
     # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')

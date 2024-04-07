@@ -15,10 +15,10 @@ from dateutil.relativedelta import relativedelta
 # -----------------------------------------------------------------------------
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-chart_dir = "\\..\\" + "Charts"
-charts_latest_dir = "\\..\\" + "Latest_Charts"
-older_charts_dir = "\\..\\" + "Older_Charts"
-log_dir = "\\..\\" + "Logs"
+chart_dir = "\\..\\..\\" + "Charts"
+## older_charts_dir = "\\..\\" + "Older_Charts"
+older_charts_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Older_Charts"
+log_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Logs"
 
 master_tracklist_file = "Master_Tracklist.xlsm"
 master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
