@@ -5864,6 +5864,9 @@
   },
 
   "WMT" : {
+    "Splits" : {
+      "02/26/2024" : "3:1"
+    },
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "07/25/2018", "Stop_Date" :   "05/05/2019", "Adj_Amount" : ".3"}
     ]
