@@ -202,7 +202,7 @@
     ]
   },
 
-  "CPSI" : {
+  "TBRG" : {
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/20/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".4"}
     ],
