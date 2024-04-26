@@ -19,6 +19,7 @@ from github - I am not sure how that works but it works)
    and then just scroll up to see what is the version of the package that is installed
   
 3. If you wan to install a package, then run the following command:
+     (RUN IT AS ADMIN --- RUN IT AS ADMIN --- RUN IT AS ADMIN)
 	python -m pip install yahoo-historical
 
 3. This installs the package in 
