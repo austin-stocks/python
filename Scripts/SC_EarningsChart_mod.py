@@ -2681,7 +2681,14 @@ for ticker_raw in ticker_list:
       volume_plt.set_facecolor("honeydew")
 
       plt.text(x=0.03, y=0.915, s=ticker_company_name + "(" + ticker + ")", fontsize=18, fontweight='bold', ha="left", transform=fig.transFigure)
-      plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry, fontsize=11, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
+      ## Append to show that if chart uses Adjusted Earnings and if so,
+      ## change the color of sector and industry line
+      if (use_diluted_or_adjusted_eps == "Adjusted"):
+        ticker_industry += " (( Plot uses Adj Earnings ))"
+        plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry, fontsize=11, fontweight='bold', fontstyle='italic', ha="left", color="magenta", transform=fig.transFigure)
+      else:
+        plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry, fontsize=11, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
+
       plt.text(x=0.03, y=0.866, s=chart_update_date_str, fontsize=9, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
       # main_plt.text(x=.45, y=.95, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
       main_plt.text(x=.28, y=.98, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
