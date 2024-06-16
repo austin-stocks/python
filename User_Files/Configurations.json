@@ -1354,6 +1354,15 @@
     ]
   },
 
+  "DDOG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+    ],
+    "QTR_Sales_BV_FCF_Overlay" : [
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
   "FL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "10/30/2017", "Stop_Date" :   "07/30/2019"}
