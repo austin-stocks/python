@@ -632,6 +632,17 @@
     ]
   },
 
+  "GLW" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2023", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2016", "Stop_Date" :   "04/05/2017", "Adj_Amount" : "-.4"},
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".4"},
+      {"Start_Date" : "03/25/2018", "Stop_Date" :   "07/05/2018", "Adj_Amount" : ".2"}
+    ]
+  },
+
   "GOOG" : {
     "Splits" : {
       "7/15/2022" : "20:1"
@@ -4443,6 +4454,9 @@
   },
 
   "APH" : {
+    "Splits" : {
+      "5/21/2024" : "2:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2020", "Stop_Date" :   "End"},
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "Next"}
