@@ -1345,6 +1345,38 @@
     ]
   },
 
+  "GTLB" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "01/30/2024", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "UBER" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2023", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "UTHR" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2021", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "03/25/2019", "Stop_Date" :   "01/05/2020", "Adj_Amount" : "4"}
+    ]
+  },
+
+  "CVLT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".32"},
+      {"Start_Date" : "09/25/2020", "Stop_Date" :   "07/05/2021", "Adj_Amount" : ".14"},
+      {"Start_Date" : "03/25/2023", "Stop_Date" :   "01/05/2024", "Adj_Amount" : ".29"}
+    ]
+  },
+
   "SWAV" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2022", "Stop_Date" :   "End"}
