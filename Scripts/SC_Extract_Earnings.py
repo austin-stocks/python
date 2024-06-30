@@ -71,6 +71,9 @@ for ticker_raw in ticker_list:
   logging.info("Getting Earnings for " + str(ticker))
 
   earnings_df = pd.read_excel(stock_files_dir + '\\' + ticker + '.xlsm', sheet_name='historical')
+  # stock_wb = openpyxl.load_workbook(stock_files_dir + '\\' + ticker + '.xlsm')
+  # earnings_ws = stock_wb['historical']
+  # earnings_df = pd.DataFrame(earnings_ws.values)
 
   logging.debug ("\n\nThe Unadultrated Historical Tab (which contains earnings data) from the stock file is \n\n" + earnings_df.to_string())
   logging.debug ("\n\nThe columns in the historical tab are :\n")

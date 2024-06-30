@@ -1180,8 +1180,20 @@ for ticker_raw in ticker_list:
   last_black_diamond_index = date_list.index(historical_date_list_eps_report_date_match)
   logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Historical df is : " + str(historical_date_list_eps_report_date_match) + " at index " + str(last_black_diamond_index))
 
-  # Now we know the last quarter earning date index
+  # Now we know the last quarter earning date index, determine the number of years for
+  # which we want to analyze analysts projection accuracy. Default is 2
+  # If there are too few entries, which can happen for very new IPOs like ALAB,
+  # then reduce the number of years to 1
+  # We need atleat one year or earnings available for this to work
+  # If you are overzealous and still want to plot a brand new IPO, then please
+  # make up the earnings for one year
   years_of_analyst_eps_to_analyze = 2
+  # logging.debug("The total number of index in qtr_eps_date_list are : " + str(len(qtr_eps_date_list)) < )
+  # If less than two years of earnings are available, then reducde the
+  # number of years for which to calculate the variation to 1
+  if ( ((len(qtr_eps_date_list)-1) - eps_date_list_eps_report_date_index) < 8):
+    logging.info("*** Reduced the number of years for which analyst projections would be analysed to 1 ***")
+    years_of_analyst_eps_to_analyze = 1
   # Delete all entries from eps projection list that are older than the date we need for our calculations
   del qtr_eps_projections_list[eps_date_list_eps_report_date_index + years_of_analyst_eps_to_analyze * 4:]
   logging.debug("Will keep (" + str(years_of_analyst_eps_to_analyze) + ") years of Analysts Projections to Analyze")
