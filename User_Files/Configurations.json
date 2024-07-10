@@ -1142,7 +1142,8 @@
 
   "NVDA" : {
     "Splits" : {
-      "07/20/2021" : "4:1"
+      "07/20/2021" : "4:1",
+      "06/10/2024" : "10:1"
     },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "11/30/2019", "Stop_Date" :   "End"},
