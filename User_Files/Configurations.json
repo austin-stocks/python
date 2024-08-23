@@ -977,6 +977,19 @@
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "2.8"}
     ]
   },
+  "MMM" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2024", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "06/25/2022", "Stop_Date" :   "07/05/2022", "Adj_Amount" : ".4"},
+      {"Start_Date" : "09/25/2022", "Stop_Date" :   "04/05/2023", "Adj_Amount" : "-.6"},
+      {"Start_Date" : "06/25/2023", "Stop_Date" :   "07/05/2023", "Adj_Amount" : "2.4"},
+      {"Start_Date" : "09/25/2023", "Stop_Date" :   "04/05/2024", "Adj_Amount" : "4.8"},
+      {"Start_Date" : "06/25/2024", "Stop_Date" :   "07/05/2024", "Adj_Amount" : "1.8"}
+    ]
+  },
+
   "FN" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2015", "Stop_Date" :   "End"}
