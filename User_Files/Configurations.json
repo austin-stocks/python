@@ -3595,6 +3595,9 @@
   },
 
   "WSM" : {
+    "Splits" : {
+      "07/09/2024" : "2:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "07/30/2012", "Stop_Date" :   "Next"},
        {"Start_Date" : "07/30/2018", "Stop_Date" :   "End"}
