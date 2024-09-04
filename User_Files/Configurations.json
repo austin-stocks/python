@@ -3582,6 +3582,12 @@
     ]
   },
 
+  "STEP" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2023", "Stop_Date" :   "End"}
+    ]
+  },
+
   "PTC" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
