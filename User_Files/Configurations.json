@@ -1257,11 +1257,27 @@
 
   "NVT" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "09/30/2021", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2023", "Stop_Date" :   "End"},
+       {"Start_Date" : "09/30/2021", "Stop_Date" :   "Next"},
        {"Start_Date" : "06/30/2020", "Stop_Date" :   "Next"}
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "09/25/2020", "Stop_Date" :   "07/05/2021", "Adj_Amount" : ".25"}
+    ]
+  },
+
+  "ZETA" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2022", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2022", "Stop_Date" :   "10/05/2023","Adj_Amount" : "-.24"}
+    ]
+  },
+
+  "ESTC" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "10/30/2023", "Stop_Date" :   "End"}
     ]
   },
 
@@ -5415,6 +5431,12 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "Next"},
        {"Start_Date" : "12/30/2019", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "IOT" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "1/30/2024", "Stop_Date" :   "End"}
     ]
   },
 

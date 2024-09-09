@@ -16,8 +16,35 @@
     ]
   },
 
+  "IOT" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "3/12/2024","Buy_Price_str" :  "38"}
+    ]
+  },
+
+  "APP" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "8/26/2024","Buy_Price_str" :  "90"}
+    ]
+  },
+
+  "TW" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "7/24/2024","Buy_Price_str" :  "108"}
+    ]
+  },
+
+  "ZS" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "7/13/2023","Buy_Price_str" :  "144"},
+       {"Buy_Date" : "2/21/2024","Buy_Price_str" :  "213"},
+       {"Buy_Date" : "5/15/2024","Buy_Price_str" :  "180"}
+    ]
+  },
+
   "COHR" : {
     "Buy_Sell" : [
+       {"Buy_Date" : "06/26/2024","Buy_Price_str" :  "79"},
        {"Buy_Date" : "03/23/2018","Buy_Price_str" :  "$191.69"},
        {"Sell_Date" : "09/21/2020","Sell_Price_str" :  "$105"}
     ]
