@@ -65,6 +65,18 @@
     ]
   },
 
+  "NU" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "05/21/2024","Buy_Price_str" :  "12"}
+    ]
+  },
+
+  "FROG" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/22/2024","Buy_Price_str" :  "34"}
+    ]
+  },
+
   "VIPS" : {
     "Buy_Sell" : [
        {"Buy_Date" : "09/15/2021","Buy_Price_str" :  "12.95"},

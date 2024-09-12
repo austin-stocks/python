@@ -1396,6 +1396,12 @@
     ]
   },
 
+  "FROG" : {
+    "Earnings_growth_projection_overlay": [
+      { "Start_Date": "12/30/2023", "Stop_Date": "End" }
+    ]
+  },
+
   "CVLT" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"}
@@ -1403,7 +1409,8 @@
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : ".32"},
       {"Start_Date" : "09/25/2020", "Stop_Date" :   "07/05/2021", "Adj_Amount" : ".14"},
-      {"Start_Date" : "03/25/2023", "Stop_Date" :   "01/05/2024", "Adj_Amount" : ".29"}
+      {"Start_Date" : "03/25/2023", "Stop_Date" :   "01/05/2024", "Adj_Amount" : ".29"},
+      {"Start_Date" : "03/25/2024", "Stop_Date" :   "01/05/2025", "Adj_Amount" : "-.65"}
     ]
   },
 
@@ -5427,6 +5434,18 @@
     ]
   },
 
+  "DUOL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "6/30/2024", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "DOCS" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2023", "Stop_Date" :   "End"}
+    ]
+  },
+
   "MKSI" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "Next"},
@@ -5997,7 +6016,8 @@
   "NU" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2022", "Stop_Date" :   "Next"},
-       {"Start_Date" : "12/30/2023", "Stop_Date" :   "End"}
+       {"Start_Date" : "12/30/2023", "Stop_Date" :   "Next"},
+       {"Start_Date" : "12/30/2024", "Stop_Date" :   "End"}
     ]
   },
 
