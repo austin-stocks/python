@@ -233,13 +233,22 @@
 
   "ANET" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "05/02/2023","Buy_Price_str" :  "$141.39"}
+       {"Buy_Date" : "05/02/2023","Buy_Price_str" :  "141"},
+       {"Buy_Date" : "10/26/2023","Buy_Price_str" :  "171"},
+       {"Buy_Date" : "02/13/2024","Buy_Price_str" :  "262"}
     ]
   },
 
   "PLTR" : {
     "Buy_Sell" : [
        {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$9.18"}
+    ]
+  },
+
+  "VRT" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "03/12/2024","Buy_Price_str" :  "70"},
+       {"Buy_Date" : "07/26/2024","Buy_Price_str" :  "86"}
     ]
   },
 
