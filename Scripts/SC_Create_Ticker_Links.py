@@ -83,7 +83,12 @@ else:
   ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 # -----------------------------------------------------------------------------
 
-ticker_links_df = pd.DataFrame(columns=['Ticker','SChart', 'CNBC','Y-Profile','Y-BS','SPI','AAII'])
+yahoo_comany_info_df = pd.read_excel(dir_path + user_dir + "\\" + 'Yahoo_Company_Info.xlsm', sheet_name="Company_Info")
+yahoo_comany_info_df.set_index('Ticker', inplace=True)
+# logging.info (yahoo_comany_info_df)
+
+
+ticker_links_df = pd.DataFrame(columns=['Ticker','Name', 'Sector', 'Industry','SChart', 'CNBC-Earnings','CNBC-Fin','Y-Profile','Y-BS','PSI','AAII'])
 ticker_links_df.set_index('Ticker', inplace=True)
 
 # -----------------------------------------------------------------------------
@@ -96,6 +101,7 @@ for ticker_raw in ticker_list:
   missing_data_found = 0
   missing_data_index = ""
   ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
+  logging.info("Iteration no : " +str(i) + " : " + str(ticker))
 
   # Remove the "." from the ticker and replace by "-" as this is what Yahoo has
   if (ticker == "BRK.B"):
@@ -103,13 +109,26 @@ for ticker_raw in ticker_list:
   elif (ticker == "BF.B"):
     ticker = "BF-B"
 
-  logging.info("Iteration no : " +str(i) + " : " + str(ticker))
-  ticker_links_df.loc[ticker, 'Y-Profile'] = 'https://finance.yahoo.com/quote/' + str(ticker)
+  ticker_company_name = "#NA#"
+  ticker_sector = "#NA#"
+  ticker_industry = "#NA#"
+  chart_update_date_str = "#NA#"
+  if (yahoo_comany_info_df.index.isin([(ticker)]).any()):
+    # This works - get the value in the column corresponding to the index
+    ticker_company_name = yahoo_comany_info_df.loc[ticker, 'Company_Name']
+    ticker_sector = yahoo_comany_info_df.loc[ticker, 'Sector']
+    ticker_industry = yahoo_comany_info_df.loc[ticker, 'Industry']
+
+  ticker_links_df.loc[ticker, 'Name'] = ticker_company_name
+  ticker_links_df.loc[ticker, 'Sector'] = ticker_sector
+  ticker_links_df.loc[ticker, 'Industry'] = ticker_industry
   ticker_links_df.loc[ticker, 'SChart'] = 'https://stockcharts.com/h-sc/ui?s='+str(ticker)
-  ticker_links_df.loc[ticker, 'SPI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=282054&p=' + str(ticker)
-  ticker_links_df.loc[ticker, 'CNBC'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=earnings'
-  ticker_links_df.loc[ticker, 'AAII'] = 'https://www.aaii.com/stock/ticker/' + str(ticker)
+  ticker_links_df.loc[ticker, 'PSI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=290866&p=' + str(ticker)
+  ticker_links_df.loc[ticker, 'CNBC-Earnings'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=earnings'
+  ticker_links_df.loc[ticker, 'CNBC-Fin'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=financials'
+  ticker_links_df.loc[ticker, 'Y-Profile'] = 'https://finance.yahoo.com/quote/' + str(ticker)
   ticker_links_df.loc[ticker, 'Y-BS'] = 'https://finance.yahoo.com/quote/' + str(ticker) + "/balance-sheet"
+  ticker_links_df.loc[ticker, 'AAII'] = 'https://www.aaii.com/stock/ticker/' + str(ticker)
 
   i = i+1
 
@@ -118,7 +137,8 @@ logging.info("Now creating xlsx with links in the logdir")
 # Now print to the file
 ticker_links_logfile= "Tickers_Links.xlsx"
 writer = pd.ExcelWriter(dir_path + log_dir + "\\" + ticker_links_logfile, engine='xlsxwriter')
-ticker_links_df.sort_values(by=['Ticker'], ascending=[False]).to_excel(writer)
+# ticker_links_df.sort_values(by=['Ticker'], ascending=[False]).to_excel(writer)
+ticker_links_df.to_excel(writer)
 logging.info("Created : " + str(ticker_links_logfile) + " <-- Tickers links")
 writer.close()
 logging.info("All Done...")

@@ -224,6 +224,11 @@
     ]
   },
 
+  "CPNG" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "05/06/2024","Buy_Price_str" :  "23.29"}
+    ]
+  },
 
   "PANW" : {
     "Buy_Sell" : [
