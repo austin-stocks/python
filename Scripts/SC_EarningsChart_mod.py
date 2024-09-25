@@ -697,8 +697,7 @@ for ticker_raw in ticker_list:
     # date that is in the earnings file and find the number of year/quarters than
     # need to be inserted
     # -------------------------------------------------------------------------
-    use_diluted_or_adjusted_eps = str(ticker_config_series['Use_Diluted_or_Adjusted_EPS'])
-    if (use_diluted_or_adjusted_eps == "Adjusted"):
+    if (str(ticker_config_series['Use_Diluted_or_Adjusted_EPS']) == "Adjusted"):
       logging.info("Using ADJUSTED EPS to Plot the chart")
       if qtr_eps_df['Q_EPS_Adjusted'].count() != qtr_eps_df['Q_EPS_Diluted'].count():
         logging.error ("")
@@ -2695,7 +2694,7 @@ for ticker_raw in ticker_list:
       plt.text(x=0.03, y=0.915, s=ticker_company_name + "(" + ticker + ")", fontsize=18, fontweight='bold', ha="left", transform=fig.transFigure)
       ## Append to show that if chart uses Adjusted Earnings and if so,
       ## change the color of sector and industry line
-      if (use_diluted_or_adjusted_eps == "Adjusted"):
+      if (str(ticker_config_series['Use_Diluted_or_Adjusted_EPS']) == "Adjusted"):
         ticker_industry += " (( Plot uses Adj Earnings ))"
         plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry, fontsize=11, fontweight='bold', fontstyle='italic', ha="left", color="magenta", transform=fig.transFigure)
       else:
