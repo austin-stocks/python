@@ -67,6 +67,7 @@
 
   "NU" : {
     "Buy_Sell" : [
+       {"Buy_Date" : "09/26/2024","Buy_Price_str" :  "14.16"},
        {"Buy_Date" : "05/21/2024","Buy_Price_str" :  "12"}
     ]
   },
