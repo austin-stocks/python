@@ -26,6 +26,15 @@
     }
   },
 
+  "HOOD" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2024", "Stop_Date" :   "End"}
+    ],
+    "QTR_Sales_BV_FCF_Overlay" : [
+       {"Start_Date" : "03/30/2024", "Stop_Date" :   "End"}
+    ]
+  },
+
   "BERY" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2016", "Stop_Date" :   "End"},
@@ -6007,6 +6016,9 @@
   },
 
   "CTAS" : {
+    "Splits" : {
+      "09/11/2024" : "4:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "02/28/2010", "Stop_Date" :   "05/30/2019"}
     ],
