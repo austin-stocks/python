@@ -300,6 +300,16 @@
        {"Buy_Date" : "09/27/2024","Buy_Price_str" :  "87"}
     ]
   },
+  "HIMS" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "09/30/2024","Buy_Price_str" :  "18"}
+    ]
+  },
+  "HOOD" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "09/30/2024","Buy_Price_str" :  "23"}
+    ]
+  },
 
   "FORM" : {
     "Buy_Sell" : [
