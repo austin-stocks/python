@@ -70,6 +70,10 @@ logging.disable(logging.NOTSET)
 # increases to the extent that it becomes cumbersome to manage it.
 # date_1year_ago_dt = dt.datetime.now() - relativedelta(months=12)
 date_6mon_ago_dt = dt.datetime.now() - relativedelta(months=6)
+logging.info("")
+logging.info("=================================================================")
+logging.info("Will move all the charts older than " + str(date_6mon_ago_dt.date()))
+logging.info("=================================================================")
 # ---------------------------------------------------------
 
 chart_styles_list = ['Linear', 'Long_Linear', 'Log']
@@ -177,6 +181,13 @@ for chart_styles_idx in chart_styles_list:
         dest_file_with_path = dest_dir + ticker_to_move
         logging.info(str(display_str) + "Moving chart file " + str(ticker_to_move))
         logging.debug(str(display_str) + "Moving chart file (Full path names) \n" + source_file_with_path + " to \n" + (dest_file_with_path))
+        if os.path.isdir(dest_dir) is False:
+          logging.error("The Destination Dir: ")
+          logging.error(str(dest_dir))
+          logging.error("Does NOT exist...Please create that directory path and retry")
+          logging.error("Exiting....")
+          logging.error("================================================================")
+          sys.exit(1)
         shutil.move(source_file_with_path, dest_file_with_path)
         no_of_files_moved =   no_of_files_moved+1
         logging.debug("")
