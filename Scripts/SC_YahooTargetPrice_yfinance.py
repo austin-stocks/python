@@ -49,6 +49,7 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # ---------------------------------------------------------------------------
 
+print("The version of yfinance is : ", yf.__version__)
 tracklist_file = "Tracklist.csv"
 tracklist_file_full_path = dir_path + user_dir + "\\" + tracklist_file
 tracklist_df = pd.read_csv(tracklist_file_full_path)

@@ -30,6 +30,7 @@ yahoo_hist_out_dir = dir_path + "\\..\\Download\\YahooHistorical"
 yahoo_hist_out_dir = dir_path + "\\..\\..\\..\\Automation_Not_in_Git\\YahooHistorical"
 print(yf.__file__)
 print(yf.__spec__)
+print("The version of yfinance is : ", yf.__version__)
 yf.pdr_override() # <== that's all it takes :-)
 # Need to have version 0.2.40 (The latest version 0.2.44 does not work...there
 # is some problem with pdr_override, so maybe the data needs to be received

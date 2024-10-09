@@ -33,6 +33,7 @@ start_date = '1900-01-01'
 end_date_raw = datetime.datetime.today() + datetime.timedelta(days=1)
 end_date = end_date_raw.strftime('%Y-%m-%d')
 # end_date = '2015-08-15'
+print("The version of yfinance is : ", yf.__version__)
 print ("Start Date set to: ", start_date, ", End Date set to: ", end_date)
 # =============================================================================
 
