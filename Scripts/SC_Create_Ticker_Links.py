@@ -87,6 +87,11 @@ yahoo_comany_info_df = pd.read_excel(dir_path + user_dir + "\\" + 'Yahoo_Company
 yahoo_comany_info_df.set_index('Ticker', inplace=True)
 # logging.info (yahoo_comany_info_df)
 
+## Read the IBD Data Tables to get some information
+## 'RS Rating', 'PE Ratio', 'Industry Group Rank', '# of Funds - last reported qrtr', ' Comp. Rating', 'EPS Rating', 'Acc/Dis Rating',Ind Grp RS', 'SMR Rating', 'Spon Rating', 'Last Qtr EPS % Chg.', 'Curr Qtr EPS Est. % Chg.', 'Curr Yr EPS Est. % Chg.', 'Last Qtr Sales % Chg.', 'Pretax Margin', 'IPO Date'
+
+## Read the AAII financial to get some information
+
 
 ticker_links_df = pd.DataFrame(columns=['Ticker','Name', 'Sector', 'Industry','SChart', 'CNBC-Earnings','CNBC-Fin','Y-Profile','Y-BS','PSI','AAII'])
 ticker_links_df.set_index('Ticker', inplace=True)
@@ -135,7 +140,9 @@ for ticker_raw in ticker_list:
 logging.info("")
 logging.info("Now creating xlsx with links in the logdir")
 # Now print to the file
-ticker_links_logfile= "Tickers_Links.xlsx"
+curr_date = dt.date.today()
+logging.info("Todays date is : " + str(curr_date))
+ticker_links_logfile= str(curr_date) + "_" + "Tickers_Links.xlsx"
 writer = pd.ExcelWriter(dir_path + log_dir + "\\" + ticker_links_logfile, engine='xlsxwriter')
 # ticker_links_df.sort_values(by=['Ticker'], ascending=[False]).to_excel(writer)
 ticker_links_df.to_excel(writer)
