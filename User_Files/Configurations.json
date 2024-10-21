@@ -65,12 +65,22 @@
 
   "YOU" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "12/30/2022", "Stop_Date" :   "End"}
+       {"Start_Date" : "12/30/2022", "Stop_Date" :   "Next"}
     ],
     "QTR_Sales_BV_FCF_Overlay" : [
        {"Start_Date" : "12/30/2022", "Stop_Date" :   "End"}
     ]
   },
+
+  "TENB" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/30/2022", "Stop_Date" :   "End"}
+    ],
+    "QTR_Sales_BV_FCF_Overlay" : [
+       {"Start_Date" : "12/30/2020", "Stop_Date" :   "End"}
+    ]
+  },
+
   "BERY" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2016", "Stop_Date" :   "End"},
@@ -1883,6 +1893,11 @@
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2018", "Stop_Date" :   "End"},
        {"Start_Date" : "09/30/2014", "Stop_Date" :   "Next"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2022", "Stop_Date" :   "04/05/2023", "Adj_Amount" : ".58"},
+      {"Start_Date" : "12/25/2021", "Stop_Date" :   "10/05/2022", "Adj_Amount" : ".5"},
+      {"Start_Date" : "06/25/2021", "Stop_Date" :   "10/05/2021", "Adj_Amount" : ".7"}
     ]
   },
 
