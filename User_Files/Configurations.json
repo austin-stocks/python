@@ -5712,6 +5712,24 @@
     ]
   },
 
+  "PSTG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "11/30/2022", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "04/25/2023", "Stop_Date" :   "02/05/2024", "Adj_Amount" : ".04"}
+    ]
+  },
+
+  "CPNG" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2023", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2023", "Stop_Date" :   "10/05/2024", "Adj_Amount" : "-.13"}
+    ]
+  },
+
   "DAL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "06/30/2018", "Stop_Date" :   "06/30/2019"},
