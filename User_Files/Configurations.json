@@ -65,6 +65,7 @@
 
   "YOU" : {
     "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2024", "Stop_Date" :   "End"},
        {"Start_Date" : "12/30/2022", "Stop_Date" :   "Next"}
     ],
     "QTR_Sales_BV_FCF_Overlay" : [
