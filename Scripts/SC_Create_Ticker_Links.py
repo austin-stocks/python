@@ -128,7 +128,7 @@ for ticker_raw in ticker_list:
   ticker_links_df.loc[ticker, 'Sector'] = ticker_sector
   ticker_links_df.loc[ticker, 'Industry'] = ticker_industry
   ticker_links_df.loc[ticker, 'SChart'] = 'https://stockcharts.com/h-sc/ui?s='+str(ticker)
-  ticker_links_df.loc[ticker, 'PSI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=290866&p=' + str(ticker)
+  ticker_links_df.loc[ticker, 'PSI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=294571&p=' + str(ticker)
   ticker_links_df.loc[ticker, 'CNBC-Earnings'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=earnings'
   ticker_links_df.loc[ticker, 'CNBC-Fin'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=financials'
   ticker_links_df.loc[ticker, 'Y-Profile'] = 'https://finance.yahoo.com/quote/' + str(ticker)
