@@ -2826,7 +2826,10 @@
       "10/14/2022" : "3:1"
     },
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "01/30/2023", "Stop_Date" :   "End"}
+       {"Start_Date" : "10/30/2023", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "01/25/2024", "Stop_Date" :   "11/05/2024", "Adj_Amount" : "-1.05"}
     ]
   },
 
@@ -3906,6 +3909,12 @@
     ],
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.7"}
+    ]
+  },
+
+  "DOCU" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "04/30/2022", "Stop_Date" :   "End"}
     ]
   },
 
