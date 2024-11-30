@@ -138,14 +138,14 @@ for ticker_raw in ticker_list:
   i = i+1
 
 logging.info("")
-logging.info("Now creating xlsx with links in the logdir")
+logging.info("Now creating xlsx with links in the logdir : ")
 # Now print to the file
 curr_date = dt.date.today()
-logging.info("Todays date is : " + str(curr_date))
+# logging.info("Todays date is : " + str(curr_date))
 ticker_links_logfile= str(curr_date) + "_" + "Tickers_Links.xlsx"
 writer = pd.ExcelWriter(dir_path + log_dir + "\\" + ticker_links_logfile, engine='xlsxwriter')
 # ticker_links_df.sort_values(by=['Ticker'], ascending=[False]).to_excel(writer)
 ticker_links_df.to_excel(writer)
-logging.info("Created : " + str(ticker_links_logfile) + " <-- Tickers links")
+logging.info("Created : " + str(log_dir) + "\\"  + str(ticker_links_logfile) + " <-- Tickers links")
 writer.close()
 logging.info("All Done...")

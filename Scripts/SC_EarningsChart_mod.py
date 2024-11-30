@@ -1128,6 +1128,16 @@ for ticker_raw in ticker_list:
     except:
       qtr_eps_projections_date_1 = 'NA'
 
+  # Check -  _date_0 should not be in the future
+  if (qtr_eps_projections_date_0 != 'NA'):
+    if (qtr_eps_projections_date_0 > dt.date.today()):
+      logging.error("******************************************************************************")
+      logging.error("The Earnings Projections update date (in col : Q_EPS_Projections_Date_0) ==> " + str(qtr_eps_projections_date_0) + " <===")
+      logging.error("is the future. It is likely just a typo while you were updating the earnings file")
+      logging.error("                       Please correct and rerun")
+      logging.error("******************************************************************************")
+      sys.exit(1)
+
   # Check -  _date_0 should be newer than the _date_1. This will catch if I forget to update the date
   if (qtr_eps_projections_date_1 != 'NA'):
     if (qtr_eps_projections_date_0 <= qtr_eps_projections_date_1):
@@ -1890,7 +1900,20 @@ for ticker_raw in ticker_list:
   i_itr = 0
   for i, row in aaii_qtr_financial_df.iterrows():
     if (i_itr > 0):
-      qtr_date_dt = dt.datetime.strptime(str(i), "%Y-%m-%d %H:%M:%S").date()
+      try:
+        qtr_date_dt = dt.datetime.strptime(str(i), "%Y-%m-%d %H:%M:%S").date()
+      except ValueError:
+        logging.error("")
+        logging.error("===========================================================================")
+        logging.error("Error while reading AAII QTR_FIN.xlsx file to get data for Sales, Book Value plot")
+        logging.error("This sometimes happens, especially for newer stocks, b/c the AAII QTR_FIN.xlsx file")
+        logging.error("===> " + aaii_ticker + "_QTR_FIX.xlsx <===")
+        logging.error("has N/A for older dates (generally older than the IPO dates) and they are towards")
+        logging.error("the right of the sheet in the xlsx file")
+        logging.error("The fix is to delete the columns that have N/A dates in the AAII QTR_FIN.xlsx file")
+        logging.error("Please delete those columns and re-run")
+        logging.error("===========================================================================")
+        sys.exit(1)
       qtr_sales = row['Total Revenue']
       qtr_bv = row['Total Stockholder Equity']
       aaii_qtr_dt_list.append(qtr_date_dt)
