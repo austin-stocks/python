@@ -2839,6 +2839,12 @@
     ]
   },
 
+  "DLO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2022", "Stop_Date" :   "End"}
+    ]
+  },
+
   "CRL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2016", "Stop_Date" :   "Next"},
