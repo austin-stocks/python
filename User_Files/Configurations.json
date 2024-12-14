@@ -36,6 +36,9 @@
   },
 
   "TOST" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/30/2025", "Stop_Date" :   "End"}
+    ],
     "QTR_Sales_BV_FCF_Overlay" : [
        {"Start_Date" : "06/30/2022", "Stop_Date" :   "End"}
     ]
