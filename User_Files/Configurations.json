@@ -2826,13 +2826,14 @@
 
   "PANW" : {
     "Splits" : {
+      "12/13/2024" : "2:1",
       "10/14/2022" : "3:1"
     },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "10/30/2023", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
-      {"Start_Date" : "01/25/2024", "Stop_Date" :   "11/05/2024", "Adj_Amount" : "-1.05"}
+      {"Start_Date" : "01/25/2024", "Stop_Date" :   "11/05/2024", "Adj_Amount" : "-.52"}
     ]
   },
 

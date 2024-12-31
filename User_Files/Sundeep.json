@@ -295,6 +295,12 @@
     ]
   },
 
+  "YOU" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "10/15/2024","Buy_Price_str" :  "35"}
+    ]
+  },
+
   "FDS" : {
     "Buy_Sell" : [
        {"Buy_Date" : "07/12/2023","Buy_Price_str" :  "$406"}
