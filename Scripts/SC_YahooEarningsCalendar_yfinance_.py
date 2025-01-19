@@ -140,7 +140,11 @@ if (not skipped_ticker_df.empty):
   logging.info("")
   logging.info("***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** ")
   logging.info("***** Earnings date for " + str(len(skipped_ticker_df.index)) + " tickers could not be found *****")
+  logging.info("====> List of skipped tickers <====")
+  logging.info(skipped_ticker_df.index.to_list())
   logging.info("***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** NOTE ***** ")
+  logging.info("")
+  logging.info("Skipped tickers list, with reasons")
   logging.info(skipped_ticker_df.to_string())
 
 # Now Print it in the csv file

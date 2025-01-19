@@ -40,7 +40,7 @@ tracklist_df = pd.read_csv(tracklist_file_full_path)
 # print ("The Tracklist df is", tracklist_df)
 ticker_list_unclean = tracklist_df['Tickers'].tolist()
 ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
-ticker_list.sort()
+## ticker_list.sort()
 ## ticker_list.sort(reverse=False)
 ## print("The sorted tickers are : ", ticker_list)
 # =============================================================================

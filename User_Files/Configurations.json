@@ -3955,6 +3955,9 @@
   },
 
   "TSCO" : {
+    "Splits" : {
+      "12/20/2024" : "5:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2017", "Stop_Date" :   "End"}
     ]
