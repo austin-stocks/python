@@ -3948,6 +3948,30 @@
     ]
   },
 
+  "RSI" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "06/26/2024", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "VMEO" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "03/26/2024", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "AMPL" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/26/2023", "Stop_Date" :   "End"}
+    ]
+  },
+
+  "FRSH" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/26/2023", "Stop_Date" :   "End"}
+    ]
+  },
+
   "TESS" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2017", "Stop_Date" :   "End"}

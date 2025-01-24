@@ -431,7 +431,25 @@ for ticker_raw in ticker_list:
     logging.error("Please add and populate that column - it contains the dates when the company has reported earnings")
     logging.error("This column is populated by looking at the dark blue bars on CNBC to find out the quarter report dates")
     sys.exit(1)
-  qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
+  try:
+    qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
+  except:
+    logging.error("Found some error while processing Quarter Report Date List, col B (Q_Report_Date) in the earnings report file")
+    logging.error("This generally happens when Sundeep is preparing a new earnings file and the date format is ")
+    logging.error("Unintentially entered wrong, like 1/22/20022, instead of 1/22/2022 etc. ")
+    logging.error("Please take a look at col B (Q_Report_Date) in earnings report file and see if there is some misformatted data, correct and rerun")
+    sys.exit(1)
+  # Check if the qtr_eps_report_date dates are in descending order
+  for i_date_idx in range(len(qtr_eps_report_date_list_dt)):
+    if (i_date_idx > 0) and (qtr_eps_report_date_list_dt[i_date_idx] > qtr_eps_report_date_list_dt[i_date_idx-1]):
+        logging.error("The dates in \'Q_Report_Date\' col. in the earnings file are not in descending order")
+        logging.error("The offending date values are : " + str(qtr_eps_report_date_list_dt[i_date_idx-1]))
+        logging.error("The offending date values are : " + str(qtr_eps_report_date_list_dt[i_date_idx]))
+        logging.error("They should have been in descending order")
+        logging.error("Sundeep probably got distracted and put the wrong year. for e.g instead of 1/22/20/25, it will put 1/22/2024")
+        logging.error("and that likely got the dates in non-descending order")
+        logging.error("Please take a look at col B (Q_Report_Date) in earnings file, correct and rerun")
+        sys.exit(1)
   eps_report_date = qtr_eps_report_date_list_dt[0]
   for i_date in qtr_eps_report_date_list_dt:
     if (i_date > dt.date.today()):

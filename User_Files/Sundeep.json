@@ -50,18 +50,15 @@
     ]
   },
 
-  "CTXS" : {
+  "MMM" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "04/27/2020","Buy_Price_str" :  "$141"},
-       {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$142"},
-       {"Buy_Date" : "10/26/2020","Buy_Price_str" :  "$123"},
-       {"Sell_Date" : "1/22/2021","Sell_Price_str" :  "$126"}
+       {"Buy_Date" : "08/22/2024","Buy_Price_str" :  "129"}
     ]
   },
 
-  "ECOM" : {
+  "CORT" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "01/08/2021","Buy_Price_str" :  "17.64"}
+       {"Buy_Date" : "09/17/2024","Buy_Price_str" :  "42"}
     ]
   },
 

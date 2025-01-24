@@ -81,6 +81,10 @@ else:
   # print ("The Tracklist df is", tracklist_df)
   ticker_list_unclean = tracklist_df['Tickers'].tolist()
   ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
+
+master_tracklist_file = "Master_Tracklist.xlsm"
+master_tracklist_df = pd.read_excel(dir_path + user_dir + "\\" + master_tracklist_file, sheet_name="Main")
+master_tracklist_ticker_list = master_tracklist_df['Tickers'].tolist()
 # -----------------------------------------------------------------------------
 
 yahoo_comany_info_df = pd.read_excel(dir_path + user_dir + "\\" + 'Yahoo_Company_Info.xlsm', sheet_name="Company_Info")
@@ -93,7 +97,7 @@ yahoo_comany_info_df.set_index('Ticker', inplace=True)
 ## Read the AAII financial to get some information
 
 
-ticker_links_df = pd.DataFrame(columns=['Ticker','Name', 'Sector', 'Industry','SChart', 'CNBC-Earnings','CNBC-Fin','Y-Profile','Y-BS','PSI','AAII'])
+ticker_links_df = pd.DataFrame(columns=['Ticker', 'In Master', 'Name','Sector', 'Industry','SChart', 'CNBC-Earnings','CNBC-Fin','Y-Profile','Y-BS','PSI','AAII'])
 ticker_links_df.set_index('Ticker', inplace=True)
 
 # -----------------------------------------------------------------------------
@@ -113,6 +117,11 @@ for ticker_raw in ticker_list:
     ticker = "BRK-B"
   elif (ticker == "BF.B"):
     ticker = "BF-B"
+
+  if (ticker in master_tracklist_ticker_list):
+    ticker_links_df.loc[ticker, 'In Master'] = 1
+  else:
+    ticker_links_df.loc[ticker, 'In Master'] = 0
 
   ticker_company_name = "#NA#"
   ticker_sector = "#NA#"

@@ -1,5 +1,6 @@
 import pandas as pd
 
+aaii_analysts_projection_file = "AAII_Analysts_2024_12_13.csv"
 aaii_analysts_projection_file = "AAII_Analysts_2024_06_16.csv"
 
 aaii_missing_tickers_list = [
