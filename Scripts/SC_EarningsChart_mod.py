@@ -419,7 +419,15 @@ for ticker_raw in ticker_list:
   # Read the Actual Quarterly Report Dates from the earnings file
   qtr_eps_report_date_list = []
   if ('Q_Report_Date' in qtr_eps_df.columns):
+    tmp_list = qtr_eps_df.Q_Report_Date.tolist()
+    for item in tmp_list:
+      # logging.debug("Item : " + str(item))
+      if (str(item) != 'nan'):
+        tmp_first_entry_row = tmp_list.index(item) + 1
+        break
+    logging.debug("The first non-zero entry for Q_Report_Data before dropna is at row : " + str(tmp_first_entry_row))
     qtr_eps_report_date_list = qtr_eps_df.Q_Report_Date.dropna().tolist()
+    tmp_dropped_entries = tmp_first_entry_row - len(qtr_eps_report_date_list)
     logging.debug("The Quarterly Report Date List from the earnings file after dropna is " + str(qtr_eps_report_date_list))
   else:
     logging.error("The Quarter report date column (Column Heading : Q_Report_Date) is missing in the Earnings file...")
@@ -442,9 +450,9 @@ for ticker_raw in ticker_list:
   # Check if the qtr_eps_report_date dates are in descending order
   for i_date_idx in range(len(qtr_eps_report_date_list_dt)):
     if (i_date_idx > 0) and (qtr_eps_report_date_list_dt[i_date_idx] > qtr_eps_report_date_list_dt[i_date_idx-1]):
-        logging.error("The dates in \'Q_Report_Date\' col. in the earnings file are not in descending order")
-        logging.error("The offending date values are : " + str(qtr_eps_report_date_list_dt[i_date_idx-1]))
-        logging.error("The offending date values are : " + str(qtr_eps_report_date_list_dt[i_date_idx]))
+        logging.error("The dates in \'Q_Report_Date\' col. (Col B) in the earnings file are not in descending order")
+        logging.error("The offending date values are : " + str(qtr_eps_report_date_list_dt[i_date_idx-1]) + ", on row : " + str(tmp_first_entry_row+i_date_idx))
+        logging.error("The offending date values are : " + str(qtr_eps_report_date_list_dt[i_date_idx])   + ", on row : " + str(tmp_first_entry_row+i_date_idx+1))
         logging.error("They should have been in descending order")
         logging.error("Sundeep probably got distracted and put the wrong year. for e.g instead of 1/22/20/25, it will put 1/22/2024")
         logging.error("and that likely got the dates in non-descending order")
