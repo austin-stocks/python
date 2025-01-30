@@ -228,6 +228,12 @@
     ]
   },
 
+  "CVLT" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "11/04/2024","Buy_Price_str" :  "158"}
+    ]
+  },
+
   "PANW" : {
     "Buy_Sell" : [
        {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$164.54"}
