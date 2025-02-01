@@ -216,6 +216,12 @@
     ]
   },
 
+  "ASML" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/27/2025","Buy_Price_str" :  "682"}
+    ]
+  },
+
   "NFLX" : {
     "Buy_Sell" : [
        {"Buy_Date" : "07/21/2023","Buy_Price_str" :  "$427.74"}
@@ -264,6 +270,12 @@
   "DIS" : {
     "Buy_Sell" : [
        {"Buy_Date" : "02/02/2023","Buy_Price_str" :  "$112.94"}
+    ]
+  },
+
+  "V" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "07/26/2024","Buy_Price_str" :  "260"}
     ]
   },
 
