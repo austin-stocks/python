@@ -3738,7 +3738,13 @@
   "PLTR" : {
    "Anchored_Text" : {
       "upper left": "Recommended by Kirk on 2/16/2022 - day before the earnings"
-    }
+    },
+    "QTR_Sales_BV_FCF_Overlay" : [
+       {"Start_Date" : "06/30/2021", "Stop_Date" :   "End"}
+    ],
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2022", "Stop_Date" :   "End"}
+    ]
   },
 
   "WST" : {
