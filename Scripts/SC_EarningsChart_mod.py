@@ -333,7 +333,17 @@ for ticker_raw in ticker_list:
   if ticker in ["QQQ"]:
     logging.info("File for " + str(ticker) + "does not exist in earnings directory. Skipping...")
     continue
-  quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
+  try:
+    quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
+  except (KeyError):
+    logging.error("")
+    logging.error("********** ERROR ERROR ERROR **********")
+    logging.error(str(ticker) + " NOT found in Master Tracklist file")
+    logging.error("This happens when Sundeep adds a ticker but then forgetfully :-)")
+    logging.error("forgets to update the Master Tracklist file with that ticker....")
+    logging.error("Please update the Master Tracklist file and then rerun the script again")
+    logging.error("Exiting...")
+    sys.exit()
   if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential') and (quality_of_stock != 'Sundeep_List')):
     logging.info(str(ticker) + " is not Wheat...skipping")
     continue
