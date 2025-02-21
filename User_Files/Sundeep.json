@@ -252,6 +252,12 @@
     ]
   },
 
+  "CWAN" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/20/2025","Buy_Price_str" :  "30.23"}
+    ]
+  },
+
   "ANET" : {
     "Buy_Sell" : [
        {"Buy_Date" : "05/02/2023","Buy_Price_str" :  "141"},
@@ -375,6 +381,12 @@
   "IBP" : {
     "Buy_Sell" : [
        {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "$109"}
+    ]
+  },
+
+  "KVYO" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/20/2025","Buy_Price_str" :  "43.17"}
     ]
   },
 
