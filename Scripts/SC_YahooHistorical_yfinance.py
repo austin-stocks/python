@@ -14,6 +14,8 @@ from termcolor import colored, cprint
 from dateutil.relativedelta import relativedelta
 import yfinance as yf
 from pandas_datareader import data as pdr
+# Sundeep - This is the reference for yfinance (for version 0.2.54)
+# https://ranaroussi.github.io/yfinance/reference/index.html
 
 # ##############################################################################
 
@@ -31,10 +33,6 @@ yahoo_hist_out_dir = dir_path + "\\..\\..\\..\\Automation_Not_in_Git\\YahooHisto
 print(yf.__file__)
 print(yf.__spec__)
 print("The version of yfinance is : ", yf.__version__)
-yf.pdr_override() # <== that's all it takes :-)
-# Need to have version 0.2.40 (The latest version 0.2.44 does not work...there
-# is some problem with pdr_override, so maybe the data needs to be received
-# differently
 # =============================================================================
 
 # ##############################################################################
@@ -67,8 +65,10 @@ else:
   ticker_list_unclean = tracklist_df['Tickers'].tolist()
   ticker_list = [x for x in ticker_list_unclean if str(x) != 'nan']
 
-
-
+# Set the end date to now+1
+end_date_raw = datetime.datetime.today() + datetime.timedelta(days=1)
+end_date = end_date_raw.strftime('%Y-%m-%d')
+print("End Date set to: ", end_date)
 
 # =============================================================================
 #  for each ticker in ticker_list
@@ -76,11 +76,6 @@ else:
 # 2. Extract the relevant data in the format that we want
 # 2. Write that data in csv
 # =============================================================================
-# Start date is now defined by the earliest date from the earnings file
-end_date_raw = datetime.datetime.today() + datetime.timedelta(days=1)
-end_date = end_date_raw.strftime('%Y-%m-%d')
-print("End Date set to: ", end_date)
-
 i = 1
 for ticker_raw in ticker_list:
 
@@ -96,20 +91,18 @@ for ticker_raw in ticker_list:
     ticker = "BF-B"
 
   # ---------------------------------------------------------------------------
-  # Sundeep : 09/27/2022 -
-  # In order to limit the size of the Historical download, only get the
-  # historical date that is slightly older than the earliest earnings date
-  # available in the earnings file. Otherwise, the size of the historical download
-  # balloons up and this not only increase the size of the historical download
-  # csv, but it takes more machine time to run this script and the historical_merge
-  # script as both of them iterate through all the rows (one-by-one) of downloaded data.
+  # Sundeep : 02/23/2025 -
+  # In order to limit the size of the Historical download, only get the historical
+  # data that is slightly older than the earliest earnings date available in the
+  # earnings file. Otherwise, the size of the historical download balloons up and
+  # this not only increase the size of the historical download csv, but it takes more
+  # machine time to run this script and the historical_merge script later in the flow
   #
-  # For now, I am setting the start date to be
-  # 1 years before the earliest date available in the earnings file
-  # I just choose 1 years mostly as random, I could have chosen 2 year or 5 years
-  # The only reason that I choose two years that the Yahoo Historical merge script
-  # calculates 250 day moving average and so in order for that to work probably needs
-  # 1 more year of historical date, if available, beyond the last earnings date
+  # For now, I am setting the start date to be 1 years before the earliest date available
+  # in the earnings file. I just choose 1 years mostly as random, I could have chosen
+  # 2 year or 5 years. The only reason that I choose two years that the Yahoo Historical
+  # merge script calculates 250 day moving average and so in order for that to work
+  # probably needs 1 more year of historical date, if available, beyond the last earnings date
   #
   # Now in a few years the size of the historical data will start becoming an
   # issue again - especially for tickers that are old (IBM, WMT etc). In that
@@ -154,21 +147,31 @@ for ticker_raw in ticker_list:
 
   # left justify / left align
   print("Iteration no : ", f"{i : <3}", " : ", f"{ticker : <6}", " : Start Date ", f"{start_date : <10}")
-  # yahoo_financials=YahooFinancials(ticker)
   try:
-    historical_data = pdr.get_data_yahoo(ticker, start=start_date, end=end_date)
+    ticker_yf = yf.Ticker(ticker)
+
+    # Note that even though the reterival returns 'Close' historical data,
+    # it actually is 'Adj Close' (adjusted for dividends and splits), as per the
+    # comment below
+    # https://github.com/ranaroussi/yfinance/issues/860
+    # yf.Ticker().history are['Open', 'High', 'Low', 'Close', 'Volume', 'Dividends', 'Stock Splits']
+    # The 'Close' columns in yf.Ticker().history is actually the 'Adj Close'
+    # columns in yf.Ticker().history, which can lead to confusion.
+    # Sundeep Comment - but it is fine for me, so I just change the 'Close' to 'Adj_Close'
+    # later in the script, which I can also change, but that will need change across all
+    # the scripts that consume historical data, but maybe that is the way to go
+
+    # This works as well, if you just want the max historical data
+    # historical_data = ticker_yf.history(period='max')
+    historical_data = ticker_yf.history(start=start_date)
     # print("The data returned is : ", historical_data, "and the type is : ", type(historical_data))
-    # # The type of data that is returned by the package is <dict>
-    # historical_data=yahoo_financials.get_historical_price_data(start_date, end_date, 'daily')
-    # print ("Historical Data retuned from package is ", historical_data)
-    # # print ("Historical Data Type returned from the package is ", type(historical_data))
+
   except (ValueError):
     print ("Ticker ", ticker , "could not download data from Yahoo Financials")
     continue
   i=i+1
 
-
-  # Reverse the dataframe
+  # Reverse the dataframe to get the dates in descending order
   historical_data_reversed = historical_data.reindex(index=historical_data.index[::-1])
   # print("The reversed dataframe is : ", historical_data_reversed)
   # Change the date format of the column date
@@ -176,7 +179,8 @@ for ticker_raw in ticker_list:
   historical_data_reversed["Date"] = pd.to_datetime(historical_data_reversed["Date"]).dt.strftime('%m/%d/%Y')
   # print("The reversed dataframe with date format change : ", historical_data_reversed)
   # Change the mane of the column Adj Close to Adj_Close
-  historical_data_reversed.rename({'Adj Close': 'Adj_Close'}, axis=1, inplace=True)
+  # historical_data_reversed.rename({'Adj Close': 'Adj_Close'}, axis=1, inplace=True)
+  historical_data_reversed.rename({'Close': 'Adj_Close'}, axis=1, inplace=True)
   historical_data_reversed.set_index('Date',inplace=True)
   # print("The reversed dataframe with date format change and column rename : ", historical_data_reversed)
   # Then write it to the file
