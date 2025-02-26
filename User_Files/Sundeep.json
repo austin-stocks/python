@@ -346,7 +346,8 @@
   },
   "HOOD" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "09/30/2024","Buy_Price_str" :  "23"}
+       {"Buy_Date" : "09/30/2024","Buy_Price_str" :  "23"},
+       {"Buy_Date" : "02/25/2025","Buy_Price_str" :  "46"}
     ]
   },
 

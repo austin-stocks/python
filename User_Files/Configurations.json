@@ -32,6 +32,9 @@
     ],
     "QTR_Sales_BV_FCF_Overlay" : [
        {"Start_Date" : "03/30/2024", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "12/25/2024", "Stop_Date" :   "10/05/2025", "Adj_Amount" : "-.16"}
     ]
   },
 
