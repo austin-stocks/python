@@ -23,7 +23,7 @@ import SC_Global_functions as sc_funcs
 
 from SC_logger import my_print as my_print
 from yahoofinancials import YahooFinancials
-from mpl_finance import candlestick_ohlc
+from mplfinance.original_flavor import candlestick_ohlc
 from pandas.plotting import register_matplotlib_converters
 
 register_matplotlib_converters()
@@ -180,12 +180,12 @@ my_hostname = socket.gethostname()
 
 dir_path = os.getcwd()
 user_dir = "\\..\\" + "User_Files"
-chart_dir = "..\\" + "Charts"
-historical_dir = "\\..\\" + "Historical"
+chart_dir = "..\\..\\" + "Charts"
+historical_dir = "\\..\\..\\" + "Historical"
 earnings_dir = "\\..\\" + "Earnings"
 dividend_dir = "\\..\\" + "Dividend"
-log_dir = "\\..\\" + "Logs"
-aaii_financial_qtr_dir = "\\..\\" + "AAII" + "\\" + "AAII_Financials" + "\\" + "Quarterly"
+log_dir = "\\..\\..\\..\\Automation_Not_in_Git\\" + "Logs"
+aaii_financial_qtr_dir = "\\..\\..\\" + "AAII" + "\\" + "AAII_Financials" + "\\" + "Quarterly"
 sc_funcs.master_to_aaii_ticker_xlate.set_index('Ticker', inplace=True)
 # ---------------------------------------------------------------------------
 # Set Logging
@@ -227,24 +227,29 @@ configurations_file_full_path = dir_path + user_dir + "\\" + configuration_file
 
 
 logging.debug("I am " + str(who_am_i) + " and I am running on " + str(my_hostname))
-if (re.search('ann', who_am_i, re.IGNORECASE)):
-  logging.debug("Looks like Ann is running the script")
-  user_name = "ann"
-  buy_sell_color = "red"
-  personal_json_file = "Ann.json"
-elif re.search('alan', who_am_i, re.IGNORECASE):
-  logging.debug("Looks like Alan is running the script")
-  buy_sell_color = "teal"
-  user_name = "alan"
-  personal_json_file = "Alan.json"
-elif (re.search('sundeep', who_am_i, re.IGNORECASE)) or \
-  re.search('DesktopNew-Optiplex', my_hostname, re.IGNORECASE) or \
-  re.search('LaptopOffice-T480', my_hostname, re.IGNORECASE) or \
-  re.search('LaptopNew-Inspiron-5570', my_hostname, re.IGNORECASE):
-  logging.debug("Looks like Sundeep is running the script")
-  user_name = "sundeep"
-  buy_sell_color = "magenta"
-  personal_json_file = "Sundeep.json"
+# if (re.search('ann', who_am_i, re.IGNORECASE)):
+#   logging.debug("Looks like Ann is running the script")
+#   user_name = "ann"
+#   buy_sell_color = "red"
+#   personal_json_file = "Ann.json"
+# elif re.search('alan', who_am_i, re.IGNORECASE):
+#   logging.debug("Looks like Alan is running the script")
+#   buy_sell_color = "teal"
+#   user_name = "alan"
+#   personal_json_file = "Alan.json"
+# elif (re.search('sundeep', who_am_i, re.IGNORECASE)) or \
+#   re.search('DesktopNew-Optiplex', my_hostname, re.IGNORECASE) or \
+#   re.search('LaptopOffice-T480', my_hostname, re.IGNORECASE) or \
+#   re.search('LaptopNew-Inspiron-5570', my_hostname, re.IGNORECASE):
+#   logging.debug("Looks like Sundeep is running the script")
+#   user_name = "sundeep"
+#   buy_sell_color = "magenta"
+#   personal_json_file = "Sundeep.json"
+
+logging.debug("Looks like Sundeep is running the script")
+user_name = "sundeep"
+buy_sell_color = "magenta"
+personal_json_file = "Sundeep.json"
 logging.debug("Setting the personal json file to " + str(personal_json_file))
 
 tracklist_df = pd.read_csv(tracklist_file_full_path)
@@ -328,7 +333,17 @@ for ticker_raw in ticker_list:
   if ticker in ["QQQ"]:
     logging.info("File for " + str(ticker) + "does not exist in earnings directory. Skipping...")
     continue
-  quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
+  try:
+    quality_of_stock = master_tracklist_df.loc[ticker, 'Quality_of_Stock']
+  except (KeyError):
+    logging.error("")
+    logging.error("********** ERROR ERROR ERROR **********")
+    logging.error(str(ticker) + " NOT found in Master Tracklist file")
+    logging.error("This happens when Sundeep adds a ticker but then forgetfully :-)")
+    logging.error("forgets to update the Master Tracklist file with that ticker....")
+    logging.error("Please update the Master Tracklist file and then rerun the script again")
+    logging.error("Exiting...")
+    sys.exit()
   if ((quality_of_stock != 'Wheat') and (quality_of_stock != 'Wheat_Chaff') and (quality_of_stock != 'Essential') and (quality_of_stock != 'Sundeep_List')):
     logging.info(str(ticker) + " is not Wheat...skipping")
     continue
@@ -414,7 +429,15 @@ for ticker_raw in ticker_list:
   # Read the Actual Quarterly Report Dates from the earnings file
   qtr_eps_report_date_list = []
   if ('Q_Report_Date' in qtr_eps_df.columns):
+    tmp_list = qtr_eps_df.Q_Report_Date.tolist()
+    for item in tmp_list:
+      # logging.debug("Item : " + str(item))
+      if (str(item) != 'nan'):
+        tmp_first_entry_row = tmp_list.index(item) + 1
+        break
+    logging.debug("The first non-zero entry for Q_Report_Data before dropna is at row : " + str(tmp_first_entry_row))
     qtr_eps_report_date_list = qtr_eps_df.Q_Report_Date.dropna().tolist()
+    tmp_dropped_entries = tmp_first_entry_row - len(qtr_eps_report_date_list)
     logging.debug("The Quarterly Report Date List from the earnings file after dropna is " + str(qtr_eps_report_date_list))
   else:
     logging.error("The Quarter report date column (Column Heading : Q_Report_Date) is missing in the Earnings file...")
@@ -426,7 +449,25 @@ for ticker_raw in ticker_list:
     logging.error("Please add and populate that column - it contains the dates when the company has reported earnings")
     logging.error("This column is populated by looking at the dark blue bars on CNBC to find out the quarter report dates")
     sys.exit(1)
-  qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
+  try:
+    qtr_eps_report_date_list_dt = [dt.datetime.strptime(date, '%m/%d/%Y').date() for date in qtr_eps_report_date_list]
+  except:
+    logging.error("Found some error while processing Quarter Report Date List, col B (Q_Report_Date) in the earnings report file")
+    logging.error("This generally happens when Sundeep is preparing a new earnings file and the date format is ")
+    logging.error("Unintentially entered wrong, like 1/22/20022, instead of 1/22/2022 etc. ")
+    logging.error("Please take a look at col B (Q_Report_Date) in earnings report file and see if there is some misformatted data, correct and rerun")
+    sys.exit(1)
+  # Check if the qtr_eps_report_date dates are in descending order
+  for i_date_idx in range(len(qtr_eps_report_date_list_dt)):
+    if (i_date_idx > 0) and (qtr_eps_report_date_list_dt[i_date_idx] > qtr_eps_report_date_list_dt[i_date_idx-1]):
+        logging.error("The dates in \'Q_Report_Date\' col. (Col B) in the earnings file are not in descending order")
+        logging.error("The offending date values are : " + str(qtr_eps_report_date_list_dt[i_date_idx-1]) + ", on row : " + str(tmp_first_entry_row+i_date_idx))
+        logging.error("The offending date values are : " + str(qtr_eps_report_date_list_dt[i_date_idx])   + ", on row : " + str(tmp_first_entry_row+i_date_idx+1))
+        logging.error("They should have been in descending order")
+        logging.error("Sundeep probably got distracted and put the wrong year. for e.g instead of 1/22/20/25, it will put 1/22/2024")
+        logging.error("and that likely got the dates in non-descending order")
+        logging.error("Please take a look at col B (Q_Report_Date) in earnings file, correct and rerun")
+        sys.exit(1)
   eps_report_date = qtr_eps_report_date_list_dt[0]
   for i_date in qtr_eps_report_date_list_dt:
     if (i_date > dt.date.today()):
@@ -506,7 +547,8 @@ for ticker_raw in ticker_list:
   # column (kids called me or something happened and then I forgot :-))
   # ---------------------------------------------------------------------------
   eps_date_list_eps_report_date_match, eps_date_list_eps_report_date_index = qtr_date_and_index_matching_eps_report_date(qtr_eps_date_list, eps_report_date)
-  if (math.isnan(qtr_eps_df.loc[eps_date_list_eps_report_date_index,['Q_EPS_Diluted']])):
+  # if (math.isnan(qtr_eps_df.loc[eps_date_list_eps_report_date_index,['Q_EPS_Diluted']])):
+  if (str(qtr_eps_df.iloc[eps_date_list_eps_report_date_index]['Q_EPS_Diluted']) == 'nan'):
     logging.error("Latest Diluted earnings in Q_EPS_Diluted column, corresponding to Lastest Earnings date : " + str(eps_report_date) + ", is not filled in the earning file")
     logging.error("Likely you put the earnings release date in the Q_Report_Date column but forgot (or got distracted) to enter the actual earnings in Q_EPS_Diluted column")
     logging.error("Row : " + str(eps_date_list_eps_report_date_index+2) + " (Date: " + str(eps_report_date) + ")," + " Col : Q_EPS_Diluted")
@@ -533,7 +575,7 @@ for ticker_raw in ticker_list:
   logging.debug("The Q_Date index that matches to last reported earning date is : " + str(eps_date_list_eps_report_date_index))
   for i_int in range(eps_date_list_eps_report_date_index):
     # logging.debug("Index : " + str(i_int) + ", : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string() + ", : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string())
-    if (math.isnan(qtr_eps_df.loc[i_int,['Q_EPS_Diluted']])):
+    if (str(qtr_eps_df.iloc[i_int]['Q_EPS_Diluted']) == 'nan'):
       logging.debug("Index : " + str(i_int) + ", : " + qtr_eps_df.loc[i_int, ['Q_Date']].to_string() + ", : " + qtr_eps_df.loc[i_int, ['Q_EPS_Diluted']].to_string())
     else:
       logging.error("It seems that : " + qtr_eps_df.loc[i_int,['Q_EPS_Diluted']].to_string() + ", is recorded for : " + qtr_eps_df.loc[i_int,['Q_Date']].to_string() + " in row " + str(i_int+2) + " of the earnings file")
@@ -691,9 +733,34 @@ for ticker_raw in ticker_list:
     # date that is in the earnings file and find the number of year/quarters than
     # need to be inserted
     # -------------------------------------------------------------------------
-    use_diluted_or_adjusted_eps = str(ticker_config_series['Use_Diluted_or_Adjusted_EPS'])
-    if (use_diluted_or_adjusted_eps == "Adjusted"):
+    if (str(ticker_config_series['Use_Diluted_or_Adjusted_EPS']) == "Adjusted"):
       logging.info("Using ADJUSTED EPS to Plot the chart")
+      if qtr_eps_df['Q_EPS_Adjusted'].count() != qtr_eps_df['Q_EPS_Diluted'].count():
+        logging.error ("")
+        logging.error ("*************************************************************************************")
+        logging.error ("As per the config file (column : Use_Diluted_or_Adjusted_EPS), we are using Adjusted Earnings EPS to plot the chart")
+        logging.error ("However, the # of entries in Q_EPS_Diluted are not equal to the number of entries in the Q_EPS_Adjusted")
+        logging.error ("# of entries in Q_EPS_Diluted  : " + str(qtr_eps_df['Q_EPS_Diluted'].count()))
+        logging.error ("# of entries in Q_EPS_Adjusted : " + str(qtr_eps_df['Q_EPS_Adjusted'].count()))
+        logging.error ("That number should be equal")
+        logging.error ("Generally the # of entries in Q_EPS_Adjusted is less than the # of entries in Q_EPS_Diluted")
+        logging.error ("and they are missing towrads the bottom (older entries)")
+        logging.error ("If that is the case then : ")
+        logging.error ("  1. One quick way to fix is to copy over those entries from Q_EPS_Diluted to Q_EPS_Adjusted")
+        logging.error ("     That (hopfully) should not make a lot of difference in the chart")
+        logging.error ("  2. Other option would be to get the Adjusted earnings from 8-K from SEC")
+        logging.error ("  3. If you really don't care, then Sundeep can modify the script so that all dates older than")
+        logging.error ("     the oldest Q_EPS_Adjusted can be deleted...That is not a good option as it would shorten")
+        logging.error ("     the left side of the chart (meaning the left side of the chart will now only start from")
+        logging.error ("     when the Q_EPS_Adjusted values are available...It is not the best way, but can be done")
+        logging.error ("     It can even be done manually by modifying the earnings.csv file, but then that would be")
+        logging.error ("     permanent loss of data..so either save that somewhere in case you change your mind...but")
+        logging.error ("     probably #1 and #2 would be the best options to consider")
+        logging.error ("So, there is some thinking needed...Please fix and then rerun")
+        logging.error ("")
+        logging.error ("Exiting...")
+        logging.error ("*************************************************************************************")
+        sys.exit()
       qtr_eps_list = qtr_eps_df.Q_EPS_Adjusted.tolist()
       # Copy the adjusted column over the diluted column as the code further down updates
       # Q_EPS_Diluted
@@ -1097,6 +1164,16 @@ for ticker_raw in ticker_list:
     except:
       qtr_eps_projections_date_1 = 'NA'
 
+  # Check -  _date_0 should not be in the future
+  if (qtr_eps_projections_date_0 != 'NA'):
+    if (qtr_eps_projections_date_0 > dt.date.today()):
+      logging.error("******************************************************************************")
+      logging.error("The Earnings Projections update date (in col : Q_EPS_Projections_Date_0) ==> " + str(qtr_eps_projections_date_0) + " <===")
+      logging.error("is the future. It is likely just a typo while you were updating the earnings file")
+      logging.error("                       Please correct and rerun")
+      logging.error("******************************************************************************")
+      sys.exit(1)
+
   # Check -  _date_0 should be newer than the _date_1. This will catch if I forget to update the date
   if (qtr_eps_projections_date_1 != 'NA'):
     if (qtr_eps_projections_date_0 <= qtr_eps_projections_date_1):
@@ -1148,8 +1225,20 @@ for ticker_raw in ticker_list:
   last_black_diamond_index = date_list.index(historical_date_list_eps_report_date_match)
   logging.debug("The match date for Last reported Earnings date : " + str(eps_report_date) + " in the Historical df is : " + str(historical_date_list_eps_report_date_match) + " at index " + str(last_black_diamond_index))
 
-  # Now we know the last quarter earning date index
+  # Now we know the last quarter earning date index, determine the number of years for
+  # which we want to analyze analysts projection accuracy. Default is 2
+  # If there are too few entries, which can happen for very new IPOs like ALAB,
+  # then reduce the number of years to 1
+  # We need atleat one year or earnings available for this to work
+  # If you are overzealous and still want to plot a brand new IPO, then please
+  # make up the earnings for one year
   years_of_analyst_eps_to_analyze = 2
+  # logging.debug("The total number of index in qtr_eps_date_list are : " + str(len(qtr_eps_date_list)) < )
+  # If less than two years of earnings are available, then reducde the
+  # number of years for which to calculate the variation to 1
+  if ( ((len(qtr_eps_date_list)-1) - eps_date_list_eps_report_date_index) < 8):
+    logging.info("*** Reduced the number of years for which analyst projections would be analysed to 1 ***")
+    years_of_analyst_eps_to_analyze = 1
   # Delete all entries from eps projection list that are older than the date we need for our calculations
   del qtr_eps_projections_list[eps_date_list_eps_report_date_index + years_of_analyst_eps_to_analyze * 4:]
   logging.debug("Will keep (" + str(years_of_analyst_eps_to_analyze) + ") years of Analysts Projections to Analyze")
@@ -1326,12 +1415,12 @@ for ticker_raw in ticker_list:
   # ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------
-  # Now Process the yr_eps_adj_* lists created above  to make the adjustments 
-  # to the yr eps. 
+  # Now Process the yr_eps_adj_* lists created above  to make the adjustments
+  # to the yr eps.
   # We will create a separate list yr_eps_adj_list - this list will be used to
   #   create price channel lines later
-  # The original list - which will be used to create two lists - past and future 
-  #   is used to plot 
+  # The original list - which will be used to create two lists - past and future
+  #   is used to plot
   # ---------------------------------------------------------------------------
   yr_eps_adj_date_list = yr_eps_date_list.copy()
   yr_eps_adj_list = yr_eps_list.copy()
@@ -1355,8 +1444,8 @@ for ticker_raw in ticker_list:
     logging.info("Prepared the Adjusted YR EPS List")
     # ---------------------------------------------------------------------------
     # Create a list that ONLY has the yr_eps that has been adjusted (in other words
-    # the yr_eps values that have been adjusted above - This will be used to plot 
-    # as a separate plot - for easier visualization that the user has adjusted 
+    # the yr_eps values that have been adjusted above - This will be used to plot
+    # as a separate plot - for easier visualization that the user has adjusted
     # yr_eps
     # ---------------------------------------------------------------------------
     yr_eps_adj_slice_list = []
@@ -1376,11 +1465,11 @@ for ticker_raw in ticker_list:
 
   # ---------------------------------------------------------------------------
   # So - in the section above, we have created three yr_eps
-  #   (and their corresponding date) lists - 
-  # 1. The normal yr_eps list that contains all the yr_eps directly calculated from 
+  #   (and their corresponding date) lists -
+  # 1. The normal yr_eps list that contains all the yr_eps directly calculated from
   #   qtr_eps
-  # 2. The yr_eps_adj list that is same as yr_eps_list except that it some of the 
-  #   eps adjusted to what user specified from json file. 
+  # 2. The yr_eps_adj list that is same as yr_eps_list except that it some of the
+  #   eps adjusted to what user specified from json file.
   # 3. The yr_eps_adj_slice_list that ONLY has the yr_eps that was modified based
   #   on the user input from jsom file
   #
@@ -1425,7 +1514,7 @@ for ticker_raw in ticker_list:
   logging.debug("The Normal Expanded Annual EPS List is: " + str(yr_eps_expanded_list))
   logging.info("Prepared the YR EPS Expanded List, YR Past EPS Expanded List (black Diamonds) and YR Projected EPS List (white Diamonds)")
   logging.debug("The white Diamond index list is :" + str(white_diamond_index_list))
-  # We have white_diamond index list here - Note that the index list is in the order of 
+  # We have white_diamond index list here - Note that the index list is in the order of
   # last white diamond (far future) to first while diamond (near future). Append the
   # last black diamond (the latest quarter for eps report date). So now we have the
   # index list that point to the dates - starting from the far white diamond to the
@@ -1684,9 +1773,9 @@ for ticker_raw in ticker_list:
       start_date_list = eps_growth_proj_overlay_df.Start_Date.tolist()
       logging.debug("The Stop_Date extracted from Earning growth overlay is" + str(stop_date_list))
 
-      # Now find if there are any "Next" in the stop date 
-      # If there are then"Next" gets replaced by the next row start date 
-      # (remember that the dataframe is already sorted ascending with the 
+      # Now find if there are any "Next" in the stop date
+      # If there are then"Next" gets replaced by the next row start date
+      # (remember that the dataframe is already sorted ascending with the
       # start dates - so in essence the current row earning projection overlay
       # will stop at the next start date
       next_in_stop_date_list_cnt = 0
@@ -1847,7 +1936,20 @@ for ticker_raw in ticker_list:
   i_itr = 0
   for i, row in aaii_qtr_financial_df.iterrows():
     if (i_itr > 0):
-      qtr_date_dt = dt.datetime.strptime(str(i), "%Y-%m-%d %H:%M:%S").date()
+      try:
+        qtr_date_dt = dt.datetime.strptime(str(i), "%Y-%m-%d %H:%M:%S").date()
+      except ValueError:
+        logging.error("")
+        logging.error("===========================================================================")
+        logging.error("Error while reading AAII QTR_FIN.xlsx file to get data for Sales, Book Value plot")
+        logging.error("This sometimes happens, especially for newer stocks, b/c the AAII QTR_FIN.xlsx file")
+        logging.error("===> " + aaii_ticker + "_QTR_FIX.xlsx <===")
+        logging.error("has N/A for older dates (generally older than the IPO dates) and they are towards")
+        logging.error("the right of the sheet in the xlsx file")
+        logging.error("The fix is to delete the columns that have N/A dates in the AAII QTR_FIN.xlsx file")
+        logging.error("Please delete those columns and re-run")
+        logging.error("===========================================================================")
+        sys.exit(1)
       qtr_sales = row['Total Revenue']
       qtr_bv = row['Total Stockholder Equity']
       aaii_qtr_dt_list.append(qtr_date_dt)
@@ -2383,7 +2485,7 @@ for ticker_raw in ticker_list:
     if (linear_chart_type_idx == 'Long_Linear'):
       plot_period_int = plot_period_int + 252 * 15
 
-    if (len(date_list) < plot_period_int):
+    if (len(date_list) <= plot_period_int):
       plot_period_int = len(date_list) - 1
       logging.debug("Since the Historical Data (Length of the date list) is not available for all\
       the years that user is asking to plot for, so adjusting the plot for " +
@@ -2408,14 +2510,14 @@ for ticker_raw in ticker_list:
     # ---------------------------------------------------------------------------
     # Create the schiller PE line for the plot
     # ---------------------------------------------------------------------------
-    avearge_schiller_pe = 15
+    average_schiller_pe = 15
     # Divide the schiller PE values by average_schiller_pe to normalize it
-    schiller_pe_normalized_list = [float(schiller_pe / avearge_schiller_pe) for schiller_pe in schiller_pe_value_list]
+    schiller_pe_normalized_list = [float(schiller_pe / average_schiller_pe) for schiller_pe in schiller_pe_value_list]
 
     schiller_pe_value_expanded_list = []
     schiller_pe_normalized_expanded_list = []
     oldest_date_in_date_list = date_list[len(date_list) - 1]
-    logging.debug("Oldest Date in Historical Date List is" + str(oldest_date_in_date_list))
+    logging.debug("Oldest Date in Historical Date List is " + str(oldest_date_in_date_list))
     for i in range(len(date_list)):
       schiller_pe_value_expanded_list.append(float('nan'))
       schiller_pe_normalized_expanded_list.append(float('nan'))
@@ -2451,18 +2553,21 @@ for ticker_raw in ticker_list:
     # schiller_ann_requested_red_line_list_3 = [i / price_lim_upper for i in schiller_ann_requested_red_line_list_2]
     # Now multiply the schiller expanded list with the yr eps expanded list
     schiller_pe_times_yr_eps_list = [a * b for a, b in zip(schiller_pe_normalized_list_smooth, yr_eps_adj_expanded_list_smooth)]
-    logging.debug("The smooth Schiller Normalized PE list mulitplied by YR EPS list is " + str(schiller_pe_times_yr_eps_list))
+    logging.debug("The smooth Schiller Normalized PE list miltiplied by YR EPS list is " + str(schiller_pe_times_yr_eps_list))
     # ---------------------------------------------------------------------------
 
     # ---------------------------------------------------------------------------
-    # Do the calcuations needed to xtick and xtick lables for main plt
+    # Do the calculations needed to xtick and xtick labels for main plt
     # ---------------------------------------------------------------------------
     # This works - Good resource
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases
 
-    # It is possible the plot_period_int might have changed becuase of
+    # It is possible the plot_period_int might have changed because of
     # Long_Linear so this needs to be regenerated
+    # logging.debug("The date list is " + str(date_list))
+    # logging.debug("The number of element : " + str(len(date_list)))
+    # logging.debug("The plot period is    : " + str(plot_period_int))
     fiscal_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_yr_str)
     fiscal_qtr_and_yr_dates_raw = pd.date_range(date_list[plot_period_int], date_list[0], freq=fiscal_qtr_str)
     # yr_dates = pd.date_range(date_list[plot_period_int], date_list[0], freq='Y')
@@ -2524,14 +2629,16 @@ for ticker_raw in ticker_list:
     MA_volume_50_list = candlestick_df.MA_Volume_50_day.tolist()
 
     # Candlesticks likes to put everything in tuple before plotting
-    quotes = [tuple(x) for x in candlestick_df[['MDate', 'Open', 'High', 'Low', 'Close']].values]
+    # quotes = [tuple(x) for x in candlestick_df[['MDate', 'Open', 'High', 'Low', 'Close']].values]
+    quotes = [tuple(x) for x in candlestick_df[['MDate', 'Open', 'High', 'Low', 'Adj_Close']].values]
     date_list_candles = candlestick_df.MDate.tolist()
     volume = candlestick_df.Volume.tolist()
     logging.debug("The type of quotes is " + str(quotes))
     logging.debug("The type of volume is " + str(volume))
 
     # Set the bar color for volume bars by comparing the current close with the previous close
-    price_close_list = candlestick_df.Close.tolist()
+    # price_close_list = candlestick_df.Close.tolist()
+    price_close_list = candlestick_df.Adj_Close.tolist()
     bar_color_list = ['darksalmon'] * len(price_close_list)
     for i_idx in range(len(price_close_list) - 1):
       bar_color_list[i_idx] = 'darksalmon'
@@ -2646,7 +2753,14 @@ for ticker_raw in ticker_list:
       volume_plt.set_facecolor("honeydew")
 
       plt.text(x=0.03, y=0.915, s=ticker_company_name + "(" + ticker + ")", fontsize=18, fontweight='bold', ha="left", transform=fig.transFigure)
-      plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry, fontsize=11, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
+      ## Append to show that if chart uses Adjusted Earnings and if so,
+      ## change the color of sector and industry line
+      if (str(ticker_config_series['Use_Diluted_or_Adjusted_EPS']) == "Adjusted"):
+        ticker_industry += " (( Plot uses Adj Earnings ))"
+        plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry, fontsize=11, fontweight='bold', fontstyle='italic', ha="left", color="magenta", transform=fig.transFigure)
+      else:
+        plt.text(x=0.03, y=0.90, s=ticker_sector + " - " + ticker_industry, fontsize=11, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
+
       plt.text(x=0.03, y=0.866, s=chart_update_date_str, fontsize=9, fontweight='bold', fontstyle='italic', ha="left", transform=fig.transFigure)
       # main_plt.text(x=.45, y=.95, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
       main_plt.text(x=.28, y=.98, s=adjusted_eps_str, fontsize=9, family='monospace', transform=fig.transFigure, bbox=dict(facecolor='lavender', edgecolor='k', pad=2.0, alpha=1))
@@ -2767,6 +2881,7 @@ for ticker_raw in ticker_list:
                        markersize=12, markevery=markers_sell_date, linestyle='None')
         logging.info("Inserted Buy and Sell Points on the Chart, if specified")
 
+      g_var_annotate_actual_qtr_earnings = 0
       if (g_var_annotate_actual_qtr_earnings == 1):
         logging.debug("Will annotate the price plt at actual qtr earnings date")
         i_idx = 0
