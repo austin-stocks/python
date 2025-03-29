@@ -291,6 +291,18 @@
     ]
   },
 
+  "DASH" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/20/2025","Buy_Price_str" :  "201"}
+    ]
+  },
+
+  "FRSH" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "02/20/2025","Buy_Price_str" :  "18"}
+    ]
+  },
+
   "V" : {
     "Buy_Sell" : [
        {"Buy_Date" : "07/26/2024","Buy_Price_str" :  "260"}
