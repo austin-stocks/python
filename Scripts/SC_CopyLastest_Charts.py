@@ -108,6 +108,7 @@ for chart_styles_idx in chart_styles_list:
     # -----------------------------------------------------------------------------
     # Loop through all the wheat tickers in the master Tracklist file
     # -----------------------------------------------------------------------------
+    i_int = 1
     for ticker_raw in ticker_list:
       ticker = ticker_raw.replace(" ", "").upper() # Remove all spaces from ticker_raw and convert to uppercase
       logging.debug("")
@@ -167,7 +168,8 @@ for chart_styles_idx in chart_styles_list:
         elif (chart_styles_idx == 'Long_Linear'):
           ticker_latest_chart_filename = ticker + "_Long_Linear_" + ticker_latest_chart + ".jpg"
 
-        logging.info("The latest " + str(chart_style_annotation_str) + " file for " + str(ticker) + " is : " + str(ticker_latest_chart_filename))
+        logging.info("Iteration :  # " + str(i_int).ljust(2) + ", Latest " + str(chart_style_annotation_str) + " file for " + str(ticker) + " is : " + str(ticker_latest_chart_filename))
+        i_int = i_int+1
         logging.debug("Copying : " + str(source_dir + ticker_latest_chart_filename))
         logging.debug(" to :  " + str(dest_dir + ticker + "_Latest.jpg"))
         # Copy the chart file - that was the youngest - to the desitnation directory as ticker_Latest.jpg
