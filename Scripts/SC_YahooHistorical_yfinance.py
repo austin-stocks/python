@@ -163,6 +163,7 @@ for ticker_raw in ticker_list:
 
     # This works as well, if you just want the max historical data
     # historical_data = ticker_yf.history(period='max')
+    # historical_data = ticker_yf.history(start=start_date,interval='1mo')
     historical_data = ticker_yf.history(start=start_date)
     # print("The data returned is : ", historical_data, "and the type is : ", type(historical_data))
 
