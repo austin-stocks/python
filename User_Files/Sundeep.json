@@ -58,7 +58,8 @@
 
   "CORT" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "09/17/2024","Buy_Price_str" :  "42"}
+       {"Buy_Date" : "09/17/2024","Buy_Price_str" :  "42"},
+       {"Sell_Date" : "03/31/2025","Sell_Price_str" :  "$100"}
     ]
   },
 
