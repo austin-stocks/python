@@ -56,6 +56,12 @@
     ]
   },
 
+  "SOFI" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "10/11/2024","Buy_Price_str" :  "9"}
+    ]
+  },
+
   "CORT" : {
     "Buy_Sell" : [
        {"Buy_Date" : "09/17/2024","Buy_Price_str" :  "42"},
