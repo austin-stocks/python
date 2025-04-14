@@ -2654,6 +2654,12 @@
     ]
   },
 
+  "ALAB" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2024", "Stop_Date" :   "End"}
+    ]
+  },
+
 
   "MSFT" : {
     "Earnings_growth_projection_overlay" : [
