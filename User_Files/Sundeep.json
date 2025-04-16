@@ -62,6 +62,18 @@
     ]
   },
 
+  "DSGX" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "2/20/2025","Buy_Price_str" :  "113"}
+    ]
+  },
+
+  "CRDO" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "12/23/2024","Buy_Price_str" :  "68"}
+    ]
+  },
+
   "CORT" : {
     "Buy_Sell" : [
        {"Buy_Date" : "09/17/2024","Buy_Price_str" :  "42"},
