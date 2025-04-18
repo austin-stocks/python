@@ -3777,10 +3777,11 @@
 
   "ASML" : {
     "Earnings_growth_projection_overlay" : [
-       {"Start_Date" : "03/30/2020", "Stop_Date" :   "End"}
+       {"Start_Date" : "03/30/2020", "Stop_Date" :   "Next"},
+       {"Start_Date" : "06/30/2024", "Stop_Date" :   "End"}
     ],
     "Anchored_Text" : {
-      "upper left": "CNBC probably reports in USD, while company reports in Euro\nThe chart EPS channel is based on Euro earnings from the past\nbut the projections from CNBC (white Diamonds) in USD\nDon't worry - read again, it is little kludgy but approximately works"
+      "upper left": "CNBC probably reports in USD, while company reports in Euro\nThe chart EPS channel is based on Euro earnings from the past\nbut the projections from CNBC (white Diamonds) in USD"
     }
   },
 
