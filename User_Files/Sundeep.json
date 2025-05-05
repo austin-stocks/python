@@ -22,6 +22,18 @@
     ]
   },
 
+  "BB" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "2/19/2025","Buy_Price_str" :  "5.6"}
+    ]
+  },
+
+  "RKT" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "8/6/2024","Buy_Price_str" :  "21"}
+    ]
+  },
+
   "APP" : {
     "Buy_Sell" : [
        {"Buy_Date" : "8/26/2024","Buy_Price_str" :  "90"}

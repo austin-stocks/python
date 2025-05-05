@@ -3843,6 +3843,14 @@
     ]
   },
 
+  "NET" : {
+    "QTR_Sales_BV_FCF_Overlay" : [
+       {"Start_Date" : "12/30/2022", "Stop_Date" :   "End"}
+    ],
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2022", "Stop_Date" :   "End"}
+    ]
+  },
   "WSM" : {
     "Splits" : {
       "07/09/2024" : "2:1"
