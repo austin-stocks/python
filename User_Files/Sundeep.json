@@ -474,6 +474,12 @@
     ]
   },
 
+  "PAYC" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "12/14/2023","Buy_Price_str" :  "189"}
+    ]
+  },
+
   "SAM" : {
     "Buy_Sell" : [
        {"Buy_Date" : "08/09/2021","Buy_Price_str" :  "680.01"}
