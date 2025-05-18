@@ -367,7 +367,8 @@
 
   "DOCS" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "09/17/2024","Buy_Price_str" :  "44"}
+       {"Buy_Date" : "09/17/2024","Buy_Price_str" :  "44"},
+       {"Sell_Date" : "04/07/2025","Sell_Price_str" :  "49"}
     ]
   },
 
@@ -471,6 +472,18 @@
   "SSNC" : {
     "Buy_Sell" : [
        {"Buy_Date" : "01/11/2021","Buy_Price_str" :  "71"}
+    ]
+  },
+
+  "ONON" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "01/23/2025","Buy_Price_str" :  "61"}
+    ]
+  },
+
+  "UNH" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "05/16/2025","Buy_Price_str" :  "287"}
     ]
   },
 
