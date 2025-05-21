@@ -4662,7 +4662,9 @@
        {"Start_Date" : "03/30/2021", "Stop_Date" :   "End"}
     ],
     "Annual_EPS_Adjust" : [
-      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.22"}
+      {"Start_Date" : "12/25/2017", "Stop_Date" :   "10/05/2018", "Adj_Amount" : "-.22"},
+      {"Start_Date" : "09/25/2021", "Stop_Date" :   "07/05/2022", "Adj_Amount" : "-.3"},
+      {"Start_Date" : "12/25/2022", "Stop_Date" :   "10/05/2023", "Adj_Amount" : "-.35"}
     ]
   },
 

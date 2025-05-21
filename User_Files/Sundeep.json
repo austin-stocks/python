@@ -86,6 +86,15 @@
     ]
   },
 
+  "CRWD" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "07/13/2023","Buy_Price_str" :  "150"},
+       {"Buy_Date" : "12/29/2023","Buy_Price_str" :  "255"},
+       {"Buy_Date" : "03/20/2024","Buy_Price_str" :  "320"},
+       {"Buy_Date" : "07/19/2024","Buy_Price_str" :  "304"}
+    ]
+  },
+
   "CORT" : {
     "Buy_Sell" : [
        {"Buy_Date" : "09/17/2024","Buy_Price_str" :  "42"},
