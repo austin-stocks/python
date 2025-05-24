@@ -115,6 +115,12 @@
     ]
   },
 
+  "SNOW" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "03/05/2024","Buy_Price_str" :  "170"}
+    ]
+  },
+
   "VIPS" : {
     "Buy_Sell" : [
        {"Buy_Date" : "09/15/2021","Buy_Price_str" :  "12.95"},
