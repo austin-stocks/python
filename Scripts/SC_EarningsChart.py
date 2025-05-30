@@ -1402,9 +1402,9 @@ for ticker_raw in ticker_list:
           yr_eps_adj_amount_list.append(float(i_adj_amount))
         except (ValueError):
           logging.error(
-            "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Upper_Price_Channel_Adj in Configuration json file.\n"
+            "\n***** Error : Either the Start/Stop Dates or the Adjust Amount are not in proper format for Annual_EPS_Adjust in Configuration json file.\n"
             "***** Error : The Dates should be in the format %m/%d/%Y and the Adjust Amount should be a int/float\n"
-            "***** Error : Found somewhere in :" + str(i_start_date) + str(i_stop_date) + str(i_adj_amount))
+            "***** Error : Found somewhere in this line : " + str(config_json[ticker]["Annual_EPS_Adjust"][i]))
           sys.exit(1)
 
   logging.debug("The yr eps adjust Start Date List " + str(yr_eps_adj_start_date_list))
