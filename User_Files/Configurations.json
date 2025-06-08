@@ -1637,6 +1637,10 @@
   "PYPL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2017", "Stop_Date" :   "End"}
+    ],
+    "Plot_Annotate" : [
+      {"Date" :  "03/16/2022", "Text" : "Example of an annotation", "Line_Length" : "-20:-40"},
+      {"Date" :  "05/16/2025", "Text" : "Annother annotate", "Line_Length" : "30:80"}
     ]
   },
 
@@ -3204,6 +3208,12 @@
     "Annual_EPS_Adjust" : [
       {"Start_Date" : "09/25/2023", "Stop_Date" :   "07/05/2024", "Adj_Amount" : ".06"},
       {"Start_Date" : "12/25/2024", "Stop_Date" :   "10/05/2025", "Adj_Amount" : "-.06"}
+    ]
+  },
+
+  "DSGX" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "10/30/2022", "Stop_Date" :   "End"}
     ]
   },
 
