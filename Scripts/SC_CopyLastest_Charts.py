@@ -57,8 +57,8 @@ logging.disable(sys.maxsize)
 logging.disable(logging.NOTSET)
 # -----------------------------------------------------------------------------
 
-# chart_styles_list = ['Linear', 'Long_Linear', 'Log']
-chart_styles_list = ['Linear', 'Long_Linear']
+chart_styles_list = ['Linear', 'Long_Linear', 'Log']
+# chart_styles_list = ['Linear', 'Long_Linear']
 # chart_styles_list = ['Linear']
 # chart_annotations_list = ['Charts_Without_Numbers', 'Charts_With_Numbers']
 chart_annotations_list = ['Charts_With_Numbers']
@@ -167,6 +167,8 @@ for chart_styles_idx in chart_styles_list:
           ticker_latest_chart_filename = ticker + "_" + ticker_latest_chart + ".jpg"
         elif (chart_styles_idx == 'Long_Linear'):
           ticker_latest_chart_filename = ticker + "_Long_Linear_" + ticker_latest_chart + ".jpg"
+        elif (chart_styles_idx == 'Log'):
+          ticker_latest_chart_filename = ticker + "_Log_" + ticker_latest_chart + ".jpg"
 
         logging.info("Iteration :  # " + str(i_int).ljust(2) + ", Latest " + str(chart_style_annotation_str) + " file for " + str(ticker) + " is : " + str(ticker_latest_chart_filename))
         i_int = i_int+1
@@ -177,6 +179,8 @@ for chart_styles_idx in chart_styles_list:
           shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Latest.jpg")
         elif (chart_styles_idx == 'Long_Linear'):
           shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Long_Linear_Latest.jpg")
+        elif (chart_styles_idx == 'Log'):
+          shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Log_Latest.jpg")
       else:
         if (chart_styles_idx == 'Linear'):
           logging.error("")
