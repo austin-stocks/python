@@ -296,7 +296,7 @@ if (plot_nasdaq):
 
 # -----------------------------------------------------------------------------
 if (g_var_use_aaii_data_to_extend_eps_projections == 1):
-  aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + sc_funcs.aaii_analysts_projection_file)
+  aaii_analysts_projection_df = pd.read_csv(dir_path + user_dir + "\\" + sc_funcs.aaii_analysts_projection_file, encoding='utf-8',engine='python')
   aaii_analysts_projection_df.set_index('Ticker', inplace=True)
   # logging.debug("The AAII Analysts Projection df is " + aaii_analysts_projection_df.to_string())
 
@@ -704,7 +704,7 @@ for ticker_raw in ticker_list:
   if (g_var_use_aaii_data_to_extend_eps_projections == 1) and (continue_aaii_eps_projections_for_this_ticker == 1):
     # ticker_aaii_analysts_projection_series = aaii_analysts_projection_df.loc[ticker]
     logging.debug("The series for " + str(ticker) + " in the AAII Analysts df is " + str(ticker_aaii_analysts_projection_series))
-    y_plus0_fiscal_year_end = ticker_aaii_analysts_projection_series['Date--Current fiscal year']
+    y_plus0_fiscal_year_end = ticker_aaii_analysts_projection_series['Date--Est EY0 fiscal year end']
     if (str(y_plus0_fiscal_year_end) != 'nan'):
       y_plus0_fiscal_year_dt = dt.datetime.strptime(str(y_plus0_fiscal_year_end), '%m/%d/%Y').date()
     else:
