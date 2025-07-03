@@ -502,6 +502,19 @@
     ]
   },
 
+  "OSCR" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "07/3/2025","Buy_Price_str" :  "16"}
+    ]
+  },
+
+  "LMND" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "07/3/2025","Buy_Price_str" :  "43"}
+    ]
+  },
+
+
   "PAYC" : {
     "Buy_Sell" : [
        {"Buy_Date" : "12/14/2023","Buy_Price_str" :  "189"}
