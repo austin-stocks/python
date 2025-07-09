@@ -86,6 +86,15 @@
     ]
   },
 
+  "DELL" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "05/16/2024","Buy_Price_str" :  "139, Final = 139"},
+       {"Buy_Date" : "06/3/2024","Buy_Price_str" :  "134"},
+       {"Buy_Date" : "06/20/2024","Buy_Price_str" :  "151"},
+       {"Buy_Date" : "11/27/2024","Buy_Price_str" :  "125"}
+    ]
+  },
+
   "CRWD" : {
     "Buy_Sell" : [
        {"Buy_Date" : "07/13/2023","Buy_Price_str" :  "150"},
@@ -511,6 +520,12 @@
   "LMND" : {
     "Buy_Sell" : [
        {"Buy_Date" : "07/3/2025","Buy_Price_str" :  "43"}
+    ]
+  },
+
+  "CCS" : {
+    "Buy_Sell" : [
+       {"Buy_Date" : "07/8/2025","Buy_Price_str" :  "59"}
     ]
   },
 
