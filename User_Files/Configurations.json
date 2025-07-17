@@ -1829,6 +1829,9 @@
   },
 
   "ORLY" : {
+    "Splits" : {
+      "6/10/2025" : "15:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "End"}
     ]
