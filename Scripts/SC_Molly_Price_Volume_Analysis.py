@@ -191,6 +191,8 @@ for i_ticker, row in raw_vol_df.iterrows():
   raw_vol_list = row.tolist()
   logging.debug(str(i_ticker) + " : Volume List : " + str(raw_vol_list))
 
+  # We can print out every row and see where the actual problem is
+  # if things need to be debugged row by row
   if (i_idx_outer%100 == 0 ):
     logging.info("Processing Row : " + str(i_idx_outer))
   # ---------------------------------------------------------
@@ -198,6 +200,7 @@ for i_ticker, row in raw_vol_df.iterrows():
   # The first entry in the row for each ticker is "COUNT" column
   # So skip the first entry in the list and calculate the
   # SMA staring from the next entry (entry #1)
+
   # ---------------------------------------------------------
   numbers_series = pd.Series(raw_vol_list[1:])
   tmp_vol_dma_5d_list = numbers_series.rolling(5).mean().tolist()[5 - 1:]
