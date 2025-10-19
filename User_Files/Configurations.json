@@ -5695,6 +5695,9 @@
   },
 
   "FAST" : {
+    "Splits" : {
+      "05/22/2025" : "2:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2017", "Stop_Date" :   "End"},
        {"Start_Date" : "12/30/2012", "Stop_Date" :   "Next"}
