@@ -91,10 +91,11 @@ for chart_styles_idx in chart_styles_list:
     logging.info("")
     logging.info("===================================================================")
     logging.info("==========> Moving files for : " + str(chart_styles_idx) + "/" + str(chart_annotations_idx))
-    time.sleep(3)
     chart_styles_and_annotations = chart_styles_idx + "/" + chart_annotations_idx
     source_dir = dir_path + chart_dir + "\\" + chart_styles_idx + "\\" + chart_annotations_idx + "\\"
     dest_dir = dir_path + older_charts_dir + "\\" + chart_styles_idx + "\\" + chart_annotations_idx + "\\"
+    logging.info("==========> Files will be moved to : " + str(dest_dir))
+    time.sleep(3)
 
 
     all_chart_files_list=os.listdir(source_dir)
