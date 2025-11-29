@@ -1622,6 +1622,9 @@
   },
 
   "NFLX" : {
+    "Splits" : {
+      "10/22/2025" : "10:1"
+    },
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "03/30/2016", "Stop_Date" :   "06/30/2019"},
        {"Start_Date" : "06/30/2019", "Stop_Date" :   "End"}
