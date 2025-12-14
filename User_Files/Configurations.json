@@ -1637,6 +1637,12 @@
     ]
   },
 
+  "PATH" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "01/30/2025", "Stop_Date" :   "End"}
+    ]
+  },
+
   "PYPL" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2017", "Stop_Date" :   "End"}
