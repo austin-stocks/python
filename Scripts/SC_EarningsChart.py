@@ -1938,17 +1938,19 @@ for ticker_raw in ticker_list:
     if (i_itr > 0):
       try:
         qtr_date_dt = dt.datetime.strptime(str(i), "%Y-%m-%d %H:%M:%S").date()
+        # logging.info("The column number is " + str(i_itr+3) + ", and the date is " + str(i))
       except ValueError:
         logging.error("")
         logging.error("===========================================================================")
         logging.error("Error while reading AAII QTR_FIN.xlsx file to get data for Sales, Book Value plot")
         logging.error("This sometimes happens, especially for newer stocks, b/c the AAII QTR_FIN.xlsx file")
-        logging.error("===> " + aaii_ticker + "_QTR_FIX.xlsx <===")
+        logging.error("===> " + aaii_ticker + "_QTR_FIN.xlsx <===")
         logging.error("has N/A for older dates (generally older than the IPO dates) and they are towards")
         logging.error("the right of the sheet in the xlsx file")
         logging.error("The fix is to delete the columns that have N/A dates in the AAII QTR_FIN.xlsx file")
         logging.error("Please delete those columns and re-run")
         logging.error("===========================================================================")
+        Logging.error("The column number is " + str(i_itr+3) + "The date is " + str(i))
         sys.exit(1)
       qtr_sales = row['Total Revenue']
       qtr_bv = row['Total Stockholder Equity']
