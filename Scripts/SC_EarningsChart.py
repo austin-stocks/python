@@ -1950,7 +1950,7 @@ for ticker_raw in ticker_list:
         logging.error("The fix is to delete the columns that have N/A dates in the AAII QTR_FIN.xlsx file")
         logging.error("Please delete those columns and re-run")
         logging.error("===========================================================================")
-        Logging.error("The column number is " + str(i_itr+3) + "The date is " + str(i))
+        logging.error("The column number is " + str(i_itr+3) + "The date is " + str(i))
         sys.exit(1)
       qtr_sales = row['Total Revenue']
       qtr_bv = row['Total Stockholder Equity']
