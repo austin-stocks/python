@@ -190,7 +190,14 @@ for i_ticker, row in raw_vol_df.iterrows():
   logging.debug("Creating Volume Averages for ticker : " + str(i_ticker))
   raw_vol_list = row.tolist()
   logging.debug(str(i_ticker) + " : Volume List : " + str(raw_vol_list))
-
+  if 0 in raw_vol_list:
+    logging.error ("==============================================================")
+    logging.error ("There is a 0 in the data for ticker " + str(i_ticker))
+    logging.error ("This will create trouble downstream")
+    logging.error ("Please correct by finding that ticker, and removing that row in both Price and Vol sheets and run again")
+    logging.error ("Exiting...")
+    logging.error ("==============================================================")
+    sys.exit(1)
   # We can print out every row and see where the actual problem is
   # if things need to be debugged row by row
   if (i_idx_outer%100 == 0 ):
@@ -222,6 +229,7 @@ for i_ticker, row in raw_vol_df.iterrows():
   for i_idx in range(len(col_date_list_str)-1):
     col_date_str = col_date_list_str[i_idx]
     col_date_str_next = col_date_list_str[i_idx+1]
+    logging.debug("Processing col : " + str(i_idx))
     if i_idx < (len(col_date_list_str)-5):
       vol_dma_5d_df.at[i_ticker, col_date_str] = tmp_vol_dma_5d_list[i_idx]
     if i_idx < (len(col_date_list_str)-21):
