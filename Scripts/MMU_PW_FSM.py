@@ -2,8 +2,10 @@ import graphviz
 
 # Create a directed graph object
 # f = graphviz.Digraph('finite_state_machine', filename='fsm.gv')
-f = graphviz.Digraph('MMU_PW_FSM',filename='MMU_PW_FSM', format="svg")
-f.attr(rankdir='PR', size='8,16',label='MMU PW SM') # Set layout direction and size
+output_filename =  r"C:\Sundeep\Akeana\MMU-Docs\Timing Diagrams\MMU_PW"
+f = graphviz.Digraph('MMU_PW_FSM',filename=output_filename, format="jpeg")
+# f.attr(rankdir='TB', size='16,16',label='MMU PW SM') # Set layout direction and size
+f.attr(rankdir='TB', width='8',lenght='11',label='MMU PW SM') # Set layout direction and size
 
 # Define "doublecircle" shape for final states
 f.attr('node', shape='ellipse',style='filled',fillcolor='lightblue',fontname='Arial',
