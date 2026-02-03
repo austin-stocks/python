@@ -265,7 +265,6 @@ mollyverse_price_vol_xlsx_copy = file_date_str + "-Molly-Price-Volume_copy.xlsx"
 logging.info("Now writing Volume Averages and Price Change into :")
 logging.info(str(dir_path + price_vol_dir) + "\\" + str(mollyverse_price_vol_xlsx))
 
-# with pd.ExcelWriter(dir_path + log_dir + "\\" + mollyverse_price_vol_xlsx) as writer:
 with pd.ExcelWriter(dir_path + price_vol_dir + "\\" + mollyverse_price_vol_xlsx) as writer:
   price_change_1d_df.to_excel(writer, sheet_name='Price-Chg', header=True)
   raw_price_df.to_excel(writer, sheet_name='Price', header=True)
@@ -274,14 +273,14 @@ with pd.ExcelWriter(dir_path + price_vol_dir + "\\" + mollyverse_price_vol_xlsx)
   vol_dma_21d_df.to_excel(writer, sheet_name='Vol-21dma', header=True)
   vol_dma_50d_df.to_excel(writer, sheet_name='Vol-50dma', header=True)
 
-# with pd.ExcelWriter(dir_path + log_dir + "\\" + mollyverse_price_vol_xlsx_copy) as writer_copy:
-with pd.ExcelWriter(dir_path + price_vol_dir + "\\" + mollyverse_price_vol_xlsx_copy) as writer_copy:
-  price_change_1d_df.to_excel(writer_copy, sheet_name='Price-Chg', header=True)
-  raw_price_df.to_excel(writer_copy, sheet_name='Price', header=True)
-  raw_vol_df.to_excel(writer_copy, sheet_name='Vol', header=True)
-  vol_dma_5d_df.to_excel(writer_copy, sheet_name='Vol-5dma', header=True)
-  vol_dma_21d_df.to_excel(writer_copy, sheet_name='Vol-21dma', header=True)
-  vol_dma_50d_df.to_excel(writer_copy, sheet_name='Vol-50dma', header=True)
+# Commentd out as there is no need for a duplicate copy anymore. The code works just fine though
+# with pd.ExcelWriter(dir_path + price_vol_dir + "\\" + mollyverse_price_vol_xlsx_copy) as writer_copy:
+#   price_change_1d_df.to_excel(writer_copy, sheet_name='Price-Chg', header=True)
+#   raw_price_df.to_excel(writer_copy, sheet_name='Price', header=True)
+#   raw_vol_df.to_excel(writer_copy, sheet_name='Vol', header=True)
+#   vol_dma_5d_df.to_excel(writer_copy, sheet_name='Vol-5dma', header=True)
+#   vol_dma_21d_df.to_excel(writer_copy, sheet_name='Vol-21dma', header=True)
+#   vol_dma_50d_df.to_excel(writer_copy, sheet_name='Vol-50dma', header=True)
 
 logging.info("")
 logging.info("ALL DONE...")
