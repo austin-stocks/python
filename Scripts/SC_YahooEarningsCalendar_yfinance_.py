@@ -70,6 +70,8 @@ for ticker in ticker_list :
   ticker = ticker.replace(" ", "").upper()  # Remove all spaces from ticker_raw and convert to uppercase
   ticker_yf = yf.Ticker(ticker)
   logging.debug("Iteration : " + str(i_itr) + ", Ticker : " + str(ticker) + ", Earnings Calendar : " + str(ticker_yf.calendar))
+  # logging.debug("Iteration : " + str(i_itr) + ", Ticker : " + str(ticker) + ", Earnings Dates : " + str(ticker_yf.earnings_dates))
+  # logging.debug("Iteration : " + str(i_itr) + ", Ticker : " + str(ticker) + ", Get Earnings Dates : " + str(ticker_yf.get_earnings_dates))
 
   # ticker_attributes = (
   #   ("major_holders", pd.DataFrame),
