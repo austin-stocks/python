@@ -197,7 +197,8 @@ for i_ticker, row in raw_vol_df.iterrows():
     logging.error ("Please correct by finding that ticker, and removing that row in both Price and Vol sheets and run again")
     logging.error ("Exiting...")
     logging.error ("==============================================================")
-    sys.exit(1)
+    continue
+    # sys.exit(1)
   # We can print out every row and see where the actual problem is
   # if things need to be debugged row by row
   if (i_idx_outer%100 == 0 ):
