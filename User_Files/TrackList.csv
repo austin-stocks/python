@@ -1,34 +1,36 @@
-Tickers,,,,24-Feb,25-Feb,26-Feb,27-Feb,,2-Mar,3-Mar,4-Mar,5-Mar,6-Mar,,,,,,,IVES,Shay,Ronnie,My Stuff,Rise Dynasty,Marty 6,,RainKing
-,,,,FSLR,ALKT,ADSK,DKL,,BRK-B,ACHR,BBWI,AVGO,COO,,BETR,-,Lots of Debt,,,INOD,RKLB,ZETA,ABAT,FLNC,PL,RKLB,MU
-,,,,GLDD,CHE,AMPH,,,AAON,AMRC,BGS,BABA,COST,,BTQ,None,,,,PEGA,CLPT,FLNC,ADUS,IREN,FSLR,IREN,AVGO
-,,,,HD,HEI,ARHS,,,NCLH,AZO,CRWD,BJ,GAP,,CIFR,-,Cash > LT debt,,,SHOP,JMIA,LUNR,AREC,NBIS,ALAB,NBIS,TSLA
-,,,,HSIC,JOBY,BLD,,,VG,BBY,GTLB,CIEN,IOT,,DEFT,+,Lots of current liabilitiey,,,,EOSE,RDW,ASST,OPEN,IMNM,,CEG
-,,,,KDP,LOW,CERT,,,,CRDO,ROST,CRMT,ICLR,,ETHA,ETF,,,,,ASTS,ONDS,ASTS,OUST,AEO,,
-,,,,MELI,MGRC,CPNG,,,,MDB,,GO,,,HUT,+,Cash > LT debt,,,,TMDX,AVAV,AVAV,RKLB,OPEN,,VIAV
-,,,,PLNT,MYRG,DELL,,,,ONON,,OKTA,,,IREN,+,Cash > LT debt,,,,VKTX,ADUS,BITF,SANM,,,FROG
-,,,,SAM,NU,DUOL,,,,THO,,TTC,,,OPEN,-,,,,,SOFI,DLO,CCCX,HUT,,,NTRA
-,,,,TMDX,NVDA,DV,,,,,,VEEV,,,SANA,-,No debt,,,,IONQ,NBIS,CIFR,CIFR,,,WRBY
-,,,,TREX,PLAB,EME,,,,,,,,,,,,,,,IREN,IREN,CLSK,SANA,,,GRAB
-,,,,UFPT,PNTG,ESTC,,,,,,,,,NBIS,,,,,,,,DPRO,,,,PGY
-,,,,WDAY,PSTG,EVTC,,,,,,,,,,,,,,,,,EOSE,,,,RKT
-,,,,WLK,SNOW,FOUR,,,,,,,,,,,,,,,,,IONQ,,,,
-,,,,ZETA,SNPS,FOXF,,,,,,,,,,,,,,,,,IREN,,,,IONQ
-,,,,,STRL,GDOT,,,,,,,,,,,,,,,,,KRKNF,,,,FIG
-,,,,,STWD,IBP,,,,,,,,,,,,,,,,,KTOS,,,,LULU
-,,,,,TTD,INTU,,,,,,,,,,,,,,,,,MDB,,,,MJ
-,,,,,USPH,MASI,,,,,,,,,,,,,,,,,ONDS,,,,
-,,,,,UTHR,MIDD,,,,,,,,,,,,,,,,,PL,,,,
-,,,,,VAC,MNST,,,,,,,,,,,,,,,,,PLUG,,,,
-,,,,,XPEL,NXST,,,,,,,,,,,,,,,,,POET,,,,
-,,,,,YOU,PAYO,,,,,,,,,,,,,,,,,PRCT,,,,
-,,,,,ZM,PRAA,,,,,,,,,,,,,,,,,PRME,,,,
-,,,,,,PZZA,,,,,,,,,,,,,,,,,RDW,,,,
-,,,,,,RKT,,,,,,,,,,,,,,,,,RIVN,,,,
-,,,,,,SRE,,,,,,,,,,,,,,,,,RKLB,,,,
-,,,,,,TFX,,,,,,,,,,,,,,,,,SIDU,,,,
-,,,,,,TTEC,,,,,,,,,,,,,,,,,SKYT,,,,
-,,,,,,WD,,,,,,,,,,,,,,,,,SOC,,,,
-,,,,,,ZS,,,,,,,,,,,,,,,,,SYM,,,,
-,,,,,,,,,,,,,,,,,,,,,,,TE,,,,
-,,,,,,,,,,,,,,,,,,,,,,,UMAC,,,,
-,,,,,,,,,,,,,,,,,,,,,,,FIGR,,,,
+Tickers,,,,26-Feb,,2-Mar,3-Mar,4-Mar,5-Mar,6-Mar,,,,,,,IVES,Shay,Ronnie,My Stuff,Rise Dynasty,Marty 6,,RainKing
+ALKT,,,,ADSK,,BRK-B,ACHR,BBWI,AVGO,COO,,BETR,-,Lots of Debt,,,INOD,RKLB,ZETA,ABAT,FLNC,PL,RKLB,MU
+CHE,,,,AMPH,,AAON,AMRC,BGS,BABA,COST,,BTQ,None,,,,PEGA,CLPT,FLNC,ADUS,IREN,FSLR,IREN,AVGO
+HEI,,,,ARHS,,NCLH,AZO,CRWD,BJ,GAP,,CIFR,-,Cash > LT debt,,,SHOP,JMIA,LUNR,AREC,NBIS,ALAB,NBIS,TSLA
+JOBY,,,,BLD,,VG,BBY,GTLB,CIEN,IOT,,DEFT,+,Lots of current liabilitiey,,,,EOSE,RDW,ASST,OPEN,IMNM,,CEG
+LOW,,,,CERT,,,CRDO,ROST,CRMT,ICLR,,ETHA,ETF,,,,,ASTS,ONDS,ASTS,OUST,AEO,,
+MGRC,,,,CPNG,,,MDB,,GO,,,HUT,+,Cash > LT debt,,,,TMDX,AVAV,AVAV,RKLB,OPEN,,VIAV
+MYRG,,,,DELL,,,ONON,,OKTA,,,IREN,+,Cash > LT debt,,,,VKTX,ADUS,BITF,SANM,,,FROG
+NU,,,,DKL,,,THO,,TTC,,,OPEN,-,,,,,SOFI,DLO,CCCX,HUT,,,NTRA
+NVDA,,,,DUOL,,,,,VEEV,,,SANA,-,No debt,,,,IONQ,NBIS,CIFR,CIFR,,,WRBY
+PLAB,,,,DV,,,,,,,,,,,,,,IREN,IREN,CLSK,SANA,,,GRAB
+PNTG,,,,EME,,,,,,,,NBIS,,,,,,,,DPRO,,,,PGY
+PSTG,,,,ESTC,,,,,,,,,,,,,,,,EOSE,,,,RKT
+SNOW,,,,EVTC,,,,,,,,,,,,,,,,IONQ,,,,
+SNPS,,,,FOUR,,,,,,,,,,,,,,,,IREN,,,,IONQ
+STRL,,,,FOXF,,,,,,,,,,,,,,,,KRKNF,,,,FIG
+STWD,,,,GDOT,,,,,,,,,,,,,,,,KTOS,,,,LULU
+TTD,,,,IBP,,,,,,,,,,,,,,,,MDB,,,,MJ
+USPH,,,,INTU,,,,,,,,,,,,,,,,ONDS,,,,
+UTHR,,,,MASI,,,,,,,,,,,,,,,,PL,,,,
+,,,,MIDD,,,,,,,,,,,,,,,,PLUG,,,,
+,,,,MNST,,,,,,,,,,,,,,,,POET,,,,
+,,,,NXST,,,,,,,,,,,,,,,,PRCT,,,,
+,,,,PAYO,,,,,,,,,,,,,,,,PRME,,,,
+,,,,PRAA,,,,,,,,,,,,,,,,RDW,,,,
+,,,,PZZA,,,,,,,,,,,,,,,,RIVN,,,,
+,,,,RKT,,,,,,,,,,,,,,,,RKLB,,,,
+,,,,SRE,,,,,,,,,,,,,,,,SIDU,,,,
+,,,,TFX,,,,,,,,,,,,,,,,SKYT,,,,
+,,,,TTEC,,,,,,,,,,,,,,,,SOC,,,,
+,,,,VAC,,,,,,,,,,,,,,,,SYM,,,,
+,,,,WD,,,,,,,,,,,,,,,,TE,,,,
+,,,,XPEL,,,,,,,,,,,,,,,,UMAC,,,,
+,,,,YOU,,,,,,,,,,,,,,,,FIGR,,,,
+,,,,ZM,,,,,,,,,,,,,,,,,,,,
+,,,,ZS,,,,,,,,,,,,,,,,,,,,
