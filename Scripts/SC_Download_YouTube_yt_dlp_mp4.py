@@ -27,6 +27,9 @@ ydl_opts = {
 try:
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([video_url])
+    print("")
     print(f"Video downloaded successfully to {download_path}")
+    print("")
+    print("All Done...")
 except Exception as e:
     print(f"An error occurred: {e}")
