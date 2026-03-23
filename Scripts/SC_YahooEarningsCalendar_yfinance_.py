@@ -158,3 +158,15 @@ yahoo_earnings_calendar_df.sort_values(by=['Earnings_Date','Ticker'], ascending=
 
 skipped_ticker_logfile = "skipped_ticker_yahoo_earnings_calendar_yfinance.csv"
 skipped_ticker_df.sort_values(by=['Ticker'], ascending=[True]).to_csv(dir_path + log_dir + "\\" + skipped_ticker_logfile,sep=',', index=True, header=True)
+
+logging.info("")
+logging.info("--------------------------------------------------------------------------")
+logging.info("The Earnings dates are saved in " + str(yahoo_earnings_calendar_logfile))
+logging.info("--------------------------------------------------------------------------")
+logging.info("")
+if (not skipped_ticker_df.empty):
+  logging.info("")
+  logging.info("--------------------------------------------------------------------------")
+  logging.info("The SKIPPED TICKERS are saved in " + str(skipped_ticker_logfile))
+  logging.info("--------------------------------------------------------------------------")
+  logging.info("")
