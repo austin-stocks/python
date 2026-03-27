@@ -187,6 +187,15 @@
     }
   },
 
+  "PIPR" : {
+    "Splits" : {
+      "03/24/2026" : "4:1"
+    },
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2018", "Stop_Date" :   "End"}
+    ]
+  },
+
   "UFPI" : {
     "Splits" : {
       "11/14/2017" : "3:1"
