@@ -239,7 +239,7 @@ for ticker_raw in ticker_list:
   eps_report_date_4qtr_ago_dt = dt.datetime.strptime(str(eps_report_date_4qtr_ago), '%Y-%m-%d').date()
   if (eps_report_date_1qtr_ago_dt > dt.date.today()):
     logging.error("  The Last quarterly earnings date for " + str(ticker) + " is " + str(eps_report_date_1qtr_ago_dt) + " which is in future... :-(")
-    logging.error("  This seems like a typo :-)...Please correct it in Master Tracklist file and rerun")
+    logging.error("  This seems like a typo :-)...Please correct it in " + str(earnings_file) + " file and rerun")
     sys.exit(1)
   if (eps_report_date_4qtr_ago_dt > dt.date.today()):
     logging.error("  The Last Year earnings date for " + str(ticker) + " is " + str(eps_report_date_4qtr_ago_dt) + " which is in future... :-(")
@@ -434,11 +434,22 @@ logging.info("Created : " + str(eps_report_newer_than_eps_projection_logfile) + 
 logging.info("Created : " + str(eps_report_by_month_logfile) + " <-- Sorted by Month - Lists number of qtr earnings reports by month...Can use to help manage your workload")
 logging.info("Created : " + str(price_target_logfile) + " <-- Sorted by PT % Change - Lists tickers sorted by their PT changes (curr PT vs Previous PT) in descending order")
 
+if (not skipped_tickers_df.empty):
+  logging.info("")
+  logging.info("List of skipped Tickers with reason")
+  logging.info("")
+  logging.info("*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+")
+  logging.info("               " + str(skipped_tickers_df.to_string) )
+  logging.info("*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+")
+  logging.info("")
+
 if (len(eps_report_newer_than_eps_projection_df.index) > 0):
   logging.error("")
   logging.error("*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+")
   logging.error("               " + str(eps_report_newer_than_eps_projection_logfile) + " IS NOT EMPTY...YOU GOTTA INVESTIGATE IT")
   logging.error("*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+")
+
+
 
 # This is not needed as we get the data from the above files anyway...
 # However this works and if needed can be resurrected.
