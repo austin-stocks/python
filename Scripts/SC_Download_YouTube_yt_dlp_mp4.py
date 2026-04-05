@@ -18,6 +18,7 @@ ydl_opts = {
     'outtmpl': os.path.join(download_path, '%(title)s.%(ext)s'), # Output file naming template
     'noplaylist': True, # Download only a single video if the URL is part of a playlist
     'quiet': False, # Show download progress
+    # 'playlist_items':'57', '1-19' # If you are downloading a playlist, this lets you selet the vidoes
     'progress_hooks': [lambda d: print(d['status']) if d['status'] == 'finished' else None] # Optional: print status on completion
 }
 
