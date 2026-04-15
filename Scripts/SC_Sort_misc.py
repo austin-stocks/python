@@ -306,6 +306,14 @@ for ticker_raw in ticker_list:
   # and create a string for the ticker filename from the string
   ticker_chart_date_list.sort(reverse=True)
   logging.debug("The datetime SORTED list for " + str(ticker) + " is " + str(ticker_chart_date_list))
+  if (len(ticker_chart_date_list) == 0):
+    logging.info("There are no charts found for " + str(ticker))
+    logging.info("Sometimes this happens when Sundeep has just removed Charts from git")
+    logging.info("and this ticker has not had a chance to create a new chart")
+    logging.info("This is highly unusual if this happens anytime other than the scenario mentioned above")
+    time.sleep(5)
+    continue
+    # sys.exit()
   charts_last_updated_df.loc[ticker] = [ticker_chart_date_list[0]]
   # ---------------------------------------------------------------------------
 
