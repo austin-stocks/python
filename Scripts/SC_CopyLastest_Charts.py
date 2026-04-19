@@ -183,10 +183,12 @@ for chart_styles_idx in chart_styles_list:
           shutil.copy2(source_dir + ticker_latest_chart_filename, dest_dir + ticker + "_Log_Latest.jpg")
       else:
         if (chart_styles_idx == 'Linear'):
-          logging.error("")
-          logging.error("***** The was no jpg for ticker " + str(ticker) + " *****")
-          logging.error("***** Please correct and rerun *****")
-          sys.exit(1)
+          logging.info("***** There was no jpg for ticker " + str(ticker) + " *****")
+          logging.info("Sometimes this happens when Sundeep has just removed Charts from git")
+          logging.info("and this ticker has not had a chance to create a new chart")
+          logging.info("This is highly unusual if this happens anytime other than the scenario mentioned above")
+          time.sleep(5)
+          continue
         elif (chart_styles_idx == 'Long_Linear'):
           logging.warning("The was no Long Linear jpg for ticker " + str(ticker) + " in the directory " + str(source_dir))
         elif (chart_styles_idx == 'Log'):
