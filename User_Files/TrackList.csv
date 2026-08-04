@@ -1,52 +1,52 @@
-Tickers,,,,30-Jul,31-Jul,,3-Aug,4-Aug,5-Aug,6-Aug,7-Aug,,10-Aug,11-Aug,12-Aug,13-Aug,14-Aug,,,,,,,,IVES,Shay,Ronnie,My Stuff,Rise Dynasty,Marty 6,,RainKing
-MSFT,,,AAPL,HUN,ABBV,,ADUS,ADM,ABCL,ACLS,ATMU,,AAON,BGS,COHR,AMAT,,,,BETR,-,Lots of Debt,,,INOD,RKLB,ZETA,ABAT,FLNC,PL,RKLB,MU
-MYRG,,,ALGM,ICE,AN,,AMRC,ALAB,ALL,AKAM,ESNT,,ACHR,MIDD,CSCO,DLO,,,,BTQ,None,,,,PEGA,CLPT,FLNC,ADUS,IREN,FSLR,IREN,AVGO
-NSP,,,AMZN,IDCC,ARES,,CLX,AMD,AMPL,AMN,ROAD,,BRK-B,ONON,ENS,NU,,,,CIFR,-,Cash > LT debt,,,SHOP,JMIA,LUNR,AREC,NBIS,ALAB,NBIS,TSLA
-ODFL,,,AOS,ILMN,CBOE,,GRAB,AME,APP,AMPH,TTWO,,GDOT,VG,GO,YETI,,,,DEFT,+,Lots of current liabilitiey,,,,EOSE,RDW,ASST,OPEN,IMNM,,CEG
-OMF,,,APD,LH,CHD,,ICHR,ANET,ATEN,ARHS,,,HIMS,,PFGC,,,,,ETHA,ETF,,,,,ASTS,ONDS,ASTS,OUST,AEO,,
-ORLY,,,AVY,LKQ,LEA,,IIPR,ATKR,AXON,ARW,,,PERI,,,,,,,HUT,+,Cash > LT debt,,,,TMDX,AVAV,AVAV,RKLB,OPEN,,VIAV
-PFSI,,,BLDR,LOPE,MGA,,MED,BALL,BLLN,DDOG,,,,,,,,,,IREN,+,Cash > LT debt,,,,VKTX,ADUS,BITF,SANM,,,FROG
-PSA,,,CHKP,LPLA,NVT,,ON,BKNG,BROS,DKNG,,,,,,,,,,OPEN,-,,,,,SOFI,DLO,CCCX,HUT,,,NTRA
-PTC,,,CI,MA,SAIA,,PAY,CACC,CACI,DOCS,,,,,,,,,,SANA,-,No debt,,,,IONQ,NBIS,CIFR,CIFR,,,WRBY
-QCOM,,,COIN,MLM,SYK,,PLTR,CAT,CDW,DV,,,,,,,,,,,,,,,,IREN,IREN,CLSK,SANA,,,GRAB
-RSI,,,CROX,MPWR,TNET,,STRL,CERT,CENT,EPAM,,,,,,,,,,NBIS,,,,,,,,DPRO,,,,PGY
-SIMO,,,DAR,MSEX,TROW,,UCTT,CPNG,CLFD,FOUR,,,,,,,,,,,,,,,,,,EOSE,,,,RKT
-SITE,,,DXCM,MTX,TW,,UFPT,EA,CPAY,FOXA,,,,,,,,,,,,,,,,,,IONQ,,,,
-SLGN,,,EME,NCLH,UPBD,,VERX,ENTG,CRL,FOXF,,,,,,,,,,,,,,,,,,IREN,,,,IONQ
-SOFI,,,EMN,NMIH,WCC,,VRTX,ET,CRUS,FROG,,,,,,,,,,,,,,,,,,KRKNF,,,,FIG
-SWK,,,FHI,OLED,,,,EVTC,DASH,G,,,,,,,,,,,,,,,,,,KTOS,,,,LULU
-TENB,,,FND,OMCL,,,,EXPD,DIOD,HAE,,,,,,,,,,,,,,,,,,MDB,,,,MJ
-TTEK,,,FSLR,PIPR,,,,FBIN,DIS,HALO,,,,,,,,,,,,,,,,,,ONDS,,,,
-TYL,,,GPI,PWR,,,,FIS,DKL,IBP,,,,,,,,,,,,,,,,,,PL,,,,
-UFPI,,,HII,REGN,,,,FLYW,DT,KDP,,,,,,,,,,,,,,,,,,PLUG,,,,
-VRT,,,,,,,,FRSH,DUOL,MCHP,,,,,,,,,,,,,,,,,,POET,,,,
-WING,,,,,,,,GWW,EBAY,MMS,,,,,,,,,,,,,,,,,,PRCT,,,,
-,,,,,,,,HSIC,ELF,MNST,,,,,,,,,,,,,,,,,,PRME,,,,
-,,,,,,,,IDXX,ETSY,NET,,,,,,,,,,,,,,,,,,RDW,,,,
-,,,,,,,,INTA,EXEL,NSIT,,,,,,,,,,,,,,,,,,RIVN,,,,
-,,,,,,,,IOSP,EXTR,NXST,,,,,,,,,,,,,,,,,,RKLB,,,,
-,,,,,,,,IT,HUBS,OSCR,,,,,,,,,,,,,,,,,,SIDU,,,,
-,,,,,,,,J,INMD,OTEX,,,,,,,,,,,,,,,,,,SKYT,,,,
-,,,,,,,,KAI,JOBY,PAYO,,,,,,,,,,,,,,,,,,SOC,,,,
-,,,,,,,,KMB,KLIC,PLNT,,,,,,,,,,,,,,,,,,SYM,,,,
-,,,,,,,,LDOS,KVYO,PRAA,,,,,,,,,,,,,,,,,,TE,,,,
-,,,,,,,,LGIH,MELI,PZZA,,,,,,,,,,,,,,,,,,UMAC,,,,
-,,,,,,,,LSCC,MKSI,QDEL,,,,,,,,,,,,,,,,,,FIGR,,,,
-,,,,,,,,MRK,MSI,RKT,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,PFE,NVO,RMD,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,PINS,OEC,RSG,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,PLUS,PAYC,SGI,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,PRIM,PNTG,SRE,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,QLYS,PRI,STEP,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,ROK,RGLD,STWD,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,RVTY,RRX,SYNA,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,TKR,SEDG,TBRG,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,TMDX,SITM,TFX,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,TOST,TRMB,TTD,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,TREX,UBER,TTEC,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,UPST,USPH,TWLO,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,WLK,UTHR,TXRH,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,ZBRA,VCTR,VAC,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,ZETA,XPEL,WD,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,YOU,ZTS,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,ZG,,,,,,,,,,,,,,,,,,,,,,,
+Tickers,,,31-Jul,,3-Aug,4-Aug,5-Aug,6-Aug,7-Aug,,10-Aug,11-Aug,12-Aug,13-Aug,14-Aug,,,,,,,,IVES,Shay,Ronnie,My Stuff,Rise Dynasty,Marty 6,,RainKing
+,,,ABBV,,ADUS,ADM,ABCL,ACLS,ATMU,,AAON,BGS,COHR,AMAT,,,,BETR,-,Lots of Debt,,,INOD,RKLB,ZETA,ABAT,FLNC,PL,RKLB,MU
+,,,AN,,AMRC,ALAB,ALL,AKAM,ESNT,,ACHR,MIDD,CSCO,DLO,,,,BTQ,None,,,,PEGA,CLPT,FLNC,ADUS,IREN,FSLR,IREN,AVGO
+,,,ARES,,CLX,AMD,AMPL,AMN,ROAD,,BRK-B,ONON,ENS,NU,,,,CIFR,-,Cash > LT debt,,,SHOP,JMIA,LUNR,AREC,NBIS,ALAB,NBIS,TSLA
+,,,CBOE,,GRAB,AME,APP,AMPH,TTWO,,GDOT,VG,GO,YETI,,,,DEFT,+,Lots of current liabilitiey,,,,EOSE,RDW,ASST,OPEN,IMNM,,CEG
+,,,CHD,,ICHR,ANET,ATEN,ARHS,,,HIMS,,PFGC,,,,,ETHA,ETF,,,,,ASTS,ONDS,ASTS,OUST,AEO,,
+,,,LEA,,IIPR,ATKR,AXON,ARW,,,PERI,,,,,,,HUT,+,Cash > LT debt,,,,TMDX,AVAV,AVAV,RKLB,OPEN,,VIAV
+,,,MGA,,MED,BALL,BLLN,DDOG,,,,,,,,,,IREN,+,Cash > LT debt,,,,VKTX,ADUS,BITF,SANM,,,FROG
+,,,NVT,,ON,BKNG,BROS,DKNG,,,,,,,,,,OPEN,-,,,,,SOFI,DLO,CCCX,HUT,,,NTRA
+,,,SAIA,,PAY,CACC,CACI,DOCS,,,,,,,,,,SANA,-,No debt,,,,IONQ,NBIS,CIFR,CIFR,,,WRBY
+,,,SYK,,PLTR,CAT,CDW,DV,,,,,,,,,,,,,,,,IREN,IREN,CLSK,SANA,,,GRAB
+,,,TNET,,STRL,CERT,CENT,EPAM,,,,,,,,,,NBIS,,,,,,,,DPRO,,,,PGY
+,,,TROW,,UCTT,CPNG,CLFD,FOUR,,,,,,,,,,,,,,,,,,EOSE,,,,RKT
+,,,TW,,UFPT,EA,CPAY,FOXA,,,,,,,,,,,,,,,,,,IONQ,,,,
+,,,UPBD,,VERX,ENTG,CRL,FOXF,,,,,,,,,,,,,,,,,,IREN,,,,IONQ
+,,,WCC,,VRTX,ET,CRUS,FROG,,,,,,,,,,,,,,,,,,KRKNF,,,,FIG
+,,,,,,EVTC,DASH,G,,,,,,,,,,,,,,,,,,KTOS,,,,LULU
+,,,,,,EXPD,DIOD,HAE,,,,,,,,,,,,,,,,,,MDB,,,,MJ
+,,,,,,FBIN,DIS,HALO,,,,,,,,,,,,,,,,,,ONDS,,,,
+,,,,,,FIS,DKL,IBP,,,,,,,,,,,,,,,,,,PL,,,,
+,,,,,,FLYW,DT,KDP,,,,,,,,,,,,,,,,,,PLUG,,,,
+,,,,,,FRSH,DUOL,MCHP,,,,,,,,,,,,,,,,,,POET,,,,
+,,,,,,GWW,EBAY,MMS,,,,,,,,,,,,,,,,,,PRCT,,,,
+,,,,,,HSIC,ELF,MNST,,,,,,,,,,,,,,,,,,PRME,,,,
+,,,,,,IDXX,ETSY,NET,,,,,,,,,,,,,,,,,,RDW,,,,
+,,,,,,INTA,EXEL,NSIT,,,,,,,,,,,,,,,,,,RIVN,,,,
+,,,,,,IOSP,EXTR,NXST,,,,,,,,,,,,,,,,,,RKLB,,,,
+,,,,,,IT,HUBS,OSCR,,,,,,,,,,,,,,,,,,SIDU,,,,
+,,,,,,J,INMD,OTEX,,,,,,,,,,,,,,,,,,SKYT,,,,
+,,,,,,KAI,JOBY,PAYO,,,,,,,,,,,,,,,,,,SOC,,,,
+,,,,,,KMB,KLIC,PLNT,,,,,,,,,,,,,,,,,,SYM,,,,
+,,,,,,LDOS,KVYO,PRAA,,,,,,,,,,,,,,,,,,TE,,,,
+,,,,,,LGIH,MELI,PZZA,,,,,,,,,,,,,,,,,,UMAC,,,,
+,,,,,,LSCC,MKSI,QDEL,,,,,,,,,,,,,,,,,,FIGR,,,,
+,,,,,,MRK,MSI,RKT,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,PFE,NVO,RMD,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,PINS,OEC,RSG,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,PLUS,PAYC,SGI,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,PRIM,PNTG,SRE,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,QLYS,PRI,STEP,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,ROK,RGLD,STWD,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,RVTY,RRX,SYNA,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,TKR,SEDG,TBRG,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,TMDX,SITM,TFX,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,TOST,TRMB,TTD,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,TREX,UBER,TTEC,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,UPST,USPH,TWLO,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,WLK,UTHR,TXRH,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,ZBRA,VCTR,VAC,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,ZETA,XPEL,WD,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,YOU,ZTS,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,ZG,,,,,,,,,,,,,,,,,,,,,,,
