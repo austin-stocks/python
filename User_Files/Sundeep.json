@@ -57,7 +57,6 @@
   "COHR" : {
     "Buy_Sell" : [
        {"Buy_Date" : "06/26/2024","Buy_Price_str" :  "79"},
-       {"Buy_Date" : "03/23/2018","Buy_Price_str" :  "$191.69"},
        {"Sell_Date" : "09/21/2020","Sell_Price_str" :  "$105"}
     ]
   },

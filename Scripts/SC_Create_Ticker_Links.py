@@ -97,7 +97,7 @@ yahoo_comany_info_df.set_index('Ticker', inplace=True)
 ## Read the AAII financial to get some information
 
 
-ticker_links_df = pd.DataFrame(columns=['Ticker', 'In Master', 'Name','Sector', 'Industry','SChart', 'CNBC-Earnings','CNBC-Fin','Y-Profile','Y-BS','PSI','AAII'])
+ticker_links_df = pd.DataFrame(columns=['Ticker', 'In Master', 'Name','Sector', 'Industry','SChart', 'CNBC-Earnings','CNBC-Fin','Qualtrim', 'Y-Profile','Y-BS','PSI','AAII'])
 ticker_links_df.set_index('Ticker', inplace=True)
 
 # -----------------------------------------------------------------------------
@@ -137,13 +137,13 @@ for ticker_raw in ticker_list:
   ticker_links_df.loc[ticker, 'Sector'] = ticker_sector
   ticker_links_df.loc[ticker, 'Industry'] = ticker_industry
   ticker_links_df.loc[ticker, 'SChart'] = 'https://stockcharts.com/h-sc/ui?s='+str(ticker)
-  ticker_links_df.loc[ticker, 'PSI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=294571&p=' + str(ticker)
+  ticker_links_df.loc[ticker, 'Qualtrim'] = 'https://www.qualtrim.com/app/chart-builder?companies=' + str(ticker) + '&metrics=dailyPrice,epsDiluted&frequency=ttm&range=MAX'
   ticker_links_df.loc[ticker, 'CNBC-Earnings'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=earnings'
   ticker_links_df.loc[ticker, 'CNBC-Fin'] = 'https://www.cnbc.com/quotes/' + str(ticker) +'?tab=financials'
+  ticker_links_df.loc[ticker, 'PSI'] = 'https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=294571&p=' + str(ticker)
   ticker_links_df.loc[ticker, 'Y-Profile'] = 'https://finance.yahoo.com/quote/' + str(ticker)
   ticker_links_df.loc[ticker, 'Y-BS'] = 'https://finance.yahoo.com/quote/' + str(ticker) + "/balance-sheet"
   ticker_links_df.loc[ticker, 'AAII'] = 'https://www.aaii.com/stock/ticker/' + str(ticker)
-
   i = i+1
 
 logging.info("")
