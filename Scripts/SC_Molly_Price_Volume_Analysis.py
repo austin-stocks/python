@@ -140,6 +140,52 @@ raw_vol_df.columns = ["COUNT"] + col_date_list_str
 logging.debug("The Raw Price DF after dates converted to strings : \n" + raw_price_df.to_string())
 logging.debug("The Raw Vol DF after dates converted to strings : \n" + raw_vol_df.to_string())
 
+
+# ---------------------------------------------------------
+# Fail fast if Price or Vol has a real 0.0 in a date column.
+# Skip COUNT. Empty Excel cells are NaN, not 0, so they are
+# not reported here.
+# Excel layout assumed: A=SYMBOL, B=COUNT, C=Date, D+=dates
+# ---------------------------------------------------------
+def excel_col_letter(col_idx_1based):
+  letters = ""
+  n = col_idx_1based
+  while n > 0:
+    n, rem = divmod(n - 1, 26)
+    letters = chr(65 + rem) + letters
+  return letters
+
+found_zero = False
+for sheet_name, sheet_df in (("Price", raw_price_df), ("Vol", raw_vol_df)):
+  orig_symbols = pd.read_excel(price_vol_xls, sheet_name, usecols=["SYMBOL"])
+  ticker_to_excel_row = {}
+  for i, sym in enumerate(orig_symbols["SYMBOL"].tolist()):
+    ticker_to_excel_row.setdefault(str(sym), i + 2)
+
+  data_df = sheet_df.drop(columns=["COUNT"], errors="ignore")
+  zero_mask = data_df.eq(0)
+  if not zero_mask.any().any():
+    logging.info("No zeros found in " + sheet_name + " sheet")
+    continue
+
+  found_zero = True
+  row_nums, col_nums = np.where(zero_mask.values)
+  for r, c in zip(row_nums, col_nums):
+    ticker = data_df.index[r]
+    date_str = data_df.columns[c]
+    excel_row = ticker_to_excel_row.get(str(ticker), "?")
+    excel_col = excel_col_letter(4 + c)
+    logging.error(
+      sheet_name
+      + " -> Ticker: " + str(ticker) + " (row " + str(excel_row) + ")"
+      + ", Date: " + str(date_str) + " (col " + excel_col + ")"
+    )
+
+if found_zero:
+  logging.error("Found 0s in Price and/or Vol. Fix the Google Finance file and rerun. Exiting...")
+  sys.exit(1)
+
+
 # Set a range to check b/c the number of days for which the data
 # is availabe changes from week to week (Google finance sheet is
 # setup to download last 200 calendar days, which can be anywhere

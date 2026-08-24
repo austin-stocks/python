@@ -41,6 +41,7 @@ from github - I am not sure how that works but it works)
     If you want to upgrade that package to the latest 
     for e.g. this upgrades pip itself to the latest version 
       python -m pip install ––upgrade pip 
+      python -m pip install --upgrade yfinance
 
     You will see the update in the Anaconda Navigator (you need to reindex) and then somehow it is updated in the pycharm (automatically??)
 	(Probably because PyCharm is pointing to the same libraraies through the python pointer - that was setup in Python Interpretor window)

@@ -10,7 +10,6 @@
 
   "BABA" : {
     "Buy_Sell" : [
-       {"Buy_Date" : "12/07/2017","Buy_Price_str" :  "$175"},
        {"Sell_Date" : "09/09/2020","Sell_Price_str" :  "$274"},
        {"Buy_Date" : "10/12/2020","Buy_Price_str" :  "$308"}
     ]
