@@ -14,7 +14,9 @@
 #     3. 10-Q / 10-K instance XBRL for the whole ticker (e.g. FOUR)
 #   Gap-fill — leftover missing quarter-ends after JSON (and after primary
 #   instance XBRL if JSON produced nothing):
-#     4. 8-K HTML earnings release (Exhibit 99.1), e.g. HNGE Q4'25 = 0.37
+#     4. 8-K HTML earnings release (Exhibit 99.1), e.g. HNGE Q4'25 = 0.37;
+#        also INCY "GAAP diluted EPS", XNCR "net loss per share (diluted)",
+#        and FOUR image-letter hidden text / GAAP DILUTED EPS recon row
 #     5. 10-Q/K instance XBRL for those dates
 #     6. compute Q4 as FY-(Q1+Q2+Q3) then FY-9mo (after 8-K, not before)
 #     7. 10-K HTML "Quarterly Financial Data" table (e.g. DGII FY 2009)
@@ -53,7 +55,7 @@ REQUEST_SLEEP_SEC = 0.15
 REQUEST_TIMEOUT_SEC = 60
 XBRL_MAX_FILINGS = 30
 XBRL_GAPFILL_MAX_FILINGS = 12
-_8K_MAX_FILINGS = 16
+_8K_MAX_FILINGS = 32
 _filings_cache = {}
 _8k_cache = {}
 _submissions_data_cache = {}
@@ -595,15 +597,20 @@ def _select_8k_for_ends(filings, missing_ends):
         continue
       seen.add(accn)
       selected.append(f)
-  selected.sort(key=lambda r: r.get("filed") or "")
+  # Newest first so a long list of old holes cannot drop the latest
+  # earnings 8-K when we cap at _8K_MAX_FILINGS (INCY 2011 holes used to
+  # push the 2026-02-10 Q4 exhibit off the list).
+  selected.sort(key=lambda r: r.get("filed") or "", reverse=True)
   return selected[:_8K_MAX_FILINGS]
 
 
 def _exhibit_99_name(names):
+  """Pick Exhibit 99.1 HTML. Names like incy-q42025xexx991.htm (Workiva)."""
   htmls = [n for n in names if n and n.lower().endswith((".htm", ".html"))]
+  compact_hit = re.compile(r"x?exx?991|exhibit991|ex99d1")
   for n in htmls:
-    nl = n.lower().replace("_", "").replace("-", "")
-    if "ex991" in nl or "exhibit991" in nl or "xex991" in nl:
+    nl = n.lower().replace("_", "").replace("-", "").replace(".", "")
+    if compact_hit.search(nl):
       return n
   for n in htmls:
     nl = n.lower()
@@ -1428,11 +1435,101 @@ def _is_gaap_diluted_eps_label(label):
   raw = str(label).lower()
   if "non-gaap" in raw or "non gaap" in t:
     return False
+  if "adjusted" in t and "gaap" not in t:
+    return False
   if "diluted" not in t:
     return False
   if "share" not in t and "eps" not in t and "per" not in t:
     return False
-  return "gaap" in t or "net income" in t
+  return (
+    "gaap" in t
+    or "net income" in t
+    or "net loss" in t
+    or "earnings per" in t
+    or "loss per" in t
+  )
+
+
+def _row_is_gaap_diluted(df, r):
+  """True if this row is GAAP diluted EPS, including a child 'Diluted' row."""
+  if _is_gaap_diluted_eps_label(df.iat[r, 0]):
+    return True
+  t = re.sub(r"[^a-z]+", " ", str(df.iat[r, 0]).lower()).strip()
+  if t not in ("diluted", "diluted eps", "eps diluted"):
+    return False
+  for pr in range(r - 1, max(-1, r - 4), -1):
+    parent = str(df.iat[pr, 0])
+    pt = re.sub(r"[^a-z]+", " ", parent.lower()).strip()
+    if not pt or pt == "nan":
+      continue
+    if "non-gaap" in parent.lower() or "non gaap" in pt:
+      return False
+    if (
+      ("net income" in pt or "net loss" in pt or "earnings" in pt)
+      and ("share" in pt or "eps" in pt or "per" in pt)
+    ):
+      return True
+    break
+  return False
+
+
+def _parse_eps_from_row_col(df, r, c):
+  """EPS in this cell, or in the next cell when this one is only '$'."""
+  val = _parse_eps_cell(df.iat[r, c])
+  if val is not None:
+    return val
+  s = str(df.iat[r, c]).strip()
+  if s in ("$", "") or s.lower() == "nan":
+    if c + 1 < df.shape[1]:
+      return _parse_eps_cell(df.iat[r, c + 1])
+  return None
+
+
+def _quarter_end_date(year, md):
+  try:
+    return date(year, md[0], md[1])
+  except ValueError:
+    try:
+      return date(year, md[0], calendar.monthrange(year, md[0])[1])
+    except Exception:
+      return None
+
+
+def _table_quarter_col_ends(df):
+  """Map column index -> period-end date for 'three months ended' columns."""
+  metas = []
+  for c in range(len(df.columns)):
+    kind = None
+    md = None
+    year = None
+    for r in range(min(8, len(df))):
+      cell = str(df.iat[r, c])
+      if re.search(r"three\s+months\s+ended", cell, re.I):
+        kind = "q"
+        got = _month_day_from_cell(cell)
+        if got:
+          md = got
+      elif re.search(r"\byear\s+ended\b", cell, re.I):
+        kind = "fy"
+      y = _as_year(cell)
+      if y:
+        year = y
+    metas.append((c, kind, md, year))
+  col_end = {}
+  for i, (c, kind, md, year) in enumerate(metas):
+    if kind != "q" or not md:
+      continue
+    if not year:
+      for c2, k2, md2, y2 in metas[i:i + 4] + metas[max(0, i - 3):i]:
+        if k2 == "q" and md2 == md and y2:
+          year = y2
+          break
+    if not year:
+      continue
+    end_d = _quarter_end_date(year, md)
+    if end_d:
+      col_end[c] = end_d
+  return col_end
 
 
 def _read_html_tables(html):
@@ -1447,48 +1544,111 @@ def _read_html_tables(html):
     return []
 
 
+def _html_to_text(html):
+  t = re.sub(r"(?is)<script[^>]*>.*?</script>", " ", html)
+  t = re.sub(r"(?is)<style[^>]*>.*?</style>", " ", t)
+  t = re.sub(r"(?s)<[^>]+>", " ", t)
+  t = (
+    t.replace("\xa0", " ")
+    .replace("&nbsp;", " ")
+    .replace("&#9;", " ")
+    .replace("&amp;", "&")
+  )
+  t = re.sub(r"&#\d+;", " ", t)
+  return re.sub(r"\s+", " ", t)
+
+
+def _calendar_q_end(q, year):
+  md = {1: (3, 31), 2: (6, 30), 3: (9, 30), 4: (12, 31)}[q]
+  return date(year, md[0], md[1])
+
+
+def _parse_8k_gaap_diluted_from_text(html):
+  """GAAP diluted EPS from exhibit text (image-letter hidden font, FOUR)."""
+  found = {}
+  text = _html_to_text(html)
+  m = re.search(
+    r"reconciliation of gaap diluted eps to non-gaap eps\s+"
+    r"(?P<heads>(?:(?:q[1-4]|fy)\s+20\d{2}\s+)+)"
+    r"gaap diluted eps\s+"
+    r"(?P<vals>(?:\$\s*-?\d+\.\d+\s+)+)",
+    text,
+    re.I,
+  )
+  if m:
+    heads = re.findall(r"(q[1-4]|fy)\s+(20\d{2})", m.group("heads"), re.I)
+    vals = re.findall(r"\$\s*(-?\d+\.\d+)", m.group("vals"))
+    for (kind, year_s), val_s in zip(heads, vals):
+      if kind.lower() == "fy":
+        continue
+      found[_calendar_q_end(int(kind[1]), int(year_s)).isoformat()] = float(val_s)
+  for m in re.finditer(
+    r"\$\s*(-?\d+\.\d+)\s+gaap\s+diluted\s+eps\b", text, re.I
+  ):
+    if re.search(r"non[\s-]*gaap", text[max(0, m.start() - 20):m.start()], re.I):
+      continue
+    window = text[max(0, m.start() - 400):m.start() + 80]
+    qm = re.search(r"\bq([1-4])\s+(20\d{2})\b", window, re.I)
+    if qm:
+      found.setdefault(
+        _calendar_q_end(int(qm.group(1)), int(qm.group(2))).isoformat(),
+        float(m.group(1)),
+      )
+      continue
+    qm = re.search(r"(?:fourth|4th)\s+quarter\s+(20\d{2})", window, re.I)
+    if qm:
+      found.setdefault(
+        date(int(qm.group(1)), 12, 31).isoformat(),
+        float(m.group(1)),
+      )
+  for m in re.finditer(
+    r"diluted eps for the quarter was \$\s*(-?\d+\.\d+)\s+and\s+non-gaap",
+    text,
+    re.I,
+  ):
+    window = text[max(0, m.start() - 800):m.start() + 120]
+    dm = re.search(
+      r"(?:quarter|three months)\s+(?:and\s+year\s+)?ended\s+"
+      r"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+"
+      r"(\d{1,2})\s*,\s*(20\d{2})",
+      window,
+      re.I,
+    )
+    if dm:
+      month = _MONTH_PREFIX.get(dm.group(1)[:3].lower())
+      if month:
+        end_d = _quarter_end_date(int(dm.group(3)), (month, int(dm.group(2))))
+        if end_d:
+          found.setdefault(end_d.isoformat(), float(m.group(1)))
+      continue
+    qm = re.search(r"\bq([1-4])\s+(20\d{2})\b", window, re.I)
+    if qm:
+      found.setdefault(
+        _calendar_q_end(int(qm.group(1)), int(qm.group(2))).isoformat(),
+        float(m.group(1)),
+      )
+  return found
+
+
 def _parse_8k_gaap_diluted_quarters(html):
   """Map period-end ISO -> GAAP diluted EPS from an earnings 8-K exhibit."""
   found = {}
   for df in _read_html_tables(html):
     if df is None or df.empty or df.shape[1] < 3:
       continue
-    col_end = {}
-    for c in range(len(df.columns)):
-      kind = None
-      md = None
-      year = None
-      for r in range(min(8, len(df))):
-        cell = str(df.iat[r, c])
-        if re.search(r"three\s+months\s+ended", cell, re.I):
-          kind = "q"
-          md = _month_day_from_cell(cell)
-        elif re.search(r"\byear\s+ended\b", cell, re.I):
-          kind = "fy"
-        y = _as_year(cell)
-        if y:
-          year = y
-      if kind != "q" or not md or not year:
-        continue
-      try:
-        col_end[c] = date(year, md[0], md[1])
-      except ValueError:
-        try:
-          col_end[c] = date(
-            year, md[0], calendar.monthrange(year, md[0])[1]
-          )
-        except Exception:
-          pass
+    col_end = _table_quarter_col_ends(df)
     if not col_end:
       continue
     for r in range(len(df)):
-      if not _is_gaap_diluted_eps_label(df.iat[r, 0]):
+      if not _row_is_gaap_diluted(df, r):
         continue
       for c, end_d in col_end.items():
-        val = _parse_eps_cell(df.iat[r, c])
+        val = _parse_eps_from_row_col(df, r, c)
         if val is None:
           continue
         found[end_d.isoformat()] = val
+  for end_iso, val in _parse_8k_gaap_diluted_from_text(html).items():
+    found.setdefault(end_iso, val)
   return found
 
 
