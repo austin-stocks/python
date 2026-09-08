@@ -2927,6 +2927,12 @@
     ]
   },
 
+  "GRDN" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "12/30/2025", "Stop_Date" :   "End"}
+    ]
+  },
+
   "DLO" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "12/30/2022", "Stop_Date" :   "End"}
@@ -4891,6 +4897,7 @@
 
   "APH" : {
     "Splits" : {
+      "8/17/2026" : "2:1",
       "5/21/2024" : "2:1"
     },
     "Earnings_growth_projection_overlay" : [

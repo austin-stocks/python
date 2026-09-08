@@ -103,6 +103,7 @@ for ticker_raw in ticker_list:
     # the dictionary corresponding the the ticker later
     del price_targets_json_dict[ticker]
     ticker_dict["Price_Target"].append({"Date": date_time, "Target": target_str})
+    ticker_dict["Price_Target"] = ticker_dict["Price_Target"][-10:]
   else:
     logging.info("Did not find " + str(ticker) + " in the price target json...Will create an entry for it")
     ticker_dict["Price_Target"] = [{"Date": date_time, "Target": target_str}]
