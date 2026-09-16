@@ -11,20 +11,27 @@
 #     1. companyconcept JSON  EarningsPerShareDiluted, then Basic
 #        (HTTP 200 with an empty units dict counts as a miss, e.g. INCY)
 #     2. companyfacts JSON    same tags, then continuing-ops (e.g. LFST)
-#     3. 10-Q and 10-K instance XBRL for the whole ticker (e.g. FOUR)
+#     3. 10-Q, 10-K and 20-F instance XBRL for the whole ticker (e.g. FOUR).
+#        20-F is the foreign-issuer annual (10-K analog).
 #   Gap-fill — leftover missing quarter-ends after JSON (and after primary
-#   instance XBRL if JSON produced nothing):
-#     4. 8-K HTML earnings release (Exhibit 99.1), e.g. HNGE Q4'25 = 0.37;
-#        also INCY "GAAP diluted EPS", XNCR "net loss per share (diluted)",
-#        FOUR image-letter hidden text / GAAP DILUTED EPS recon row,
-#        GMED bullets ("GAAP diluted EPS was $0.14", "Diluted EPS for the
-#        fourth quarter was $0.14") and income-statement Diluted row
-#        under Three Months Ended. FY-end 8-Ks almost always have GAAP /
+#   instance XBRL if JSON produced nothing). If primary produced nothing,
+#   walk 8-K / 6-K HTML newest-first through all 6-Ks and Item 2.02 8-Ks
+#   (including older submissions files) and keep every quarter found.
+#   Do not invent lookback dates. Within one exhibit, drop YoY
+#   comparative columns (same table, prior year).
+#     4. 8-K / 6-K HTML earnings release (Exhibit 99.1), e.g. HNGE Q4'25
+#        = 0.37; also INCY "GAAP diluted EPS", XNCR "net loss per share
+#        (diluted)", FOUR image-letter hidden text / GAAP DILUTED EPS
+#        recon row, GMED bullets ("GAAP diluted EPS was $0.14",
+#        "Diluted EPS for the fourth quarter was $0.14") and
+#        income-statement Diluted row under Three Months Ended. 6-K is
+#        the foreign-issuer current report (8-K analog) and is also how
+#        FPIs furnish interims. FY-end 8-Ks almost always have GAAP /
 #        diluted EPS; wording varies, parser accepts several formats.
-#     5. 10-Q and 10-K instance XBRL for those dates
-#        (forms 10-Q, 10-Q/A, 10-K, 10-K/A — not 10-Q only)
-#     6. compute Q4 as FY-(Q1+Q2+Q3) then FY-9mo (after 8-K, not before)
-#     7. 10-K HTML "Quarterly Financial Data" table (e.g. DGII FY 2009)
+#     5. 10-Q, 10-K and 20-F instance XBRL for those dates
+#        (forms 10-Q, 10-Q/A, 10-K, 10-K/A, 20-F, 20-F/A)
+#     6. compute Q4 as FY-(Q1+Q2+Q3) then FY-9mo (after 8-K/6-K, not before)
+#     7. 10-K / 20-F HTML "Quarterly Financial Data" table (e.g. DGII FY 2009)
 #
 # Data source: SEC EDGAR data.sec.gov JSON APIs + EDGAR archives for instances
 #   ticker->CIK map:  https://www.sec.gov/files/company_tickers.json
@@ -108,9 +115,10 @@ ticker_list = [x for x in ticker_list_unclean if str(x) != "nan"]
 
 logging.info(f"Loaded {len(ticker_list)} tickers from {tracklist_file_full_path}")
 logging.info(
-  "Primary: companyconcept JSON -> companyfacts JSON -> 10-Q and 10-K "
-  "instance XBRL (stop at first hit). Gap-fill missing quarters: 8-K HTML, "
-  "then 10-Q and 10-K instance XBRL, then FY-Q1-Q2-Q3 / FY-9mo, then 10-K HTML."
+  "Primary: companyconcept JSON -> companyfacts JSON -> 10-Q, 10-K and "
+  "20-F instance XBRL (stop at first hit). Gap-fill missing quarters: "
+  "8-K / 6-K HTML, then 10-Q, 10-K and 20-F instance XBRL, then "
+  "FY-Q1-Q2-Q3 / FY-9mo, then 10-K / 20-F HTML."
 )
 logging.debug("Ticker list: " + str(ticker_list))
 
@@ -118,8 +126,12 @@ Path(sec_out_dir).mkdir(parents=True, exist_ok=True)
 
 
 # Tag search order. companyconcept only uses the first two; companyfacts and
-# 10-Q / 10-K instance XBRL use the full list.
-INSTANCE_XBRL_LADDER = "10-Q and 10-K instance XBRL"
+# 10-Q / 10-K / 20-F instance XBRL use the full list.
+INSTANCE_XBRL_LADDER = "10-Q, 10-K and 20-F instance XBRL"
+CURRENT_HTML_LADDER = "8-K / 6-K HTML"
+ANNUAL_HTML_LADDER = "10-K / 20-F HTML"
+FINANCIAL_FORMS = ("10-Q", "10-K", "10-Q/A", "10-K/A", "20-F", "20-F/A")
+CURRENT_REPORT_FORMS = ("8-K", "8-K/A", "6-K", "6-K/A")
 EPS_TAG_PRIORITY = [
   ("EarningsPerShareDiluted", "Diluted"),
   ("EarningsPerShareBasic", "Basic"),
@@ -269,7 +281,7 @@ def try_companyfacts(cik, ticker):
 
 
 # =============================================================================
-# 3. 10-Q / 10-K INSTANCE XBRL
+# 3. 10-Q / 10-K / 20-F INSTANCE XBRL
 # =============================================================================
 def _local_name(tag):
   if tag is None:
@@ -458,9 +470,14 @@ def _instance_xml_name(file_names):
   return None
 
 
+def _is_annual_report_form(form):
+  f = str(form or "")
+  return f.startswith("10-K") or f.startswith("20-F")
+
+
 def _filings_from_recent(recent, allowed_forms=None):
   if allowed_forms is None:
-    allowed_forms = ("10-Q", "10-K", "10-Q/A", "10-K/A")
+    allowed_forms = FINANCIAL_FORMS
   forms = recent.get("form") or []
   accs = recent.get("accessionNumber") or []
   dates = recent.get("filingDate") or []
@@ -484,12 +501,12 @@ def _filings_from_recent(recent, allowed_forms=None):
 
 
 def _form_tally(filings):
-  """Stdout bit like '10-K x4, 10-K/A x2, 10-Q x6'."""
+  """Stdout bit like '10-K x4, 10-K/A x2, 10-Q x6, 20-F x1'."""
   counts = {}
   for f in filings:
     form = str(f.get("form") or "?")
     counts[form] = counts.get(form, 0) + 1
-  order = ("10-K", "10-K/A", "10-Q", "10-Q/A")
+  order = ("10-K", "10-K/A", "10-Q", "10-Q/A", "20-F", "20-F/A")
   bits = []
   for form in order:
     n = counts.pop(form, 0)
@@ -553,9 +570,29 @@ def _load_financial_filings(cik, ticker):
     seen.add(accn)
     uniq.append(f)
   uniq.sort(key=lambda r: r["filed"], reverse=True)
-  logging.debug("[" + ticker + "] submissions 10-Q/K total=" + str(len(uniq)))
+  logging.debug("[" + ticker + "] submissions 10-Q/K/20-F total=" + str(len(uniq)))
   _filings_cache[cik] = uniq
   return uniq
+
+
+def _append_submission_extras(data, ticker, filings, allowed_forms):
+  """Older EDGAR submission chunks (beyond filings.recent)."""
+  for extra in (data.get("filings") or {}).get("files") or []:
+    name = extra.get("name")
+    if not name:
+      continue
+    extra_url = "https://data.sec.gov/submissions/" + name
+    extra_resp = _http_get(extra_url, ticker, "submissions-extra " + name)
+    if extra_resp.status_code != 200:
+      continue
+    extra_json = extra_resp.json()
+    if "form" in extra_json:
+      rec = extra_json
+    else:
+      rec = (extra_json.get("filings") or {}).get("recent") or extra_json
+    if isinstance(rec, dict) and rec.get("form"):
+      filings.extend(_filings_from_recent(rec, allowed_forms=allowed_forms))
+  return filings
 
 
 def _load_8k_filings(cik, ticker):
@@ -568,7 +605,10 @@ def _load_8k_filings(cik, ticker):
     return []
   filings = _filings_from_recent(
     (data.get("filings") or {}).get("recent") or {},
-    allowed_forms=("8-K", "8-K/A"),
+    allowed_forms=CURRENT_REPORT_FORMS,
+  )
+  filings = _append_submission_extras(
+    data, ticker, filings, CURRENT_REPORT_FORMS
   )
   seen = set()
   uniq = []
@@ -579,16 +619,67 @@ def _load_8k_filings(cik, ticker):
     seen.add(accn)
     uniq.append(f)
   uniq.sort(key=lambda r: r["filed"], reverse=True)
-  logging.debug("[" + ticker + "] submissions 8-K total=" + str(len(uniq)))
+  logging.debug("[" + ticker + "] submissions 8-K/6-K total=" + str(len(uniq)))
   _8k_cache[cik] = uniq
   return uniq
 
 
-def _select_8k_for_ends(filings, missing_ends):
-  """For each missing quarter-end, keep up to two 8-Ks filed 0-100 days later.
+def _current_report_earnings_score(f, end_d):
+  """Prefer 8-K Item 2.02; for 6-K, prefer a report date / filename match.
 
-  Prefer Item 2.02 (earnings) and the soonest filing after the period end so a
-  long missing list cannot push the relevant earnings 8-K past _8K_MAX_FILINGS.
+  6-K has no Item 2.02. FPIs put the quarter in the primary name
+  (bsp-20260630x6k.htm) or reportDate. Without that, the two soonest
+  6-Ks after quarter-end can be an acquisition 6-K, not earnings.
+  """
+  if "2.02" in str(f.get("items") or ""):
+    return 1
+  if not str(f.get("form") or "").startswith("6-K"):
+    return 0
+  blob = (
+    str(f.get("primary") or "") + str(f.get("report") or "")
+  ).lower().replace("-", "").replace("_", "")
+  if end_d.strftime("%Y%m%d") in blob or end_d.strftime("%Y%m") in blob:
+    return 1
+  rd = (f.get("report") or "")[:10]
+  if rd:
+    try:
+      if abs((parse_iso(rd) - end_d).days) <= 10:
+        return 1
+    except Exception:
+      pass
+  return 0
+
+
+def _select_open_ended_current_reports(filings):
+  """All 6-Ks and Item 2.02 8-Ks, newest first. No invented dates, no 32 cap.
+
+  Other 8-K items are skipped (not earnings). Walk the whole list so we
+  keep going back as long as filings can yield EPS.
+  """
+  selected = []
+  seen = set()
+  for f in filings:
+    accn = f.get("accn")
+    if not accn or accn in seen:
+      continue
+    form = str(f.get("form") or "")
+    is_6k = form.startswith("6-K")
+    is_earnings_8k = "2.02" in str(f.get("items") or "")
+    if not (is_6k or is_earnings_8k):
+      continue
+    seen.add(accn)
+    selected.append(f)
+  selected.sort(key=lambda r: r.get("filed") or "", reverse=True)
+  return selected
+
+
+def _select_8k_for_ends(filings, missing_ends):
+  """For each missing quarter-end, keep 8-K/6-Ks filed 0-100 days later.
+
+  Prefer Item 2.02 (8-K earnings) or a 6-K report-date/filename match,
+  then the soonest filing after the period end so a long missing list
+  cannot push the relevant earnings filing past _8K_MAX_FILINGS.
+  Keep up to two 8-Ks per end; up to eight 6-Ks (no 2.02 to rank on).
   """
   selected = []
   seen = set()
@@ -598,6 +689,7 @@ def _select_8k_for_ends(filings, missing_ends):
     except Exception:
       continue
     cands = []
+    n_keep = 2
     for f in filings:
       accn = f.get("accn")
       if not accn:
@@ -611,10 +703,12 @@ def _select_8k_for_ends(filings, missing_ends):
         continue
       delta = (filed_d - end_d).days
       if 0 <= delta <= 100:
-        earnings = 1 if "2.02" in str(f.get("items") or "") else 0
+        if str(f.get("form") or "").startswith("6-K"):
+          n_keep = 8
+        earnings = _current_report_earnings_score(f, end_d)
         cands.append((earnings, -delta, f))
     cands.sort(key=lambda x: (x[0], x[1]), reverse=True)
-    for _, _, f in cands[:2]:
+    for _, _, f in cands[:n_keep]:
       accn = f.get("accn")
       if accn in seen:
         continue
@@ -660,9 +754,9 @@ def _select_gapfill_filings(filings, missing_ends):
       if fy_start <= rd_d <= fy_end:
         keep = True
         break
-      if form.startswith("10-K"):
+      if _is_annual_report_form(form):
         delta = (rd_d - fy_end).days
-        # same 10-K, later 10-K in the same FY (~90 days after Q3),
+        # same 10-K/20-F, later annual in the same FY (~90 days after Q3),
         # plus next 1-2 years (prior-year comparatives)
         if abs(delta) <= 15 or 80 <= delta <= 800:
           keep = True
@@ -724,7 +818,7 @@ def _eps_entries_from_filings(cik, ticker, filings):
         e["accn"] = accn
         by_tag[tag].append(e)
   logging.debug(
-    "[" + ticker + "] parsed " + str(parsed_ok) + " 10-Q/K instances"
+    "[" + ticker + "] parsed " + str(parsed_ok) + " 10-Q/K/20-F instances"
     + " no_xml=" + str(no_xml)
   )
   return by_tag, parsed_ok, no_xml
@@ -732,7 +826,7 @@ def _eps_entries_from_filings(cik, ticker, filings):
 
 def try_xbrl_filings(cik, ticker):
   global last_json_method
-  last_json_method = "10-Q and 10-K instance XBRL"
+  last_json_method = INSTANCE_XBRL_LADDER
   logging.debug("[" + ticker + "] method=xbrl-10q")
   url = f"https://data.sec.gov/submissions/CIK{cik:010d}.json"
   resp = _http_get(url, ticker, "submissions")
@@ -741,12 +835,16 @@ def try_xbrl_filings(cik, ticker):
     return None, None, None, None
   resp.raise_for_status()
   filings = _recent_financial_filings(resp.json())
-  logging.debug("[" + ticker + "] submissions 10-Q/K count used=" + str(len(filings)))
+  logging.debug(
+    "[" + ticker + "] submissions 10-Q/K/20-F count used=" + str(len(filings))
+  )
   if not filings:
     return None, None, None, None
 
   by_tag, parsed_ok, _no_xml = _eps_entries_from_filings(cik, ticker, filings)
-  logging.debug("[" + ticker + "] parsed " + str(parsed_ok) + " 10-Q/K instances")
+  logging.debug(
+    "[" + ticker + "] parsed " + str(parsed_ok) + " 10-Q/K/20-F instances"
+  )
 
   for tag, label in EPS_TAG_PRIORITY:
     entries = by_tag.get(tag) or []
@@ -777,8 +875,16 @@ def resolve_eps(cik, ticker):
   """Primary ladder: companyconcept -> companyfacts -> instance XBRL (first hit wins).
 
   Gap-fill of leftover missing quarters happens in _finalize_rows.
+  A total primary miss still tries 8-K / 6-K HTML newest-first through
+  all 6-Ks and Item 2.02 8-Ks and keeps every quarter found (no invented
+  lookback dates; YoY comparatives inside one exhibit are dropped).
   """
   last_ladder.clear()
+  last_annual_rows.clear()
+  last_ytd_rows.clear()
+  last_q4_cannot_ends.clear()
+  last_q4_cannot_msgs.clear()
+  last_q4_computes.clear()
   attempts = []
 
   logging.info(ticker + "  primary: trying companyconcept")
@@ -820,9 +926,9 @@ def resolve_eps(cik, ticker):
     "primary", "companyfacts JSON", "miss", "no quarterly EPS"
   )
 
-  logging.info(ticker + "  primary: trying 10-Q and 10-K instance XBRL")
+  logging.info(ticker + "  primary: trying " + INSTANCE_XBRL_LADDER)
   rows, method, tag, label = try_xbrl_filings(cik, ticker)
-  attempts.append("10-Q and 10-K XBRL")
+  attempts.append("10-Q, 10-K and 20-F XBRL")
   if rows:
     _ladder_step(
       "primary", INSTANCE_XBRL_LADDER, "hit", _ladder_hit_detail(rows)
@@ -830,13 +936,13 @@ def resolve_eps(cik, ticker):
     _log_json_success(ticker, method, tag, rows)
     return _finalize_rows(cik, ticker, rows, method, tag, label, attempts)
   logging.info(
-    ticker + "  primary: 10-Q and 10-K instance XBRL had no quarterly EPS"
+    ticker + "  primary: " + INSTANCE_XBRL_LADDER + " had no quarterly EPS"
   )
   _ladder_step(
     "primary", INSTANCE_XBRL_LADDER, "miss", "no quarterly EPS"
   )
 
-  return None, None, None, None, attempts
+  return _finalize_rows(cik, ticker, [], None, None, None, attempts)
 
 
 # =============================================================================
@@ -1046,6 +1152,11 @@ def _ladder_source_bits(rows, source):
   )
 
 
+def _ladder_source_bits_any(rows, sources):
+  parts = [_ladder_source_bits(rows, s) for s in sources]
+  return "; ".join(p for p in parts if p)
+
+
 def _log_ladder(ticker, leftover=None):
   """Stdout + log: the rungs actually taken for this ticker."""
   logging.info(ticker + "  ladder followed:")
@@ -1227,9 +1338,9 @@ def _fact_origin(row):
   """Short 'from where' for a tagged fact used in a Q4 compute."""
   src = str(row.get("Source") or "")
   if src.startswith("HTML"):
-    method = "HTML(10-K quarterly)"
-  elif src.startswith("XBRL(10-Q/K)"):
-    method = "10-Q and 10-K instance XBRL"
+    method = src
+  elif src.startswith("XBRL(10-Q/K)") or src.startswith("XBRL(20-F)"):
+    method = INSTANCE_XBRL_LADDER
   elif src.startswith("Computed"):
     method = src
   else:
@@ -1282,7 +1393,7 @@ def _primary_source_label(method):
   if m == "companyfacts":
     return "companyfacts JSON"
   if m.startswith("xbrl"):
-    return "10-Q and 10-K instance XBRL"
+    return INSTANCE_XBRL_LADDER
   return m or "primary"
 
 
@@ -1304,17 +1415,19 @@ def _log_json_success(ticker, method, tag, rows):
     )
   if method == "companyconcept":
     logging.info(
-      ticker + "  primary: not trying companyfacts or 10-Q and 10-K "
-      "instance XBRL (companyconcept already produced quarters)"
+      ticker + "  primary: not trying companyfacts or "
+      + INSTANCE_XBRL_LADDER
+      + " (companyconcept already produced quarters)"
     )
   elif method == "companyfacts":
     logging.info(
-      ticker + "  primary: not trying 10-Q and 10-K instance XBRL "
-      "(companyfacts already produced quarters)"
+      ticker + "  primary: not trying " + INSTANCE_XBRL_LADDER
+      + " (companyfacts already produced quarters)"
     )
   elif str(method).startswith("xbrl"):
     logging.info(
-      ticker + "  primary: 10-Q and 10-K instance XBRL produced the series "
+      ticker + "  primary: " + INSTANCE_XBRL_LADDER
+      + " produced the series "
       "(companyconcept and companyfacts had none)"
     )
   missing_after_primary = _still_missing_quarters(rows)
@@ -1329,9 +1442,10 @@ def _log_json_success(ticker, method, tag, rows):
 def extract_quarterly_rows(facts_json, ticker, concept_label):
   """Return tagged ~90-day EPS rows. Do not compute Q4 here.
 
-  Untagged Q4s are filled later in _finalize_rows: 8-K HTML first, then
-  instance XBRL, then FY-(Q1+Q2+Q3) / FY-9mo, then 10-K HTML. Computing
-  Q4 from FY before 8-K is wrong after an IPO share-count change (HNGE).
+  Untagged Q4s are filled later in _finalize_rows: 8-K / 6-K HTML first,
+  then instance XBRL, then FY-(Q1+Q2+Q3) / FY-9mo, then 10-K / 20-F HTML.
+  Computing Q4 from FY before 8-K/6-K is wrong after an IPO share-count
+  change (HNGE).
   """
   last_q4_cannot_ends.clear()
   last_q4_cannot_msgs.clear()
@@ -1414,8 +1528,9 @@ def extract_quarterly_rows(facts_json, ticker, concept_label):
   last_annual_rows.extend(annual)
   last_ytd_rows.extend(ytd)
 
-  # Do not compute Q4 here. 8-K HTML (e.g. HNGE Q4'25 = 0.37) must run
-  # before FY-(Q1+Q2+Q3), which can be wrong after an IPO share-count change.
+  # Do not compute Q4 here. 8-K / 6-K HTML (e.g. HNGE Q4'25 = 0.37) must
+  # run before FY-(Q1+Q2+Q3), which can be wrong after an IPO share-count
+  # change.
   for r in quarterly:
     r.pop("_filed_dt", None)
 
@@ -1424,15 +1539,15 @@ def extract_quarterly_rows(facts_json, ticker, concept_label):
 
 
 def fill_missing_q4_from_xbrl(cik, ticker, rows, missing_ends, concept_label):
-  """Try 10-Q and 10-K instance XBRL for leftover missing quarter-ends.
+  """Try 10-Q, 10-K and 20-F instance XBRL for leftover missing quarter-ends.
 
-  Looks at forms 10-Q, 10-Q/A, 10-K, and 10-K/A (not 10-Q only).
+  Looks at forms 10-Q, 10-Q/A, 10-K, 10-K/A, 20-F, and 20-F/A.
   Returns (rows, filled, note) where note is the stdout/ladder detail.
   """
   if not missing_ends:
     return rows, False, ""
   logging.info(
-    ticker + "  gap-fill: trying 10-Q and 10-K instance XBRL for "
+    ticker + "  gap-fill: trying " + INSTANCE_XBRL_LADDER + " for "
     + ", ".join(missing_ends)
   )
   filings = _load_financial_filings(cik, ticker)
@@ -1443,7 +1558,7 @@ def fill_missing_q4_from_xbrl(cik, ticker, rows, missing_ends, concept_label):
     + " reports=" + str([f.get("form") + ":" + str(f.get("report")) for f in selected])
   )
   if not selected:
-    note = "no 10-Q or 10-K matched " + ", ".join(missing_ends)
+    note = "no 10-Q, 10-K or 20-F matched " + ", ".join(missing_ends)
     logging.info(ticker + "  gap-fill: " + note)
     return rows, False, note
 
@@ -1456,7 +1571,7 @@ def fill_missing_q4_from_xbrl(cik, ticker, rows, missing_ends, concept_label):
       + "); still missing " + ", ".join(missing_ends)
     )
     logging.info(
-      ticker + "  gap-fill: 10-Q and 10-K instance XBRL -> " + note
+      ticker + "  gap-fill: " + INSTANCE_XBRL_LADDER + " -> " + note
     )
     return rows, False, note
 
@@ -1497,7 +1612,11 @@ def fill_missing_q4_from_xbrl(cik, ticker, rows, missing_ends, concept_label):
         continue
       e_copy = dict(e)
       e_copy.pop("_dims", None)
-      cand.append(_make_row(ticker, "USD/shares", e_copy, "XBRL(10-Q/K)", label))
+      xbrl_src = (
+        "XBRL(20-F)" if str(e.get("form") or "").startswith("20-F")
+        else "XBRL(10-Q/K)"
+      )
+      cand.append(_make_row(ticker, "USD/shares", e_copy, xbrl_src, label))
     cand = _dedupe_by_period_end(cand)
     if cand:
       added = cand
@@ -1513,7 +1632,7 @@ def fill_missing_q4_from_xbrl(cik, ticker, rows, missing_ends, concept_label):
       + "; no 3-month EPS for " + ", ".join(missing_ends)
     )
     logging.info(
-      ticker + "  gap-fill: 10-Q and 10-K instance XBRL -> " + note
+      ticker + "  gap-fill: " + INSTANCE_XBRL_LADDER + " -> " + note
     )
     return rows, False, note
 
@@ -1759,6 +1878,9 @@ def _default_q_end_from_8k_text(text):
   )
   if m:
     return _calendar_q_end(_ORD_QUARTER[m.group(1).lower()], int(m.group(2)))
+  m = re.search(r"\bq([1-4])\s+(20\d{2})\b", head, re.I)
+  if m:
+    return _calendar_q_end(int(m.group(1)), int(m.group(2)))
   m = re.search(
     r"(?:three\s+months|quarter)\s+ended\s+"
     r"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+"
@@ -1962,21 +2084,67 @@ def _parse_8k_gaap_diluted_quarters(html):
   return found
 
 
+def _keep_latest_year_in_parsed(parsed):
+  """Drop YoY comparative years when building a series from scratch.
+
+  One 6-K table often has last-year and this-year columns (BSP Q2 2025
+  0.11 and Q2 2026 0.28). Keeping both opens interior holes for quarters
+  that were never filed.
+  """
+  years = []
+  for end_iso in parsed:
+    try:
+      years.append(parse_iso(end_iso).year)
+    except Exception:
+      continue
+  if not years:
+    return parsed
+  latest_y = max(years)
+  out = {}
+  for end_iso, val in parsed.items():
+    try:
+      if parse_iso(end_iso).year == latest_y:
+        out[end_iso] = val
+    except Exception:
+      continue
+  return out
+
+
 def fill_missing_from_8k(cik, ticker, rows, missing_ends, concept_label):
-  """Fill missing quarters from Item 2.02 8-K earnings-release HTML."""
-  if not missing_ends:
-    return rows, False
-  logging.info(
-    ticker + "  gap-fill: trying 8-K HTML for "
-    + ", ".join(missing_ends)
-  )
-  filings = _load_8k_filings(cik, ticker)
-  selected = _select_8k_for_ends(filings, missing_ends)
-  if not selected:
+  """Fill from 8-K (Item 2.02) / 6-K earnings-release HTML.
+
+  If missing_ends is set, only fill those dates (filings 0-100 days later).
+  If missing_ends is empty, walk all 6-Ks and Item 2.02 8-Ks newest-first
+  and keep every quarter they contain — no invented lookback dates.
+  """
+  open_ended = not missing_ends
+  if open_ended:
     logging.info(
-      ticker + "  gap-fill: no 8-K filing in window for "
+      ticker + "  gap-fill: primary produced no quarters; trying "
+      + CURRENT_HTML_LADDER
+    )
+  else:
+    logging.info(
+      ticker + "  gap-fill: trying " + CURRENT_HTML_LADDER + " for "
       + ", ".join(missing_ends)
     )
+  filings = _load_8k_filings(cik, ticker)
+  if open_ended:
+    selected = _select_open_ended_current_reports(filings)
+    logging.info(
+      ticker + "  gap-fill: " + CURRENT_HTML_LADDER + " "
+      + str(len(selected)) + " 6-K/Item-2.02 8-K filing(s), newest first"
+    )
+  else:
+    selected = _select_8k_for_ends(filings, missing_ends)
+  if not selected:
+    if open_ended:
+      logging.info(ticker + "  gap-fill: no 8-K or 6-K filings")
+    else:
+      logging.info(
+        ticker + "  gap-fill: no 8-K or 6-K filing in window for "
+        + ", ".join(missing_ends)
+      )
     return rows, False
 
   want = {}
@@ -1985,6 +2153,7 @@ def fill_missing_from_8k(cik, ticker, rows, missing_ends, concept_label):
       want[pe] = parse_iso(pe)
     except Exception:
       continue
+  started_empty = not rows
   have = {r["PeriodEnd"] for r in rows}
   added = []
   cik_nolead = str(int(cik))
@@ -1995,7 +2164,7 @@ def fill_missing_from_8k(cik, ticker, rows, missing_ends, concept_label):
       f"https://www.sec.gov/Archives/edgar/data/{cik_nolead}/{accn_nodash}/index.json"
     )
     try:
-      idx_resp = _http_get(index_url, ticker, "8-K index " + accn)
+      idx_resp = _http_get(index_url, ticker, "8-K/6-K index " + accn)
       if idx_resp.status_code != 200:
         continue
       items = (idx_resp.json().get("directory") or {}).get("item") or []
@@ -2007,7 +2176,7 @@ def fill_missing_from_8k(cik, ticker, rows, missing_ends, concept_label):
           f"https://www.sec.gov/Archives/edgar/data/{cik_nolead}/"
           f"{accn_nodash}/{ex_name}"
         )
-        ex_resp = _http_get(ex_url, ticker, "8-K exhibit " + ex_name)
+        ex_resp = _http_get(ex_url, ticker, "8-K/6-K exhibit " + ex_name)
         if ex_resp.status_code == 200:
           html = ex_resp.text
       if not html and filing.get("primary"):
@@ -2015,17 +2184,21 @@ def fill_missing_from_8k(cik, ticker, rows, missing_ends, concept_label):
           f"https://www.sec.gov/Archives/edgar/data/{cik_nolead}/"
           f"{accn_nodash}/{filing['primary']}"
         )
-        prim_resp = _http_get(prim_url, ticker, "8-K primary")
+        prim_resp = _http_get(prim_url, ticker, "8-K/6-K primary")
         if prim_resp.status_code == 200:
           html = prim_resp.text
       if not html:
         continue
       parsed = _parse_8k_gaap_diluted_quarters(html)
+      if started_empty and parsed:
+        parsed = _keep_latest_year_in_parsed(parsed)
     except Exception:
-      logging.debug("[" + ticker + "] 8-K parse failed " + accn, exc_info=True)
+      logging.debug(
+        "[" + ticker + "] 8-K/6-K parse failed " + accn, exc_info=True
+      )
       continue
     logging.debug(
-      "[" + ticker + "] 8-K " + accn + " GAAP diluted quarters="
+      "[" + ticker + "] 8-K/6-K " + accn + " GAAP diluted quarters="
       + str(parsed)
     )
     for end_iso, val in parsed.items():
@@ -2036,12 +2209,17 @@ def fill_missing_from_8k(cik, ticker, rows, missing_ends, concept_label):
       except Exception:
         continue
       matched = None
-      for pe, want_d in want.items():
-        if abs((end_d - want_d).days) <= 10:
-          matched = pe
-          break
-      if not matched:
-        continue
+      if want:
+        for pe, want_d in want.items():
+          if abs((end_d - want_d).days) <= 10:
+            matched = pe
+            break
+        if not matched:
+          continue
+      else:
+        matched = end_iso
+      form = filing.get("form") or "8-K"
+      src = "HTML(6-K)" if str(form).startswith("6-K") else "HTML(8-K)"
       added.append({
         "Ticker": ticker,
         "Year": end_d.year,
@@ -2050,8 +2228,8 @@ def fill_missing_from_8k(cik, ticker, rows, missing_ends, concept_label):
         "PeriodEnd": end_iso,
         "EPS_GAAP": val,
         "EPS_Concept": concept_label or "Diluted",
-        "Source": "HTML(8-K)",
-        "Form": filing.get("form") or "8-K",
+        "Source": src,
+        "Form": form,
         "Filed": filing.get("filed"),
         "AccessionNumber": accn,
         "Unit": "USD/shares",
@@ -2059,14 +2237,21 @@ def fill_missing_from_8k(cik, ticker, rows, missing_ends, concept_label):
       have.add(end_iso)
 
   if not added:
-    logging.info(
-      ticker + "  gap-fill: 8-K HTML had no GAAP diluted EPS for "
-      + ", ".join(missing_ends)
-    )
+    if open_ended:
+      logging.info(
+        ticker + "  gap-fill: " + CURRENT_HTML_LADDER
+        + " had no GAAP diluted EPS"
+      )
+    else:
+      logging.info(
+        ticker + "  gap-fill: " + CURRENT_HTML_LADDER
+        + " had no GAAP diluted EPS for "
+        + ", ".join(missing_ends)
+      )
     return rows, False
   added.sort(key=lambda r: r["PeriodEnd"])
   logging.info(
-    ticker + "  gap-fill: 8-K HTML filled "
+    ticker + "  gap-fill: " + CURRENT_HTML_LADDER + " filled "
     + str(len(added)) + " quarter(s): "
     + "; ".join(_filled_eps_bit(r) for r in added)
   )
@@ -2238,7 +2423,7 @@ def _select_10k_for_ends(filings, missing_ends):
   selected = []
   seen = set()
   for f in filings:
-    if not str(f.get("form") or "").startswith("10-K"):
+    if not _is_annual_report_form(f.get("form")):
       continue
     if not f.get("primary") or not f.get("accn"):
       continue
@@ -2274,18 +2459,19 @@ def _select_10k_for_ends(filings, missing_ends):
 
 
 def fill_missing_q4_from_html(cik, ticker, rows, missing_ends, concept_label):
-  """Fill missing FY quarters from the 10-K HTML quarterly note."""
+  """Fill missing FY quarters from the 10-K / 20-F HTML quarterly note."""
   if not missing_ends:
     return rows, False
   logging.info(
-    ticker + "  gap-fill: trying 10-K HTML quarterly table for "
+    ticker + "  gap-fill: trying " + ANNUAL_HTML_LADDER
+    + " quarterly table for "
     + ", ".join(missing_ends)
   )
   filings = _load_financial_filings(cik, ticker)
   selected = _select_10k_for_ends(filings, missing_ends)
   if not selected:
     logging.info(
-      ticker + "  gap-fill: no 10-K HTML filing matched "
+      ticker + "  gap-fill: no 10-K or 20-F HTML filing matched "
       + ", ".join(missing_ends)
     )
     return rows, False
@@ -2313,14 +2499,16 @@ def fill_missing_q4_from_html(cik, ticker, rows, missing_ends, concept_label):
       f"{accn_nodash}/{prim}"
     )
     try:
-      resp = _http_get(html_url, ticker, "10-K HTML " + accn)
+      resp = _http_get(html_url, ticker, "10-K/20-F HTML " + accn)
       if resp.status_code != 200 or not resp.text:
         continue
       rd = (filing.get("report") or "")[:10]
       fy_md = (parse_iso(rd).month, parse_iso(rd).day) if rd else (12, 31)
       parsed = _parse_10k_quarterly_tables(resp.text, fy_md)
     except Exception:
-      logging.debug("[" + ticker + "] 10-K HTML parse failed " + accn, exc_info=True)
+      logging.debug(
+        "[" + ticker + "] 10-K/20-F HTML parse failed " + accn, exc_info=True
+      )
       continue
     logging.debug(
       "[" + ticker + "] HTML " + accn + " quarterly EPS facts=" + str(len(parsed))
@@ -2339,7 +2527,11 @@ def fill_missing_q4_from_html(cik, ticker, rows, missing_ends, concept_label):
         "PeriodEnd": end_iso,
         "EPS_GAAP": item["val"],
         "EPS_Concept": item["concept"],
-        "Source": "HTML(10-K quarterly)",
+        "Source": (
+          "HTML(20-F quarterly)"
+          if str(filing.get("form") or "").startswith("20-F")
+          else "HTML(10-K quarterly)"
+        ),
         "Form": filing.get("form"),
         "Filed": filing.get("filed"),
         "AccessionNumber": accn,
@@ -2382,7 +2574,7 @@ def fill_missing_q4_from_html(cik, ticker, rows, missing_ends, concept_label):
   if extra:
     logging.info(
       ticker + "  gap-fill: HTML also filled "
-      + str(len(extra)) + " nearby hole(s) from the same 10-K table: "
+      + str(len(extra)) + " nearby hole(s) from the same 10-K/20-F table: "
       + "; ".join(_filled_eps_bit(r) for r in extra)
     )
   return rows + added, True
@@ -2397,10 +2589,13 @@ def _log_sources(ticker, rows, method, tag):
   order = [
     "XBRL",
     "XBRL(10-Q/K)",
+    "XBRL(20-F)",
     "HTML(8-K)",
+    "HTML(6-K)",
     "Computed(FY-Q1-Q2-Q3)",
     "Computed(FY-9mo)",
     "HTML(10-K quarterly)",
+    "HTML(20-F quarterly)",
   ]
   keys = [k for k in order if k in groups]
   keys += [k for k in groups if k not in order]
@@ -2420,15 +2615,39 @@ def _log_sources(ticker, rows, method, tag):
       logging.info(ticker + "  from " + src + ": " + "; ".join(bits))
 
 
+def _append_method(method, bit):
+  return (method + "+" + bit) if method else bit
+
+
+def _current_html_method_bit(rows):
+  """8k / 6k / 8k/6k from the forms we actually filled."""
+  has_6k = False
+  has_8k = False
+  for r in rows:
+    src = str(r.get("Source") or "")
+    form = str(r.get("Form") or "")
+    if src == "HTML(6-K)" or form.startswith("6-K"):
+      has_6k = True
+    if src == "HTML(8-K)" or form.startswith("8-K"):
+      has_8k = True
+  if has_6k and has_8k:
+    return "8k/6k"
+  if has_6k:
+    return "6k"
+  return "8k"
+
+
 def _finalize_rows(cik, ticker, rows, method, tag, label, attempts):
+  rows = list(rows) if rows else []
   missing = _still_missing_quarters(rows) if rows else []
-  did_gapfill = bool(rows and missing)
+  open_html = not rows
+  did_gapfill = bool(missing) or open_html
   if rows and not missing:
     logging.info(
       ticker + "  gap-fill: not needed (no missing quarters after primary)"
     )
     _ladder_step(
-      "gap-fill", "8-K HTML", "not needed",
+      "gap-fill", CURRENT_HTML_LADDER, "not needed",
       "no missing quarters after primary",
     )
     _ladder_step(
@@ -2440,49 +2659,69 @@ def _finalize_rows(cik, ticker, rows, method, tag, label, attempts):
       "no missing quarters after primary",
     )
     _ladder_step(
-      "gap-fill", "10-K HTML", "not needed",
+      "gap-fill", ANNUAL_HTML_LADDER, "not needed",
       "no missing quarters after primary",
     )
-  if rows and missing:
+  if missing or open_html:
+    attempts.append("8-K/6-K HTML")
     rows, filled_8k = fill_missing_from_8k(
       cik, ticker, rows, missing, label
     )
     if filled_8k:
-      method = method + "+8k"
+      method = _append_method(method, _current_html_method_bit(rows))
+      if not tag:
+        tag = "Diluted"
+      if not label:
+        label = "Diluted"
       _ladder_step(
-        "gap-fill", "8-K HTML", "filled",
-        _ladder_source_bits(rows, "HTML(8-K)"),
+        "gap-fill", CURRENT_HTML_LADDER, "filled",
+        _ladder_source_bits_any(rows, ("HTML(8-K)", "HTML(6-K)")),
       )
     else:
       _ladder_step(
-        "gap-fill", "8-K HTML", "no fill", ", ".join(missing)
+        "gap-fill", CURRENT_HTML_LADDER, "no fill",
+        ", ".join(missing) if missing else "no quarterly EPS",
       )
-    missing = _still_missing_quarters(rows)
+    missing = _still_missing_quarters(rows) if rows else []
     if missing:
       logging.info(
-        ticker + "  still missing after gap-fill 8-K: "
+        ticker + "  still missing after gap-fill 8-K / 6-K: "
         + ", ".join(missing)
       )
-  if rows and missing:
+    if not rows:
+      _ladder_step(
+        "gap-fill", INSTANCE_XBRL_LADDER, "no fill", "no quarters to fill"
+      )
+      _ladder_step(
+        "gap-fill", "FY-(Q1+Q2+Q3) / FY-9mo", "no fill",
+        "no quarters to fill",
+      )
+      _ladder_step(
+        "gap-fill", ANNUAL_HTML_LADDER, "no fill", "no quarters to fill"
+      )
+      return rows, method, tag, label, attempts
+  if missing:
     rows, filled, xbrl_note = fill_missing_q4_from_xbrl(
       cik, ticker, rows, missing, label
     )
     if filled:
-      method = method + "+xbrl-gapfill"
+      method = _append_method(method, "xbrl-gapfill")
       _ladder_step(
         "gap-fill", INSTANCE_XBRL_LADDER, "filled",
-        xbrl_note or _ladder_source_bits(rows, "XBRL(10-Q/K)"),
+        xbrl_note or _ladder_source_bits_any(
+          rows, ("XBRL(10-Q/K)", "XBRL(20-F)")
+        ),
       )
     else:
       _ladder_step(
         "gap-fill", INSTANCE_XBRL_LADDER, "no fill",
         xbrl_note or ", ".join(missing),
       )
-    missing = _still_missing_quarters(rows)
+    missing = _still_missing_quarters(rows) if rows else []
     if missing:
       logging.info(
-        ticker + "  still missing after gap-fill 10-Q and 10-K instance XBRL: "
-        + ", ".join(missing)
+        ticker + "  still missing after gap-fill "
+        + INSTANCE_XBRL_LADDER + ": " + ", ".join(missing)
       )
   elif did_gapfill:
     _ladder_step(
@@ -2524,13 +2763,15 @@ def _finalize_rows(cik, ticker, rows, method, tag, label, attempts):
         ticker + "  still missing after FY-(Q1+Q2+Q3) / FY-9mo: "
         + ", ".join(missing)
       )
-  if rows and missing:
+  if missing:
     rows, filled_html = fill_missing_q4_from_html(
       cik, ticker, rows, missing, label
     )
     if filled_html:
-      method = method + "+html-10k"
-      html_bits = _ladder_source_bits(rows, "HTML(10-K quarterly)")
+      method = _append_method(method, "html-10k")
+      html_bits = _ladder_source_bits_any(
+        rows, ("HTML(10-K quarterly)", "HTML(20-F quarterly)")
+      )
       rows = _apply_q4_from_fy(
         rows, last_annual_rows, ticker, label, ytd_rows=last_ytd_rows
       )
@@ -2542,21 +2783,22 @@ def _finalize_rows(cik, ticker, rows, method, tag, label, attempts):
           c["end"] + "=" + str(c["val"]) + " (" + c["kind"] + ")"
           for c in last_q4_computes
         )
-      _ladder_step("gap-fill", "10-K HTML", "filled", html_bits)
+      _ladder_step("gap-fill", ANNUAL_HTML_LADDER, "filled", html_bits)
       _log_q4_computes(ticker)
-      missing = _still_missing_quarters(rows)
+      missing = _still_missing_quarters(rows) if rows else []
       if missing:
         logging.info(
-          ticker + "  still missing after gap-fill 10-K HTML: "
-          + ", ".join(missing)
+          ticker + "  still missing after gap-fill "
+          + ANNUAL_HTML_LADDER + ": " + ", ".join(missing)
         )
     else:
       _ladder_step(
-        "gap-fill", "10-K HTML", "no fill", ", ".join(missing)
+        "gap-fill", ANNUAL_HTML_LADDER, "no fill", ", ".join(missing)
       )
   elif did_gapfill:
     _ladder_step(
-      "gap-fill", "10-K HTML", "not needed", "no missing quarters left"
+      "gap-fill", ANNUAL_HTML_LADDER, "not needed",
+      "no missing quarters left",
     )
   if rows:
     _emit_q4_warnings()
@@ -2627,11 +2869,11 @@ def main():
         continue
 
       if not rows:
-        logging.warning(
-          f"{ticker:<6}  SKIP  no quarterly EPS "
+        logging.error(
+          f"{ticker:<6}  ERROR  no quarterly EPS "
           f"(tried {', '.join(attempts)})"
         )
-        _log_ladder(ticker)
+        _log_ladder(ticker, ["no quarters at all"])
         n_skip += 1
         continue
 
@@ -2670,9 +2912,9 @@ def main():
   logging.info("All Done...  ok=" + str(n_ok) + "  skipped=" + str(n_skip))
   logging.info(
     "Ladder: primary (stop at first hit) companyconcept JSON -> "
-    "companyfacts JSON -> 10-Q and 10-K instance XBRL. Then gap-fill missing "
-    "quarters: 8-K HTML -> 10-Q and 10-K instance XBRL -> "
-    "FY-(Q1+Q2+Q3) / FY-9mo -> 10-K HTML."
+    "companyfacts JSON -> 10-Q, 10-K and 20-F instance XBRL. Then gap-fill "
+    "missing quarters: 8-K / 6-K HTML -> 10-Q, 10-K and 20-F instance XBRL "
+    "-> FY-(Q1+Q2+Q3) / FY-9mo -> 10-K / 20-F HTML."
   )
 
 

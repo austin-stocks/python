@@ -192,8 +192,8 @@ sc_funcs.master_to_aaii_ticker_xlate.set_index('Ticker', inplace=True)
 # critical, error, warning, info, debug
 # set up logging to file - see previous section for more details
 logging.basicConfig(# This decides what level of messages get printed in the debug file
-                    # level=logging.DEBUG,
-                    level=logging.INFO,
+                    level=logging.DEBUG,
+                    # level=logging.INFO,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
                     filename=dir_path + log_dir + "\\" + 'SC_EarningsChart_debug.txt',
@@ -708,7 +708,7 @@ for ticker_raw in ticker_list:
     if (str(y_plus0_fiscal_year_end) != 'nan'):
       y_plus0_fiscal_year_dt = dt.datetime.strptime(str(y_plus0_fiscal_year_end), '%m/%d/%Y').date()
     else:
-      logging.debug("The y0 fiscal year end for " + str(ticker) + " is NaN in AAII Analysts df...will skip inserting AAII EPS Projections")
+      logging.info("The y0 fiscal year end for " + str(ticker) + " is NaN in AAII Analysts df...will skip inserting AAII EPS Projections")
       continue_aaii_eps_projections_for_this_ticker = 0
 
   # Till this point we have only decided whether we want (based on user/config file variables) to or
@@ -767,6 +767,7 @@ for ticker_raw in ticker_list:
       qtr_eps_df['Q_EPS_Diluted'] = qtr_eps_df['Q_EPS_Adjusted']
     else:
       qtr_eps_list = qtr_eps_df.Q_EPS_Diluted.tolist()
+
     days_bw_y_plus0_and_latest_qtr_date_in_earnings_file = y_plus0_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
     days_bw_y_plus1_and_latest_qtr_date_in_earnings_file = y_plus1_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
     days_bw_y_plus2_and_latest_qtr_date_in_earnings_file = y_plus2_fiscal_year_dt - latest_qtr_date_in_earnings_file_dt
