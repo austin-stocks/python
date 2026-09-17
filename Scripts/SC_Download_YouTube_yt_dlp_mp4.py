@@ -3,6 +3,11 @@ import os
 
 # Define the YouTube video URL
 print("The version of yt_dlp is : ", yt_dlp.version.__version__)
+cookiefile = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "User_Files", "cookies.txt")
+)
+if not os.path.isfile(cookiefile):
+    raise SystemExit(f"Missing cookies file: {cookiefile}")
 
 video_url = input("\nEnter the video url : ")
 # Define the output directory (optional, current directory if not specified)

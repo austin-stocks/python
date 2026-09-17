@@ -1,57 +1,37 @@
 Tickers,,,,,11-Sep,,16-Sep,,22-Sep,23-Sep,,,,,,,,IVES,Shay,Ronnie,My Stuff,Rise Dynasty,Marty 6,,RainKing
-DAR,,MSEX,8/3/2026,,pltr,,LEN,,AZO,CTAS,,FITZ,BETR,-,Lots of Debt,,,INOD,RKLB,ZETA,ABAT,FLNC,PL,RKLB,MU
-DXCM,,MTX,8/3/2026,,amd,,,,KBH,GIS,,GRNY,BTQ,None,,,,PEGA,CLPT,FLNC,ADUS,IREN,FSLR,IREN,AVGO
-EME,,NCLH,8/3/2026,,avgo,,,,MLKN,BB,,GRNJ,CIFR,-,Cash > LT debt,,,SHOP,JMIA,LUNR,AREC,NBIS,ALAB,NBIS,TSLA
-EMN,,NMIH,8/3/2026,,crdo,,,,THO,COST,,IVES,DEFT,+,Lots of current liabilitiey,,,,EOSE,RDW,ASST,OPEN,IMNM,,CEG
-FHI,,OLED,8/3/2026,,mdb,,,,,SNX,,CNEQ,ETHA,ETF,,,,,ASTS,ONDS,ASTS,OUST,AEO,,
-FND,,OMCL,8/3/2026,,app,,,,,,,ATFV,HUT,+,Cash > LT debt,,,,TMDX,AVAV,AVAV,RKLB,OPEN,,VIAV
-FSLR,,PIPR,8/3/2026,,aaoi,,,,,,,FRTY,IREN,+,Cash > LT debt,,,,VKTX,ADUS,BITF,SANM,,,FROG
-GPI,,PWR,8/3/2026,,nvda,,,,,,,ALAI,OPEN,-,,,,,SOFI,DLO,CCCX,HUT,,,NTRA
-HII,,REGN,8/3/2026,,now,,,,,,,,SANA,-,No debt,,,,IONQ,NBIS,CIFR,CIFR,,,WRBY
-HUN,,ABBV,8/9/2026,,nflx,,,,,,,,,,,,,,IREN,IREN,CLSK,SANA,,,GRAB
-ICE,,ADM,8/9/2026,,,,,,,,,,NBIS,,,,,,,,DPRO,,,,PGY
-IDCC,,ADUS,8/9/2026,,,,,,,,,,,,,,,,,,EOSE,,,,RKT
-ILMN,,ALAB,8/9/2026,,,,,,,,,,,,,,,,,,IONQ,,,,
-LH,,AMD,8/9/2026,,,,,,,,,,,,,,,,,,IREN,,,,IONQ
-LKQ,,AME,8/9/2026,,,,,,,,,,,,,,,,,,KRKNF,,,,FIG
-LOPE,,AMRC,8/9/2026,,,,,,,,,,,,,,,,,,KTOS,,,,LULU
-LPLA,,AN,8/9/2026,,,,,,,,,,,,,,,,,,MDB,,,,MJ
-MA,,ANET,8/9/2026,,,,,,,,,,,,,,,,,,ONDS,,,,
-MLM,,ARES,8/9/2026,,,,,,,,,,,,,,,,,,PL,,,,
-MPWR,,CBOE,8/9/2026,,,,,,,,,,,,,,,,,,PLUG,,,,
-,,CHD,8/9/2026,,,,,,,,,,,,,,,,,,POET,,,,
-,,CLX,8/9/2026,,,,,,,,,,,,,,,,,,PRCT,,,,
-,,GRAB,8/9/2026,,,,,,,,,,,,,,,,,,PRME,,,,
-,,ICHR,8/9/2026,,,,,,,,,,,,,,,,,,RDW,,,,
-,,IIPR,8/9/2026,,,,,,,,,,,,,,,,,,RIVN,,,,
-,,LEA,8/9/2026,,,,,,,,,,,,,,,,,,RKLB,,,,
-,,MED,8/9/2026,,,,,,,,,,,,,,,,,,SIDU,,,,
-,,MGA,8/9/2026,,,,,,,,,,,,,,,,,,SKYT,,,,
-,,NVT,8/9/2026,,,,,,,,,,,,,,,,,,SOC,,,,
-,,ON,8/9/2026,,,,,,,,,,,,,,,,,,SYM,,,,
-,,PAY,8/9/2026,,,,,,,,,,,,,,,,,,TE,,,,
-,,PLTR,8/9/2026,,,,,,,,,,,,,,,,,,UMAC,,,,
-,,SAIA,8/9/2026,,,,,,,,,,,,,,,,,,FIGR,,,,
-,,STRL,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,SYK,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,TNET,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,TROW,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,TW,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,UCTT,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,UFPT,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,UPBD,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,VERX,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,VRTX,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,WCC,8/9/2026,,,,,,,,,,,,,,,,,,,,,,
-,,BALL,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
-,,BKNG,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
-,,CACC,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
-,,CAT,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
-,,CERT,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
-,,CPNG,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
-,,ENTG,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
-,,ET,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
-,,EVTC,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
+,,CHD,8/9/2026,,pltr,,LEN,,AZO,CTAS,,FITZ,BETR,-,Lots of Debt,,,INOD,RKLB,ZETA,ABAT,FLNC,PL,RKLB,MU
+,,CLX,8/9/2026,,amd,,,,KBH,GIS,,GRNY,BTQ,None,,,,PEGA,CLPT,FLNC,ADUS,IREN,FSLR,IREN,AVGO
+,,GRAB,8/9/2026,,avgo,,,,MLKN,BB,,GRNJ,CIFR,-,Cash > LT debt,,,SHOP,JMIA,LUNR,AREC,NBIS,ALAB,NBIS,TSLA
+,,ICHR,8/9/2026,,crdo,,,,THO,COST,,IVES,DEFT,+,Lots of current liabilitiey,,,,EOSE,RDW,ASST,OPEN,IMNM,,CEG
+,,IIPR,8/9/2026,,mdb,,,,,SNX,,CNEQ,ETHA,ETF,,,,,ASTS,ONDS,ASTS,OUST,AEO,,
+,,LEA,8/9/2026,,app,,,,,,,ATFV,HUT,+,Cash > LT debt,,,,TMDX,AVAV,AVAV,RKLB,OPEN,,VIAV
+,,MED,8/9/2026,,aaoi,,,,,,,FRTY,IREN,+,Cash > LT debt,,,,VKTX,ADUS,BITF,SANM,,,FROG
+,,MGA,8/9/2026,,nvda,,,,,,,ALAI,OPEN,-,,,,,SOFI,DLO,CCCX,HUT,,,NTRA
+,,NVT,8/9/2026,,now,,,,,,,,SANA,-,No debt,,,,IONQ,NBIS,CIFR,CIFR,,,WRBY
+,,ON,8/9/2026,,nflx,,,,,,,,,,,,,,IREN,IREN,CLSK,SANA,,,GRAB
+,,PAY,8/9/2026,,,,,,,,,,NBIS,,,,,,,,DPRO,,,,PGY
+,,PLTR,8/9/2026,,,,,,,,,,,,,,,,,,EOSE,,,,RKT
+,,SAIA,8/9/2026,,,,,,,,,,,,,,,,,,IONQ,,,,
+,,STRL,8/9/2026,,,,,,,,,,,,,,,,,,IREN,,,,IONQ
+,,SYK,8/9/2026,,,,,,,,,,,,,,,,,,KRKNF,,,,FIG
+,,TNET,8/9/2026,,,,,,,,,,,,,,,,,,KTOS,,,,LULU
+,,TROW,8/9/2026,,,,,,,,,,,,,,,,,,MDB,,,,MJ
+,,TW,8/9/2026,,,,,,,,,,,,,,,,,,ONDS,,,,
+,,UCTT,8/9/2026,,,,,,,,,,,,,,,,,,PL,,,,
+,,UFPT,8/9/2026,,,,,,,,,,,,,,,,,,PLUG,,,,
+,,UPBD,8/9/2026,,,,,,,,,,,,,,,,,,POET,,,,
+,,VERX,8/9/2026,,,,,,,,,,,,,,,,,,PRCT,,,,
+,,VRTX,8/9/2026,,,,,,,,,,,,,,,,,,PRME,,,,
+,,WCC,8/9/2026,,,,,,,,,,,,,,,,,,RDW,,,,
+,,BALL,8/10/2026,,,,,,,,,,,,,,,,,,RIVN,,,,
+,,BKNG,8/10/2026,,,,,,,,,,,,,,,,,,RKLB,,,,
+,,CACC,8/10/2026,,,,,,,,,,,,,,,,,,SIDU,,,,
+,,CAT,8/10/2026,,,,,,,,,,,,,,,,,,SKYT,,,,
+,,CERT,8/10/2026,,,,,,,,,,,,,,,,,,SOC,,,,
+,,CPNG,8/10/2026,,,,,,,,,,,,,,,,,,SYM,,,,
+,,ENTG,8/10/2026,,,,,,,,,,,,,,,,,,TE,,,,
+,,ET,8/10/2026,,,,,,,,,,,,,,,,,,UMAC,,,,
+,,EVTC,8/10/2026,,,,,,,,,,,,,,,,,,FIGR,,,,
 ,,EXPD,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
 ,,FBIN,8/10/2026,,,,,,,,,,,,,,,,,,,,,,
 ,,FIS,8/10/2026,,,,,,,,,,,,,,,,,,,,,,

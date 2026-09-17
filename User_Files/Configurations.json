@@ -4920,6 +4920,19 @@
       {"Start_Date" : "12/25/2022", "Stop_Date" :   "10/05/2023", "Adj_Amount" : ".38"}
     ]
   },
+
+  "KNSA" : {
+    "Earnings_growth_projection_overlay" : [
+       {"Start_Date" : "09/30/2025", "Stop_Date" :   "End"}
+    ],
+    "Annual_EPS_Adjust" : [
+      {"Start_Date" : "09/25/2022", "Stop_Date" :   "07/05/2023", "Adj_Amount" : "-.9"}
+    ],
+    "QTR_Sales_BV_FCF_Overlay" : [
+       {"Start_Date" : "09/30/2025", "Stop_Date" :   "End"}
+    ]
+  },
+
   "ELV" : {
     "Earnings_growth_projection_overlay" : [
        {"Start_Date" : "09/30/2016", "Stop_Date" :   "06/30/2019"}
