@@ -13,7 +13,8 @@
 # Also writes Ticker-metrics: one row per underlying from GET
 # /market-metrics. Days_To_Earnings is +days to expected-report-date,
 # or -days since last historic earnings-reports date if no expected.
-# Notes sheet explains column headers. Ticker sheets drop LocalSymbol
+# Getting-Started is the first sheet. Notes, beside it, explains column
+# headers. Ticker sheets drop LocalSymbol
 # and Abs_Delta (|delta| is still used internally for the band and Summary).
 #
 # No TWS. OAuth + nested chain + DXLink greeks + REST option quotes.
@@ -29,6 +30,7 @@ import asyncio
 import datetime as dt
 import json
 import logging
+import math
 import os
 import sys
 import time
@@ -93,6 +95,13 @@ RANK_PCT_COLS = {
 }
 TICKER_DROP_COLS = ("Abs_Delta", "LocalSymbol")
 NOTES_SECTIONS = ("Ticker-metrics", "Summary", "Ticker sheet")
+GETTING_STARTED_SECTIONS = (
+  "The two greens",
+  "Column G",
+  "Column K",
+  "Read them as a pair",
+  "What the greens are not",
+)
 
 CENTER = Alignment(horizontal="center", vertical="center")
 HEADER_FONT = Font(name="Calibri", size=11, bold=True)
@@ -118,6 +127,10 @@ CALL_FONT = Font(color="C00000")
 PUT_FONT = Font(color="006600")
 CALL_FILL = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
 PUT_FILL = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
+MOVE_FILL = PatternFill(
+  fill_type="solid",
+  fgColor=Color(theme=3, tint=0.7999816888943144),
+)
 COL_MIN_WIDTH = {
   "Underlying": 12,
   "Underlying_Price": 18,
@@ -135,6 +148,9 @@ COL_MIN_WIDTH = {
   "Volume": 10,
   "Open_Interest": 16,
   "Moneyness": 14,
+  "IV_DTE": 10,
+  "Range_Lo": 12,
+  "Range_Hi": 12,
   "Ticker": 10,
   "C30_K": 10,
   "C30_IV": 10,
@@ -286,11 +302,19 @@ def _style_sheet(ws, moneyness_as_pct=False, color_by_type=False, delta_as_pct=F
   money_col = col_index.get("Moneyness")
   pct_suffix_cols = []
   for name in (
-    "IVx", "IV", "C30_IV", "P30_IV", "C10_IV", "P10_IV",
+    "IVx", "IV", "IV_DTE", "C30_IV", "P30_IV", "C10_IV", "P10_IV",
   ):
     if name in col_index:
       pct_suffix_cols.append(col_index[name])
   gamma_col = col_index.get("Gamma")
+  two_dec_cols = []
+  for name in ("Mark", "Range_Lo", "Range_Hi"):
+    if name in col_index:
+      two_dec_cols.append(col_index[name])
+  move_cols = []
+  for name in ("IV_DTE", "Range_Lo", "Range_Hi"):
+    if name in col_index:
+      move_cols.append(col_index[name])
   delta_cols = []
   if delta_as_pct:
     for name in ("Delta", "Abs_Delta", "C30_d", "P30_d", "C10_d", "P10_d"):
@@ -323,6 +347,10 @@ def _style_sheet(ws, moneyness_as_pct=False, color_by_type=False, delta_as_pct=F
         cell.number_format = '0.00"%"'
       if gamma_col and cell.column == gamma_col and isinstance(cell.value, (int, float)):
         cell.number_format = "0.000"
+      if cell.column in two_dec_cols and isinstance(cell.value, (int, float)):
+        cell.number_format = "0.00"
+      if cell.column in move_cols and isinstance(cell.value, (int, float)):
+        cell.fill = MOVE_FILL
       if color_by_type and kind == "call" and cell.column in (type_col, money_col):
         cell.font = CALL_FONT
         cell.fill = CALL_FILL
@@ -896,6 +924,53 @@ def _with_group_blanks(df, group_col):
   return pd.concat(chunks, ignore_index=True)
 
 
+def _iv30_for(ticker_metrics, ticker):
+  if ticker_metrics is None or ticker_metrics.empty:
+    return None
+  hit = ticker_metrics.loc[ticker_metrics["Ticker"] == ticker]
+  if hit.empty:
+    return None
+  return to_float(hit.iloc[0].get("implied-volatility-30-day"))
+
+
+def _blank_expiry(exp):
+  if exp is None:
+    return True
+  try:
+    return bool(pd.isna(exp))
+  except Exception:
+    return False
+
+
+def add_expiry_move(otm, iv_30):
+  # Own row above each expiry: IV_DTE, Range_Lo, Range_Hi only.
+  # Chain rows for that expiry start on the next line.
+  out = otm.copy()
+  out["IV_DTE"] = None
+  out["Range_Lo"] = None
+  out["Range_Hi"] = None
+  if out.empty or not finite(iv_30):
+    return out
+  pieces = []
+  seen = set()
+  for _, row in out.iterrows():
+    exp = row.get("Expiry")
+    if not _blank_expiry(exp) and exp not in seen:
+      seen.add(exp)
+      dte = to_float(row.get("DTE"))
+      spot = to_float(row.get("Underlying_Price"))
+      summary = {col: None for col in out.columns}
+      if dte is not None and spot is not None and dte >= 0 and spot > 0:
+        period = float(iv_30) * math.sqrt(dte / 365.0)
+        move = spot * period / 100.0
+        summary["IV_DTE"] = period
+        summary["Range_Lo"] = spot - move
+        summary["Range_Hi"] = spot + move
+      pieces.append(pd.DataFrame([summary]))
+    pieces.append(pd.DataFrame([row.to_dict()]))
+  return pd.concat(pieces, ignore_index=True)
+
+
 def nearest_band_row(g, target):
   if g.empty:
     return None
@@ -1040,6 +1115,20 @@ def _style_ticker_metrics(ws):
         cell.number_format = "0"
       elif name not in ("Ticker", BLANK_COL):
         cell.number_format = '0.00"%"'
+      if name == "iv-hv-30-day-difference" and cell.value > 0:
+        cell.font = PUT_FONT
+        cell.fill = PUT_FILL
+      if name == "historical-volatility-30-day":
+        hv60 = row[TICKER_METRIC_COLS.index("historical-volatility-60-day")].value
+        hv90 = row[TICKER_METRIC_COLS.index("historical-volatility-90-day")].value
+        if (
+          isinstance(hv60, (int, float))
+          and isinstance(hv90, (int, float))
+          and cell.value > hv60
+          and cell.value > hv90
+        ):
+          cell.font = PUT_FONT
+          cell.fill = PUT_FILL
 
   max_header_lines = 2
   for idx in range(1, n + 1):
@@ -1138,7 +1227,8 @@ def notes_df():
     (
       "historical volatility 30 day",
       "tasty historical-volatility-30-day. 30-day realized / historical "
-      "volatility. Already a percent.",
+      "volatility. Already a percent. Green when this is above both "
+      "60-day HV and 90-day HV.",
     ),
     (
       "historical volatility 60 day",
@@ -1208,6 +1298,23 @@ def notes_df():
       "0.10-0.30. Calls red, puts green on Type and Moneyness.",
     ),
     (
+      "IV_DTE",
+      "30-day IV scaled to this expiry: IV_30 * sqrt(DTE/365). "
+      "Sits on its own row above that expiry's contracts, with Range_Lo and "
+      "Range_Hi. Other cells on that row are blank. Percent, not annualized.",
+    ),
+    (
+      "Range_Lo",
+      "Low end of the one-standard-deviation band: spot minus spot * IV_DTE. "
+      "Column Q, on the same row as IV_DTE, above that expiry's contracts.",
+    ),
+    (
+      "Range_Hi",
+      "High end of that same band: spot plus spot * IV_DTE. Column R, "
+      "on the IV_DTE row. About 68% of the model outcomes sit between "
+      "Range_Lo and Range_Hi.",
+    ),
+    (
       "Moneyness",
       "(spot − strike) / spot, as a percent. Same formula for calls and puts. "
       "A call struck above spot is negative; a put struck below spot is "
@@ -1239,7 +1346,56 @@ def _note_wrap_lines(text, width_chars):
   return lines
 
 
-def _style_notes(ws):
+def getting_started_df():
+  rows = [
+    (
+      "The two greens",
+      "Ticker-metrics highlights two cells in green. They are not the same "
+      "signal. Column G asks whether the option market is charging more for "
+      "movement than the stock just delivered. Column K asks whether that "
+      "recent delivery was already the roughest stretch of the last quarter. "
+      "Read them together.",
+    ),
+    (
+      "Column G",
+      "Column G is 30-day implied volatility minus 30-day historical "
+      "volatility. It turns green when that difference is positive: the "
+      "market is pricing more movement over the next month than the shares "
+      "produced over the last one. That is a sound place to start looking "
+      "for a sale. It is not, by itself, a sale. The extra premium may be "
+      "there because an event is coming, or because at-the-money volatility "
+      "is rich while the strike you would actually sell is not.",
+    ),
+    (
+      "Column K",
+      "Column K is 30-day historical volatility. It turns green only when "
+      "that number is strictly higher than both the 60-day and the 90-day "
+      "readings. The last month was the most violent of the three windows. "
+      "That is a description of the stock's past. It does not say the option "
+      "is expensive.",
+    ),
+    (
+      "Read them as a pair",
+      "Both green is the case worth your time. Implied volatility is still "
+      "above recent realized volatility, and that recent realized volatility "
+      "is already hotter than the 60-day and 90-day windows. The market is "
+      "pricing more movement than an already-hot month. Green on K with G "
+      "left plain is the opposite. The stock has sped up, and the options "
+      "are not priced above that faster tape. Selling there is selling into "
+      "a move that has already begun, not selling rich premium.",
+    ),
+    (
+      "What the greens are not",
+      "A green cell is a mark on the page, not an order. Implied-volatility "
+      "rank, days to earnings, and the implied volatility of the strike you "
+      "would sell still decide whether the premium is worth the risk. Those "
+      "columns are defined on the Notes sheet beside this one.",
+    ),
+  ]
+  return pd.DataFrame(rows, columns=["Topic", "Guide"])
+
+
+def _style_notes(ws, sections=NOTES_SECTIONS, max_height=64):
   for cell in ws[1]:
     cell.alignment = CENTER
     cell.font = HEADER_FONT
@@ -1254,7 +1410,7 @@ def _style_notes(ws):
   left_one = Alignment(horizontal="left", vertical="center", wrap_text=False)
   for row in ws.iter_rows(min_row=2, max_row=ws.max_row, max_col=2):
     a, b = row[0], row[1]
-    is_sec = str(a.value or "") in NOTES_SECTIONS
+    is_sec = str(a.value or "") in sections
     lines = _note_wrap_lines(b.value, 86)
     if is_sec:
       a.font = HEADER_FONT
@@ -1270,7 +1426,7 @@ def _style_notes(ws):
     else:
       a.alignment = left_one
       b.alignment = left_top
-      ws.row_dimensions[a.row].height = min(15 * lines + 4, 64)
+      ws.row_dimensions[a.row].height = min(15 * lines + 4, max_height)
 
 
 def write_notes_sheet(wb):
@@ -1326,6 +1482,14 @@ async def async_main():
   out_path = _output_path()
   try:
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
+      getting_started_df().to_excel(writer, sheet_name="Getting-Started", index=False)
+      _style_notes(
+        writer.sheets["Getting-Started"],
+        GETTING_STARTED_SECTIONS,
+        max_height=140,
+      )
+      notes_df().to_excel(writer, sheet_name="Notes", index=False)
+      _style_notes(writer.sheets["Notes"])
       ticker_metrics.to_excel(writer, sheet_name="Ticker-metrics", index=False)
       _style_ticker_metrics(writer.sheets["Ticker-metrics"])
       if summary.empty:
@@ -1337,7 +1501,7 @@ async def async_main():
         summary = _with_group_blanks(summary, "Ticker")
         summary.to_excel(writer, sheet_name="Summary", index=False)
         _style_sheet(writer.sheets["Summary"], delta_as_pct=True)
-      used = {"Ticker-metrics", "Summary", "Notes"}
+      used = {"Getting-Started", "Notes", "Ticker-metrics", "Summary"}
       for ticker in tickers:
         name = sheet_name(ticker)
         base = name
@@ -1354,6 +1518,7 @@ async def async_main():
           _style_sheet(writer.sheets[name])
           continue
         otm = ticker_sheet_df(raw)
+        otm = add_expiry_move(otm, _iv30_for(ticker_metrics, ticker))
         otm.to_excel(writer, sheet_name=name, index=False)
         _style_sheet(
           writer.sheets[name],
@@ -1361,8 +1526,6 @@ async def async_main():
           color_by_type=True,
           delta_as_pct=True,
         )
-      notes_df().to_excel(writer, sheet_name="Notes", index=False)
-      _style_notes(writer.sheets["Notes"])
   except PermissionError:
     logging.error("Cannot write " + out_path + " — close the file in Excel and re-run")
     return
