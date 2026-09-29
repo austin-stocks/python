@@ -13,7 +13,10 @@
 # Also writes Ticker-metrics: one row per underlying from GET
 # /market-metrics. Days_To_Earnings is +days to expected-report-date,
 # or -days since last historic earnings-reports date if no expected.
-# Getting-Started is the first sheet. Notes, beside it, explains column
+# Getting-Started is the first sheet. It names Ticker-metrics and
+# identifies the green columns by the header on that sheet. The column
+# letter is taken from TICKER_METRIC_COLS at write time, so reordering
+# that list updates the guide. Notes, beside it, explains column
 # headers. Ticker sheets drop LocalSymbol
 # and Abs_Delta (|delta| is still used internally for the band and Summary).
 #
@@ -69,6 +72,13 @@ QUOTE_BATCH = 80
 METRICS_BATCH = 40
 EARNINGS_LOOKBACK_DAYS = 400
 BLANK_COL = " "
+METRICS_SHEET = "Ticker-metrics"
+# Green rules and the Getting-Started guide both key off these names.
+# Letters are not stored: they are TICKER_METRIC_COLS positions at write time.
+IV_HV_DIFF_COL = "iv-hv-30-day-difference"
+HV30_COL = "historical-volatility-30-day"
+HV60_COL = "historical-volatility-60-day"
+HV90_COL = "historical-volatility-90-day"
 TICKER_METRIC_COLS = [
   "Ticker",
   "Days_To_Earnings",
@@ -76,13 +86,13 @@ TICKER_METRIC_COLS = [
   "implied-volatility-index-rank",
   "implied-volatility-percentile",
   "implied-volatility-30-day",
-  "iv-hv-30-day-difference",
+  IV_HV_DIFF_COL,
   "implied-volatility-index-5-day-change",
   BLANK_COL,
   "implied-volatility-index-15-day",
-  "historical-volatility-30-day",
-  "historical-volatility-60-day",
-  "historical-volatility-90-day",
+  HV30_COL,
+  HV60_COL,
+  HV90_COL,
 ]
 INDEX_PCT_COLS = {
   "implied-volatility-index",
@@ -94,14 +104,7 @@ RANK_PCT_COLS = {
   "implied-volatility-percentile",
 }
 TICKER_DROP_COLS = ("Abs_Delta", "LocalSymbol")
-NOTES_SECTIONS = ("Ticker-metrics", "Summary", "Ticker sheet")
-GETTING_STARTED_SECTIONS = (
-  "The two greens",
-  "Column G",
-  "Column K",
-  "Read them as a pair",
-  "What the greens are not",
-)
+NOTES_SECTIONS = ("Ticker-Metrics", "Summary", "Ticker Sheet")
 
 CENTER = Alignment(horizontal="center", vertical="center")
 HEADER_FONT = Font(name="Calibri", size=11, bold=True)
@@ -1115,12 +1118,12 @@ def _style_ticker_metrics(ws):
         cell.number_format = "0"
       elif name not in ("Ticker", BLANK_COL):
         cell.number_format = '0.00"%"'
-      if name == "iv-hv-30-day-difference" and cell.value > 0:
+      if name == IV_HV_DIFF_COL and cell.value > 0:
         cell.font = PUT_FONT
         cell.fill = PUT_FILL
-      if name == "historical-volatility-30-day":
-        hv60 = row[TICKER_METRIC_COLS.index("historical-volatility-60-day")].value
-        hv90 = row[TICKER_METRIC_COLS.index("historical-volatility-90-day")].value
+      if name == HV30_COL:
+        hv60 = row[TICKER_METRIC_COLS.index(HV60_COL)].value
+        hv90 = row[TICKER_METRIC_COLS.index(HV90_COL)].value
         if (
           isinstance(hv60, (int, float))
           and isinstance(hv90, (int, float))
@@ -1172,7 +1175,7 @@ def _style_ticker_metrics(ws):
 def notes_df():
   rows = [
     (
-      "Ticker-metrics",
+      "Ticker-Metrics",
       "One row per underlying from tasty GET /market-metrics. "
       "Index family and IVR/IVP are percent on the sheet (0.66 → 66.6). "
       "30d IV, HV, and IV-HV are already percent from tasty.",
@@ -1185,57 +1188,66 @@ def notes_df():
       "Blank if neither exists.",
     ),
     (
-      "implied volatility index",
-      "tasty implied-volatility-index. VIX-style IV Index, ~30-day tenor. "
-      "Sheet is percent.",
+      "Implied Volatility Index",
+      "tasty implied-volatility-index. This reading is annualized, and the "
+      "options inside it cover about the next 30 days. Tasty builds it the "
+      "way the VIX is built: a constant-maturity blend, quoted as a yearly "
+      "rate. 40.00 on the sheet means 40% a year. Over that 30-day window, "
+      "one standard deviation is 40 × sqrt(30/365), about 11.5% of the share "
+      "price. Implied Volatility 30 Day, further down this sheet, is a "
+      "separate tasty field. It is annualized too, and the two columns can "
+      "print different numbers. Sheet is percent.",
     ),
     (
-      "implied volatility index rank",
+      "Implied Volatility Index Rank",
       "tasty implied-volatility-index-rank (IVR). Where this name's Index "
       "sits in its own 52-week high-low range. Not the same as percentile. "
       "Can print above 100 or below 0 on a new high/low. Sheet is percent.",
     ),
     (
-      "implied volatility percentile",
-      "tasty implied-volatility-percentile (IVP). Share of the last ~252 "
-      "sessions on which the Index was lower than now. Sheet is percent.",
+      "Implied Volatility Percentile",
+      "tasty implied-volatility-percentile (IVP). Over the last year, about "
+      "252 sessions, this is the share of days on which implied volatility "
+      "was lower than it is today. 80 means it was lower on 80% of those "
+      "days and higher on 20%. If you want to sell an option, a higher "
+      "number is a good starting point to consider.",
     ),
     (
-      "implied volatility 30 day",
+      "Implied Volatility 30 Day",
       "tasty implied-volatility-30-day. Already a percent in the API.",
     ),
     (
-      "iv hv 30 day difference",
+      "IV HV 30 Day Difference",
       "tasty iv-hv-30-day-difference. 30d IV minus 30d HV, percent points. "
       "Positive = options pricing more vol than the stock just realized.",
     ),
     (
-      "implied volatility index 5 day change",
+      "Implied Volatility Index 5 Day Change",
       "tasty implied-volatility-index-5-day-change. Change in the Index over "
       "5 days. API is 0-1 units; sheet is percent points (0.028 → 2.80).",
     ),
     (
-      "(blank)",
+      "(Blank)",
       "Spacer between the first metric group and the 15-day / HV group. "
       "No data.",
     ),
     (
-      "implied volatility index 15 day",
+      "Implied Volatility Index 15 Day",
       "tasty implied-volatility-index-15-day. 15-day tenor of the same Index "
       "(a level, not a change). Sheet is percent.",
     ),
     (
-      "historical volatility 30 day",
+      "Historical Volatility 30 Day",
       "tasty historical-volatility-30-day. 30-day realized / historical "
       "volatility. Already a percent. Green when this is above both "
       "60-day HV and 90-day HV.",
     ),
     (
-      "historical volatility 60 day",
+      "Historical Volatility 60 Day",
       "tasty historical-volatility-60-day. Already a percent.",
     ),
     (
-      "historical volatility 90 day",
+      "Historical Volatility 90 Day",
       "tasty historical-volatility-90-day. Already a percent.",
     ),
     (
@@ -1293,7 +1305,7 @@ def notes_df():
       "Implied volatility of that ~0.10-delta put.",
     ),
     (
-      "Ticker sheet",
+      "Ticker Sheet",
       "One sheet per underlying. Next 8 expiries. Contracts with |delta| "
       "0.10-0.30. Calls red, puts green on Type and Moneyness.",
     ),
@@ -1346,63 +1358,162 @@ def _note_wrap_lines(text, width_chars):
   return lines
 
 
+_TITLE_ACRONYMS = {
+  "iv": "IV",
+  "hv": "HV",
+  "ivr": "IVR",
+  "ivp": "IVP",
+  "api": "API",
+  "dte": "DTE",
+  "otm": "OTM",
+  "vix": "VIX",
+  "get": "GET",
+  "sqrt": "sqrt",
+}
+
+
+def _title_piece(piece):
+  if not piece:
+    return piece
+  if any(ch.isdigit() for ch in piece):
+    return piece
+  key = piece.lower()
+  if key in _TITLE_ACRONYMS:
+    return _TITLE_ACRONYMS[key]
+  return piece[:1].upper() + piece[1:].lower()
+
+
+def _title_token(token):
+  out = []
+  buf = []
+  apostrophes = set("'’ʼ")
+
+  def flush():
+    if not buf:
+      return
+    piece = "".join(buf)
+    # "30d" stays "30d". A hyphenated word such as "30-day" still titles.
+    if out and out[-1][-1:].isdigit():
+      out.append(piece)
+    else:
+      out.append(_title_piece(piece))
+    buf.clear()
+
+  for ch in token:
+    if ch.isalpha() or (ch in apostrophes and buf):
+      buf.append(ch)
+    else:
+      flush()
+      out.append(ch)
+  flush()
+  return "".join(out)
+
+
+def _title_case_text(text):
+  if text is None:
+    return text
+  return " ".join(_title_token(part) for part in str(text).split(" "))
+
+
+def _metric_header(name):
+  acronyms = {"iv": "IV", "hv": "HV"}
+  words = str(name).replace("-", " ").replace("_", " ").split()
+  titled = []
+  for word in words:
+    key = word.lower()
+    if key in acronyms:
+      titled.append(acronyms[key])
+    elif word[:1].isdigit():
+      titled.append(word)
+    else:
+      titled.append(word[:1].upper() + word[1:].lower())
+  return " ".join(titled)
+
+
+def _metric_where(name):
+  # Letter follows TICKER_METRIC_COLS. The guide names the header.
+  try:
+    idx = TICKER_METRIC_COLS.index(name)
+  except ValueError:
+    raise ValueError("TICKER_METRIC_COLS has no " + str(name)) from None
+  return _metric_header(name), get_column_letter(idx + 1)
+
+
+def _metric_ref(name):
+  header, letter = _metric_where(name)
+  return header + " (column " + letter + ")"
+
+
 def getting_started_df():
+  iv_hv = _metric_ref(IV_HV_DIFF_COL)
+  hv30 = _metric_ref(HV30_COL)
+  hv60 = _metric_ref(HV60_COL)
+  hv90 = _metric_ref(HV90_COL)
+  iv_hv_header = _metric_header(IV_HV_DIFF_COL)
+  hv30_header = _metric_header(HV30_COL)
   rows = [
     (
       "The two greens",
-      "Ticker-metrics highlights two cells in green. They are not the same "
-      "signal. Column G asks whether the option market is charging more for "
-      "movement than the stock just delivered. Column K asks whether that "
-      "recent delivery was already the roughest stretch of the last quarter. "
-      "Read them together.",
+      "Two cells on the " + METRICS_SHEET + " sheet turn green, and each "
+      "one answers a different question. " + iv_hv + " sets the option "
+      "market's price for the next month against the movement the shares "
+      "actually produced over the last one. " + hv30 + " stays in the past, "
+      "and asks whether that month was already the roughest stretch of the "
+      "quarter. Read the two together. One green cell is only half the story.",
     ),
     (
-      "Column G",
-      "Column G is 30-day implied volatility minus 30-day historical "
-      "volatility. It turns green when that difference is positive: the "
-      "market is pricing more movement over the next month than the shares "
-      "produced over the last one. That is a sound place to start looking "
-      "for a sale. It is not, by itself, a sale. The extra premium may be "
-      "there because an event is coming, or because at-the-money volatility "
-      "is rich while the strike you would actually sell is not.",
+      iv_hv_header,
+      iv_hv + " is 30-day implied volatility minus 30-day historical "
+      "volatility, in percentage points. It turns green when that difference "
+      "is above zero. The market is then charging for more movement over the "
+      "coming month than the shares produced over the last one. If you want "
+      "to sell an option, that is a sound place to begin. The richness may "
+      "be an event still ahead, or a richness at the money that fades at "
+      "the strike of the option you would sell. The cell says the premium "
+      "is rich against the "
+      "recent tape. Choosing the trade comes after that.",
     ),
     (
-      "Column K",
-      "Column K is 30-day historical volatility. It turns green only when "
-      "that number is strictly higher than both the 60-day and the 90-day "
-      "readings. The last month was the most violent of the three windows. "
-      "That is a description of the stock's past. It does not say the option "
-      "is expensive.",
+      hv30_header,
+      hv30 + " turns green only when the last month's realized volatility "
+      "is strictly higher than both " + hv60 + " and " + hv90 + ". A tie "
+      "stays plain. The last month was the most violent of the three "
+      "windows. The cell describes the stock's past. Whether the option is "
+      "expensive is the question answered by " + iv_hv_header + ".",
     ),
     (
       "Read them as a pair",
-      "Both green is the case worth your time. Implied volatility is still "
-      "above recent realized volatility, and that recent realized volatility "
-      "is already hotter than the 60-day and 90-day windows. The market is "
-      "pricing more movement than an already-hot month. Green on K with G "
-      "left plain is the opposite. The stock has sped up, and the options "
-      "are not priced above that faster tape. Selling there is selling into "
-      "a move that has already begun, not selling rich premium.",
+      "If you want to sell an option, both green is the case that deserves "
+      "your time. Implied volatility still stands above a month that was "
+      "already hotter than the 60-day and 90-day windows. The market is "
+      "pricing more movement than an already-rough month delivered. Green "
+      "on " + hv30_header + " alone is the other picture. The shares have "
+      "sped up, and " + iv_hv_header + " does not stand above that faster "
+      "tape. If you want to sell an option there, you are joining a move "
+      "already underway. "
+      "The case the two greens point toward is the one where both cells "
+      "are green.",
     ),
     (
       "What the greens are not",
-      "A green cell is a mark on the page, not an order. Implied-volatility "
-      "rank, days to earnings, and the implied volatility of the strike you "
-      "would sell still decide whether the premium is worth the risk. Those "
-      "columns are defined on the Notes sheet beside this one.",
+      "A green cell on " + METRICS_SHEET + " is a place to look. "
+      "Implied-volatility rank, the days remaining until earnings, and the "
+      "implied volatility of the strike you would sell still decide whether "
+      "the premium pays for the risk. The Notes sheet beside this one "
+      "defines those columns.",
     ),
   ]
   return pd.DataFrame(rows, columns=["Topic", "Guide"])
 
 
-def _style_notes(ws, sections=NOTES_SECTIONS, max_height=64):
+def _style_notes(ws, sections=NOTES_SECTIONS, max_height=64, col_a_width=40):
   for cell in ws[1]:
     cell.alignment = CENTER
     cell.font = HEADER_FONT
     cell.fill = HEADER_FILL
     cell.border = HEADER_BORDER
   ws.freeze_panes = "A2"
-  ws.column_dimensions["A"].width = 40
+  ws.column_dimensions["A"].width = col_a_width
   ws.column_dimensions["B"].width = 92
   ws.row_dimensions[1].height = 18
   left_mid = Alignment(horizontal="left", vertical="center", wrap_text=True)
@@ -1410,6 +1521,7 @@ def _style_notes(ws, sections=NOTES_SECTIONS, max_height=64):
   left_one = Alignment(horizontal="left", vertical="center", wrap_text=False)
   for row in ws.iter_rows(min_row=2, max_row=ws.max_row, max_col=2):
     a, b = row[0], row[1]
+    b.value = _title_case_text(b.value)
     is_sec = str(a.value or "") in sections
     lines = _note_wrap_lines(b.value, 86)
     if is_sec:
@@ -1439,7 +1551,7 @@ def write_notes_sheet(wb):
   for r, rec in enumerate(df.itertuples(index=False), start=2):
     ws.cell(r, 1, rec[0])
     ws.cell(r, 2, rec[1])
-  _style_notes(ws)
+  _style_notes(ws, max_height=140, col_a_width=44)
 
 
 def drop_ticker_display_cols(ws):
@@ -1482,16 +1594,17 @@ async def async_main():
   out_path = _output_path()
   try:
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
-      getting_started_df().to_excel(writer, sheet_name="Getting-Started", index=False)
+      started = getting_started_df()
+      started.to_excel(writer, sheet_name="Getting-Started", index=False)
       _style_notes(
         writer.sheets["Getting-Started"],
-        GETTING_STARTED_SECTIONS,
+        set(started["Topic"]),
         max_height=140,
       )
       notes_df().to_excel(writer, sheet_name="Notes", index=False)
-      _style_notes(writer.sheets["Notes"])
-      ticker_metrics.to_excel(writer, sheet_name="Ticker-metrics", index=False)
-      _style_ticker_metrics(writer.sheets["Ticker-metrics"])
+      _style_notes(writer.sheets["Notes"], max_height=140, col_a_width=44)
+      ticker_metrics.to_excel(writer, sheet_name=METRICS_SHEET, index=False)
+      _style_ticker_metrics(writer.sheets[METRICS_SHEET])
       if summary.empty:
         pd.DataFrame({"Message": ["No 0.10-0.30 delta contracts"]}).to_excel(
           writer, sheet_name="Summary", index=False
@@ -1501,7 +1614,7 @@ async def async_main():
         summary = _with_group_blanks(summary, "Ticker")
         summary.to_excel(writer, sheet_name="Summary", index=False)
         _style_sheet(writer.sheets["Summary"], delta_as_pct=True)
-      used = {"Getting-Started", "Notes", "Ticker-metrics", "Summary"}
+      used = {"Getting-Started", "Notes", METRICS_SHEET, "Summary"}
       for ticker in tickers:
         name = sheet_name(ticker)
         base = name
