@@ -682,7 +682,14 @@ async def _wait_greeks(ws, greeks, quotes, summaries, wanted, wait_s):
   return sum(1 for s in wanted_set if s in greeks)
 
 
-async def stream_option_data(dx_url, dx_token, symbol_groups, wait_s):
+def _iter_prefix(i_int, n_tickers):
+  # Same "Iteration # " label SC_EarningsChart uses. 1-based, padded so
+  # ticker 3 of 100 lines up with ticker 100.
+  width = max(len(str(n_tickers)), 1)
+  return "Iteration # " + str(i_int).rjust(width) + " of " + str(n_tickers) + ", "
+
+
+async def stream_option_data(dx_url, dx_token, symbol_groups, wait_s, iter_prefix=""):
   greeks, quotes, summaries = {}, {}, {}
   groups = [list(dict.fromkeys(g)) for g in symbol_groups if g]
   if not groups:
@@ -732,7 +739,7 @@ async def stream_option_data(dx_url, dx_token, symbol_groups, wait_s):
       await _dx_recv(ws, greeks, quotes, summaries, 0.3)
       got = await _wait_greeks(ws, greeks, quotes, summaries, group, wait_s)
       logging.info(
-        "greeks expiry " + str(gi + 1) + "/" + str(len(groups))
+        iter_prefix + "greeks expiry " + str(gi + 1) + "/" + str(len(groups))
         + " got=" + str(got) + "/" + str(len(group))
       )
       try:
@@ -757,7 +764,7 @@ def candidate_contracts(exp_obj):
   return out, dte
 
 
-async def pull_ticker(api, symbol, dx_url, dx_token):
+async def pull_ticker(api, symbol, dx_url, dx_token, iter_prefix=""):
   q = api.equity_quote(symbol)
   spot = None
   if q:
@@ -765,23 +772,23 @@ async def pull_ticker(api, symbol, dx_url, dx_token):
       if finite(q.get(key)):
         spot = float(q.get(key))
         break
-  logging.info(symbol + " last=" + str(q.get("last") if q else None) + " spot=" + str(spot))
+  logging.info(iter_prefix + symbol + " last=" + str(q.get("last") if q else None) + " spot=" + str(spot))
   if spot is None:
     return pd.DataFrame(), None
 
   chain = api.nested_chain(symbol)
   if not chain:
-    logging.warning(symbol + ": no option chain")
+    logging.warning(iter_prefix + symbol + ": no option chain")
     return pd.DataFrame(), spot
   expiries = pick_expiries(chain.get("expirations") or [], date.today())
-  logging.info(symbol + " expiries=" + str(len(expiries)))
+  logging.info(iter_prefix + symbol + " expiries=" + str(len(expiries)))
 
   all_cands = []
   groups = []
   for exp_obj in expiries:
     exp_date = str(exp_obj.get("expiration-date"))
     cands, dte = candidate_contracts(exp_obj)
-    logging.info(symbol + " " + exp_date + " quoted " + str(len(cands)) + " contracts")
+    logging.info(iter_prefix + symbol + " " + exp_date + " quoted " + str(len(cands)) + " contracts")
     for right, strike, occ, stream in cands:
       all_cands.append((exp_date, dte, right, strike, occ, stream))
     groups.append([c[3] for c in cands])
@@ -789,14 +796,14 @@ async def pull_ticker(api, symbol, dx_url, dx_token):
   streamer_n = sum(len(g) for g in groups)
   try:
     greeks, dx_quotes, summaries = await stream_option_data(
-      dx_url, dx_token, groups, GREEKS_WAIT_S
+      dx_url, dx_token, groups, GREEKS_WAIT_S, iter_prefix
     )
   except Exception as exc:
-    logging.error(symbol + " stream failed: " + str(exc))
+    logging.error(iter_prefix + symbol + " stream failed: " + str(exc))
     logging.debug(traceback.format_exc())
     greeks, dx_quotes, summaries = {}, {}, {}
   logging.info(
-    symbol + " greeks=" + str(len(greeks)) + "/" + str(streamer_n)
+    iter_prefix + symbol + " greeks=" + str(len(greeks)) + "/" + str(streamer_n)
     + " dx_quotes=" + str(len(dx_quotes))
   )
 
@@ -866,7 +873,7 @@ async def pull_ticker(api, symbol, dx_url, dx_token):
   for exp_obj in expiries:
     exp_date = str(exp_obj.get("expiration-date"))
     logging.info(
-      symbol + " " + exp_date + " kept "
+      iter_prefix + symbol + " " + exp_date + " kept "
       + str(kept_by_exp.get(exp_date, 0)) + " in 0.10-0.30 |delta|"
     )
 
@@ -1579,14 +1586,19 @@ async def async_main():
   dx_url, dx_token = api.quote_token()
 
   frames = {}
-  for ticker in tickers:
-    logging.info("=== " + ticker + " ===")
+  n_tickers = len(tickers)
+  for i_int, ticker in enumerate(tickers, start=1):
+    prefix = _iter_prefix(i_int, n_tickers)
+    logging.info("\n")
+    logging.info(prefix + "==============================================================")
+    logging.info(prefix + "=== " + ticker + " ===")
+    logging.info(prefix + "==============================================================")
     try:
-      df, spot = await pull_ticker(api, ticker, dx_url, dx_token)
+      df, spot = await pull_ticker(api, ticker, dx_url, dx_token, prefix)
       frames[ticker] = df
-      logging.info(ticker + " rows=" + str(len(df)) + " spot=" + str(spot))
+      logging.info(prefix + ticker + " rows=" + str(len(df)) + " spot=" + str(spot))
     except Exception as exc:
-      logging.error(ticker + " failed: " + type(exc).__name__ + " " + str(exc))
+      logging.error(prefix + ticker + " failed: " + type(exc).__name__ + " " + str(exc))
       logging.debug(traceback.format_exc())
       frames[ticker] = pd.DataFrame()
 
@@ -1643,7 +1655,9 @@ async def async_main():
     logging.error("Cannot write " + out_path + " — close the file in Excel and re-run")
     return
 
+  logging.info("\n")
   logging.info("Wrote " + out_path)
+  logging.info("\n")
   for ticker in tickers:
     logging.info(format_ticker_got(ticker, frames.get(ticker)))
 
