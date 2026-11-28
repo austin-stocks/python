@@ -3557,6 +3557,7 @@
 
   "MNST" : {
     "Splits" : {
+      "08/11/2026" : "2:1",
       "03/28/2023" : "2:1"
     },
     "Earnings_growth_projection_overlay" : [
